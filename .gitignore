@@ -1,0 +1,7 @@
+node_modules/
+*.log
+rxnxt-db.json
+.env
+.next/
+coverage/  
+test-report.html  

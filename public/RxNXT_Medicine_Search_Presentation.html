@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RxNXT - Intelligent Medicine Search</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&display=swap');
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #0ea5e9;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --accent: #10b981; /* Emerald for healthcare */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* A4 Page Formatting - Landscape */
+        .page {
+            width: 297mm; 
+            height: 210mm;
+            background: white;
+            margin: 20px auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-gradient {
+            background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%);
+            color: white;
+        }
+
+        .bg-pattern {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .title-slide h1 {
+            font-size: 4.5rem;
+            background: linear-gradient(to right, #34d399, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+        }
+
+        .title-slide h2 {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #cbd5e1;
+            margin-bottom: 40px;
+        }
+
+        .badge {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Content Slides */
+        .content-slide {
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+
+        .slide-title {
+            font-size: 2.5rem;
+            color: var(--dark);
+        }
+
+        .slide-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #94a3b8;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            flex: 1;
+        }
+
+        .feature-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-box h3 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .feature-box p, .feature-box ul {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #475569;
+        }
+
+        .feature-box ul {
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+
+        .feature-box li {
+            margin-bottom: 10px;
+        }
+
+        .example-box {
+            background: #0f172a;
+            color: #f8fafc;
+            border-radius: 12px;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .example-box h3 {
+            color: #38bdf8;
+            margin-bottom: 15px;
+        }
+
+        .code-snippet {
+            font-family: monospace;
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            color: #a7f3d0;
+            font-size: 1.1rem;
+        }
+
+        /* Print formatting */
+        .print-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            display: block;
+            margin: 20px auto;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .print-btn:hover {
+            background: #1d4ed8;
+        }
+
+        @media print {
+            .print-btn { display: none; }
+            body { 
+                background: white; 
+                margin: 0; 
+                padding: 0; 
+            }
+            .page { 
+                margin: 0; 
+                box-shadow: none; 
+                page-break-after: always;
+            }
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn" onclick="window.print()">🖨️ Click Here to Save as PDF</button>
+
+    <!-- Slide 1: Title -->
+    <div class="page bg-gradient bg-pattern title-slide">
+        <span class="badge">Core Feature Deep-Dive</span>
+        <h1 style="margin-top: 30px;">Intelligent Medicine Search Engine</h1>
+        <h2>Revolutionizing Clinical Workflows with Predictive EMR Search</h2>
+        <p style="color: #94a3b8; font-size: 1.2rem; max-width: 600px;">
+            A presentation for Doctors & Investors detailing the ML-inspired ranking algorithm, clinical safety fallbacks, and revenue impacts of RxNXT.
+        </p>
+    </div>
+
+    <!-- Slide 2: Problem & Solution -->
+    <div class="page content-slide">
+        <div class="slide-header">
+            <h2 class="slide-title">The Friction in Modern EMRs</h2>
+            <div class="slide-logo">RxNXT</div>
+        </div>
+        <div class="content-grid">
+            <div class="feature-box">
+                <h3>The Problem: Wasted Time & Clinical Errors</h3>
+                <p>Standard EMRs use basic text-matching. This creates massive friction:</p>
+                <ul>
+                    <li><strong>Typos equal zero results:</strong> A doctor typing "Parcetmol" instead of "Paracetamol" has to backspace and retype.</li>
+                    <li><strong>Irrelevant sorting:</strong> Rare drugs often appear before common ones just because of alphabetical sorting.</li>
+                    <li><strong>No personalization:</strong> A cardiologist and a pediatrician see the exact same generic drug lists.</li>
+                </ul>
+            </div>
+            <div class="feature-box" style="background: #eff6ff; border-color: #bfdbfe;">
+                <h3 style="color: #1d4ed8;">The RxNXT Solution</h3>
+                <p>We built a <strong>Clinical Additive Ranking Algorithm</strong>. It doesn't just search; it <em>predicts</em>.</p>
+                <ul>
+                    <li>Typo-tolerant fuzzy matching across thousands of drugs.</li>
+                    <li>Learns doctor and clinic preferences dynamically.</li>
+                    <li>Instantly recognizes medical shorthand and aliases.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Fuzzy Matching -->
+    <div class="page content-slide">
+        <div class="slide-header">
+            <h2 class="slide-title">1. Typo-Tolerant "Fuzzy" Matching</h2>
+            <div class="slide-logo">RxNXT</div>
+        </div>
+        <div class="content-grid">
+            <div class="feature-box">
+                <h3>How It Works</h3>
+                <p>Doctors are often typing quickly while talking to patients. Our search engine incorporates advanced typo-tolerance across Generic Names, Brand Names, and Clinical Aliases simultaneously.</p>
+                <br>
+                <p><strong>Clinical Benefit:</strong> The doctor never has to look at the keyboard. Even with slight misspellings, the correct medicine is retrieved instantly, saving precious seconds per patient.</p>
+            </div>
+            <div class="example-box">
+                <h3>Real-World Example</h3>
+                <p>Doctor's Input (Typo):</p>
+                <div class="code-snippet">Search: "Azitro"</div>
+                <p>System Output:</p>
+                <div class="code-snippet" style="color: #38bdf8;">
+                    Result 1: Azithromycin (Generic)<br>
+                    Result 2: Azithral 500mg (Brand)
+                </div>
+                <p style="font-size: 0.9rem; color: #94a3b8; margin-top: 10px;">
+                    * The mathematical string distance is calculated behind the scenes, awarding fuzzy points rather than returning "No Results Found."
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Smart Additive Ranking -->
+    <div class="page content-slide">
+        <div class="slide-header">
+            <h2 class="slide-title">2. Smart Additive Ranking (ML-Inspired)</h2>
+            <div class="slide-logo">RxNXT</div>
+        </div>
+        <div class="content-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="feature-box">
+                <h3>Dynamic Scoring Model</h3>
+                <p>Instead of flat lists, every drug is assigned a dynamic `match_score` in real-time:</p>
+                <ul>
+                    <li><strong>Doctor Preference (Up to +50 pts):</strong> Drugs the specific doctor prescribes frequently are boosted.</li>
+                    <li><strong>Clinic Standardization (Up to +20 pts):</strong> Drugs preferred by the hospital inventory are boosted.</li>
+                    <li><strong>Prefix Matches (+25 pts):</strong> Typing the first 3 letters instantly elevates relevant drugs.</li>
+                </ul>
+            </div>
+            <div class="example-box">
+                <h3>Visual UI Cues</h3>
+                <p>The UI provides instant visual feedback to build trust:</p>
+                <br>
+                <div style="background: white; padding: 15px; border-radius: 8px; color: black; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <strong>Paracetamol 500mg</strong>
+                        <div style="font-size: 0.8rem; color: #64748b;">Generic</div>
+                    </div>
+                    <span style="font-size: 0.7rem; font-weight: bold; color: #b45309; background: #fef3c7; padding: 4px 8px; border-radius: 4px; border: 1px solid #fde68a;">
+                        ★ FAVORITE
+                    </span>
+                </div>
+                <br>
+                <p style="font-size: 0.9rem; color: #94a3b8;">
+                    Personalized scores guarantee the doctor's most-used drugs are always at the top of the dropdown.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Alias Short-Circuiting -->
+    <div class="page content-slide">
+        <div class="slide-header">
+            <h2 class="slide-title">3. "Short-Circuit" Alias Detection</h2>
+            <div class="slide-logo">RxNXT</div>
+        </div>
+        <div class="content-grid">
+            <div class="feature-box">
+                <h3>Lightning Fast Shorthand</h3>
+                <p>Doctors frequently use medical shorthands. When the system detects a known clinical alias (e.g., "PCM"), it <strong>short-circuits</strong> the complex fuzzy logic.</p>
+                <br>
+                <p>It assigns a guaranteed top score (100+ points), ensuring that standard medical abbreviations work instantaneously and with perfect accuracy.</p>
+            </div>
+            <div class="example-box">
+                <h3>Examples in Practice</h3>
+                <div class="code-snippet">
+                    Input: "PCM"<br>
+                    Output: Paracetamol
+                </div>
+                <div class="code-snippet">
+                    Input: "B12"<br>
+                    Output: Cobalamin
+                </div>
+                <p style="font-size: 0.9rem; color: #94a3b8; margin-top: 10px;">
+                    This bypasses fuzzy search entirely for maximum performance on known aliases.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Clinical Safety -->
+    <div class="page content-slide">
+        <div class="slide-header">
+            <h2 class="slide-title">4. Clinical Safety & "Did you mean?"</h2>
+            <div class="slide-logo">RxNXT</div>
+        </div>
+        <div class="content-grid">
+            <div class="feature-box">
+                <h3>Patient Safety First</h3>
+                <p>If a query yields results, but the mathematical confidence score is extremely low (e.g., under 15 points), the UI adapts.</p>
+                <br>
+                <p>Instead of presenting a weakly-matched drug as a definitive result—which could lead to a wrong prescription—the system triggers a <strong>"Did you mean?"</strong> safety banner, prompting the doctor to verify.</p>
+            </div>
+            <div class="example-box" style="background: #fffbeb; border: 1px solid #fef3c7; color: #92400e;">
+                <h3 style="color: #b45309;">Safety Fallback UI</h3>
+                <div style="background: #fef3c7; padding: 15px; border-radius: 8px; border: 1px solid #fde68a; margin-top: 10px;">
+                    <strong style="text-transform: uppercase; font-size: 0.8rem;">Did you mean?</strong><br>
+                    <em>Low confidence match detected for your search. Please verify the medicine below.</em>
+                </div>
+                <p style="font-size: 0.9rem; color: #92400e; margin-top: 20px;">
+                    This prevents "autocorrect" style clinical errors.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Investor Value -->
+    <div class="page bg-gradient title-slide">
+        <div style="text-align: left; padding: 0 60px; width: 100%;">
+            <span class="badge" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: white;">Business & Revenue Impact</span>
+            <h1 style="font-size: 3.5rem; text-align: left; margin-top: 20px; background: none; -webkit-text-fill-color: white;">Why This Drives Growth</h1>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-top: 40px;">
+                <div style="background: rgba(255,255,255,0.05); padding: 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                    <h3 style="color: #38bdf8; margin-bottom: 15px;">1. High Doctor Retention</h3>
+                    <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.5;">By saving doctors 1-2 minutes per prescription through predictive search, we drastically reduce EMR burnout, leading to near-zero churn rates.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                    <h3 style="color: #34d399; margin-bottom: 15px;">2. Premium Pricing Power</h3>
+                    <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.5;">"Smart EMRs" command a 30-40% premium over legacy systems. The ML-inspired ranking acts as a core differentiator during sales demos.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                    <h3 style="color: #fbbf24; margin-bottom: 15px;">3. Data Monetization</h3>
+                    <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.5;">Structured preference data allows us to partner with clinical networks for inventory alignment, creating potential B2B data revenue streams.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

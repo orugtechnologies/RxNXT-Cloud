@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RxNXT - Investor Pitch: Monetization Strategy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent-primary: #10b981; /* Emerald */
+            --accent-secondary: #3b82f6; /* Blue */
+            --accent-tertiary: #8b5cf6; /* Purple */
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.15), transparent 25%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-text-alt {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 5rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            max-width: 700px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        /* Strategy Section (The Hook) */
+        .strategy-section {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 4rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 3rem;
+            animation: fadeInUp 1s ease-out 0.2s both;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .strategy-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .strategy-content {
+            flex: 1;
+        }
+
+        .strategy-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .price-tag {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .features-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .features-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 0.75rem;
+            color: #cbd5e1;
+        }
+
+        .features-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+            font-weight: bold;
+        }
+
+        /* Pricing Grid */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .pricing-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .pricing-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-card .price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .pricing-card .price span {
+            font-size: 1rem;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .pitch-box {
+            background: rgba(255,255,255,0.05);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            font-style: italic;
+            border-left: 3px solid var(--accent-secondary);
+        }
+
+        /* Holy Grail Section */
+        .holy-grail {
+            text-align: center;
+            background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(15, 23, 42, 0.9));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 24px;
+            padding: 4rem 3rem;
+            animation: fadeInUp 1s ease-out 0.6s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .holy-grail::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            animation: pulse 10s infinite linear;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .holy-grail > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .holy-grail h2 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .holy-grail p {
+            font-size: 1.2rem;
+            color: #cbd5e1;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .commission-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-tertiary), var(--accent-secondary));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 100px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .strategy-section { flex-direction: column; padding: 2rem; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .holy-grail { padding: 3rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Hero -->
+        <header class="hero">
+            <h1>RxNXT: Monetization Strategy</h1>
+            <p>A surgical, multi-tiered business model designed specifically for the Indian Healthcare Demography. High volume, zero friction, maximum ROI.</p>
+        </header>
+
+        <!-- The Hook -->
+        <section class="strategy-section">
+            <div class="strategy-content">
+                <div class="price-tag">Free - ₹799 / month</div>
+                <h2>The "Trojan Horse" <br><span class="gradient-text">Base Subscription</span></h2>
+                <p>The goal is absolute friction removal. We give doctors a blazing fast, typo-tolerant digital prescription engine. Once they build their templates and patient database here, the switching cost becomes monumental.</p>
+                
+                <ul class="features-list">
+                    <li>Unlimited Digital Prescriptions & Profiles</li>
+                    <li>Typo-Tolerant Proprietary Drug Search</li>
+                    <li>Printable PDF Generation</li>
+                    <li>1-Click Prescription Kits (Templates)</li>
+                </ul>
+            </div>
+            <div style="flex: 0.8; text-align: center;">
+                <img src="https://illustrations.popsy.co/amber/startup-idea.svg" alt="Strategy" style="width: 100%; max-width: 350px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">
+            </div>
+        </section>
+
+        <!-- Add-ons Grid -->
+        <div class="pricing-grid">
+            
+            <!-- Card 1 -->
+            <div class="pricing-card">
+                <div class="card-icon">📱</div>
+                <h3>"Digital Clinic" Pack</h3>
+                <div class="price">₹999<span>/mo</span></div>
+                <div class="pitch-box">
+                    "Doctor, printing costs you paper and ink. Send it on WhatsApp instead. If our automated follow-up reminders bring back just two patients a month, this feature pays for itself entirely."
+                </div>
+                <ul class="features-list">
+                    <li>1-Click WhatsApp PDF Delivery</li>
+                    <li>Automated Follow-up Reminders</li>
+                    <li>Local Language Prescription Translation</li>
+                </ul>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="pricing-card">
+                <div class="card-icon">⭐</div>
+                <h3>"Practice Growth" Pack</h3>
+                <div class="price">₹1,499<span>/mo</span></div>
+                <div class="pitch-box">
+                    "Every patient who gets a WhatsApp prescription is prompted to leave a 5-star review on your Google Maps listing. Be the #1 rated clinic in your neighborhood."
+                </div>
+                <ul class="features-list">
+                    <li>White-labeled Patient Portal Link</li>
+                    <li>Automated Google Review Generation</li>
+                    <li>Online Follow-up Booking</li>
+                </ul>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="pricing-card">
+                <div class="card-icon">📊</div>
+                <h3>"Intelligence" Pack</h3>
+                <div class="price">₹499<span>/mo</span></div>
+                <div class="pitch-box">
+                    "Understand exactly where your revenue comes from and prepare your clinic inventory based on seasonal trends before they hit."
+                </div>
+                <ul class="features-list">
+                    <li>Advanced Revenue Tracking</li>
+                    <li>Seasonal Disease Trends & Forecasting</li>
+                    <li>Top Prescribed Drugs Analytics</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- The Holy Grail -->
+        <section class="holy-grail">
+            <h2>The <span class="gradient-text-alt">Zero-Cost</span> Revenue Share</h2>
+            <p>The ultimate scale model for the Indian market. The software becomes free for the doctor. We monetize the ecosystem.</p>
+            
+            <p style="text-align: left; max-width: 600px; margin: 0 auto 2rem; color: #cbd5e1; font-weight: 300;">
+                We partner with major e-pharmacies (like 1mg or Apollo) and diagnostic labs. When a patient opens their digital prescription on their phone, they see a button: <strong>"Order Medicines"</strong> or <strong>"Book Home Blood Test."</strong>
+            </p>
+
+            <div class="commission-badge">
+                RxNXT takes 3-5% Affiliate Commission
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // Simple subtle parallax effect for cards
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.pricing-card');
+            const x = (window.innerWidth / 2 - e.pageX) / 50;
+            const y = (window.innerHeight / 2 - e.pageY) / 50;
+            
+            cards.forEach(card => {
+                card.style.transform = `perspective(1000px) rotateY(${x}deg) rotateX(${y}deg) translateY(-5px)`;
+            });
+        });
+        
+        // Reset on mouse leave
+        document.addEventListener('mouseleave', () => {
+            const cards = document.querySelectorAll('.pricing-card');
+            cards.forEach(card => {
+                card.style.transform = `none`;
+            });
+        });
+    </script>
+</body>
+</html>

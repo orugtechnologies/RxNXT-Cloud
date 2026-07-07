@@ -1,0 +1,237 @@
+// This is your Prisma schema file for RxNXT (SQLite — fully local)
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// CLINIC
+// ─────────────────────────────────────────────
+model Clinic {
+  id        String   @id @default(cuid())
+  name      String
+  address   String?
+  phone     String?
+  email     String?
+  logoUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users           User[]
+  patients        Patient[]
+  encounters      Encounter[]
+  prescriptions   Prescription[]
+  treatmentGroups TreatmentGroup[]
+  clinicDrugPreferences ClinicDrugPreference[]
+  customDrugs           Drug[]
+}
+
+// ─────────────────────────────────────────────
+// USER (Doctor / Admin)
+// ─────────────────────────────────────────────
+model User {
+  id                 String   @id @default(cuid())
+  email              String   @unique
+  password           String
+  fullName           String
+  role               String   @default("doctor")
+  specialization     String?
+  registrationNumber String?
+  signatureUrl       String?
+  phone              String?
+  clinicId           String
+  clinic             Clinic   @relation(fields: [clinicId], references: [id])
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  encounters      Encounter[]
+  prescriptions   Prescription[]
+  treatmentGroups TreatmentGroup[]
+  doctorDrugPreferences DoctorDrugPreference[]
+}
+
+// ─────────────────────────────────────────────
+// PATIENT
+// ─────────────────────────────────────────────
+model Patient {
+  id        String   @id @default(cuid())
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  name      String
+  phone     String?
+  age       Int?
+  gender    String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  encounters    Encounter[]
+  prescriptions Prescription[]
+  reminders     Reminder[]
+}
+
+// ─────────────────────────────────────────────
+// ENCOUNTER (Clinical Visit)
+// ─────────────────────────────────────────────
+model Encounter {
+  id             String   @id @default(cuid())
+  clinicId       String
+  clinic         Clinic   @relation(fields: [clinicId], references: [id])
+  doctorId       String
+  doctor         User     @relation(fields: [doctorId], references: [id])
+  patientId      String
+  patient        Patient  @relation(fields: [patientId], references: [id])
+  chiefComplaint String?
+  diagnosis      String?
+  notes          String?
+  followUpDate   String?
+  createdAt      DateTime @default(now())
+
+  prescription Prescription?
+}
+
+// ─────────────────────────────────────────────
+// PRESCRIPTION
+// ─────────────────────────────────────────────
+model Prescription {
+  id          String   @id @default(cuid())
+  clinicId    String
+  clinic      Clinic   @relation(fields: [clinicId], references: [id])
+  encounterId String   @unique
+  encounter   Encounter @relation(fields: [encounterId], references: [id])
+  doctorId    String
+  doctor      User     @relation(fields: [doctorId], references: [id])
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  createdAt   DateTime @default(now())
+  timeTakenSeconds Int?
+  creationMethod   String?
+
+  medicines PrescriptionMedicine[]
+  reminders Reminder[]
+}
+
+// ─────────────────────────────────────────────
+// PRESCRIPTION MEDICINE (Line Item)
+// ─────────────────────────────────────────────
+model PrescriptionMedicine {
+  id             String       @id @default(cuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  drugId         String?
+  drug           Drug?        @relation(fields: [drugId], references: [id])
+  customName     String?
+  dosageForm     String?
+  strength       String?
+  route          String?
+  frequency      String?
+  duration       String?
+  instructions   String?
+  createdAt      DateTime     @default(now())
+}
+
+// ─────────────────────────────────────────────
+// DRUG (Medicine Database)
+// ─────────────────────────────────────────────
+model Drug {
+  id                String   @id @default(cuid())
+  genericName       String
+  brandName         String?
+  aliases           String?  // Comma-separated aliases like "PCM, P-Mol"
+  dosageForm        String?
+  strength          String?
+  route             String?
+  isActive          Boolean  @default(true)
+  prescriptionCount Int      @default(0)
+  createdAt         DateTime @default(now())
+
+  prescriptionMedicines PrescriptionMedicine[]
+  treatmentGroupItems   TreatmentGroupItem[]
+  doctorDrugPreferences DoctorDrugPreference[]
+  clinicDrugPreferences ClinicDrugPreference[]
+
+  clinicId              String?
+  clinic                Clinic?  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────────────
+// TREATMENT GROUP (Prescription Templates)
+// ─────────────────────────────────────────────
+model TreatmentGroup {
+  id        String   @id @default(cuid())
+  name      String
+  doctorId  String
+  doctor    User     @relation(fields: [doctorId], references: [id])
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  createdAt DateTime @default(now())
+
+  items TreatmentGroupItem[]
+}
+
+model TreatmentGroupItem {
+  id           String         @id @default(cuid())
+  groupId      String
+  group        TreatmentGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  drugId       String?
+  drug         Drug?          @relation(fields: [drugId], references: [id])
+  customName   String?
+  dosageForm   String?
+  strength     String?
+  route        String?
+  frequency    String?
+  duration     String?
+  instructions String?
+  sortOrder    Int            @default(0)
+}
+
+// ─────────────────────────────────────────────
+// PREFERENCES (Habit Tracking)
+// ─────────────────────────────────────────────
+model DoctorDrugPreference {
+  id        String   @id @default(cuid())
+  doctorId  String
+  drugId    String
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  doctor    User     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  drug      Drug     @relation(fields: [drugId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, drugId])
+}
+
+model ClinicDrugPreference {
+  id        String   @id @default(cuid())
+  clinicId  String
+  drugId    String
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  drug      Drug     @relation(fields: [drugId], references: [id], onDelete: Cascade)
+
+  @@unique([clinicId, drugId])
+}
+
+// ─────────────────────────────────────────────
+// REMINDERS (Automated WhatsApp Scheduling)
+// ─────────────────────────────────────────────
+model Reminder {
+  id             String       @id @default(cuid())
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  patientId      String
+  patient        Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  scheduledFor   DateTime
+  sentAt         DateTime?
+  status         String       @default("PENDING") // PENDING, SENT, FAILED
+  messageType    String       @default("MEDICINE") // PDF, MEDICINE
+  createdAt      DateTime     @default(now())
+}
