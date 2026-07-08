@@ -34,7 +34,7 @@ export default function LoginPage() {
 
 
     // Successful login — hard redirect so middleware re-evaluates session
-    window.location.href = '/doctor/dashboard';
+    window.location.href = '/doctor/dashboard?login=success';
   };
 
   return (
