@@ -24,10 +24,9 @@ export default function DashboardPage() {
       setShowFlash(true);
       const timer = setTimeout(() => {
         setShowFlash(false);
+        // Clean up the URL after the flash message disappears
+        window.history.replaceState(null, '', '/doctor/dashboard');
       }, 4000);
-      
-      // Clean up the URL without triggering a Next.js re-render
-      window.history.replaceState(null, '', '/doctor/dashboard');
       
       return () => clearTimeout(timer);
     }
@@ -39,14 +38,16 @@ export default function DashboardPage() {
   };
 
   const flashMessageNode = showFlash ? (
-    <div className="fixed top-6 right-6 z-50 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-4 rounded-xl shadow-2xl animate-fade-in flex items-center gap-4 transition-all duration-300 transform scale-100 hover:scale-105 border border-emerald-400/50">
-      <div className="bg-white/20 p-2.5 rounded-full backdrop-blur-sm shadow-inner">
-        <span className="text-2xl block" role="img" aria-label="stethoscope">🩺</span>
+    <div className="fixed inset-0 z-50 bg-gradient-to-br from-emerald-500 to-teal-700 text-white flex flex-col items-center justify-center animate-in fade-in duration-500">
+      <div className="bg-white/20 p-6 rounded-full backdrop-blur-md shadow-2xl mb-8 animate-bounce">
+        <span className="text-6xl block" role="img" aria-label="stethoscope">🩺</span>
       </div>
-      <div>
-        <h4 className="font-bold text-lg leading-tight tracking-wide">Hello Doctor,</h4>
-        <p className="text-sm text-emerald-50 font-medium tracking-wide mt-0.5">Welcome to another day of saving lives</p>
-      </div>
+      <h1 className="font-extrabold text-4xl md:text-5xl leading-tight tracking-tight text-center mb-4 shadow-sm">
+        Hello Doctor,
+      </h1>
+      <p className="text-xl md:text-2xl text-emerald-50 font-medium tracking-wide text-center">
+        Welcome to another day of saving lives.
+      </p>
     </div>
   ) : null;
 
