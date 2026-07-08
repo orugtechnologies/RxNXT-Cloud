@@ -55,9 +55,10 @@ export default function DashboardPage() {
       <div className="relative">
         {flashMessageNode}
         <div className="flex items-center justify-center h-[60vh]">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin text-clinic-emerald" />
-          <p className="text-slate-500 font-medium animate-pulse">Loading dashboard...</p>
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-clinic-emerald" />
+            <p className="text-slate-500 font-medium animate-pulse">Loading dashboard...</p>
+          </div>
         </div>
       </div>
     );
