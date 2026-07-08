@@ -28,16 +28,14 @@ async function sendViaMicroservice(formattedPhone: string, messageBody: string) 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.warn('[WhatsApp Microservice Error]', errorData);
-      // Fall back to mock success if the microservice is offline so the UI doesn't break
-      return { success: true, mocked: true, warning: 'Microservice offline' };
+      throw new Error(errorData.error || 'Failed to send WhatsApp message via microservice');
     }
 
     const data = await response.json();
     return data;
-  } catch (error) {
-    console.warn('[WhatsApp Microservice] Failed to reach microservice at', MICROSERVICE_URL);
-    // Fall back to mock success if the microservice is offline
-    return { success: true, mocked: true, warning: 'Microservice offline' };
+  } catch (error: any) {
+    console.warn('[WhatsApp Microservice] Failed to reach microservice:', error);
+    throw new Error(error.message || 'WhatsApp microservice is offline or unreachable');
   }
 }
 
