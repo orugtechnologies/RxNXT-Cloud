@@ -47,16 +47,20 @@ export default function ReviewPrescriptionModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prescriptionId })
       });
-      if (!res.ok) throw new Error('Failed to send WhatsApp message');
+      
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to send WhatsApp message');
+      }
       
       if (timeTakenSeconds) {
         alert(`✅ Prescription sent successfully! (Completed in ${timeTakenSeconds} seconds 🚀)`);
       } else {
         alert('✅ Prescription sent successfully!');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Error sending WhatsApp message');
+      alert(err.message || 'Error sending WhatsApp message');
     } finally {
       setIsSending(false);
     }
