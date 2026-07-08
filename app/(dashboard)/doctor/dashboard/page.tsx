@@ -38,9 +38,23 @@ export default function DashboardPage() {
     router.push(`/doctor/prescription?clone=${prescriptionId}&patient=${patientId}`);
   };
 
+  const flashMessageNode = showFlash ? (
+    <div className="fixed top-6 right-6 z-50 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-4 rounded-xl shadow-2xl animate-fade-in flex items-center gap-4 transition-all duration-300 transform scale-100 hover:scale-105 border border-emerald-400/50">
+      <div className="bg-white/20 p-2.5 rounded-full backdrop-blur-sm shadow-inner">
+        <span className="text-2xl block" role="img" aria-label="stethoscope">🩺</span>
+      </div>
+      <div>
+        <h4 className="font-bold text-lg leading-tight tracking-wide">Hello Doctor,</h4>
+        <p className="text-sm text-emerald-50 font-medium tracking-wide mt-0.5">Welcome to another day of saving lives</p>
+      </div>
+    </div>
+  ) : null;
+
   if (isLoading || !data) {
     return (
-      <div className="flex items-center justify-center h-[60vh]">
+      <div className="relative">
+        {flashMessageNode}
+        <div className="flex items-center justify-center h-[60vh]">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-clinic-emerald" />
           <p className="text-slate-500 font-medium animate-pulse">Loading dashboard...</p>
@@ -51,9 +65,12 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="bg-red-50 text-red-600 p-6 rounded-xl border border-red-100 max-w-2xl mx-auto mt-10">
-        <h3 className="text-lg font-bold mb-2">Error Loading Dashboard</h3>
-        <p>{error}</p>
+      <div className="relative">
+        {flashMessageNode}
+        <div className="bg-red-50 text-red-600 p-6 rounded-xl border border-red-100 max-w-2xl mx-auto mt-10">
+          <h3 className="text-lg font-bold mb-2">Error Loading Dashboard</h3>
+          <p>{error}</p>
+        </div>
       </div>
     );
   }
@@ -66,18 +83,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 relative">
-      {/* Flash Message */}
-      {showFlash && (
-        <div className="fixed top-6 right-6 z-50 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-4 rounded-xl shadow-2xl animate-fade-in flex items-center gap-4 transition-all duration-300 transform scale-100 hover:scale-105 border border-emerald-400/50">
-          <div className="bg-white/20 p-2.5 rounded-full backdrop-blur-sm shadow-inner">
-            <span className="text-2xl block" role="img" aria-label="stethoscope">🩺</span>
-          </div>
-          <div>
-            <h4 className="font-bold text-lg leading-tight tracking-wide">Hello Doctor,</h4>
-            <p className="text-sm text-emerald-50 font-medium tracking-wide mt-0.5">Welcome to another day of saving lives</p>
-          </div>
-        </div>
-      )}
+      {flashMessageNode}
 
       {/* Welcome Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
