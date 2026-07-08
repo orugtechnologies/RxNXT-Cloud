@@ -15,7 +15,7 @@ interface PrintViewProps {
   clinicName?: string;
 }
 
-export const generatePrescriptionPDF = (data: PrintViewProps) => {
+export const generatePrescriptionPDF = (data: PrintViewProps, asBase64 = false): string | void => {
   const doc = new jsPDF();
   
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -115,7 +115,11 @@ export const generatePrescriptionPDF = (data: PrintViewProps) => {
   doc.text("Doctor's Signature", pageWidth - 20, 270, { align: 'right' });
   doc.line(pageWidth - 60, 265, pageWidth - 20, 265);
 
-  doc.save(`Prescription_${data.patient.name.replace(/\s+/g, '_')}.pdf`);
+  if (asBase64) {
+    return doc.output('datauristring').split(',')[1];
+  } else {
+    doc.save(`Prescription_${data.patient.name.replace(/\s+/g, '_')}.pdf`);
+  }
 };
 
 export default function PrescriptionPrintView() {

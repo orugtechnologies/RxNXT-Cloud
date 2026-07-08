@@ -40,6 +40,7 @@ function PrescriptionWorkflowContent() {
   const [showReview, setShowReview] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [prescriptionId, setPrescriptionId] = useState<string | undefined>();
+  const [pdfBase64, setPdfBase64] = useState<string | null>(null);
   // Using a key to remount TreatmentGroupsUI and fetch fresh templates
   const [templateKey, setTemplateKey] = useState(0);
 
@@ -157,9 +158,14 @@ function PrescriptionWorkflowContent() {
       
       const data = await res.json();
       
+      const base64 = generatePrescriptionPDF({
+        patient, medicines, chiefComplaint, diagnosis, notes, followUpDate
+      }, true) as string;
+      setPdfBase64(base64);
+
       generatePrescriptionPDF({
         patient, medicines, chiefComplaint, diagnosis, notes, followUpDate
-      });
+      }, false);
       
       setPrescriptionId(data.prescriptionId);
       if (startTime) {
@@ -184,6 +190,7 @@ function PrescriptionWorkflowContent() {
     setShowReview(false);
     setIsSuccess(false);
     setPrescriptionId(undefined);
+    setPdfBase64(null);
     setStartTime(null);
     setCreationMethod('MANUAL');
     setLastTimeTaken(null);
@@ -393,6 +400,7 @@ function PrescriptionWorkflowContent() {
           saving={saving}
           isSuccess={isSuccess}
           prescriptionId={prescriptionId}
+          pdfBase64={pdfBase64}
           timeTakenSeconds={lastTimeTaken}
           onClose={() => {
             if (isSuccess) startNewPrescription();

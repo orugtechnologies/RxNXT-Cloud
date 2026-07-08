@@ -15,6 +15,7 @@ interface ReviewModalProps {
   saving: boolean;
   isSuccess?: boolean;
   prescriptionId?: string;
+  pdfBase64?: string | null;
   timeTakenSeconds?: number | null;
   onClose: () => void;
   onConfirm: () => void;
@@ -31,6 +32,7 @@ export default function ReviewPrescriptionModal({
   saving,
   isSuccess,
   prescriptionId,
+  pdfBase64,
   timeTakenSeconds,
   onClose,
   onConfirm,
@@ -45,7 +47,7 @@ export default function ReviewPrescriptionModal({
       const res = await fetch('/api/prescriptions/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prescriptionId })
+        body: JSON.stringify({ prescriptionId, pdfBase64 })
       });
       
       if (!res.ok) {

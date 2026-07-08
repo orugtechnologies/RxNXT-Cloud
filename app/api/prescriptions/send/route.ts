@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { prescriptionId } = await request.json();
+    const { prescriptionId, pdfBase64 } = await request.json();
 
     if (!prescriptionId) {
       return NextResponse.json({ error: 'Missing prescriptionId' }, { status: 400 });
@@ -33,9 +33,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Patient does not have a phone number' }, { status: 400 });
     }
 
-    // In a production environment, you would generate the PDF using jsPDF or puppeteer,
-    // upload it to a cloud bucket (e.g., Supabase Storage / AWS S3), and get a public URL.
-    // For this implementation, we will generate a link to the app's secure view/download page.
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const pdfDownloadUrl = `${baseUrl}/patient/prescription/${prescription.id}/view`;
 
@@ -44,7 +41,8 @@ export async function POST(request: Request) {
       prescription.patient.phone,
       prescription.patient.name,
       prescription.clinic.name,
-      pdfDownloadUrl
+      pdfDownloadUrl,
+      pdfBase64
     );
 
     return NextResponse.json({ success: true, result });

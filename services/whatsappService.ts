@@ -14,7 +14,7 @@ function sanitizePhone(phone: string): string {
   return clean.startsWith('+') ? clean : `+91${clean}`;
 }
 
-async function sendViaMicroservice(formattedPhone: string, messageBody: string) {
+async function sendViaMicroservice(formattedPhone: string, messageBody: string, pdfBase64?: string) {
   try {
     const response = await fetch(`${MICROSERVICE_URL}/api/whatsapp/send`, {
       method: 'POST',
@@ -22,6 +22,7 @@ async function sendViaMicroservice(formattedPhone: string, messageBody: string) 
       body: JSON.stringify({
         phone: formattedPhone,
         message: messageBody,
+        pdfBase64: pdfBase64,
       }),
     });
 
@@ -46,12 +47,13 @@ export async function sendPrescriptionPDF(
   patientPhone: string,
   patientName: string,
   clinicName: string,
-  pdfUrl: string
+  pdfUrl: string,
+  pdfBase64?: string
 ) {
   const formattedPhone = sanitizePhone(patientPhone);
-  const messageBody = `Hello ${patientName}, your prescription from ${clinicName} is ready. \n\nYou can view and download it here: ${pdfUrl} \n\nGet well soon!`;
+  const messageBody = `Hello ${patientName}, your prescription from ${clinicName} is ready. \n\nYou can view it here: ${pdfUrl} \n\nGet well soon!`;
 
-  return await sendViaMicroservice(formattedPhone, messageBody);
+  return await sendViaMicroservice(formattedPhone, messageBody, pdfBase64);
 }
 
 /**
