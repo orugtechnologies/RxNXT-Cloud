@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity } from 'lucide-react';
+import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, Smartphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -27,6 +27,7 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
     { name: 'Patients', href: '/doctor/patients', icon: Users },
     { name: 'Templates', href: '/doctor/prescription?tab=templates', icon: BookOpen },
     { name: 'Analytics', href: '/doctor/analytics', icon: Activity },
+    { name: 'WhatsApp Setup', href: '/doctor/settings/whatsapp', icon: Smartphone },
   ];
 
   if (userRole === 'clinic_admin' || userRole === 'super_admin') {

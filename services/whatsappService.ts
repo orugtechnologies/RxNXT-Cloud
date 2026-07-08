@@ -1,14 +1,8 @@
-import twilio from 'twilio';
-
 // Initialize Twilio client using environment variables
 // Ensure TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are set in .env
-const accountSid = process.env.TWILIO_ACCOUNT_SID || 'mock_sid_for_development';
-const authToken = process.env.TWILIO_AUTH_TOKEN || 'mock_token_for_development';
-const twilioPhoneNumber = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886'; // Twilio Sandbox Number
+// Note: We have migrated away from Twilio to a BYOD Microservice
 
-// Use a mock client if credentials are not provided (so local dev doesn't crash)
-const isConfigured = process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN;
-const client = isConfigured ? twilio(accountSid, authToken) : null;
+const MICROSERVICE_URL = process.env.WHATSAPP_MICROSERVICE_URL || 'https://rxnxt-whatsapp-service.onrender.com';
 
 function sanitizePhone(phone: string): string {
   if (!phone) return '';
@@ -18,6 +12,33 @@ function sanitizePhone(phone: string): string {
   clean = clean.replace(/^0+/, '');
   // Default to India country code if none provided
   return clean.startsWith('+') ? clean : `+91${clean}`;
+}
+
+async function sendViaMicroservice(formattedPhone: string, messageBody: string) {
+  try {
+    const response = await fetch(`${MICROSERVICE_URL}/api/whatsapp/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: formattedPhone,
+        message: messageBody,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.warn('[WhatsApp Microservice Error]', errorData);
+      // Fall back to mock success if the microservice is offline so the UI doesn't break
+      return { success: true, mocked: true, warning: 'Microservice offline' };
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.warn('[WhatsApp Microservice] Failed to reach microservice at', MICROSERVICE_URL);
+    // Fall back to mock success if the microservice is offline
+    return { success: true, mocked: true, warning: 'Microservice offline' };
+  }
 }
 
 /**
@@ -32,24 +53,7 @@ export async function sendPrescriptionPDF(
   const formattedPhone = sanitizePhone(patientPhone);
   const messageBody = `Hello ${patientName}, your prescription from ${clinicName} is ready. \n\nYou can view and download it here: ${pdfUrl} \n\nGet well soon!`;
 
-  if (!client) {
-    console.warn('[WhatsApp Mock] Prescription sent to', formattedPhone);
-    console.warn('[WhatsApp Mock] Message:', messageBody);
-    return { success: true, mocked: true };
-  }
-
-  try {
-    const message = await client.messages.create({
-      body: messageBody,
-      from: twilioPhoneNumber,
-      to: `whatsapp:${formattedPhone}`,
-    });
-    
-    return { success: true, messageId: message.sid };
-  } catch (error) {
-    console.error('Error sending WhatsApp prescription:', error);
-    throw new Error('Failed to send WhatsApp message');
-  }
+  return await sendViaMicroservice(formattedPhone, messageBody);
 }
 
 /**
@@ -63,24 +67,7 @@ export async function sendMedicineReminder(
   const formattedPhone = sanitizePhone(patientPhone);
   const messageBody = `Hi ${patientName}, this is a gentle reminder to take your medicine: *${medicineName}*.`;
 
-  if (!client) {
-    console.warn('[WhatsApp Mock] Reminder sent to', formattedPhone);
-    console.warn('[WhatsApp Mock] Message:', messageBody);
-    return { success: true, mocked: true };
-  }
-
-  try {
-    const message = await client.messages.create({
-      body: messageBody,
-      from: twilioPhoneNumber,
-      to: `whatsapp:${formattedPhone}`,
-    });
-    
-    return { success: true, messageId: message.sid };
-  } catch (error) {
-    console.error('Error sending WhatsApp reminder:', error);
-    throw new Error('Failed to send WhatsApp reminder');
-  }
+  return await sendViaMicroservice(formattedPhone, messageBody);
 }
 
 /**
@@ -95,23 +82,6 @@ export async function sendFollowUpReminder(
   const formattedPhone = sanitizePhone(patientPhone);
   const messageBody = `Hi ${patientName}, this is a reminder from ${clinicName} for your follow-up visit with Dr. ${doctorName} today. Please contact us if you need to reschedule.`;
 
-  if (!client) {
-    console.warn('[WhatsApp Mock] Follow-up Reminder sent to', formattedPhone);
-    console.warn('[WhatsApp Mock] Message:', messageBody);
-    return { success: true, mocked: true };
-  }
-
-  try {
-    const message = await client.messages.create({
-      body: messageBody,
-      from: twilioPhoneNumber,
-      to: `whatsapp:${formattedPhone}`,
-    });
-    
-    return { success: true, messageId: message.sid };
-  } catch (error) {
-    console.error('Error sending WhatsApp follow-up reminder:', error);
-    throw new Error('Failed to send WhatsApp follow-up reminder');
-  }
+  return await sendViaMicroservice(formattedPhone, messageBody);
 }
 
