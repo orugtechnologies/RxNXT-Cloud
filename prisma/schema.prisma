@@ -148,6 +148,7 @@ model Drug {
   strength          String?
   route             String?
   isActive          Boolean  @default(true)
+  isRestricted      Boolean  @default(false)
   prescriptionCount Int      @default(0)
   createdAt         DateTime @default(now())
 

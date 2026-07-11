@@ -14,9 +14,9 @@ interface MedicineSearchResult {
   strength_id?: string;
   route?: string;
   route_id?: string;
-  route_id?: string;
   match_score: number;
   popularity?: number;
+  isRestricted?: boolean;
 }
 
 interface DrugSearchUIProps {
@@ -137,13 +137,19 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
               <li
                 key={keyId}
                 onClick={() => {
+                  if (result.isRestricted) {
+                    alert('This drug is highly restricted (Schedule X / Narcotic) and cannot be prescribed via telemedicine.');
+                    return;
+                  }
                   onSelect(result);
                   setQuery('');
                   setResults([]);
                 }}
-                className="p-4 hover:bg-clinic-emerald/5 cursor-pointer flex justify-between items-start transition-colors border-b border-gray-50 group"
+                className={`p-4 flex justify-between items-start transition-colors border-b border-gray-50 group ${
+                  result.isRestricted ? 'bg-red-50/50 cursor-not-allowed opacity-80' : 'hover:bg-clinic-emerald/5 cursor-pointer'
+                }`}
               >
-                <div>
+                <div className={result.isRestricted ? 'grayscale' : ''}>
                   <p className="font-bold text-clinic-navy text-base group-hover:text-clinic-emerald transition-colors">
                     {result.brand_name ? result.brand_name : result.generic_name}
                   </p>
@@ -167,12 +173,17 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
                 </div>
                 
                 <div className="flex flex-col items-end gap-2">
-                  {(result.popularity !== undefined && result.popularity >= 10) && (
+                  {result.isRestricted && (
+                    <span className="text-[10px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded uppercase border border-red-200 flex items-center shadow-sm">
+                      <AlertCircle size={10} className="mr-1" /> RESTRICTED
+                    </span>
+                  )}
+                  {(!result.isRestricted && result.popularity !== undefined && result.popularity >= 10) && (
                     <span className="text-[10px] font-bold text-yellow-700 bg-yellow-50 px-2 py-0.5 rounded uppercase border border-yellow-200 flex items-center shadow-sm">
                       ★ Favorite
                     </span>
                   )}
-                  {(result.popularity !== undefined && result.popularity > 0 && result.popularity < 10) && (
+                  {(!result.isRestricted && result.popularity !== undefined && result.popularity > 0 && result.popularity < 10) && (
                     <span className="text-[10px] font-bold text-clinic-emerald bg-clinic-emerald/10 px-2 py-0.5 rounded uppercase border border-clinic-emerald/20 flex items-center shadow-sm">
                       ✓ Preferred
                     </span>

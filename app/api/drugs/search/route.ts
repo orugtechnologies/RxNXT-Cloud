@@ -28,7 +28,7 @@ export async function GET(request: Request) {
             { clinicId: user.clinicId }
           ]
         },
-        select: { id: true, genericName: true, brandName: true, aliases: true, dosageForm: true, strength: true, route: true, clinicId: true }
+        select: { id: true, genericName: true, brandName: true, aliases: true, dosageForm: true, strength: true, route: true, clinicId: true, isRestricted: true }
       }),
       prisma.doctorDrugPreference.findMany({ where: { doctorId: user.id } }),
       prisma.clinicDrugPreference.findMany({ where: { clinicId: user.clinicId } })
@@ -52,6 +52,7 @@ export async function GET(request: Request) {
       raw_score: rawFuzzy,
       popularity: popularity,
       drugId: d.id,
+      isRestricted: d.isRestricted,
     });
 
     // 2. SHORT-CIRCUIT: Exact Alias Match

@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
+import { isDrugNameRestricted } from '@/lib/restrictedDrugs';
 
 export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
@@ -12,6 +13,24 @@ export async function POST(request: Request) {
 
     if (!patientId || !medicines || medicines.length === 0) {
       return NextResponse.json({ error: 'Patient and at least 1 medicine are required' }, { status: 400 });
+    }
+
+    // 1. Strict Validation: Check for Restricted Drugs (Schedule X / Narcotics)
+    // Custom names via keyword match
+    const hasRestrictedCustom = medicines.some((m: any) => isDrugNameRestricted(m.name));
+    if (hasRestrictedCustom) {
+      return NextResponse.json({ error: 'Cannot prescribe highly restricted drugs or narcotics via telemedicine.' }, { status: 400 });
+    }
+
+    // Predefined drugs via database check
+    const drugIds = medicines.map((m: any) => m.drugId).filter(Boolean);
+    if (drugIds.length > 0) {
+      const restrictedDrugs = await prisma.drug.findMany({
+        where: { id: { in: drugIds }, isRestricted: true }
+      });
+      if (restrictedDrugs.length > 0) {
+        return NextResponse.json({ error: 'Cannot prescribe highly restricted drugs or narcotics via telemedicine.' }, { status: 400 });
+      }
     }
 
     // Verify patient belongs to the clinic
@@ -74,7 +93,6 @@ export async function POST(request: Request) {
       }
 
       // Increment prescription count for global, doctor, and clinic preferences
-      const drugIds = medicines.map((m: any) => m.drugId).filter(Boolean);
       console.log('--- SAVING PRESCRIPTION ---');
       console.log('medicines:', medicines);
       console.log('drugIds:', drugIds);
