@@ -8,7 +8,7 @@ import QuickActions from '@/components/dashboard/QuickActions';
 import RecentPrescriptions from '@/components/dashboard/RecentPrescriptions';
 import UpcomingFollowUps from '@/components/dashboard/UpcomingFollowUps';
 import FrequentMedicines from '@/components/dashboard/FrequentMedicines';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -22,39 +22,22 @@ export default function DashboardPage() {
   useEffect(() => {
     if (searchParams.get('login') === 'success') {
       setShowFlash(true);
-      const timer = setTimeout(() => {
-        setShowFlash(false);
-        // Clean up the URL after the flash message disappears
-        window.history.replaceState(null, '', '/doctor/dashboard');
-      }, 4000);
-      
+      const timer = setTimeout(() => setShowFlash(false), 4000);
       return () => clearTimeout(timer);
     }
   }, [searchParams]);
+
 
   const handleClone = (prescriptionId: string, patientId: string) => {
     // Navigate to prescription page with clone parameter
     router.push(`/doctor/prescription?clone=${prescriptionId}&patient=${patientId}`);
   };
 
-  const flashMessageNode = showFlash ? (
-    <div className="fixed inset-0 z-50 bg-gradient-to-br from-emerald-500 to-teal-700 text-white flex flex-col items-center justify-center animate-in fade-in duration-500">
-      <div className="bg-white/20 p-6 rounded-full backdrop-blur-md shadow-2xl mb-8 animate-bounce">
-        <span className="text-6xl block" role="img" aria-label="stethoscope">🩺</span>
-      </div>
-      <h1 className="font-extrabold text-4xl md:text-5xl leading-tight tracking-tight text-center mb-4 shadow-sm">
-        Hello Doctor,
-      </h1>
-      <p className="text-xl md:text-2xl text-emerald-50 font-medium tracking-wide text-center">
-        Welcome to another day of saving lives.
-      </p>
-    </div>
-  ) : null;
+
 
   if (isLoading || !data) {
     return (
       <div className="relative">
-        {flashMessageNode}
         <div className="flex items-center justify-center h-[60vh]">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-clinic-emerald" />
@@ -68,7 +51,6 @@ export default function DashboardPage() {
   if (error) {
     return (
       <div className="relative">
-        {flashMessageNode}
         <div className="bg-red-50 text-red-600 p-6 rounded-xl border border-red-100 max-w-2xl mx-auto mt-10">
           <h3 className="text-lg font-bold mb-2">Error Loading Dashboard</h3>
           <p>{error}</p>
@@ -85,7 +67,14 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 relative">
-      {flashMessageNode}
+      {showFlash && (
+        <div className="bg-clinic-navy text-white p-4 rounded-xl shadow-lg flex items-center justify-between animate-fade-in border border-indigo-500/30">
+          <p className="font-medium text-lg">Hello Doctor, Welcome to another day of saving of Lives</p>
+          <button onClick={() => setShowFlash(false)} className="text-white/80 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+      )}
 
       {/* Welcome Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
