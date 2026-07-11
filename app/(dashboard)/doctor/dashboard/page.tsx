@@ -33,7 +33,15 @@ export default function DashboardPage() {
     router.push(`/doctor/prescription?clone=${prescriptionId}&patient=${patientId}`);
   };
 
-
+  if (showFlash) {
+    return (
+      <div className="fixed inset-0 z-[100] bg-clinic-navy flex items-center justify-center p-4 animate-fade-in">
+        <h1 className="text-white text-3xl md:text-5xl font-bold animate-pulse text-center max-w-4xl leading-tight">
+          Hello Doctor, Welcome to another day of saving of Lives
+        </h1>
+      </div>
+    );
+  }
 
   if (isLoading || !data) {
     return (
@@ -67,15 +75,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 relative">
-      {showFlash && (
-        <div className="bg-clinic-navy text-white p-4 rounded-xl shadow-lg flex items-center justify-between animate-fade-in border border-indigo-500/30">
-          <p className="font-medium text-lg">Hello Doctor, Welcome to another day of saving of Lives</p>
-          <button onClick={() => setShowFlash(false)} className="text-white/80 hover:text-white p-1 rounded-full hover:bg-white/10 transition-colors">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-      )}
-
       {/* Welcome Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
