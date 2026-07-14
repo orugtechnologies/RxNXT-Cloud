@@ -90,7 +90,7 @@ export default function TeamManagementPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Team Management</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Manage Doctors</h1>
           <p className="text-slate-500">Manage your clinic doctors and pending invites.</p>
         </div>
       </div>

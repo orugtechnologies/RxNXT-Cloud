@@ -83,7 +83,7 @@ export default function StaffManagementPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Staff Management</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Support Staff</h1>
           <p className="text-slate-500">Manage non-doctor staff like Receptionists and Nurses.</p>
         </div>
         <Button className="bg-clinic-blue hover:bg-clinic-blueDark" onClick={() => setIsModalOpen(true)}>

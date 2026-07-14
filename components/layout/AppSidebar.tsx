@@ -71,8 +71,8 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
       navGroups.push({
         label: 'Administration',
         items: [
-          { name: 'Team Management', href: '/admin/team', icon: Users },
-          { name: 'Staff Management', href: '/admin/staff', icon: Users },
+          { name: 'Manage Doctors', href: '/admin/team', icon: Users },
+          { name: 'Support Staff', href: '/admin/staff', icon: Users },
           { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
           { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
         ]
