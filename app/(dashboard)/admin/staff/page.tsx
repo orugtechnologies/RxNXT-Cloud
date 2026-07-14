@@ -5,8 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, Users, PlusCircle, Building2, Stethoscope, PhoneCall } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Loader2, Users, PlusCircle, Building2, Stethoscope, PhoneCall, X } from 'lucide-react';
 
 export default function StaffManagementPage() {
   const [staff, setStaff] = useState<any[]>([]);
@@ -87,21 +86,25 @@ export default function StaffManagementPage() {
           <h1 className="text-2xl font-bold text-slate-900">Staff Management</h1>
           <p className="text-slate-500">Manage non-doctor staff like Receptionists and Nurses.</p>
         </div>
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-clinic-blue hover:bg-clinic-blueDark">
-              <PlusCircle className="w-4 h-4 mr-2" /> Add Staff Member
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Create Staff Account</DialogTitle>
-              <DialogDescription>
-                Create an account directly for your staff. Give them the email and password to log in.
-              </DialogDescription>
-            </DialogHeader>
+        <Button className="bg-clinic-blue hover:bg-clinic-blueDark" onClick={() => setIsModalOpen(true)}>
+          <PlusCircle className="w-4 h-4 mr-2" /> Add Staff Member
+        </Button>
+      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b border-slate-100">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">Create Staff Account</h2>
+                <p className="text-sm text-slate-500 mt-1">Create an account directly for your staff.</p>
+              </div>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 bg-slate-50 p-2 rounded-full">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
             
-            <form onSubmit={handleSubmit} className="space-y-4 py-4">
+            <form onSubmit={handleSubmit} className="space-y-4 p-6 overflow-y-auto">
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input 
@@ -153,17 +156,17 @@ export default function StaffManagementPage() {
 
               {error && <div className="text-sm text-red-600 bg-red-50 p-2 rounded">{error}</div>}
 
-              <DialogFooter className="pt-4">
+              <div className="pt-4 flex justify-end gap-2 border-t border-slate-100 mt-6">
                 <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Cancel</Button>
                 <Button type="submit" disabled={submitting}>
                   {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                   Create Account
                 </Button>
-              </DialogFooter>
+              </div>
             </form>
-          </DialogContent>
-        </Dialog>
-      </div>
+          </div>
+        </div>
+      )}
 
       <Card className="border-slate-200 shadow-sm">
         <CardHeader className="bg-slate-50 border-b border-slate-100">
