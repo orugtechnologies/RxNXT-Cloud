@@ -37,7 +37,9 @@ export default function DashboardPage() {
   if (showFlash) {
     return (
       <div className="fixed inset-0 z-[100] bg-blue-50 flex flex-col items-center justify-center p-4 animate-fade-in">
-        <Stethoscope className="w-20 h-20 md:w-28 md:h-28 text-clinic-blue mb-8 animate-pulse" />
+        <div className="mb-8 animate-pulse text-clinic-blue">
+          <Stethoscope size={120} strokeWidth={2} />
+        </div>
         <h1 className="text-clinic-navy text-3xl md:text-5xl font-bold animate-pulse text-center max-w-4xl leading-tight">
           Hello Doctor, Welcome to another day of saving of Lives
         </h1>
