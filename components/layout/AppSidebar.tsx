@@ -27,85 +27,123 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab');
 
-  let navItems: any[] = [];
+  let navGroups: { label: string, items: any[] }[] = [];
 
   if (userRole === 'receptionist') {
-    navItems = [
-      { name: 'Dashboard', href: '/receptionist/dashboard', icon: LayoutDashboard },
+    navGroups = [
+      {
+        label: 'Overview',
+        items: [
+          { name: 'Dashboard', href: '/receptionist/dashboard', icon: LayoutDashboard },
+        ]
+      }
     ];
   } else if (userRole === 'nurse') {
-    navItems = [
-      { name: 'Dashboard', href: '/nurse/dashboard', icon: LayoutDashboard },
+    navGroups = [
+      {
+        label: 'Overview',
+        items: [
+          { name: 'Dashboard', href: '/nurse/dashboard', icon: LayoutDashboard },
+        ]
+      }
     ];
   } else {
-    navItems = [
-      { name: 'Dashboard', href: '/doctor/dashboard', icon: LayoutDashboard },
-      { name: 'New Prescription', href: '/doctor/prescription', icon: FilePlus },
-      { name: 'Patients', href: '/doctor/patients', icon: Users },
-      { name: 'Templates', href: '/doctor/prescription?tab=templates', icon: BookOpen },
-      { name: 'Analytics', href: '/doctor/analytics', icon: Activity },
-      { name: 'WhatsApp Setup', href: '/doctor/settings/whatsapp', icon: WhatsAppIcon },
+    navGroups = [
+      {
+        label: 'Clinical',
+        items: [
+          { name: 'Dashboard', href: '/doctor/dashboard', icon: LayoutDashboard },
+          { name: 'New Prescription', href: '/doctor/prescription', icon: FilePlus },
+          { name: 'Patients', href: '/doctor/patients', icon: Users },
+          { name: 'Templates', href: '/doctor/prescription?tab=templates', icon: BookOpen },
+        ]
+      },
+      {
+        label: 'Insights & Tools',
+        items: [
+          { name: 'Analytics', href: '/doctor/analytics', icon: Activity },
+          { name: 'WhatsApp Setup', href: '/doctor/settings/whatsapp', icon: WhatsAppIcon },
+        ]
+      }
     ];
 
     if (userRole === 'clinic_admin' || userRole === 'super_admin') {
-      navItems.push({ name: 'Team Management', href: '/admin/team', icon: Users });
-      navItems.push({ name: 'Staff Management', href: '/admin/staff', icon: Users });
-      navItems.push({ name: 'Clinic Settings', href: '/admin/settings', icon: Settings });
-      navItems.push({ name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus });
+      navGroups.push({
+        label: 'Administration',
+        items: [
+          { name: 'Team Management', href: '/admin/team', icon: Users },
+          { name: 'Staff Management', href: '/admin/staff', icon: Users },
+          { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
+          { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
+        ]
+      });
     }
   }
 
   return (
-    <>
-      {navItems.map((item) => {
-        const hrefPath = item.href.split('?')[0];
-        const hrefQuery = item.href.includes('?') ? item.href.split('?')[1] : '';
-        
-        let isActive = false;
-        
-        if (pathname === hrefPath) {
-          if (hrefQuery === 'tab=templates') {
-            isActive = tab === 'templates';
-          } else if (hrefPath === '/doctor/prescription') {
-            isActive = tab !== 'templates';
-          } else {
-            isActive = true;
-          }
-        } else if (pathname.startsWith(hrefPath) && hrefPath !== '/doctor/dashboard') {
-          isActive = true;
-        }
+    <div className="space-y-6">
+      {navGroups.map((group, groupIdx) => (
+        <div key={groupIdx}>
+          {!collapsed && (
+            <h3 className="px-6 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              {group.label}
+            </h3>
+          )}
+          {collapsed && groupIdx > 0 && <div className="h-4" />}
+          
+          <div className="space-y-1">
+            {group.items.map((item) => {
+              const hrefPath = item.href.split('?')[0];
+              const hrefQuery = item.href.includes('?') ? item.href.split('?')[1] : '';
+              
+              let isActive = false;
+              
+              if (pathname === hrefPath) {
+                if (hrefQuery === 'tab=templates') {
+                  isActive = tab === 'templates';
+                } else if (hrefPath === '/doctor/prescription') {
+                  isActive = tab !== 'templates';
+                } else {
+                  isActive = true;
+                }
+              } else if (pathname.startsWith(hrefPath) && hrefPath !== '/doctor/dashboard') {
+                isActive = true;
+              }
 
-        return (
-          <Link
-            key={item.name}
-            href={item.href}
-            className={cn(
-              "flex items-center gap-3 py-3 transition-all duration-200 group relative",
-              isActive && !collapsed 
-                ? "bg-clinic-blue text-white shadow-md pr-8 pl-6" 
-                : isActive && collapsed 
-                ? "bg-clinic-blue text-white rounded-lg mx-3 px-3 justify-center"
-                : collapsed
-                ? "text-slate-600 hover:bg-blue-100/50 hover:text-clinic-blue mx-3 px-3 rounded-lg justify-center transition-colors"
-                : "text-slate-600 hover:bg-blue-100/50 hover:text-clinic-blue mx-3 px-3 rounded-lg transition-colors"
-            )}
-            style={isActive && !collapsed ? { clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 16px) 50%, 100% 100%, 0% 100%)' } : {}}
-          >
-            <item.icon className={cn("h-5 w-5 shrink-0", isActive ? "text-white" : "text-slate-400 group-hover:text-clinic-navy")} />
-            
-            {!collapsed && (
-              <span className="font-medium whitespace-nowrap">{item.name}</span>
-            )}
-            
-            {collapsed && (
-              <div className="absolute left-full ml-4 px-2 py-1 bg-slate-800 text-xs rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
-                {item.name}
-              </div>
-            )}
-          </Link>
-        );
-      })}
-    </>
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 py-2.5 transition-all duration-200 group relative",
+                    isActive && !collapsed 
+                      ? "bg-clinic-blue text-white shadow-md pr-8 pl-6" 
+                      : isActive && collapsed 
+                      ? "bg-clinic-blue text-white rounded-lg mx-3 px-3 justify-center"
+                      : collapsed
+                      ? "text-slate-600 hover:bg-blue-100/50 hover:text-clinic-blue mx-3 px-3 rounded-lg justify-center transition-colors"
+                      : "text-slate-600 hover:bg-blue-100/50 hover:text-clinic-blue mx-3 px-3 rounded-lg transition-colors"
+                  )}
+                  style={isActive && !collapsed ? { clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 16px) 50%, 100% 100%, 0% 100%)' } : {}}
+                >
+                  <item.icon className={cn("h-5 w-5 shrink-0", isActive ? "text-white" : "text-slate-400 group-hover:text-clinic-blue")} />
+                  
+                  {!collapsed && (
+                    <span className="font-medium whitespace-nowrap">{item.name}</span>
+                  )}
+                  
+                  {collapsed && (
+                    <div className="absolute left-full ml-4 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+                      {item.name}
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
