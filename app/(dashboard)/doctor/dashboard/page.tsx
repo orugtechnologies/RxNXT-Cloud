@@ -8,7 +8,7 @@ import QuickActions from '@/components/dashboard/QuickActions';
 import RecentPrescriptions from '@/components/dashboard/RecentPrescriptions';
 import UpcomingFollowUps from '@/components/dashboard/UpcomingFollowUps';
 import FrequentMedicines from '@/components/dashboard/FrequentMedicines';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, X, Stethoscope } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
@@ -36,8 +36,9 @@ export default function DashboardPage() {
 
   if (showFlash) {
     return (
-      <div className="fixed inset-0 z-[100] bg-clinic-navy flex items-center justify-center p-4 animate-fade-in">
-        <h1 className="text-white text-3xl md:text-5xl font-bold animate-pulse text-center max-w-4xl leading-tight">
+      <div className="fixed inset-0 z-[100] bg-blue-50 flex flex-col items-center justify-center p-4 animate-fade-in">
+        <Stethoscope className="w-20 h-20 md:w-28 md:h-28 text-clinic-blue mb-8 animate-pulse" />
+        <h1 className="text-clinic-navy text-3xl md:text-5xl font-bold animate-pulse text-center max-w-4xl leading-tight">
           Hello Doctor, Welcome to another day of saving of Lives
         </h1>
       </div>
