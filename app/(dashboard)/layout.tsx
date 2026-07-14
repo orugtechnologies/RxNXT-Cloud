@@ -48,6 +48,19 @@ export default function DashboardLayout({
     }
   }
 
+  // Role-based routing: ensure non-doctors go to their respective dashboards
+  if (typeof window !== 'undefined' && user.status !== 'PENDING') {
+    const path = window.location.pathname;
+    if (user.role === 'receptionist' && !path.startsWith('/receptionist')) {
+      router.push('/receptionist/dashboard');
+      return null;
+    }
+    if (user.role === 'nurse' && !path.startsWith('/nurse')) {
+      router.push('/nurse/dashboard');
+      return null;
+    }
+  }
+
   const toggleSidebar = () => {
     const newState = !sidebarCollapsed;
     setSidebarCollapsed(newState);

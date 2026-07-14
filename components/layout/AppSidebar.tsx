@@ -21,19 +21,32 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab');
 
-  const navItems = [
-    { name: 'Dashboard', href: '/doctor/dashboard', icon: LayoutDashboard },
-    { name: 'New Prescription', href: '/doctor/prescription', icon: FilePlus },
-    { name: 'Patients', href: '/doctor/patients', icon: Users },
-    { name: 'Templates', href: '/doctor/prescription?tab=templates', icon: BookOpen },
-    { name: 'Analytics', href: '/doctor/analytics', icon: Activity },
-    { name: 'WhatsApp Setup', href: '/doctor/settings/whatsapp', icon: Smartphone },
-  ];
+  let navItems: any[] = [];
 
-  if (userRole === 'clinic_admin' || userRole === 'super_admin') {
-    navItems.push({ name: 'Team Management', href: '/admin/team', icon: Users });
-    navItems.push({ name: 'Clinic Settings', href: '/admin/settings', icon: Settings });
-    navItems.push({ name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus });
+  if (userRole === 'receptionist') {
+    navItems = [
+      { name: 'Dashboard', href: '/receptionist/dashboard', icon: LayoutDashboard },
+    ];
+  } else if (userRole === 'nurse') {
+    navItems = [
+      { name: 'Dashboard', href: '/nurse/dashboard', icon: LayoutDashboard },
+    ];
+  } else {
+    navItems = [
+      { name: 'Dashboard', href: '/doctor/dashboard', icon: LayoutDashboard },
+      { name: 'New Prescription', href: '/doctor/prescription', icon: FilePlus },
+      { name: 'Patients', href: '/doctor/patients', icon: Users },
+      { name: 'Templates', href: '/doctor/prescription?tab=templates', icon: BookOpen },
+      { name: 'Analytics', href: '/doctor/analytics', icon: Activity },
+      { name: 'WhatsApp Setup', href: '/doctor/settings/whatsapp', icon: Smartphone },
+    ];
+
+    if (userRole === 'clinic_admin' || userRole === 'super_admin') {
+      navItems.push({ name: 'Team Management', href: '/admin/team', icon: Users });
+      navItems.push({ name: 'Staff Management', href: '/admin/staff', icon: Users });
+      navItems.push({ name: 'Clinic Settings', href: '/admin/settings', icon: Settings });
+      navItems.push({ name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus });
+    }
   }
 
   return (
