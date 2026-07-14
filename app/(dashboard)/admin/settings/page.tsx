@@ -1,18 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Settings, Building2, Users, Link as LinkIcon } from 'lucide-react';
+import { Settings, Building2 } from 'lucide-react';
 import ClinicProfileTab from '@/components/settings/ClinicProfileTab';
-import StaffManagementTab from '@/components/settings/StaffManagementTab';
-import IntegrationsTab from '@/components/settings/IntegrationsTab';
 
 export default function ClinicSettingsPage() {
   const [activeTab, setActiveTab] = useState('profile');
 
   const tabs = [
     { id: 'profile', label: 'Clinic Profile', icon: <Building2 size={18} /> },
-    { id: 'staff', label: 'Staff Management', icon: <Users size={18} /> },
-    { id: 'integrations', label: 'Integrations', icon: <LinkIcon size={18} /> },
   ];
 
   return (
@@ -51,8 +47,6 @@ export default function ClinicSettingsPage() {
         {/* Content Area */}
         <div className="flex-1">
           {activeTab === 'profile' && <ClinicProfileTab />}
-          {activeTab === 'staff' && <StaffManagementTab />}
-          {activeTab === 'integrations' && <IntegrationsTab />}
         </div>
       </div>
     </div>
