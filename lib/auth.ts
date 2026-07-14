@@ -35,6 +35,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.fullName,
           role: user.role,
+          status: user.status,
           clinicId: user.clinicId,
           clinicName: user.clinic.name,
         };
@@ -53,6 +54,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role;
+        token.status = (user as any).status;
         token.clinicId = (user as any).clinicId;
         token.clinicName = (user as any).clinicName;
       }
@@ -63,6 +65,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         (session.user as any).id = token.id as string;
         (session.user as any).role = token.role as string;
+        (session.user as any).status = token.status as string;
         (session.user as any).clinicId = token.clinicId as string;
         (session.user as any).clinicName = token.clinicName as string;
       }

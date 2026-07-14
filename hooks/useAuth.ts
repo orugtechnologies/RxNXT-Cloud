@@ -15,6 +15,7 @@ export function useAuth() {
         id: (session.user as any).id as string,
         email: session.user.email ?? '',
         role: (session.user as any).role as string ?? 'doctor',
+        status: (session.user as any).status as string ?? 'ACTIVE',
         clinic_id: (session.user as any).clinicId as string,
       }
     : null;

@@ -1,15 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Mail, Lock, User, Building2, Loader2, ArrowRight } from 'lucide-react';
 
-export default function RegisterPage() {
+function RegisterForm() {
+  const searchParams = useSearchParams();
+  const inviteCodeParam = searchParams?.get('invite') || '';
+
   const [form, setForm] = useState({
     fullName: '',
     email: '',
@@ -17,6 +21,7 @@ export default function RegisterPage() {
     clinicName: '',
     specialization: '',
     phone: '',
+    inviteCode: inviteCodeParam,
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -57,7 +62,11 @@ export default function RegisterPage() {
         return;
       }
 
-      window.location.href = '/doctor/dashboard';
+      if (data.status === 'PENDING') {
+        window.location.href = '/pending';
+      } else {
+        window.location.href = '/doctor/dashboard';
+      }
     } catch (err) {
       setError('An unexpected error occurred.');
       setLoading(false);
@@ -68,9 +77,19 @@ export default function RegisterPage() {
     <Card className="glass border-0 shadow-2xl bg-white/95 backdrop-blur-md">
       <CardContent className="pt-8 px-8 pb-8">
         <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold text-slate-800">Create Your Clinic</h2>
-          <p className="text-slate-500 text-sm mt-1">Set up your RxNXT workspace</p>
+          <h2 className="text-2xl font-bold text-slate-800">
+            {inviteCodeParam ? 'Join Your Team' : 'Create Your Clinic'}
+          </h2>
+          <p className="text-slate-500 text-sm mt-1">
+            {inviteCodeParam ? 'Complete registration to join the clinic workspace' : 'Set up your RxNXT workspace'}
+          </p>
         </div>
+
+        {inviteCodeParam && (
+          <div className="bg-emerald-50 text-emerald-700 text-sm p-3 rounded-md border border-emerald-100 mb-6 text-center font-medium">
+            You have been invited to join a clinic. Your account will be linked automatically.
+          </div>
+        )}
 
         <form className="space-y-4" onSubmit={handleRegister}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -87,13 +106,15 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="clinicName">Clinic Name</Label>
-            <div className="relative">
-              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input id="clinicName" name="clinicName" placeholder="City Health Clinic" className="pl-9" value={form.clinicName} onChange={handleChange} required disabled={loading} />
+          {!inviteCodeParam && (
+            <div className="space-y-1">
+              <Label htmlFor="clinicName">Clinic Name</Label>
+              <div className="relative">
+                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input id="clinicName" name="clinicName" placeholder="City Health Clinic" className="pl-9" value={form.clinicName} onChange={handleChange} required disabled={loading} />
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="space-y-1">
             <Label htmlFor="email">Email Address</Label>
@@ -134,5 +155,13 @@ export default function RegisterPage() {
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-8"><Loader2 className="animate-spin text-clinic-blue h-8 w-8" /></div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }

@@ -31,6 +31,7 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
   ];
 
   if (userRole === 'clinic_admin' || userRole === 'super_admin') {
+    navItems.push({ name: 'Team Management', href: '/admin/team', icon: Users });
     navItems.push({ name: 'Clinic Settings', href: '/admin/settings', icon: Settings });
     navItems.push({ name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus });
   }

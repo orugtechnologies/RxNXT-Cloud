@@ -39,6 +39,15 @@ export default function DashboardLayout({
     return null;
   }
 
+  // PENDING guard: block PENDING doctors from accessing dashboard
+  if (user.status === 'PENDING' && typeof window !== 'undefined') {
+    const isPendingPage = window.location.pathname === '/pending';
+    if (!isPendingPage) {
+      router.push('/pending');
+      return null;
+    }
+  }
+
   const toggleSidebar = () => {
     const newState = !sidebarCollapsed;
     setSidebarCollapsed(newState);
