@@ -11,6 +11,7 @@ import FrequentMedicines from '@/components/dashboard/FrequentMedicines';
 import { Loader2, X } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 
 export default function DashboardPage() {
   const { data, isLoading, error } = useDashboard();
@@ -78,8 +79,9 @@ export default function DashboardPage() {
       {/* Welcome Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            {greeting}, <span className="text-clinic-blue">{doctorName}</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center">
+            {greeting}, <span className="text-clinic-blue ml-2">{doctorName}</span>
+            <InfoTooltip text="Welcome to your command center. View your daily queue, access recent patients, and quickly start new consultations." />
           </h2>
           <p className="text-slate-500 mt-1 font-medium">
             Here's your clinical overview for {formatDate(new Date().toISOString(), { weekday: 'long', month: 'long', day: 'numeric' })}

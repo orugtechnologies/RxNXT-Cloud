@@ -13,6 +13,7 @@ import { Activity, User, Pill, Stethoscope, Save, Layers, Eye } from 'lucide-rea
 import TemplateManagementUI from '@/components/prescriptions/TemplateManagementUI';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 
 function PrescriptionWorkflowContent() {
   const searchParams = useSearchParams();
@@ -207,6 +208,7 @@ function PrescriptionWorkflowContent() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center">
             <Activity className="text-clinic-emerald mr-3" size={28} strokeWidth={2.5} />
             Clinical Workspace
+            <InfoTooltip text="Write and send digital prescriptions via WhatsApp. Use the AI Smart Search to quickly find drugs, or switch to the Templates tab to use pre-saved protocols." />
           </h1>
           <p className="text-slate-500 mt-1 ml-11 text-sm font-medium">RxNXT Digital Prescription Flow</p>
         </div>

@@ -5,6 +5,7 @@ import PatientSearchUI, { Patient } from '@/components/patients/PatientSearchUI'
 import AddPatientModal from '@/components/patients/AddPatientModal';
 import { useRouter } from 'next/navigation';
 import { Users } from 'lucide-react';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 
 export default function PatientsPage() {
   const [showAddPatient, setShowAddPatient] = useState(false);
@@ -25,6 +26,7 @@ export default function PatientsPage() {
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center">
           <Users className="text-clinic-emerald mr-3" size={32} strokeWidth={2.5} />
           Patient Directory
+          <InfoTooltip text="Your complete patient database. Click on any patient to view their full medical history, past prescriptions, and recorded vitals." />
         </h1>
         <p className="text-slate-500 mt-2 ml-11 text-sm font-medium">
           Search for existing patients or register a new one to view their complete clinical history.

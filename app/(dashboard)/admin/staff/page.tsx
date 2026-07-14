@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Users, PlusCircle, Building2, Stethoscope, PhoneCall, X } from 'lucide-react';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 
 export default function StaffManagementPage() {
   const [staff, setStaff] = useState<any[]>([]);
@@ -83,7 +84,10 @@ export default function StaffManagementPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Support Staff</h1>
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center">
+            Support Staff
+            <InfoTooltip text="Create accounts for your front desk and nursing staff. Support staff have restricted dashboards tailored to their specific daily tasks." />
+          </h1>
           <p className="text-slate-500">Manage non-doctor staff like Receptionists and Nurses.</p>
         </div>
         <Button className="bg-clinic-blue hover:bg-clinic-blueDark" onClick={() => setIsModalOpen(true)}>

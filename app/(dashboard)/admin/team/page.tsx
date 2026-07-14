@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Copy, RefreshCw, UserCheck, ShieldAlert, CheckCircle2 } from 'lucide-react';
@@ -90,7 +91,10 @@ export default function TeamManagementPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Manage Doctors</h1>
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center">
+            Manage Doctors
+            <InfoTooltip text="Invite and manage the medical practitioners at your clinic. Doctors have full access to write prescriptions and view clinical data." />
+          </h1>
           <p className="text-slate-500">Manage your clinic doctors and pending invites.</p>
         </div>
       </div>

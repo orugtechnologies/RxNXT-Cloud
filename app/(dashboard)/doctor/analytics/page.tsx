@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Activity, Clock, Zap, AlertTriangle } from 'lucide-react';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 
 export default function AnalyticsPage() {
   const [metrics, setMetrics] = useState<any[]>([]);
@@ -52,6 +53,7 @@ export default function AnalyticsPage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center">
             <Activity className="text-clinic-emerald mr-3" size={28} strokeWidth={2.5} />
             Efficiency Analytics
+            <InfoTooltip text="Track your clinic's performance over time. Monitor patient volume, revenue trends, and demographic data to optimize your practice." />
           </h1>
           <p className="text-slate-500 mt-1 ml-11 text-sm font-medium">Measure and optimize your digital prescription workflow</p>
         </div>

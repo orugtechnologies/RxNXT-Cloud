@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Search, Trash2, Upload, FileUp } from 'lucide-react';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 
 export default function ClinicDrugsPage() {
   const [drugs, setDrugs] = useState<any[]>([]);
@@ -138,7 +139,10 @@ export default function ClinicDrugsPage() {
     <div className="max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Clinic Drugs</h1>
+          <h1 className="text-2xl font-bold text-slate-800 flex items-center">
+            Clinic Drugs
+            <InfoTooltip text="Manage your clinic's custom drug database. Add specific medicines, dosages, and brands that you frequently prescribe for faster access." />
+          </h1>
           <p className="text-slate-500">Manage custom medicines for your clinic.</p>
         </div>
         <div className="flex gap-3">
