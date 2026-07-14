@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Users, PlusCircle, Building2, Stethoscope, PhoneCall } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function StaffManagementPage() {
   const [staff, setStaff] = useState<any[]>([]);
@@ -116,15 +115,15 @@ export default function StaffManagementPage() {
               
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
-                <Select value={formData.role} onValueChange={(val) => setFormData({...formData, role: val})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="receptionist">Receptionist (Front Desk)</SelectItem>
-                    <SelectItem value="nurse">Nurse / Medical Assistant</SelectItem>
-                  </SelectContent>
-                </Select>
+                <select 
+                  id="role"
+                  className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={formData.role} 
+                  onChange={(e) => setFormData({...formData, role: e.target.value})}
+                >
+                  <option value="receptionist">Receptionist (Front Desk)</option>
+                  <option value="nurse">Nurse / Medical Assistant</option>
+                </select>
               </div>
 
               <div className="space-y-2">
