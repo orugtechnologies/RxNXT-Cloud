@@ -112,7 +112,7 @@ export default function StaffManagementPage() {
                   required 
                   value={formData.fullName} 
                   onChange={e => setFormData({...formData, fullName: e.target.value})} 
-                  placeholder="e.g. Jane Doe"
+                  placeholder="e.g. Priya Sharma"
                 />
               </div>
               
