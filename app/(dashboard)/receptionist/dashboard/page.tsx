@@ -8,6 +8,7 @@ import { PhoneCall } from 'lucide-react';
 
 export default function ReceptionistDashboard() {
   const [showAddPatient, setShowAddPatient] = useState(false);
+  const [initialQuery, setInitialQuery] = useState('');
   const [patientToAssign, setPatientToAssign] = useState<Patient | null>(null);
   const [lastAdded, setLastAdded] = useState<string | null>(null);
 
@@ -47,12 +48,16 @@ export default function ReceptionistDashboard() {
       <div className="bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-slate-200">
         <PatientSearchUI 
           onSelect={handlePatientSelect} 
-          onAddNew={() => setShowAddPatient(true)} 
+          onAddNew={(query) => {
+            setInitialQuery(query);
+            setShowAddPatient(true);
+          }} 
         />
       </div>
 
       {showAddPatient && (
         <AddPatientModal 
+          initialQuery={initialQuery}
           onClose={() => setShowAddPatient(false)} 
           onSuccess={handlePatientAdded} 
         />
