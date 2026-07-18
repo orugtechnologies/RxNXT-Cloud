@@ -20,6 +20,7 @@ export async function GET() {
       recentPrescriptions,
       followUps,
       frequentMedsPrefs,
+      queueItems,
     ] = await Promise.all([
       // Total patients in clinic
       prisma.patient.count({ where: { clinicId } }),
@@ -67,6 +68,20 @@ export async function GET() {
         take: 10,
         include: { drug: true }
       }),
+
+      // Today's Queue (WAITING status for this doctor)
+      prisma.queueItem.findMany({
+        where: {
+          clinicId,
+          doctorId: user.id,
+          status: 'WAITING',
+          createdAt: { gte: today },
+        },
+        orderBy: { createdAt: 'asc' },
+        include: {
+          patient: { select: { name: true, phone: true, age: true, gender: true } },
+        },
+      }),
     ]);
 
     // Format recent prescriptions
@@ -112,6 +127,18 @@ export async function GET() {
       prescription_count: pref.count,
     }));
 
+    // Format Queue
+    const formattedQueue = queueItems.map((q) => ({
+      id: q.id,
+      patient_id: q.patientId,
+      patient_name: q.patient.name,
+      patient_phone: q.patient.phone,
+      patient_age: q.patient.age,
+      patient_gender: q.patient.gender,
+      waiting_since: q.createdAt.toISOString(),
+      status: q.status,
+    }));
+
     return NextResponse.json({
       stats: {
         total_patients: totalPatients,
@@ -124,6 +151,7 @@ export async function GET() {
       recentPrescriptions: formattedRecentRx,
       followUps: formattedFollowUps,
       frequentMedicines: formattedFreqMeds,
+      todayQueue: formattedQueue,
     });
 
   } catch (error: any) {

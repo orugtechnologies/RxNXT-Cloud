@@ -31,6 +31,7 @@ model Clinic {
   treatmentGroups TreatmentGroup[]
   clinicDrugPreferences ClinicDrugPreference[]
   customDrugs           Drug[]
+  queueItems            QueueItem[]
 }
 
 // ─────────────────────────────────────────────
@@ -56,6 +57,7 @@ model User {
   prescriptions   Prescription[]
   treatmentGroups TreatmentGroup[]
   doctorDrugPreferences DoctorDrugPreference[]
+  queueItems      QueueItem[]
 }
 
 // ─────────────────────────────────────────────
@@ -76,6 +78,7 @@ model Patient {
   encounters    Encounter[]
   prescriptions Prescription[]
   reminders     Reminder[]
+  queueItems    QueueItem[]
 }
 
 // ─────────────────────────────────────────────
@@ -238,3 +241,20 @@ model Reminder {
   messageType    String       @default("MEDICINE") // PDF, MEDICINE
   createdAt      DateTime     @default(now())
 }
+
+// ─────────────────────────────────────────────
+// QUEUE ITEM (Patient waiting for Doctor)
+// ─────────────────────────────────────────────
+model QueueItem {
+  id        String   @id @default(cuid())
+  clinicId  String
+  clinic    Clinic   @relation(fields: [clinicId], references: [id])
+  doctorId  String
+  doctor    User     @relation(fields: [doctorId], references: [id])
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id])
+  status    String   @default("WAITING") // WAITING, COMPLETED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

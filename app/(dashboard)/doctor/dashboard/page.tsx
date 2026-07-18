@@ -5,6 +5,7 @@ import { useDashboard } from '@/hooks/useDashboard';
 import { useAuth } from '@/hooks/useAuth';
 import StatsCards from '@/components/dashboard/StatsCards';
 import QuickActions from '@/components/dashboard/QuickActions';
+import DoctorQueue from '@/components/dashboard/DoctorQueue';
 import RecentPrescriptions from '@/components/dashboard/RecentPrescriptions';
 import UpcomingFollowUps from '@/components/dashboard/UpcomingFollowUps';
 import FrequentMedicines from '@/components/dashboard/FrequentMedicines';
@@ -97,7 +98,8 @@ export default function DashboardPage() {
       <QuickActions />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
+          <DoctorQueue queue={data.todayQueue || []} />
           <RecentPrescriptions 
             prescriptions={data.recentPrescriptions} 
             onClone={handleClone} 

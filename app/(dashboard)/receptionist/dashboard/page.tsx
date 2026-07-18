@@ -3,21 +3,26 @@
 import React, { useState } from 'react';
 import PatientSearchUI, { Patient } from '@/components/patients/PatientSearchUI';
 import AddPatientModal from '@/components/patients/AddPatientModal';
+import AssignDoctorModal from '@/components/patients/AssignDoctorModal';
 import { PhoneCall } from 'lucide-react';
 
 export default function ReceptionistDashboard() {
   const [showAddPatient, setShowAddPatient] = useState(false);
+  const [patientToAssign, setPatientToAssign] = useState<Patient | null>(null);
   const [lastAdded, setLastAdded] = useState<string | null>(null);
 
   const handlePatientSelect = (patient: Patient) => {
-    // Receptionists don't have clinical history access in the pilot
-    setLastAdded(`Selected: ${patient.name} (${patient.phone || 'No phone'})`);
-    setTimeout(() => setLastAdded(null), 3000);
+    setPatientToAssign(patient);
   };
 
   const handlePatientAdded = (patient: Patient) => {
     setShowAddPatient(false);
-    setLastAdded(`Successfully registered: ${patient.name}`);
+    setPatientToAssign(patient);
+  };
+
+  const handleAssignmentSuccess = (message: string) => {
+    setPatientToAssign(null);
+    setLastAdded(message);
     setTimeout(() => setLastAdded(null), 5000);
   };
 
@@ -50,6 +55,14 @@ export default function ReceptionistDashboard() {
         <AddPatientModal 
           onClose={() => setShowAddPatient(false)} 
           onSuccess={handlePatientAdded} 
+        />
+      )}
+
+      {patientToAssign && (
+        <AssignDoctorModal
+          patient={patientToAssign}
+          onClose={() => setPatientToAssign(null)}
+          onSuccess={handleAssignmentSuccess}
         />
       )}
     </div>

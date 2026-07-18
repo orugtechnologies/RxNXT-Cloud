@@ -92,6 +92,17 @@ export async function POST(request: Request) {
         });
       }
 
+      // Mark any WAITING queue items for this patient and doctor as COMPLETED
+      await tx.queueItem.updateMany({
+        where: {
+          clinicId: user.clinicId,
+          doctorId: user.id,
+          patientId,
+          status: 'WAITING',
+        },
+        data: { status: 'COMPLETED' },
+      });
+
       // Increment prescription count for global, doctor, and clinic preferences
       console.log('--- SAVING PRESCRIPTION ---');
       console.log('medicines:', medicines);
