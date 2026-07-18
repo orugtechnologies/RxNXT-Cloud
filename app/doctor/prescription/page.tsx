@@ -81,6 +81,33 @@ function PrescriptionWorkflowContent() {
           }
         })
         .finally(() => setFetchingPastRx(false));
+    } else {
+      const patientId = searchParams.get('patientId');
+      if (patientId) {
+        setFetchingPastRx(true);
+        fetch(`/api/patients/${patientId}`)
+          .then(res => res.json())
+          .then(json => {
+            if (json.patient) {
+              setPatient(json.patient);
+              if (!startTime) setStartTime(Date.now());
+              
+              // Now fetch recent Rx
+              return fetch(`/api/prescriptions/recent?patientId=${patientId}`)
+                .then(r => r.json())
+                .then(rxJson => {
+                  if (rxJson.data && rxJson.data.medicines && rxJson.data.medicines.length > 0) {
+                    setChiefComplaint(rxJson.data.chiefComplaint || '');
+                    setDiagnosis(rxJson.data.diagnosis || '');
+                    setNotes(rxJson.data.notes || '');
+                    setMedicines(rxJson.data.medicines);
+                  }
+                });
+            }
+          })
+          .catch(err => console.error('Error loading patient from URL:', err))
+          .finally(() => setFetchingPastRx(false));
+      }
     }
   }, [searchParams]);
 
