@@ -11,7 +11,7 @@ export async function GET() {
     const doctors = await prisma.user.findMany({
       where: {
         clinicId: user.clinicId,
-        role: 'doctor',
+        role: { in: ['doctor', 'clinic_admin'] },
         status: 'ACTIVE',
       },
       select: {
