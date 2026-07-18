@@ -58,6 +58,8 @@ model User {
   treatmentGroups TreatmentGroup[]
   doctorDrugPreferences DoctorDrugPreference[]
   queueItems      QueueItem[]
+
+  @@index([clinicId, role])
 }
 
 // ─────────────────────────────────────────────
@@ -79,6 +81,9 @@ model Patient {
   prescriptions Prescription[]
   reminders     Reminder[]
   queueItems    QueueItem[]
+
+  @@index([clinicId, phone])
+  @@index([clinicId, name])
 }
 
 // ─────────────────────────────────────────────
@@ -99,6 +104,9 @@ model Encounter {
   createdAt      DateTime @default(now())
 
   prescription Prescription?
+
+  @@index([clinicId, doctorId])
+  @@index([patientId])
 }
 
 // ─────────────────────────────────────────────
@@ -120,6 +128,9 @@ model Prescription {
 
   medicines PrescriptionMedicine[]
   reminders Reminder[]
+
+  @@index([clinicId, doctorId])
+  @@index([patientId])
 }
 
 // ─────────────────────────────────────────────
@@ -139,6 +150,9 @@ model PrescriptionMedicine {
   duration       String?
   instructions   String?
   createdAt      DateTime     @default(now())
+
+  @@index([prescriptionId])
+  @@index([drugId])
 }
 
 // ─────────────────────────────────────────────
@@ -164,6 +178,9 @@ model Drug {
 
   clinicId              String?
   clinic                Clinic?  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@index([genericName])
+  @@index([brandName])
 }
 
 // ─────────────────────────────────────────────
@@ -256,5 +273,8 @@ model QueueItem {
   status    String   @default("WAITING") // WAITING, COMPLETED
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([clinicId, doctorId, status, createdAt])
+  @@index([patientId])
 }
 
