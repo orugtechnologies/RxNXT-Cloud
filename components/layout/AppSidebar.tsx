@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity } from 'lucide-react';
+import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -68,15 +68,16 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
     ];
 
     if (userRole === 'clinic_admin' || userRole === 'super_admin') {
-      navGroups.push({
-        label: 'Administration',
-        items: [
-          { name: 'Manage Doctors', href: '/admin/team', icon: Users },
-          { name: 'Support Staff', href: '/admin/staff', icon: Users },
-          { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
-          { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
-        ]
-      });
+    navGroups.push({
+      label: 'Platform & Admin',
+      items: [
+        { name: 'Super Admin Portal', href: '/admin/superadmin', icon: ShieldCheck },
+        { name: 'Manage Doctors', href: '/admin/team', icon: Users },
+        { name: 'Support Staff', href: '/admin/staff', icon: Users },
+        { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
+        { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
+      ]
+    });
     }
   }
 
