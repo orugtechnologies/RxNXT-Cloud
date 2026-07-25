@@ -2,12 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, Smartphone, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, Smartphone, CheckCircle2, AlertCircle, Download, Share2 } from 'lucide-react';
 
 export default function WhatsAppSettingsPage() {
   const [status, setStatus] = useState<string>('initializing');
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const handleDownloadQR = () => {
+    if (!qrCode) return;
+    const link = document.createElement('a');
+    link.href = qrCode;
+    link.download = 'RxNXT-WhatsApp-QR.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   useEffect(() => {
     // Poll the microservice every 3 seconds to get the latest status and QR code
@@ -58,15 +68,39 @@ export default function WhatsAppSettingsPage() {
           )}
 
           {status === 'waiting_for_scan' && qrCode && (
-            <div className="flex flex-col items-center gap-6 animate-in fade-in zoom-in duration-500">
+            <div className="flex flex-col items-center gap-6 animate-in fade-in zoom-in duration-500 w-full max-w-lg">
               <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                 <img src={qrCode} alt="WhatsApp QR Code" className="w-64 h-64" />
               </div>
+
+              <button
+                type="button"
+                onClick={handleDownloadQR}
+                className="bg-gradient-to-r from-[#2563eb] to-[#0ea5e9] hover:from-[#1d4ed8] hover:to-[#0284c7] text-white font-bold py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-sm"
+              >
+                <Download size={18} />
+                <span>Save QR Code to Photo Gallery</span>
+              </button>
+
               <div className="text-center space-y-2">
                 <h3 className="font-semibold text-lg">Waiting for scan...</h3>
-                <p className="text-sm text-slate-500 max-w-sm">
-                  Open WhatsApp on your phone, tap Menu or Settings and select <strong>Linked Devices</strong>. Point your phone to this screen to capture the code.
+                <p className="text-sm text-slate-500 max-w-sm mx-auto">
+                  If using a PC/Laptop, open WhatsApp on your phone $\rightarrow$ <strong>Linked Devices</strong> $\rightarrow$ point your camera at this screen.
                 </p>
+              </div>
+
+              {/* Single Phone Helper Box */}
+              <div className="bg-blue-50/80 border border-blue-200/80 rounded-xl p-4 text-left w-full text-xs sm:text-sm text-slate-700 space-y-2">
+                <div className="font-bold text-[#2563eb] flex items-center gap-1.5">
+                  <span>📱</span>
+                  <span>Using THIS exact smartphone to link? (Single-Device Mode)</span>
+                </div>
+                <ol className="list-decimal pl-4 space-y-1 text-slate-600">
+                  <li>Tap the <strong>Save QR Code to Photo Gallery</strong> button above (or take a screenshot).</li>
+                  <li>Open your <strong>WhatsApp App</strong> on this phone $\rightarrow$ tap <strong>Menu (⋮) or Settings</strong> $\rightarrow$ <strong>Linked Devices</strong>.</li>
+                  <li>Tap <strong>Link a Device</strong>. On the camera scanner screen, tap the <strong>Gallery / Photo icon</strong> at the top/bottom.</li>
+                  <li>Select the QR code photo you just saved. Your clinic WhatsApp will connect instantly!</li>
+                </ol>
               </div>
             </div>
           )}
