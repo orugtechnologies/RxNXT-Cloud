@@ -87,7 +87,7 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="bg-white rounded-xl shadow-soft border border-gray-100 p-6 flex flex-col items-center justify-center text-center">
-            <div className="h-14 w-14 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mb-4">
+            <div className="h-14 w-14 bg-sky-50 text-sky-500 rounded-full flex items-center justify-center mb-4">
               <Activity size={28} />
             </div>
             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-1">Total Tracked</h3>

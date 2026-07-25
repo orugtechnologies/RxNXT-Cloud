@@ -117,12 +117,12 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
                   className={cn(
                     "flex items-center gap-3 py-2.5 transition-all duration-200 group relative",
                     isActive && !collapsed 
-                      ? "bg-clinic-blue text-white shadow-md pr-8 pl-6" 
+                      ? "bg-gradient-to-r from-[#2563eb] to-[#0ea5e9] text-white shadow-md pr-8 pl-6" 
                       : isActive && collapsed 
-                      ? "bg-clinic-blue text-white rounded-lg mx-3 px-3 justify-center"
+                      ? "bg-gradient-to-r from-[#2563eb] to-[#0ea5e9] text-white rounded-lg mx-3 px-3 justify-center"
                       : collapsed
-                      ? "text-slate-600 hover:bg-blue-100/50 hover:text-clinic-blue mx-3 px-3 rounded-lg justify-center transition-colors"
-                      : "text-slate-600 hover:bg-blue-100/50 hover:text-clinic-blue mx-3 px-3 rounded-lg transition-colors"
+                      ? "text-slate-600 hover:bg-blue-50 hover:text-[#2563eb] mx-3 px-3 rounded-lg justify-center transition-colors"
+                      : "text-slate-600 hover:bg-blue-50 hover:text-[#2563eb] mx-3 px-3 rounded-lg transition-colors"
                   )}
                   style={isActive && !collapsed ? { clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 16px) 50%, 100% 100%, 0% 100%)' } : {}}
                 >
@@ -154,7 +154,7 @@ export default function AppSidebar({ userRole, userName, collapsed, onToggle }: 
 
   return (
     <div className={cn(
-      "flex flex-col h-full bg-gradient-to-b from-indigo-50/80 to-white text-slate-900 transition-all duration-300 ease-in-out border-r border-indigo-100 shadow-sm relative",
+      "flex flex-col h-full bg-gradient-to-b from-blue-50/60 via-white to-emerald-50/20 text-slate-900 transition-all duration-300 ease-in-out border-r border-slate-200 shadow-sm relative",
       collapsed ? "w-[72px]" : "w-[256px]"
     )}>
       {/* Logo Area */}
@@ -173,7 +173,7 @@ export default function AppSidebar({ userRole, userName, collapsed, onToggle }: 
       {/* Collapse Toggle */}
       <button 
         onClick={onToggle}
-        className="absolute -right-3 top-20 bg-white border border-indigo-200 rounded-full p-1 text-slate-400 hover:text-clinic-navy hover:bg-indigo-50 shadow-sm transition-colors hidden md:block z-10"
+        className="absolute -right-3 top-20 bg-white border border-slate-200 rounded-full p-1 text-slate-400 hover:text-[#2563eb] hover:bg-blue-50 shadow-sm transition-colors hidden md:block z-10"
       >
         {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
       </button>
@@ -186,7 +186,7 @@ export default function AppSidebar({ userRole, userName, collapsed, onToggle }: 
       </nav>
 
       {/* User Area */}
-      <div className="p-4 border-t border-indigo-100 bg-white/50 mt-auto">
+      <div className="p-4 border-t border-slate-200 bg-white/50 mt-auto">
         <div className={cn("flex items-center gap-3 mb-4", collapsed && "justify-center")}>
           <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-clinic-blue to-clinic-emerald flex items-center justify-center text-white text-sm font-bold shadow-inner shrink-0">
             {userName?.charAt(0).toUpperCase() || 'U'}

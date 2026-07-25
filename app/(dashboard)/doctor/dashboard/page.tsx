@@ -86,8 +86,8 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-10">
       {/* Top Banner Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-clinic-navy p-6 sm:p-8 rounded-3xl text-white shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-clinic-emerald/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-gradient-to-r from-[#0f172a] via-[#2563eb] to-[#0ea5e9] p-6 sm:p-8 rounded-3xl text-white shadow-xl relative overflow-hidden">
+        <div className="absolute right-0 top-0 w-96 h-96 bg-[#10b981]/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -123,7 +123,7 @@ export default function DashboardPage() {
         {/* Action 1: Open Clinical Workspace */}
         <button
           onClick={() => router.push('/doctor/prescription')}
-          className="group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-md bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 text-white"
+          className="group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-md bg-gradient-to-br from-[#10b981] via-[#059669] to-[#0f172a] text-white"
         >
           <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-white/10 transition-transform group-hover:scale-150 duration-500" />
           <div className="relative z-10 flex items-center space-x-4">
@@ -144,8 +144,8 @@ export default function DashboardPage() {
           className={cn(
             "group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-md text-white",
             showSearchDrawer
-              ? "bg-gradient-to-br from-blue-700 to-indigo-900 ring-2 ring-blue-400"
-              : "bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800"
+              ? "bg-gradient-to-br from-[#1d4ed8] to-[#0f172a] ring-2 ring-[#0ea5e9]"
+              : "bg-gradient-to-br from-[#2563eb] via-[#1d4ed8] to-[#0f172a]"
           )}
         >
           <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-white/10 transition-transform group-hover:scale-150 duration-500" />
@@ -164,7 +164,7 @@ export default function DashboardPage() {
         {/* Action 3: View History */}
         <button
           onClick={() => setShowSearchDrawer(true)}
-          className="group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-md bg-gradient-to-br from-purple-600 via-indigo-700 to-slate-800 text-white"
+          className="group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-md bg-gradient-to-br from-[#0ea5e9] via-[#0284c7] to-[#0f172a] text-white"
         >
           <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-white/10 transition-transform group-hover:scale-150 duration-500" />
           <div className="relative z-10 flex items-center space-x-4">

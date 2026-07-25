@@ -14,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 84% 5%;
 
-    --primary: 224 64% 33%; /* #1e3a8a - matches clinic-blue */
+    --primary: 221 83% 53%; /* #2563eb - matches RxNXT logo blue */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -31,7 +31,7 @@
 
     --border: 214 32% 91%; /* #e2e8f0 - matches clinic-border */
     --input: 214 32% 91%;
-    --ring: 224 64% 33%;
+    --ring: 221 83% 53%;
 
     --radius: 0.625rem;
   }
@@ -85,7 +85,7 @@
 
   /* Gradient text */
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-clinic-blue to-clinic-emerald;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#2563eb] via-[#0ea5e9] to-[#10b981];
   }
 
   /* Card hover effect */

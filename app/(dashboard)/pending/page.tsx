@@ -8,7 +8,7 @@ import Image from 'next/image';
 
 export default function PendingPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-emerald-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-4">
       <Card className="max-w-md w-full glass border-0 shadow-2xl bg-white/95 backdrop-blur-md overflow-hidden">
         <div className="h-2 bg-orange-400 w-full" />
         <CardContent className="pt-10 px-8 pb-8 text-center flex flex-col items-center">

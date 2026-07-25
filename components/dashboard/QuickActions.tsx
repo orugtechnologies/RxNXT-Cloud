@@ -20,14 +20,14 @@ export default function QuickActions() {
       icon: Search,
       desc: 'Find existing records',
       onClick: () => router.push('/doctor/prescription?tab=patients'),
-      gradient: 'from-blue-500 to-blue-700',
+      gradient: 'from-[#2563eb] to-[#1d4ed8]',
     },
     {
       name: 'View History',
       icon: History,
       desc: 'Recent encounters',
       onClick: () => router.push('#recent'),
-      gradient: 'from-purple-500 to-purple-700',
+      gradient: 'from-[#0ea5e9] to-[#0284c7]',
     },
   ];
 

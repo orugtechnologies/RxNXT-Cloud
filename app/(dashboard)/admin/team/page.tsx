@@ -99,10 +99,10 @@ export default function TeamManagementPage() {
         </div>
       </div>
 
-      <Card className="border-indigo-100 shadow-sm">
-        <CardHeader className="bg-indigo-50/50 border-b border-indigo-50">
-          <CardTitle className="text-indigo-900 flex items-center gap-2">
-            <ShieldAlert className="h-5 w-5 text-indigo-500" />
+      <Card className="border-blue-100 shadow-sm">
+        <CardHeader className="bg-blue-50/50 border-b border-blue-50">
+          <CardTitle className="text-blue-900 flex items-center gap-2">
+            <ShieldAlert className="h-5 w-5 text-blue-500" />
             Invite Doctors (Secure Link)
           </CardTitle>
           <CardDescription>
@@ -116,7 +116,7 @@ export default function TeamManagementPage() {
               readOnly 
               className="bg-slate-50 text-slate-600 font-mono"
             />
-            <Button onClick={handleCopyLink} className="shrink-0 bg-indigo-600 hover:bg-indigo-700">
+            <Button onClick={handleCopyLink} className="shrink-0 bg-[#2563eb] hover:bg-[#1d4ed8]">
               <Copy className="h-4 w-4 mr-2" /> Copy
             </Button>
             <Button onClick={handleRegenerateLink} variant="outline" className="shrink-0 text-red-600 border-red-200 hover:bg-red-50" disabled={refreshingLink}>
@@ -169,7 +169,7 @@ export default function TeamManagementPage() {
                 <div>
                   <p className="font-semibold text-slate-900">
                     {doctor.fullName} 
-                    {doctor.role === 'clinic_admin' && <span className="ml-2 text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">Admin</span>}
+                    {doctor.role === 'clinic_admin' && <span className="ml-2 text-xs bg-blue-100 text-[#2563eb] px-2 py-0.5 rounded-full">Admin</span>}
                   </p>
                   <p className="text-sm text-slate-500">{doctor.email} • {doctor.specialization || 'General'}</p>
                 </div>

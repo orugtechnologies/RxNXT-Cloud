@@ -1,5 +1,11 @@
 # RxNXT Changelog
 
+## [2026-07-25] - Doctor Dashboard Redesign & Brand Color Parity
+- **Brand Theme & Color Parity**: Replaced legacy indigo and dull navy accents across the application with the vibrant **RxNXT Logo Palette** (`#2563eb` Royal Blue, `#0ea5e9` Sky Blue, `#10b981` Healthcare Emerald Green, and clean slate `#f8fafc`). Updated CSS variables in `globals.css` and extended theme colors in `tailwind.config.ts`.
+- **Doctor Command Center Redesign**: Streamlined the doctor's dashboard (`/doctor/dashboard`) by removing clutter and focusing on 3 core actions: Start Consultation, Search Patient, and View History.
+- **Integrated Patient Queue**: Added waiting time timers ("Waiting for Xm"), status badges ("NEXT UP"), and 1-click consultation launching or history viewing directly from queue cards.
+- **Patient History Modal**: Created `PatientHistoryModal.tsx` for fast review of previous encounters, visit timelines, and 1-click prescription cloning without leaving the dashboard.
+
 ## [2026-07-05] - Security & UI Cleanup
 - **UI Tweaks**: Removed the Welcome Splash component entirely for a faster, frictionless login experience.
 - **Data Cleanup**: Updated registration placeholders and seed scripts to default to **Dr. Shanmukha Datta**.

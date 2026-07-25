@@ -57,7 +57,7 @@ export default function ClinicSettingsPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
-                  { icon: <CreditCard className="h-6 w-6 text-indigo-500" />, title: 'Payments', desc: 'Razorpay / Stripe for patient billing via WhatsApp', color: 'indigo' },
+                  { icon: <CreditCard className="h-6 w-6 text-sky-500" />, title: 'Payments', desc: 'Razorpay / Stripe for patient billing via WhatsApp', color: 'sky' },
                   { icon: <FlaskConical className="h-6 w-6 text-amber-500" />, title: 'Labs & Diagnostics', desc: 'Order tests and receive reports directly in patient records', color: 'amber' },
                   { icon: <ShieldCheck className="h-6 w-6 text-emerald-500" />, title: 'Government Health Registries', desc: 'ABDM / ABHA Health ID integration', color: 'emerald' },
                   { icon: <Calculator className="h-6 w-6 text-blue-500" />, title: 'Accounting', desc: 'Sync clinic revenue to Tally or QuickBooks', color: 'blue' },

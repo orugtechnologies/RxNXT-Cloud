@@ -13,8 +13,10 @@ const config: Config = {
         // Existing clinic theme colors (preserved)
         clinic: {
           navy: '#0f172a',
-          blue: '#1e3a8a',
-          emerald: '#10b981',
+          blue: '#2563eb', // RxNXT Logo Vibrant Royal Blue
+          blueDark: '#1d4ed8',
+          sky: '#0ea5e9',  // RxNXT Logo Sky Blue / Cyan
+          emerald: '#10b981', // RxNXT Logo Healthcare Green
           emeraldDark: '#059669',
           bg: '#f8fafc',
           card: '#ffffff',
