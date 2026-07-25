@@ -214,7 +214,7 @@ export default function ClinicDrugsPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center text-slate-500">Loading custom drugs...</div>
         ) : drugs.length === 0 ? (
