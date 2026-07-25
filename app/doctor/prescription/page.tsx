@@ -376,20 +376,20 @@ function PrescriptionWorkflowContent() {
 
             {/* Action Bar */}
             {patient && (
-              <div className="flex justify-end gap-4 animate-in fade-in">
+              <div className="sticky bottom-0 z-40 bg-white/95 backdrop-blur-md p-4 border-t border-slate-200 shadow-2xl md:static md:bg-transparent md:p-0 md:border-0 md:shadow-none flex flex-wrap justify-end gap-3 rounded-b-2xl md:rounded-none -mx-4 sm:mx-0 px-4 sm:px-0 mt-6 animate-in fade-in">
                 <button 
                   onClick={() => setShowSaveTemplate(true)}
                   disabled={medicines.length === 0}
-                  className="bg-white hover:bg-gray-50 text-clinic-navy border border-gray-200 font-bold py-3.5 px-6 rounded-xl shadow-sm hover:shadow transition-all duration-200 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-white hover:bg-gray-50 text-clinic-navy border border-gray-200 font-bold py-3 px-5 rounded-xl shadow-sm hover:shadow transition-all duration-200 flex items-center text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Layers className="mr-2 text-blue-500" size={20} /> Save as Group
+                  <Layers className="mr-2 text-blue-500" size={18} /> Save as Group
                 </button>
                 <button 
                   onClick={() => setShowReview(true)}
                   disabled={medicines.length === 0}
-                  className="bg-clinic-emerald hover:bg-clinic-emeraldDark text-white font-bold py-3.5 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-emerald-400"
+                  className="bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-emerald-400"
                 >
-                  <Eye className="mr-2" size={20} /> Review & Print Rx
+                  <Eye className="mr-2" size={18} /> Review & Print Rx
                 </button>
               </div>
             )}
