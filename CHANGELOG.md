@@ -1,5 +1,11 @@
 # RxNXT Changelog
 
+## [2026-07-26] - Prescription Speed Optimization, Mobile PWA & WhatsApp BYOD
+- **Prescription Workflow Acceleration**: Replaced rigid, long `<select>` dropdowns in `PrescriptionCart.tsx` with **1-Click Quick-Select Chips (Pills)** (`1-0-1`, `5 days`, `After meals`) and type-to-search datalist combo inputs. Added smart OPD default values when adding new medicines to eliminate mandatory field validation bottlenecks.
+- **Receptionist Front Desk Auto-Reset**: Implemented automatic clearing and reset of patient registration forms and search queries in `/receptionist/dashboard` immediately after registering a patient, readying the desk for the next person in line.
+- **Mobile PWA & Sticky Action Footer**: Added a complete Progressive Web App manifest (`public/manifest.json`), Apple iOS standalone metadata, and viewport scaling rules in `layout.tsx`. Pinned the prescription writer's action bar as a **sticky bottom footer** on smartphones so "Review & Print" / "WhatsApp" buttons are always accessible at the thumb without scrolling.
+- **WhatsApp Single-Device BYOD Guide**: Added a **"📥 Save QR Code to Photo Gallery"** button and step-by-step single-phone instructions in `/doctor/settings/whatsapp` so doctors using RxNXT directly on their mobile browser can seamlessly link their WhatsApp from their photo gallery.
+
 ## [2026-07-25] - Doctor Dashboard Redesign & Brand Color Parity
 - **Brand Theme & Color Parity**: Replaced legacy indigo and dull navy accents across the application with the vibrant **RxNXT Logo Palette** (`#2563eb` Royal Blue, `#0ea5e9` Sky Blue, `#10b981` Healthcare Emerald Green, and clean slate `#f8fafc`). Updated CSS variables in `globals.css` and extended theme colors in `tailwind.config.ts`.
 - **Doctor Command Center Redesign**: Streamlined the doctor's dashboard (`/doctor/dashboard`) by removing clutter and focusing on 3 core actions: Start Consultation, Search Patient, and View History.
