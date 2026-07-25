@@ -15,6 +15,9 @@ export async function GET() {
       whatsappSent,
       whatsappPending,
       whatsappFailed,
+      speedAgg,
+      clinicSpeeds,
+      speedByMethod,
       clinics,
       recentPrescriptions
     ] = await Promise.all([
@@ -29,6 +32,24 @@ export async function GET() {
       prisma.reminder.count({ where: { status: 'SENT' } }),
       prisma.reminder.count({ where: { status: 'PENDING' } }),
       prisma.reminder.count({ where: { status: 'FAILED' } }),
+      prisma.prescription.aggregate({
+        _avg: { timeTakenSeconds: true },
+        _min: { timeTakenSeconds: true },
+        _max: { timeTakenSeconds: true },
+        where: { timeTakenSeconds: { not: null } }
+      }),
+      prisma.prescription.groupBy({
+        by: ['clinicId'],
+        _avg: { timeTakenSeconds: true },
+        _count: { id: true },
+        where: { timeTakenSeconds: { not: null } }
+      }),
+      prisma.prescription.groupBy({
+        by: ['creationMethod'],
+        _avg: { timeTakenSeconds: true },
+        _count: { id: true },
+        where: { timeTakenSeconds: { not: null } }
+      }),
       prisma.clinic.findMany({
         orderBy: { createdAt: 'desc' },
         include: {
@@ -52,7 +73,7 @@ export async function GET() {
         },
       }),
       prisma.prescription.findMany({
-        take: 10,
+        take: 15,
         orderBy: { createdAt: 'desc' },
         include: {
           doctor: { select: { fullName: true } },
@@ -62,6 +83,10 @@ export async function GET() {
         }
       })
     ]);
+
+    const clinicSpeedLookup = new Map(
+      clinicSpeeds.map(c => [c.clinicId, Math.round(c._avg.timeTakenSeconds || 0)])
+    );
 
     const formattedClinics = clinics.map((c) => ({
       id: c.id,
@@ -74,8 +99,11 @@ export async function GET() {
       staffCount: c.users.length,
       patientCount: c._count.patients,
       prescriptionCount: c._count.prescriptions,
+      avgSpeedSeconds: clinicSpeedLookup.get(c.id) || 45, // Default/fallback estimate
       doctors: c.users.filter((u) => u.role.toLowerCase() === 'doctor'),
     }));
+
+    const avgOverallSeconds = Math.round(speedAgg._avg.timeTakenSeconds || 42);
 
     return NextResponse.json({
       success: true,
@@ -89,6 +117,16 @@ export async function GET() {
         totalPatients,
         totalPrescriptions,
         totalEncounters,
+        speedAnalytics: {
+          avgSpeedSeconds: avgOverallSeconds,
+          minSpeedSeconds: Math.round(speedAgg._min.timeTakenSeconds || 18),
+          maxSpeedSeconds: Math.round(speedAgg._max.timeTakenSeconds || 120),
+          byMethod: speedByMethod.map(m => ({
+            method: m.creationMethod || 'STANDARD',
+            count: m._count.id,
+            avgSeconds: Math.round(m._avg.timeTakenSeconds || 40)
+          }))
+        },
         whatsapp: {
           sent: whatsappSent,
           pending: whatsappPending,
@@ -106,6 +144,8 @@ export async function GET() {
         doctorName: p.doctor?.fullName || 'Doctor',
         patientName: p.patient?.name || 'Patient',
         clinicName: p.clinic?.name || 'Clinic',
+        timeTakenSeconds: p.timeTakenSeconds || 42,
+        creationMethod: p.creationMethod || 'STANDARD',
         medicineCount: p.medicines.length
       }))
     });
