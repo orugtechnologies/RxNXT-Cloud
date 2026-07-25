@@ -37,6 +37,10 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to create patient');
       const { data } = json;
+      setName('');
+      setPhone('');
+      setAge('');
+      setGender('Male');
       onSuccess(data);
     } catch (err) {
       console.error(err);

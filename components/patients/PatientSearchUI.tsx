@@ -11,11 +11,18 @@ export interface Patient {
   gender: string;
 }
 
-export default function PatientSearchUI({ onSelect, onAddNew }: { onSelect: (p: Patient) => void, onAddNew: (query: string) => void }) {
+export default function PatientSearchUI({ onSelect, onAddNew, clearTrigger }: { onSelect: (p: Patient) => void, onAddNew: (query: string) => void, clearTrigger?: any }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    if (clearTrigger !== undefined) {
+      setQuery('');
+      setResults([]);
+    }
+  }, [clearTrigger]);
 
   useEffect(() => {
     if (query.trim().length < 3) {
@@ -79,7 +86,7 @@ export default function PatientSearchUI({ onSelect, onAddNew }: { onSelect: (p: 
               </div>
             </li>
           ))}
-          <li onClick={() => onAddNew(query)} className="p-4 bg-gray-50 hover:bg-clinic-emerald/10 cursor-pointer text-clinic-emerald flex items-center font-bold border-t border-gray-100 transition-colors">
+          <li onClick={() => { onAddNew(query); setQuery(''); setResults([]); }} className="p-4 bg-gray-50 hover:bg-clinic-emerald/10 cursor-pointer text-clinic-emerald flex items-center font-bold border-t border-gray-100 transition-colors">
             <UserPlus size={18} className="mr-3" /> Add New Patient "{query}"
           </li>
         </ul>
