@@ -18,11 +18,45 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        // Look up user in local SQLite database
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email.toLowerCase().trim() },
+        const cleanEmail = credentials.email.toLowerCase().trim();
+
+        // Look up user in database
+        let user = await prisma.user.findUnique({
+          where: { email: cleanEmail },
           include: { clinic: true },
         });
+
+        // Auto-provision Super Admin if account is not in database yet
+        if (!user && cleanEmail === 'superadmin@rxnxt.com') {
+          try {
+            let clinic = await prisma.clinic.findFirst();
+            if (!clinic) {
+              clinic = await prisma.clinic.create({
+                data: {
+                  id: 'demo-clinic-001',
+                  name: 'RxNXT Demo Clinic',
+                  address: '123 Health Street, Bengaluru',
+                  phone: '+91 80 1234 5678',
+                  email: 'info@rxnxtdemo.com',
+                },
+              });
+            }
+            const hashedPassword = await bcrypt.hash('admin123', 12);
+            user = await prisma.user.create({
+              data: {
+                email: 'superadmin@rxnxt.com',
+                password: hashedPassword,
+                fullName: 'RxNXT Platform Executive Admin',
+                role: 'superadmin',
+                specialization: 'Platform Administration',
+                clinicId: clinic.id,
+              },
+              include: { clinic: true },
+            });
+          } catch (createErr) {
+            console.error('Error auto-provisioning Super Admin:', createErr);
+          }
+        }
 
         if (!user) return null;
 
@@ -37,7 +71,7 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           status: user.status,
           clinicId: user.clinicId,
-          clinicName: user.clinic.name,
+          clinicName: user.clinic?.name || 'RxNXT Platform',
         };
       },
     }),
