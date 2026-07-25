@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, ShieldCheck, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -29,7 +29,25 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
 
   let navGroups: { label: string, items: any[] }[] = [];
 
-  if (userRole === 'receptionist') {
+  if (userRole === 'superadmin' || userRole === 'super_admin') {
+    navGroups = [
+      {
+        label: 'Platform Executive Portal',
+        items: [
+          { name: 'Super Admin Portal', href: '/admin/superadmin', icon: ShieldCheck },
+          { name: 'Onboarded Clinics', href: '/admin/superadmin?tab=clinics', icon: Building2 },
+        ]
+      },
+      {
+        label: 'System & Integrations',
+        items: [
+          { name: 'WhatsApp BYOD Setup', href: '/doctor/settings/whatsapp', icon: WhatsAppIcon },
+          { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
+          { name: 'Global Drug Database', href: '/admin/drugs', icon: FilePlus },
+        ]
+      }
+    ];
+  } else if (userRole === 'receptionist') {
     navGroups = [
       {
         label: 'Overview',

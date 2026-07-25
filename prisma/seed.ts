@@ -49,6 +49,22 @@ async function main() {
   });
   console.log(`✅ Doctor: ${doctor.fullName} (${doctor.email})`);
 
+  // ── 2b. Super Admin ────────────────────────────────────────────
+  const superAdminPassword = await bcrypt.hash('admin123', 12);
+  const superAdmin = await prisma.user.upsert({
+    where: { email: 'superadmin@rxnxt.com' },
+    update: { role: 'superadmin' },
+    create: {
+      email: 'superadmin@rxnxt.com',
+      password: superAdminPassword,
+      fullName: 'RxNXT Platform Executive Admin',
+      role: 'superadmin',
+      specialization: 'Platform Administration',
+      clinicId: clinic.id,
+    },
+  });
+  console.log(`✅ Super Admin: ${superAdmin.fullName} (${superAdmin.email})`);
+
   // ── 3. Drugs ────────────────────────────────────────────────────
   const drugsPath = path.join(process.cwd(), 'data', 'drugs.json');
   const drugsData = JSON.parse(fs.readFileSync(drugsPath, 'utf-8'));

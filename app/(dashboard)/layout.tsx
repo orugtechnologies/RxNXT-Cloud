@@ -59,6 +59,10 @@ export default function DashboardLayout({
       router.push('/nurse/dashboard');
       return null;
     }
+    if ((user.role === 'superadmin' || user.role === 'super_admin') && !path.startsWith('/admin') && !path.startsWith('/doctor/settings/whatsapp')) {
+      router.push('/admin/superadmin');
+      return null;
+    }
   }
 
   const toggleSidebar = () => {

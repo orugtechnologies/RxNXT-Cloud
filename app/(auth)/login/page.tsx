@@ -90,8 +90,9 @@ export default function LoginPage() {
           )}
 
           {/* Demo credentials hint */}
-          <div className="bg-blue-50 text-blue-700 text-xs p-3 rounded-md border border-blue-100">
-            <strong>Demo login:</strong> doctor@rxnxt.com &nbsp;/&nbsp; doctor123
+          <div className="bg-blue-50/80 text-blue-800 text-xs p-3.5 rounded-xl border border-blue-200/80 space-y-1">
+            <p><strong>Doctor Login:</strong> doctor@rxnxt.com &nbsp;/&nbsp; doctor123</p>
+            <p><strong>Super Admin Login:</strong> superadmin@rxnxt.com &nbsp;/&nbsp; admin123</p>
           </div>
 
           <Button
