@@ -143,9 +143,9 @@ function PrescriptionWorkflowContent() {
       dosage_form: drug.dosage_form,
       strength: drug.strength,
       route: drug.route,
-      frequency: '',
-      duration: '',
-      instructions: ''
+      frequency: '1-0-1',
+      duration: '5 days',
+      instructions: 'After meals'
     };
     setMedicines([...medicines, newMed]);
   };

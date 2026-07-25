@@ -94,6 +94,10 @@ const INSTRUCTIONS_OPTIONS = [
   { label: 'Shake well before use', value: 'Shake well before use' },
 ];
 
+const QUICK_FREQUENCIES = ['1-0-1', '1-1-1', '1-0-0', '0-0-1', 'OD', 'SOS'];
+const QUICK_DURATIONS = ['3 days', '5 days', '7 days', '10 days', '15 days', '1 month'];
+const QUICK_INSTRUCTIONS = ['After meals', 'Before meals', 'At bedtime', 'SOS'];
+
 export default function PrescriptionCart({ medicines, onUpdate, onRemove }: CartProps) {
   if (medicines.length === 0) return (
     <div className="mt-8 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center bg-gray-50/50">
@@ -136,48 +140,123 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
               </button>
             </div>
 
-            {/* Dropdowns Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 ml-7">
+            {/* Smart Inputs & Quick-Select Chips Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ml-0 sm:ml-7 mt-2">
               {/* Frequency */}
-              <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1.5 tracking-wider">Frequency</label>
-                <select
-                  value={med.frequency}
-                  onChange={(e) => onUpdate(med.id, { frequency: e.target.value })}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-800 font-medium focus:ring-2 focus:ring-clinic-emerald focus:border-clinic-emerald outline-none transition-shadow shadow-sm hover:border-gray-400"
-                >
-                  {FREQUENCY_OPTIONS.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Frequency *</label>
+                  <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {QUICK_FREQUENCIES.map(q => (
+                    <button
+                      key={q}
+                      type="button"
+                      onClick={() => onUpdate(med.id, { frequency: q })}
+                      className={`text-[11px] font-bold px-2 py-1 rounded-md transition-all shadow-2xs ${
+                        med.frequency === q
+                          ? 'bg-[#2563eb] text-white ring-2 ring-[#2563eb]/20'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#2563eb] hover:border-blue-200'
+                      }`}
+                    >
+                      {q}
+                    </button>
                   ))}
-                </select>
+                </div>
+                <div className="relative pt-1">
+                  <input
+                    type="text"
+                    list={`freq-list-${med.id}`}
+                    value={med.frequency}
+                    onChange={(e) => onUpdate(med.id, { frequency: e.target.value })}
+                    placeholder="Type or pick from list..."
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 font-bold focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb] outline-none transition-shadow shadow-xs"
+                  />
+                  <datalist id={`freq-list-${med.id}`}>
+                    {FREQUENCY_OPTIONS.filter(o => o.value).map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </datalist>
+                </div>
               </div>
 
               {/* Duration */}
-              <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1.5 tracking-wider">Duration</label>
-                <select
-                  value={med.duration}
-                  onChange={(e) => onUpdate(med.id, { duration: e.target.value })}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-800 font-medium focus:ring-2 focus:ring-clinic-emerald focus:border-clinic-emerald outline-none transition-shadow shadow-sm hover:border-gray-400"
-                >
-                  {DURATION_OPTIONS.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Duration *</label>
+                  <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {QUICK_DURATIONS.map(q => (
+                    <button
+                      key={q}
+                      type="button"
+                      onClick={() => onUpdate(med.id, { duration: q })}
+                      className={`text-[11px] font-bold px-2 py-1 rounded-md transition-all shadow-2xs ${
+                        med.duration === q
+                          ? 'bg-[#2563eb] text-white ring-2 ring-[#2563eb]/20'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#2563eb] hover:border-blue-200'
+                      }`}
+                    >
+                      {q}
+                    </button>
                   ))}
-                </select>
+                </div>
+                <div className="relative pt-1">
+                  <input
+                    type="text"
+                    list={`dur-list-${med.id}`}
+                    value={med.duration}
+                    onChange={(e) => onUpdate(med.id, { duration: e.target.value })}
+                    placeholder="Type or pick from list..."
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 font-bold focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb] outline-none transition-shadow shadow-xs"
+                  />
+                  <datalist id={`dur-list-${med.id}`}>
+                    {DURATION_OPTIONS.filter(o => o.value).map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </datalist>
+                </div>
               </div>
 
               {/* Instructions */}
-              <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1.5 tracking-wider">Instructions</label>
-                <select
-                  value={med.instructions}
-                  onChange={(e) => onUpdate(med.id, { instructions: e.target.value })}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-800 font-medium focus:ring-2 focus:ring-clinic-emerald focus:border-clinic-emerald outline-none transition-shadow shadow-sm hover:border-gray-400"
-                >
-                  {INSTRUCTIONS_OPTIONS.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Instructions</label>
+                  <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {QUICK_INSTRUCTIONS.map(q => (
+                    <button
+                      key={q}
+                      type="button"
+                      onClick={() => onUpdate(med.id, { instructions: q })}
+                      className={`text-[11px] font-bold px-2 py-1 rounded-md transition-all shadow-2xs ${
+                        med.instructions === q
+                          ? 'bg-[#2563eb] text-white ring-2 ring-[#2563eb]/20'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#2563eb] hover:border-blue-200'
+                      }`}
+                    >
+                      {q}
+                    </button>
                   ))}
-                </select>
+                </div>
+                <div className="relative pt-1">
+                  <input
+                    type="text"
+                    list={`inst-list-${med.id}`}
+                    value={med.instructions}
+                    onChange={(e) => onUpdate(med.id, { instructions: e.target.value })}
+                    placeholder="Type or pick from list..."
+                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 font-bold focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb] outline-none transition-shadow shadow-xs"
+                  />
+                  <datalist id={`inst-list-${med.id}`}>
+                    {INSTRUCTIONS_OPTIONS.filter(o => o.value).map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </datalist>
+                </div>
               </div>
             </div>
           </div>
