@@ -29,7 +29,12 @@ async function sendViaMicroservice(formattedPhone: string, messageBody: string, 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.warn('[WhatsApp Microservice Error]', errorData);
-      throw new Error(errorData.error || 'Failed to send WhatsApp message via microservice');
+      
+      let errMsg = errorData.error || 'Failed to send WhatsApp message via microservice';
+      if (errorData.details) {
+        errMsg += ` (Details: ${errorData.details})`;
+      }
+      throw new Error(errMsg);
     }
 
     const data = await response.json();
