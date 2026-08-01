@@ -32,8 +32,19 @@ export default function LoginPage() {
       return;
     }
 
+    // Check if authenticated user is a super admin
+    try {
+      const res = await fetch('/api/auth/session');
+      const session = await res.json();
+      if (session?.user?.role === 'super_admin') {
+        window.location.href = '/superadmin/login?notice=super_admin_moved';
+        return;
+      }
+    } catch (e) {
+      // Fall through to default doctor dashboard redirect
+    }
 
-    // Successful login — hard redirect so middleware re-evaluates session
+    // Successful doctor login — hard redirect so middleware re-evaluates session
     window.location.href = '/doctor/dashboard?login=success';
   };
 
@@ -43,7 +54,7 @@ export default function LoginPage() {
         <form className="space-y-6" onSubmit={handleLogin}>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-700">Email Address</Label>
+              <Label htmlFor="email" className="text-slate-700">Doctor / Staff Email</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <Mail className="h-5 w-5" />
@@ -92,7 +103,7 @@ export default function LoginPage() {
           {/* Demo credentials hint */}
           <div className="bg-blue-50/80 text-blue-800 text-xs p-3.5 rounded-xl border border-blue-200/80 space-y-1">
             <p><strong>Doctor Login:</strong> doctor@rxnxt.com &nbsp;/&nbsp; doctor123</p>
-            <p><strong>Super Admin Login:</strong> superadmin@rxnxt.com &nbsp;/&nbsp; admin123</p>
+            <p><strong>Super Admin Portal:</strong> superadmin@rxnxt.com &nbsp;/&nbsp; admin123 (via <Link href="/superadmin/login" className="underline font-semibold text-indigo-600 hover:text-indigo-800">Super Admin Login</Link>)</p>
           </div>
 
           <Button
@@ -104,18 +115,26 @@ export default function LoginPage() {
               <Loader2 className="h-5 w-5 animate-spin mr-2" />
             ) : (
               <>
-                Sign In to Workspace
+                Sign In to Doctor Workspace
                 <ArrowRight className="ml-2 h-5 w-5" />
               </>
             )}
           </Button>
         </form>
 
-        <div className="mt-8 text-center text-sm text-slate-500">
-          Don&apos;t have an account?{' '}
-          <Link href="/register" className="font-medium text-clinic-emerald hover:text-clinic-emeraldDark transition-colors">
-            Register your clinic
-          </Link>
+        <div className="mt-8 text-center text-sm text-slate-500 space-y-2">
+          <div>
+            Don&apos;t have an account?{' '}
+            <Link href="/register" className="font-medium text-clinic-emerald hover:text-clinic-emeraldDark transition-colors">
+              Register your clinic
+            </Link>
+          </div>
+          <div className="pt-2 border-t border-slate-100 text-xs text-slate-400">
+            Platform Admin?{' '}
+            <Link href="/superadmin/login" className="font-medium text-slate-600 hover:text-slate-900 underline transition-colors">
+              Super Admin Portal Login
+            </Link>
+          </div>
         </div>
       </CardContent>
     </Card>

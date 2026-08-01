@@ -51,6 +51,10 @@ export default function DashboardLayout({
   // Role-based routing: ensure non-doctors go to their respective dashboards
   if (typeof window !== 'undefined' && user.status !== 'PENDING') {
     const path = window.location.pathname;
+    if (user.role === 'super_admin') {
+      router.push('/superadmin/dashboard');
+      return null;
+    }
     if (user.role === 'receptionist' && !path.startsWith('/receptionist')) {
       router.push('/receptionist/dashboard');
       return null;

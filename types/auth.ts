@@ -36,7 +36,7 @@ export interface SessionUser {
 
 // Role-based dashboard redirect paths
 export const ROLE_DASHBOARDS: Record<UserRole, string> = {
-  super_admin: '/admin/dashboard',
+  super_admin: '/superadmin/dashboard',
   clinic_admin: '/admin/dashboard',
   doctor: '/doctor/dashboard',
 };

@@ -29,25 +29,7 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
 
   let navGroups: { label: string, items: any[] }[] = [];
 
-  if (userRole === 'superadmin' || userRole === 'super_admin') {
-    navGroups = [
-      {
-        label: 'Platform Executive Portal',
-        items: [
-          { name: 'Super Admin Portal', href: '/admin/superadmin', icon: ShieldCheck },
-          { name: 'Onboarded Clinics', href: '/admin/superadmin?tab=clinics', icon: Building2 },
-        ]
-      },
-      {
-        label: 'System & Integrations',
-        items: [
-          { name: 'WhatsApp BYOD Setup', href: '/doctor/settings/whatsapp', icon: WhatsAppIcon },
-          { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
-          { name: 'Global Drug Database', href: '/admin/drugs', icon: FilePlus },
-        ]
-      }
-    ];
-  } else if (userRole === 'receptionist') {
+  if (userRole === 'receptionist') {
     navGroups = [
       {
         label: 'Overview',
@@ -85,17 +67,16 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
       }
     ];
 
-    if (userRole === 'clinic_admin' || userRole === 'super_admin') {
-    navGroups.push({
-      label: 'Platform & Admin',
-      items: [
-        { name: 'Super Admin Portal', href: '/admin/superadmin', icon: ShieldCheck },
-        { name: 'Manage Doctors', href: '/admin/team', icon: Users },
-        { name: 'Support Staff', href: '/admin/staff', icon: Users },
-        { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
-        { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
-      ]
-    });
+    if (userRole === 'clinic_admin') {
+      navGroups.push({
+        label: 'Administration',
+        items: [
+          { name: 'Manage Doctors', href: '/admin/team', icon: Users },
+          { name: 'Support Staff', href: '/admin/staff', icon: Users },
+          { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
+          { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
+        ]
+      });
     }
   }
 
@@ -168,8 +149,6 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
 
 export default function AppSidebar({ userRole, userName, collapsed, onToggle }: AppSidebarProps) {
   const { signOut } = useAuth();
-
-
 
   return (
     <div className={cn(
