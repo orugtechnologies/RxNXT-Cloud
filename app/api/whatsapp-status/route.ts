@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
+import { getAuthenticatedUser } from '@/lib/auth-server';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    const user = await getAuthenticatedUser();
+    const clinicId = user?.clinicId || 'default';
+
     const MICROSERVICE_URL = process.env.WHATSAPP_MICROSERVICE_URL || 'https://rxnxt-whatsapp-service.onrender.com';
-    const response = await fetch(`${MICROSERVICE_URL}/api/whatsapp/status?t=${Date.now()}`, {
+    const response = await fetch(`${MICROSERVICE_URL}/api/whatsapp/status?clinicId=${clinicId}&t=${Date.now()}`, {
       cache: 'no-store',
       headers: {
         'Accept': 'application/json',

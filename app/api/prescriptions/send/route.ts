@@ -42,7 +42,8 @@ export async function POST(request: Request) {
       prescription.patient.name,
       prescription.clinic.name,
       pdfDownloadUrl,
-      pdfBase64
+      pdfBase64,
+      prescription.clinicId
     );
 
     return NextResponse.json({ success: true, result });
