@@ -23,7 +23,7 @@ export default function WhatsAppSettingsPage() {
     // Poll the microservice every 3 seconds to get the latest status and QR code
     const pollStatus = async () => {
       try {
-        const response = await fetch('https://rxnxt-whatsapp-service.onrender.com/api/whatsapp/status');
+        const response = await fetch(`https://rxnxt-whatsapp-service.onrender.com/api/whatsapp/status?t=${Date.now()}`);
         if (!response.ok) throw new Error('Microservice offline');
         
         const data = await response.json();
