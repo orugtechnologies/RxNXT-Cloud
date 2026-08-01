@@ -15,6 +15,7 @@ interface QueueItem {
   waiting_since: string;
   status: string;
   tokenNumber: number | null;
+  tokenNumberDisplay?: string | null;
 }
 
 interface ClinicQueueProps {
@@ -135,9 +136,9 @@ export default function ClinicQueue({ refreshTrigger = 0 }: ClinicQueueProps) {
                   <tr key={item.id} className={`hover:bg-slate-50/50 transition-colors ${(isAway || isSkipped || isCompleted) ? 'opacity-60' : ''}`}>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        {item.tokenNumber ? (
-                          <div className={`h-9 w-9 rounded-md flex items-center justify-center font-bold text-sm ${isWaiting ? 'bg-[#2563eb] text-white shadow-sm' : 'bg-slate-200 text-slate-600'}`}>
-                            #{item.tokenNumber}
+                        {item.tokenNumberDisplay ? (
+                          <div className={`h-11 px-2 rounded-md flex items-center justify-center font-bold text-sm ${isWaiting ? 'bg-[#2563eb] text-white shadow-sm' : 'bg-slate-200 text-slate-600'}`}>
+                            {item.tokenNumberDisplay}
                           </div>
                         ) : (
                           <div className={`h-9 w-9 rounded-full flex items-center justify-center font-bold text-xs ${isWaiting ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}`}>

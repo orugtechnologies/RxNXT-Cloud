@@ -148,17 +148,25 @@ export async function GET() {
     }));
 
     // Format Queue
-    const formattedQueue = queueItems.map((q) => ({
-      id: q.id,
-      patient_id: q.patientId,
-      patient_name: q.patient.name,
-      patient_phone: q.patient.phone,
-      patient_age: q.patient.age,
-      patient_gender: q.patient.gender,
-      waiting_since: q.createdAt.toISOString(),
-      status: q.status,
-      tokenNumber: q.tokenNumber,
-    }));
+    const formattedQueue = queueItems.map((q) => {
+      const dd = String(q.createdAt.getDate()).padStart(2, '0');
+      const mm = String(q.createdAt.getMonth() + 1).padStart(2, '0');
+      const seq = q.tokenNumber ? String(q.tokenNumber).padStart(2, '0') : '';
+      const tokenNumberDisplay = seq ? `${dd}${mm}${seq}` : null;
+
+      return {
+        id: q.id,
+        patient_id: q.patientId,
+        patient_name: q.patient.name,
+        patient_phone: q.patient.phone,
+        patient_age: q.patient.age,
+        patient_gender: q.patient.gender,
+        waiting_since: q.createdAt.toISOString(),
+        status: q.status,
+        tokenNumber: q.tokenNumber,
+        tokenNumberDisplay,
+      };
+    });
 
     return NextResponse.json({
       stats: {

@@ -14,6 +14,7 @@ interface QueueItem {
   waiting_since: string;
   status: string;
   tokenNumber: number | null;
+  tokenNumberDisplay?: string | null;
 }
 
 export default function DoctorQueue({
@@ -118,9 +119,9 @@ export default function DoctorQueue({
             >
               {/* Patient Info */}
               <div className="flex items-center space-x-4">
-                {item.tokenNumber ? (
-                  <div className="w-14 h-14 bg-gradient-to-br from-[#2563eb] to-[#1e40af] text-white rounded-xl flex items-center justify-center font-black text-xl shadow-md shrink-0 border border-blue-600">
-                    #{item.tokenNumber}
+                {item.tokenNumberDisplay ? (
+                  <div className="h-14 px-3 bg-gradient-to-br from-[#2563eb] to-[#1e40af] text-white rounded-xl flex items-center justify-center font-black text-xl shadow-md shrink-0 border border-blue-600">
+                    {item.tokenNumberDisplay}
                   </div>
                 ) : (
                   <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-clinic-blue text-white rounded-xl flex items-center justify-center font-bold text-2xl shadow-sm shrink-0">
