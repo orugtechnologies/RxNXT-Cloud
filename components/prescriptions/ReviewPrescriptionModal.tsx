@@ -62,7 +62,11 @@ export default function ReviewPrescriptionModal({
       }
     } catch (err: any) {
       console.error(err);
-      alert(err.message || 'Error sending WhatsApp message');
+      if (err.message === 'WhatsApp is not connected yet') {
+        alert('WhatsApp is still connecting in the background (or the microservice is waking up). Please wait 15-20 seconds and click Send again.');
+      } else {
+        alert(err.message || 'Error sending WhatsApp message');
+      }
     } finally {
       setIsSending(false);
     }
