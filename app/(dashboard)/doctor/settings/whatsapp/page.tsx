@@ -87,6 +87,9 @@ export default function WhatsAppSettingsPage() {
                 <p className="text-sm text-slate-500 max-w-sm mx-auto">
                   If using a PC/Laptop, open WhatsApp on your phone $\rightarrow$ <strong>Linked Devices</strong> $\rightarrow$ point your camera at this screen.
                 </p>
+                <div className="mt-4 p-3 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-sm font-medium animate-pulse">
+                  ⚠️ After scanning, please wait on this page (up to 30 seconds) until you see the green "Successfully Connected" screen.
+                </div>
               </div>
 
               {/* Single Phone Helper Box */}
