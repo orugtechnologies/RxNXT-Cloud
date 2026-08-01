@@ -115,7 +115,7 @@ export default function LoginPage() {
               <Loader2 className="h-5 w-5 animate-spin mr-2" />
             ) : (
               <>
-                Sign In to Doctor Workspace
+                Sign In
                 <ArrowRight className="ml-2 h-5 w-5" />
               </>
             )}
