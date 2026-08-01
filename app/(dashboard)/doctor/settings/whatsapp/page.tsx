@@ -32,7 +32,7 @@ export default function WhatsAppSettingsPage() {
         setError(null);
       } catch (err) {
         setStatus('error');
-        setError('Cannot connect to WhatsApp microservice. Please ensure it is running on port 3001.');
+        setError('Cannot connect to the Render WhatsApp microservice. It may be offline or restarting. Please wait a moment...');
       }
     };
 
