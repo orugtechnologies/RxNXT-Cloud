@@ -84,6 +84,26 @@ export async function GET() {
       }),
     ]);
 
+    // Auto-backfill missing token numbers for Doctor's queue
+    const queueWithoutToken = queueItems.filter(q => q.tokenNumber === null);
+    if (queueWithoutToken.length > 0) {
+      let maxToken = await prisma.queueItem.aggregate({
+        where: { clinicId, createdAt: { gte: today } },
+        _max: { tokenNumber: true }
+      });
+      let currentMax = maxToken._max.tokenNumber || 0;
+      
+      const sortedWithoutToken = queueWithoutToken.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      for (const item of sortedWithoutToken) {
+        currentMax++;
+        await prisma.queueItem.update({
+          where: { id: item.id },
+          data: { tokenNumber: currentMax }
+        });
+        item.tokenNumber = currentMax;
+      }
+    }
+
     // Format recent prescriptions
     const formattedRecentRx = recentPrescriptions.map((rx) => ({
       id: rx.id,
