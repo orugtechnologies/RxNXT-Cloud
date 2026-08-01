@@ -51,7 +51,7 @@ export default function DashboardLayout({
   // Role-based routing: ensure non-doctors go to their respective dashboards
   if (typeof window !== 'undefined' && user.status !== 'PENDING') {
     const path = window.location.pathname;
-    if (user.role === 'super_admin') {
+    if (user.role === 'super_admin' || user.role === 'superadmin') {
       router.push('/superadmin/dashboard');
       return null;
     }
@@ -61,10 +61,6 @@ export default function DashboardLayout({
     }
     if (user.role === 'nurse' && !path.startsWith('/nurse')) {
       router.push('/nurse/dashboard');
-      return null;
-    }
-    if ((user.role === 'superadmin' || user.role === 'super_admin') && !path.startsWith('/admin') && !path.startsWith('/doctor/settings/whatsapp')) {
-      router.push('/admin/superadmin');
       return null;
     }
   }
