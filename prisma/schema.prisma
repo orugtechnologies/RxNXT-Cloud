@@ -263,16 +263,17 @@ model Reminder {
 // QUEUE ITEM (Patient waiting for Doctor)
 // ─────────────────────────────────────────────
 model QueueItem {
-  id        String   @id @default(cuid())
-  clinicId  String
-  clinic    Clinic   @relation(fields: [clinicId], references: [id])
-  doctorId  String
-  doctor    User     @relation(fields: [doctorId], references: [id])
-  patientId String
-  patient   Patient  @relation(fields: [patientId], references: [id])
-  status    String   @default("WAITING") // WAITING, COMPLETED
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  clinicId    String
+  clinic      Clinic   @relation(fields: [clinicId], references: [id])
+  doctorId    String
+  doctor      User     @relation(fields: [doctorId], references: [id])
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  status      String   @default("WAITING") // WAITING, AWAY, SKIPPED, COMPLETED
+  tokenNumber Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([clinicId, doctorId, status, createdAt])
   @@index([patientId])

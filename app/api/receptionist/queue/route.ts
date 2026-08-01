@@ -34,6 +34,7 @@ export async function GET() {
       doctor_specialization: q.doctor.specialization,
       waiting_since: q.createdAt.toISOString(),
       status: q.status,
+      tokenNumber: q.tokenNumber,
     }));
 
     return NextResponse.json({ success: true, data: formattedQueue });

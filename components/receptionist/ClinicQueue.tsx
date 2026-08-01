@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { RefreshCw, Clock, CheckCircle2, User, Stethoscope, Phone } from 'lucide-react';
+import { RefreshCw, Clock, CheckCircle2, User, Stethoscope, Phone, LogOut, ArrowLeftRight, XCircle } from 'lucide-react';
 
 interface QueueItem {
   id: string;
@@ -14,6 +14,7 @@ interface QueueItem {
   doctor_specialization: string | null;
   waiting_since: string;
   status: string;
+  tokenNumber: number | null;
 }
 
 interface ClinicQueueProps {
@@ -39,6 +40,25 @@ export default function ClinicQueue({ refreshTrigger = 0 }: ClinicQueueProps) {
       setError('Could not load the active queue.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateStatus = async (id: string, newStatus: string) => {
+    // Optimistic UI update
+    setQueue(prev => prev.map(item => item.id === id ? { ...item, status: newStatus } : item));
+    try {
+      const res = await fetch(`/api/queue/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (!res.ok) {
+        throw new Error('Failed to update status');
+      }
+    } catch (err) {
+      console.error(err);
+      // Revert on failure
+      fetchQueue();
     }
   };
 
@@ -99,22 +119,31 @@ export default function ClinicQueue({ refreshTrigger = 0 }: ClinicQueueProps) {
                 <th className="px-5 py-3">Patient</th>
                 <th className="px-5 py-3">Contact</th>
                 <th className="px-5 py-3">Assigned Doctor</th>
-                <th className="px-5 py-3">Wait Time</th>
                 <th className="px-5 py-3">Status</th>
+                <th className="px-5 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100/80 bg-white">
               {queue.map((item) => {
                 const isWaiting = item.status === 'WAITING';
+                const isAway = item.status === 'AWAY';
+                const isSkipped = item.status === 'SKIPPED';
+                const isCompleted = item.status === 'COMPLETED';
                 const waitTimeMins = Math.floor((Date.now() - new Date(item.waiting_since).getTime()) / 60000);
                 
                 return (
-                  <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                  <tr key={item.id} className={`hover:bg-slate-50/50 transition-colors ${(isAway || isSkipped || isCompleted) ? 'opacity-60' : ''}`}>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs ${isWaiting ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                          {item.patient_name.charAt(0).toUpperCase()}
-                        </div>
+                        {item.tokenNumber ? (
+                          <div className={`h-9 w-9 rounded-md flex items-center justify-center font-bold text-sm ${isWaiting ? 'bg-[#2563eb] text-white shadow-sm' : 'bg-slate-200 text-slate-600'}`}>
+                            #{item.tokenNumber}
+                          </div>
+                        ) : (
+                          <div className={`h-9 w-9 rounded-full flex items-center justify-center font-bold text-xs ${isWaiting ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}`}>
+                            {item.patient_name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
                         <div>
                           <div className="font-semibold text-slate-900">{item.patient_name}</div>
                           <div className="text-xs text-slate-500">
@@ -141,24 +170,57 @@ export default function ClinicQueue({ refreshTrigger = 0 }: ClinicQueueProps) {
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <div className="flex items-center gap-1.5 font-medium text-slate-600">
-                        <Clock size={14} className={isWaiting && waitTimeMins > 15 ? 'text-orange-500' : 'text-slate-400'} />
-                        <span className={isWaiting && waitTimeMins > 15 ? 'text-orange-600' : ''}>
-                          {isWaiting ? `${waitTimeMins} mins` : '-'}
+                      {isWaiting && (
+                        <div className="flex flex-col gap-1">
+                          <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-700 border border-orange-200/60 px-2.5 py-1 rounded-md text-xs font-semibold w-max">
+                            <span className="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                            Waiting
+                          </span>
+                          <span className="text-[10px] text-slate-400 ml-1">
+                            {waitTimeMins} mins
+                          </span>
+                        </div>
+                      )}
+                      {isAway && (
+                        <span className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-md text-xs font-semibold">
+                          <LogOut size={12} />
+                          Stepped Out
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4">
-                      {isWaiting ? (
-                        <span className="inline-flex items-center gap-1.5 bg-orange-50 text-orange-700 border border-orange-200/60 px-2.5 py-1 rounded-md text-xs font-semibold">
-                          <span className="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse"></span>
-                          Waiting
+                      )}
+                      {isSkipped && (
+                        <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-md text-xs font-semibold">
+                          <XCircle size={12} />
+                          Skipped
                         </span>
-                      ) : (
+                      )}
+                      {isCompleted && (
                         <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 px-2.5 py-1 rounded-md text-xs font-semibold">
                           <CheckCircle2 size={12} className="text-emerald-600" />
                           Completed
                         </span>
+                      )}
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      {!isCompleted && (
+                        <div className="flex items-center justify-end gap-2">
+                          {isWaiting && (
+                            <button
+                              onClick={() => updateStatus(item.id, 'AWAY')}
+                              className="text-[11px] font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-100 px-2 py-1 rounded transition-colors"
+                            >
+                              Mark Away
+                            </button>
+                          )}
+                          {(isAway || isSkipped) && (
+                            <button
+                              onClick={() => updateStatus(item.id, 'WAITING')}
+                              className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-50 border border-blue-200 bg-white px-2 py-1 rounded transition-colors flex items-center gap-1"
+                            >
+                              <ArrowLeftRight size={10} />
+                              Mark Returned
+                            </button>
+                          )}
+                        </div>
                       )}
                     </td>
                   </tr>

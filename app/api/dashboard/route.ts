@@ -137,6 +137,7 @@ export async function GET() {
       patient_gender: q.patient.gender,
       waiting_since: q.createdAt.toISOString(),
       status: q.status,
+      tokenNumber: q.tokenNumber,
     }));
 
     return NextResponse.json({

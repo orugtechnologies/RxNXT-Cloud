@@ -36,12 +36,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, data: updatedItem });
     }
 
+    const todayCount = await prisma.queueItem.count({
+      where: {
+        clinicId: user.clinicId,
+        createdAt: { gte: today },
+      }
+    });
+    const tokenNumber = todayCount + 1;
+
     const newQueueItem = await prisma.queueItem.create({
       data: {
         clinicId: user.clinicId,
         doctorId,
         patientId,
         status: 'WAITING',
+        tokenNumber,
       },
     });
 
