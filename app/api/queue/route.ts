@@ -28,10 +28,18 @@ export async function POST(request: Request) {
     });
 
     if (existingQueueItem) {
-      // Update it to the new doctor if it exists
+      let currentToken = existingQueueItem.tokenNumber;
+      if (!currentToken) {
+        const todayCount = await prisma.queueItem.count({
+          where: { clinicId: user.clinicId, createdAt: { gte: today } }
+        });
+        currentToken = todayCount + 1;
+      }
+
+      // Update it to the new doctor and assign token if missing
       const updatedItem = await prisma.queueItem.update({
         where: { id: existingQueueItem.id },
-        data: { doctorId },
+        data: { doctorId, tokenNumber: currentToken },
       });
       return NextResponse.json({ success: true, data: updatedItem });
     }
