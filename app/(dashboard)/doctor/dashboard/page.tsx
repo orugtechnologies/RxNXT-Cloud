@@ -41,11 +41,11 @@ export default function DashboardPage() {
 
   if (showFlash) {
     return (
-      <div className="fixed inset-0 z-[100] bg-green-50 flex flex-col items-center justify-center p-4 animate-fade-in">
+      <div className="fixed inset-0 z-[100] bg-slate-800 flex flex-col items-center justify-center p-4 animate-fade-in">
         <div className="mb-8 animate-pulse text-clinic-blue">
           <Stethoscope size={120} strokeWidth={2} />
         </div>
-        <h1 className="text-clinic-navy text-3xl md:text-5xl font-bold animate-pulse text-center max-w-4xl leading-tight">
+        <h1 className="text-white text-3xl md:text-5xl font-bold animate-pulse text-center max-w-4xl leading-tight">
           Hello Doctor, Welcome to another day of saving Lives
         </h1>
       </div>
