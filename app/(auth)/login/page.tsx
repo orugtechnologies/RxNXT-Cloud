@@ -36,7 +36,8 @@ export default function LoginPage() {
     try {
       const res = await fetch('/api/auth/session');
       const session = await res.json();
-      if (session?.user?.role === 'super_admin') {
+      const role = session?.user?.role?.toLowerCase().replace('_', '');
+      if (role === 'superadmin') {
         window.location.href = '/superadmin/login?notice=super_admin_moved';
         return;
       }

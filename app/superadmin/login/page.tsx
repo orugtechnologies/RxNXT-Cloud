@@ -37,11 +37,12 @@ function SuperAdminLoginContent() {
       return;
     }
 
-    // Verify user role is super_admin
+    // Verify user role is super_admin or superadmin
     try {
       const res = await fetch('/api/auth/session');
       const session = await res.json();
-      if (session?.user?.role !== 'super_admin') {
+      const role = session?.user?.role?.toLowerCase().replace('_', '');
+      if (role !== 'superadmin') {
         setError('Access denied: Account is not authorized for Super Admin Portal access.');
         setLoading(false);
         return;
