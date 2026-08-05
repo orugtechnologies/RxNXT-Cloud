@@ -65,7 +65,7 @@ export default function LoginPage() {
                   type="email"
                   required
                   className="pl-10 py-6 bg-slate-50/50 focus:bg-white transition-colors"
-                  placeholder="doctor@clinic.com"
+                  placeholder="user@domain.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
