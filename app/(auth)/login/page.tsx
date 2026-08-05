@@ -118,19 +118,11 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <div className="mt-8 text-center text-sm text-slate-500 space-y-2">
-          <div>
-            Don&apos;t have an account?{' '}
-            <Link href="/register" className="font-medium text-clinic-emerald hover:text-clinic-emeraldDark transition-colors">
-              Register your clinic
-            </Link>
-          </div>
-          <div className="pt-2 border-t border-slate-100 text-xs text-slate-400">
-            Platform Admin?{' '}
-            <Link href="/superadmin/login" className="font-medium text-slate-600 hover:text-slate-900 underline transition-colors">
-              Super Admin Portal Login
-            </Link>
-          </div>
+        <div className="mt-8 text-center text-xs text-slate-400">
+          Platform Admin?{' '}
+          <Link href="/superadmin/login" className="font-medium text-slate-600 hover:text-slate-900 underline transition-colors">
+            Super Admin Portal Login
+          </Link>
         </div>
       </CardContent>
     </Card>
