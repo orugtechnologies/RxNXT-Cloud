@@ -100,11 +100,6 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Demo credentials hint */}
-          <div className="bg-blue-50/80 text-blue-800 text-xs p-3.5 rounded-xl border border-blue-200/80 space-y-1">
-            <p><strong>Doctor Login:</strong> doctor@rxnxt.com &nbsp;/&nbsp; doctor123</p>
-            <p><strong>Super Admin Portal:</strong> superadmin@rxnxt.com &nbsp;/&nbsp; admin123 (via <Link href="/superadmin/login" className="underline font-semibold text-indigo-600 hover:text-indigo-800">Super Admin Login</Link>)</p>
-          </div>
 
           <Button
             type="submit"
