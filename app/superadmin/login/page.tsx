@@ -97,7 +97,7 @@ function SuperAdminLoginContent() {
                       type="email"
                       required
                       className="pl-10 py-6 bg-slate-950/60 border-slate-800 text-white placeholder-slate-500 focus:border-indigo-500 focus:ring-indigo-500/20"
-                      placeholder="superadmin@rxnxt.com"
+                      placeholder="admin@domain.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={loading}
