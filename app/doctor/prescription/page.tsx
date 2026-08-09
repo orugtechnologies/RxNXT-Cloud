@@ -27,6 +27,7 @@ function PrescriptionWorkflowContent() {
   }, []);
 
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [patientEncounters, setPatientEncounters] = useState<any[]>([]);
   const [showAddPatient, setShowAddPatient] = useState(false);
   const [newPatientQuery, setNewPatientQuery] = useState('');
   
@@ -97,6 +98,7 @@ function PrescriptionWorkflowContent() {
           .then(json => {
             if (json.patient) {
               setPatient(json.patient);
+              setPatientEncounters(json.encounters || []);
               if (!startTime) setStartTime(Date.now());
               
               // Now fetch recent Rx
@@ -120,10 +122,12 @@ function PrescriptionWorkflowContent() {
 
   const handlePatientSelect = async (selectedPatient: Patient) => {
     setPatient(selectedPatient);
+    setPatientEncounters([]);
     if (!startTime) setStartTime(Date.now());
     setFetchingPastRx(true);
     
     try {
+      // Fetch recent Rx for auto-fill
       const res = await fetch(`/api/prescriptions/recent?patientId=${selectedPatient.id}`);
       if (res.ok) {
         const json = await res.json();
@@ -133,6 +137,13 @@ function PrescriptionWorkflowContent() {
           setNotes(json.data.notes || '');
           setMedicines(json.data.medicines);
         }
+      }
+
+      // Fetch full patient history for AI Clinical Summary
+      const histRes = await fetch(`/api/patients/${selectedPatient.id}`);
+      if (histRes.ok) {
+        const histJson = await histRes.json();
+        setPatientEncounters(histJson.encounters || []);
       }
     } catch (err) {
       console.error('Error fetching past rx:', err);
@@ -217,6 +228,7 @@ function PrescriptionWorkflowContent() {
 
   const startNewPrescription = () => {
     setPatient(null);
+    setPatientEncounters([]);
     setMedicines([]);
     setChiefComplaint('');
     setDiagnosis('');
@@ -290,7 +302,7 @@ function PrescriptionWorkflowContent() {
                     </button>
                     
                     {/* AI Patient Clinical Summary for Returning Patients */}
-                    <AIPatientSummaryCard patientId={patient.id} />
+                    <AIPatientSummaryCard patientId={patient.id} encounters={patientEncounters} />
                   </div>
                 )}
               </div>
