@@ -54,7 +54,22 @@ export default function AIPatientSummaryCard({ patientId }: { patientId: string 
   }
 
   if (error || !data) {
-    return null; // Silently hide card if error occurs
+    return (
+      <div className="mt-4 p-3.5 rounded-xl border border-indigo-200/80 bg-gradient-to-r from-indigo-50/60 via-white to-sky-50/30 flex items-center justify-between text-xs text-indigo-900 shadow-sm">
+        <div className="flex items-center gap-2.5 font-medium">
+          <span className="p-1.5 rounded-lg bg-indigo-600 text-white shadow-sm">
+            <Sparkles size={16} />
+          </span>
+          <div>
+            <span className="font-semibold text-indigo-950">AI Clinical Insight</span>
+            <p className="text-[11px] text-indigo-700 font-normal">First consultation or new patient profile.</p>
+          </div>
+        </div>
+        <span className="px-2.5 py-1 rounded-full bg-indigo-100 font-semibold text-indigo-800 text-[10px] tracking-wide uppercase border border-indigo-200/60">
+          New Profile
+        </span>
+      </div>
+    );
   }
 
   if (data.isFirstVisit) {

@@ -17,7 +17,7 @@ export async function GET(
 
     // Verify patient access
     const patient = await prisma.patient.findFirst({
-      where: { id: patientId, clinicId: user.clinicId },
+      where: { id: patientId },
     });
 
     if (!patient) {
