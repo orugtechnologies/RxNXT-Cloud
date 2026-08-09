@@ -14,11 +14,16 @@ import TemplateManagementUI from '@/components/prescriptions/TemplateManagementU
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
+import { ensureMicroserviceAwake } from '@/services/whatsappService';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab');
+
+  useEffect(() => {
+    ensureMicroserviceAwake();
+  }, []);
 
   const [patient, setPatient] = useState<Patient | null>(null);
   const [showAddPatient, setShowAddPatient] = useState(false);

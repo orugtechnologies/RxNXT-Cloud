@@ -1,5 +1,16 @@
 const MICROSERVICE_URL = process.env.WHATSAPP_MICROSERVICE_URL || 'https://rxnxt-whatsapp-service.onrender.com';
 
+/**
+ * Fires a non-blocking background ping to wake up the Render microservice if sleeping.
+ */
+export function ensureMicroserviceAwake(clinicId?: string) {
+  try {
+    fetch(`${MICROSERVICE_URL}/api/whatsapp/status?clinicId=${clinicId || 'default'}`).catch(() => {});
+  } catch (e) {
+    // Ignore error - background warm up
+  }
+}
+
 function sanitizePhone(phone: string): string {
   if (!phone) return '';
   let clean = phone.replace(/(?!^\+)[^\d]/g, '');
