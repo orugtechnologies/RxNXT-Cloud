@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock, User, Stethoscope, History, Search, FastForward, Loader2 } from 'lucide-react';
+import AIPatientSummaryCard from '@/components/patients/AIPatientSummaryCard';
 
 interface QueueItem {
   id: string;
@@ -150,6 +151,9 @@ export default function DoctorQueue({
                       • Waiting {waitingTime} mins
                     </span>
                   </div>
+                  
+                  {/* AI Clinical Summary for Returning Patients */}
+                  <AIPatientSummaryCard patientId={item.patient_id} />
                 </div>
               </div>
 
