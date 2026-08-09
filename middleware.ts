@@ -1,16 +1,23 @@
-import { withAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { NextResponse, NextRequest } from 'next/server';
 
-export default withAuth(
-  function middleware(req) {
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // Public / Cron endpoints bypass auth checks completely
+  if (pathname.startsWith('/api/cron')) {
     return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token,
-    },
   }
-);
+
+  // Check for NextAuth token on protected routes
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (!token) {
+    const loginUrl = new URL('/login', req.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
@@ -18,6 +25,7 @@ export const config = {
     '/receptionist/:path*',
     '/nurse/:path*',
     '/admin/:path*',
-    '/superadmin/(?!login).*',
+    '/superadmin/:path*',
+    '/api/cron/:path*',
   ],
 };
