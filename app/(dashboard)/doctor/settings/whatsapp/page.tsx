@@ -20,19 +20,27 @@ export default function WhatsAppSettingsPage() {
   };
 
   useEffect(() => {
+    let failCount = 0;
+    
     // Poll the microservice every 3 seconds to get the latest status and QR code
     const pollStatus = async () => {
       try {
         const response = await fetch('/api/whatsapp-status');
-        if (!response.ok) throw new Error('Microservice offline');
+        if (!response.ok) throw new Error('Microservice starting...');
         
         const data = await response.json();
+        failCount = 0;
         setStatus(data.status);
         setQrCode(data.qr);
         setError(null);
       } catch (err) {
-        setStatus('error');
-        setError('Cannot connect to the Render WhatsApp microservice. It may be offline or restarting. Please wait a moment...');
+        failCount++;
+        if (failCount > 3) {
+          setStatus('error');
+          setError('Connecting to WhatsApp Engine... If this takes longer than 30 seconds, please refresh.');
+        } else {
+          setStatus('initializing');
+        }
       }
     };
 
