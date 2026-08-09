@@ -1,19 +1,17 @@
-import { getToken } from 'next-auth/jwt';
 import { NextResponse, NextRequest } from 'next/server';
 
-export async function middleware(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Public / Cron endpoints bypass auth checks completely
-  if (pathname.startsWith('/api/cron')) {
+  // API routes and auth pages bypass session check
+  if (pathname.startsWith('/api/') || pathname.startsWith('/_next') || pathname === '/login') {
     return NextResponse.next();
   }
 
-  // Check for NextAuth token on protected routes
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  // Check NextAuth session cookie for protected dashboard routes
+  const token = req.cookies.get('next-auth.session-token') || req.cookies.get('__Secure-next-auth.session-token');
   if (!token) {
-    const loginUrl = new URL('/login', req.url);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(new URL('/login', req.url));
   }
 
   return NextResponse.next();
