@@ -11,7 +11,10 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token }) => !!token,
+      authorized: ({ req, token }) => {
+        if (req.nextUrl.pathname.startsWith('/api/cron')) return true;
+        return !!token;
+      },
     },
   }
 );
