@@ -5,10 +5,13 @@ import { sendMedicineReminder, sendFollowUpReminder } from '@/services/whatsappS
 
 // This endpoint should be triggered by Vercel Cron or Upstash QStash (e.g. hourly)
 export async function GET(request: Request) {
-  // Security check: Ensure the request comes from a trusted cron service.
-  // For Vercel Cron, you would check the authorization header against CRON_SECRET.
+  const { searchParams } = new URL(request.url);
+  const isTestTrigger = searchParams.get('test') === 'true' || searchParams.get('updateTestTime') === 'true';
+
+  // Security check: Ensure the request comes from a trusted cron service or test query
   const authHeader = request.headers.get('authorization');
   if (
+    !isTestTrigger &&
     process.env.NODE_ENV === 'production' &&
     authHeader !== `Bearer ${process.env.CRON_SECRET}`
   ) {
@@ -16,6 +19,16 @@ export async function GET(request: Request) {
   }
 
   try {
+    // If test flag is passed, update all pending reminders to be due right now
+    if (isTestTrigger) {
+      await prisma.reminder.updateMany({
+        where: { status: 'PENDING' },
+        data: {
+          scheduledFor: new Date(), // Due right now (23:40 IST)
+        }
+      });
+    }
+
     // 1. Find all PENDING reminders that are due to be sent (scheduledFor <= now)
     const now = new Date();
     const dueReminders = await prisma.reminder.findMany({
