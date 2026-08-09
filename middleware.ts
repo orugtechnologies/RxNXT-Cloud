@@ -1,35 +1,23 @@
-// middleware.ts
-// NextAuth middleware — protects all routes except public pages.
-// Replaces the old Supabase session middleware.
-
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
 export default withAuth(
   function middleware(req) {
-    if (req.nextUrl.pathname.startsWith('/api/cron')) {
-      return NextResponse.next();
-    }
     return NextResponse.next();
   },
   {
     callbacks: {
-      authorized: ({ req, token }) => {
-        if (req.nextUrl.pathname.startsWith('/api/cron')) return true;
-        return !!token;
-      },
+      authorized: ({ token }) => !!token,
     },
   }
 );
 
 export const config = {
   matcher: [
-    /*
-     * Protect all routes EXCEPT:
-     * - /login, /register, /forgot-password (auth pages)
-     * - /api/auth/* (NextAuth endpoints)
-     * - Static files (images, fonts, etc.)
-     */
-    '/((?!login|register|forgot-password|superadmin/login|api/auth|api/cron/.*|_next/static|_next/image|favicon.ico|Logo.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/doctor/:path*',
+    '/receptionist/:path*',
+    '/nurse/:path*',
+    '/admin/:path*',
+    '/superadmin/(?!login).*',
   ],
 };
