@@ -79,7 +79,7 @@ export default function ReviewPrescriptionModal({
       if (onGoToDashboard) {
         onGoToDashboard();
       } else {
-        window.location.href = '/doctor';
+        window.location.href = '/doctor/dashboard';
       }
     };
 

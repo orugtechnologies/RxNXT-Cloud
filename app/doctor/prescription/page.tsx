@@ -438,7 +438,7 @@ function PrescriptionWorkflowContent() {
           }}
           onConfirm={savePrescription}
           onNewPrescription={startNewPrescription}
-          onGoToDashboard={() => router.push('/doctor')}
+          onGoToDashboard={() => router.push('/doctor/dashboard')}
         />
       )}
     </div>
