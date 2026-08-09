@@ -20,6 +20,7 @@ interface ReviewModalProps {
   onClose: () => void;
   onConfirm: () => void;
   onNewPrescription?: () => void;
+  onGoToDashboard?: () => void;
 }
 
 export default function ReviewPrescriptionModal({
@@ -36,7 +37,8 @@ export default function ReviewPrescriptionModal({
   timeTakenSeconds,
   onClose,
   onConfirm,
-  onNewPrescription
+  onNewPrescription,
+  onGoToDashboard
 }: ReviewModalProps) {
   const [isSending, setIsSending] = useState(false);
 
@@ -73,9 +75,28 @@ export default function ReviewPrescriptionModal({
   };
 
   if (isSuccess) {
+    const handleGoToDashboard = () => {
+      if (onGoToDashboard) {
+        onGoToDashboard();
+      } else {
+        window.location.href = '/doctor';
+      }
+    };
+
     return (
       <div className="fixed inset-0 bg-clinic-navy/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200 text-center p-8">
+          
+          {/* Top-Right Cancel (X) Button */}
+          <button
+            onClick={handleGoToDashboard}
+            className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition-colors flex items-center justify-center"
+            title="Close & Return to Patient Queue"
+            aria-label="Close"
+          >
+            <X size={20} />
+          </button>
+
           <div className="flex justify-center mb-6">
             <div className="h-20 w-20 bg-emerald-100 text-clinic-emerald rounded-full flex items-center justify-center">
               <CheckCircle size={40} />
@@ -103,6 +124,12 @@ export default function ReviewPrescriptionModal({
               className="w-full bg-white hover:bg-slate-50 text-clinic-navy border border-slate-200 font-bold py-3 px-6 rounded-xl transition-all"
             >
               Start New Prescription
+            </button>
+            <button
+              onClick={handleGoToDashboard}
+              className="w-full text-slate-500 hover:text-slate-800 text-xs font-semibold py-2 transition-colors flex items-center justify-center gap-1"
+            >
+              ← Return to Patient Queue
             </button>
           </div>
         </div>

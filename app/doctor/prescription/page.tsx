@@ -11,11 +11,12 @@ import ReviewPrescriptionModal from '@/components/prescriptions/ReviewPrescripti
 import { generatePrescriptionPDF } from '@/components/prescriptions/PrescriptionPrintView';
 import { Activity, User, Pill, Stethoscope, Save, Layers, Eye } from 'lucide-react';
 import TemplateManagementUI from '@/components/prescriptions/TemplateManagementUI';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 
 function PrescriptionWorkflowContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab');
 
@@ -437,6 +438,7 @@ function PrescriptionWorkflowContent() {
           }}
           onConfirm={savePrescription}
           onNewPrescription={startNewPrescription}
+          onGoToDashboard={() => router.push('/doctor')}
         />
       )}
     </div>
