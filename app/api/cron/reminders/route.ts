@@ -3,15 +3,10 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendMedicineReminder, sendFollowUpReminder } from '@/services/whatsappService';
 
-// This endpoint should be triggered by Vercel Cron or Upstash QStash (e.g. hourly)
+// This endpoint is triggered by Vercel Cron
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const isTestTrigger = searchParams.get('test') === 'true' || searchParams.get('updateTestTime') === 'true';
-
-  // Security check: Ensure the request comes from a trusted cron service or test query
   const authHeader = request.headers.get('authorization');
   if (
-    !isTestTrigger &&
     process.env.NODE_ENV === 'production' &&
     authHeader !== `Bearer ${process.env.CRON_SECRET}`
   ) {
@@ -19,17 +14,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    // If test flag is passed, update all pending reminders to be due right now
-    if (isTestTrigger) {
-      await prisma.reminder.updateMany({
-        where: { status: 'PENDING' },
-        data: {
-          scheduledFor: new Date(), // Due right now (23:40 IST)
-        }
-      });
-    }
-
-    // 1. Find all PENDING reminders that are due to be sent (scheduledFor <= now)
+    // Find all PENDING reminders that are due to be sent (scheduledFor <= now)
     const now = new Date();
     const dueReminders = await prisma.reminder.findMany({
       where: {
@@ -52,7 +37,6 @@ export async function GET(request: Request) {
           }
         }
       },
-      // Limit to 50 per batch to avoid timeout
       take: 50, 
     });
 
@@ -62,17 +46,10 @@ export async function GET(request: Request) {
 
     const results = [];
 
-    // 2. Process each reminder
     for (const reminder of dueReminders) {
-      // In a real application, you might have specific reminder text for specific medicines.
-      // Here we will just send a generic reminder for the first medicine in the prescription as an example,
-      // or aggregate them.
-      const medicineNames = reminder.prescription.medicines
-        .map(m => m.customName || m.drug?.brandName || m.drug?.genericName || 'your medicine')
-        .join(', ');
+      const { patient, prescription } = reminder;
 
-      if (!reminder.patient.phone) {
-        // Mark as failed if no phone number
+      if (!patient || !patient.phone) {
         await prisma.reminder.update({
           where: { id: reminder.id },
           data: { status: 'FAILED' }
@@ -81,26 +58,45 @@ export async function GET(request: Request) {
         continue;
       }
 
-      try {
-        // Send WhatsApp Reminder based on messageType
-        if (reminder.messageType === 'FOLLOW_UP') {
-          await sendFollowUpReminder(
-            reminder.patient.phone,
-            reminder.patient.name,
-            reminder.prescription.clinic.name,
-            reminder.prescription.doctor.fullName,
-            reminder.prescription.clinicId
-          );
-        } else {
-          await sendMedicineReminder(
-            reminder.patient.phone,
-            reminder.patient.name,
-            medicineNames,
-            reminder.prescription.clinicId
-          );
-        }
+      let success = false;
 
-        // Mark as SENT
+      if (reminder.messageType === 'FOLLOW_UP') {
+        const dateStr = reminder.scheduledFor
+          ? new Date(reminder.scheduledFor).toLocaleDateString('en-IN', {
+              weekday: 'short',
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric'
+            })
+          : 'scheduled date';
+
+        const doctorName = prescription?.doctor?.fullName || 'your doctor';
+        const clinicName = prescription?.clinic?.name || 'the clinic';
+
+        const message = `Hello ${patient.name}, this is a follow-up reminder from Dr. ${doctorName} at ${clinicName}. Your follow-up appointment is scheduled for ${dateStr}. Please call the clinic if you wish to reschedule.`;
+
+        success = await sendFollowUpReminder(
+          patient.phone,
+          message,
+          prescription?.clinicId || 'default'
+        );
+      } else {
+        // MEDICINE reminder
+        const medicinesList = prescription?.medicines
+          ?.map((m: any) => m.customName || m.drug?.name)
+          .filter(Boolean)
+          .join(', ') || 'your prescribed medicines';
+
+        const message = `Hello ${patient.name}, this is a friendly reminder to take your prescribed medicine(s): ${medicinesList}. - ${prescription?.clinic?.name || 'RxNXT Clinic'}`;
+
+        success = await sendMedicineReminder(
+          patient.phone,
+          message,
+          prescription?.clinicId || 'default'
+        );
+      }
+
+      if (success) {
         await prisma.reminder.update({
           where: { id: reminder.id },
           data: {
@@ -108,29 +104,23 @@ export async function GET(request: Request) {
             sentAt: new Date()
           }
         });
-        
         results.push({ id: reminder.id, status: 'SENT' });
-      } catch (err: any) {
-        console.error(`Failed to send reminder ${reminder.id}:`, err);
-        // We leave it as PENDING to retry on the next cron cycle, or mark it FAILED after max retries.
-        // For now, we will mark as FAILED to prevent infinite loops.
+      } else {
         await prisma.reminder.update({
           where: { id: reminder.id },
           data: { status: 'FAILED' }
         });
-        results.push({ id: reminder.id, status: 'FAILED', error: err.message });
+        results.push({ id: reminder.id, status: 'FAILED', reason: 'WhatsApp send failed' });
       }
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      processed: dueReminders.length,
-      results 
+    return NextResponse.json({
+      processedCount: dueReminders.length,
+      results
     });
 
   } catch (error: any) {
-    console.error('Cron reminder error:', error);
+    console.error('Reminder Cron Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-
