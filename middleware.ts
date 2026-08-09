@@ -24,6 +24,6 @@ export const config = {
      * - /api/auth/* (NextAuth endpoints)
      * - Static files (images, fonts, etc.)
      */
-    '/((?!login|register|forgot-password|superadmin/login|api/auth|api/cron|_next/static|_next/image|favicon.ico|Logo.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!login|register|forgot-password|superadmin/login|api/auth|api/cron/.*|_next/static|_next/image|favicon.ico|Logo.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
