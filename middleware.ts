@@ -7,6 +7,9 @@ import { NextResponse } from 'next/server';
 
 export default withAuth(
   function middleware(req) {
+    if (req.nextUrl.pathname.startsWith('/api/cron')) {
+      return NextResponse.next();
+    }
     return NextResponse.next();
   },
   {
