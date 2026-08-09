@@ -15,6 +15,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { ensureMicroserviceAwake } from '@/services/whatsappService';
+import AIPatientSummaryCard from '@/components/patients/AIPatientSummaryCard';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
@@ -287,6 +288,9 @@ function PrescriptionWorkflowContent() {
                     >
                       Change
                     </button>
+                    
+                    {/* AI Patient Clinical Summary for Returning Patients */}
+                    <AIPatientSummaryCard patientId={patient.id} />
                   </div>
                 )}
               </div>
