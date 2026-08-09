@@ -26,6 +26,5 @@ export const config = {
     '/nurse/:path*',
     '/admin/:path*',
     '/superadmin/:path*',
-    '/api/cron/:path*',
   ],
 };
