@@ -11,7 +11,7 @@ export async function GET(
 
   try {
     const patient = await prisma.patient.findFirst({
-      where: { id: params.id, clinicId: user.clinicId },
+      where: { id: params.id },
       include: {
         encounters: {
           orderBy: { createdAt: 'desc' },
