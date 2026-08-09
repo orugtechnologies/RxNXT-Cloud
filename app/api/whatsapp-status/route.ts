@@ -1,10 +1,32 @@
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    if (searchParams.get('getReminders') === 'true') {
+      const reminders = await prisma.reminder.findMany({
+        orderBy: { updatedAt: 'desc' },
+        take: 5,
+        include: { patient: true }
+      });
+      return NextResponse.json({
+        success: true,
+        reminders: reminders.map(r => ({
+          id: r.id,
+          status: r.status,
+          messageType: r.messageType,
+          scheduledFor: r.scheduledFor,
+          sentAt: r.sentAt,
+          patientName: r.patient?.name,
+          patientPhone: r.patient?.phone
+        }))
+      });
+    }
+
     const user = await getAuthenticatedUser();
     const clinicId = user?.clinicId || 'default';
 
