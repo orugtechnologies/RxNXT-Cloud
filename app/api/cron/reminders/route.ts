@@ -45,6 +45,7 @@ export async function GET(request: Request) {
     }
 
     const results = [];
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
     for (const reminder of dueReminders) {
       const { patient, prescription } = reminder;
@@ -112,6 +113,9 @@ export async function GET(request: Request) {
         });
         results.push({ id: reminder.id, status: 'FAILED', reason: 'WhatsApp send failed' });
       }
+
+      // Intentional 1-second delay to prevent WhatsApp anti-spam bans
+      await delay(1000);
     }
 
     return NextResponse.json({
