@@ -107,8 +107,20 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
                 <option>Other</option>
               </select>
             </div>
+          {/* WhatsApp Digital Consent */}
+          <div className="flex items-start gap-2.5 p-3 rounded-lg bg-emerald-50/70 border border-emerald-100">
+            <input 
+              type="checkbox" 
+              id="whatsappConsent" 
+              defaultChecked 
+              className="mt-0.5 rounded border-gray-300 text-clinic-emerald focus:ring-clinic-emerald cursor-pointer" 
+            />
+            <label htmlFor="whatsappConsent" className="text-xs text-gray-600 leading-tight cursor-pointer">
+              Patient consents to receiving digital prescriptions & appointment reminders via <span className="font-semibold text-emerald-700">WhatsApp</span>.
+            </label>
           </div>
-          <div className="pt-4">
+
+          <div className="pt-2">
             <button disabled={loading} type="submit" className="w-full bg-clinic-emerald hover:bg-clinic-emeraldDark text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed">
               {loading ? (
                 <><Activity className="animate-pulse mr-2" size={20}/> Saving...</>
