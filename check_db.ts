@@ -2,19 +2,21 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  const docPrefs = await prisma.doctorDrugPreference.findMany();
-  const clinicPrefs = await prisma.clinicDrugPreference.findMany();
-  const crocin = await prisma.drug.findFirst({ where: { brandName: 'Crocin' } });
-  const pyrigesic = await prisma.drug.findFirst({ where: { brandName: 'Pyrigesic' } });
+  const users = await prisma.user.findMany({ select: { id: true, email: true, fullName: true, role: true } });
+  console.log('--- USERS ---');
+  console.table(users);
 
-  console.log("--- Doctor Preferences ---");
-  console.dir(docPrefs, { depth: null });
-  console.log("--- Clinic Preferences ---");
-  console.dir(clinicPrefs, { depth: null });
-  console.log("--- Crocin ---");
-  console.log(crocin);
-  console.log("--- Pyrigesic ---");
-  console.log(pyrigesic);
+  const patients = await prisma.patient.findMany({ orderBy: { createdAt: 'desc' }, take: 5, select: { id: true, name: true, phone: true, createdAt: true } });
+  console.log('--- RECENT PATIENTS ---');
+  console.table(patients);
+
+  const queue = await prisma.queueItem.findMany({ 
+    orderBy: { createdAt: 'desc' }, 
+    take: 5,
+    include: { doctor: { select: { email: true } }, patient: { select: { name: true } } } 
+  });
+  console.log('--- RECENT QUEUE ITEMS ---');
+  queue.forEach(q => console.log(q.id, q.status, q.createdAt, 'Doc:', q.doctor?.email, 'Pat:', q.patient?.name));
 }
 
-main().finally(() => prisma.$disconnect());
+main().catch(console.error).finally(() => prisma.$disconnect());

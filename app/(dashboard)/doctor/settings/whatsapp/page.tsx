@@ -20,19 +20,27 @@ export default function WhatsAppSettingsPage() {
   };
 
   useEffect(() => {
+    let failCount = 0;
+    
     // Poll the microservice every 3 seconds to get the latest status and QR code
     const pollStatus = async () => {
       try {
-        const response = await fetch('https://rxnxt-whatsapp-service.onrender.com/api/whatsapp/status');
-        if (!response.ok) throw new Error('Microservice offline');
+        const response = await fetch('/api/whatsapp-status');
+        if (!response.ok) throw new Error('Microservice starting...');
         
         const data = await response.json();
+        failCount = 0;
         setStatus(data.status);
         setQrCode(data.qr);
         setError(null);
       } catch (err) {
-        setStatus('error');
-        setError('Cannot connect to WhatsApp microservice. Please ensure it is running on port 3001.');
+        failCount++;
+        if (failCount > 3) {
+          setStatus('error');
+          setError('Connecting to WhatsApp Engine... If this takes longer than 30 seconds, please refresh.');
+        } else {
+          setStatus('initializing');
+        }
       }
     };
 
@@ -87,6 +95,9 @@ export default function WhatsAppSettingsPage() {
                 <p className="text-sm text-slate-500 max-w-sm mx-auto">
                   If using a PC/Laptop, open WhatsApp on your phone $\rightarrow$ <strong>Linked Devices</strong> $\rightarrow$ point your camera at this screen.
                 </p>
+                <div className="mt-4 p-3 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-sm font-medium animate-pulse">
+                  ⚠️ After scanning, please wait on this page (up to 30 seconds) until you see the green "Successfully Connected" screen.
+                </div>
               </div>
 
               {/* Single Phone Helper Box */}

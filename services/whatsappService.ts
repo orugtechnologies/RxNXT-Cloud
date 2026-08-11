@@ -1,22 +1,27 @@
-// Initialize WhatsApp Microservice Service
-// Note: Migrated away from Twilio to BYOD Microservice on Render
-
 const MICROSERVICE_URL = process.env.WHATSAPP_MICROSERVICE_URL || 'https://rxnxt-whatsapp-service.onrender.com';
+
+/**
+ * Fires a non-blocking background ping to wake up the Render microservice if sleeping.
+ */
+export function ensureMicroserviceAwake(clinicId?: string) {
+  try {
+    fetch(`${MICROSERVICE_URL}/api/whatsapp/status?clinicId=${clinicId || 'default'}`).catch(() => {});
+  } catch (e) {
+    // Ignore error - background warm up
+  }
+}
 
 function sanitizePhone(phone: string): string {
   if (!phone) return '';
-  // Remove all non-digits except a leading plus
   let clean = phone.replace(/(?!^\+)[^\d]/g, '');
-  // Remove leading zeros
   clean = clean.replace(/^0+/, '');
-  // Default to India country code if none provided
   return clean.startsWith('+') ? clean : `+91${clean}`;
 }
 
 async function sendViaMicroservice(
   formattedPhone: string, 
   messageBody: string, 
-  pdfBase64?: string,
+  pdfBase64?: string, 
   clinicId?: string
 ) {
   try {
@@ -27,14 +32,19 @@ async function sendViaMicroservice(
         phone: formattedPhone,
         message: messageBody,
         pdfBase64: pdfBase64,
-        clinicId: clinicId || 'default',
+        clinicId: clinicId || 'default'
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.warn('[WhatsApp Microservice Error]', errorData);
-      throw new Error(errorData.error || 'Failed to send WhatsApp message via microservice');
+      
+      let errMsg = errorData.error || 'Failed to send WhatsApp message via microservice';
+      if (errorData.details) {
+        errMsg += ` (Details: ${errorData.details})`;
+      }
+      throw new Error(errMsg);
     }
 
     const data = await response.json();

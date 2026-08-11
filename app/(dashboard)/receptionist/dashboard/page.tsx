@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import PatientSearchUI, { Patient } from '@/components/patients/PatientSearchUI';
 import AddPatientModal from '@/components/patients/AddPatientModal';
 import AssignDoctorModal from '@/components/patients/AssignDoctorModal';
+import ClinicQueue from '@/components/receptionist/ClinicQueue';
 import { PhoneCall, UserPlus, RefreshCw } from 'lucide-react';
 
 export default function ReceptionistDashboard() {
@@ -91,6 +92,8 @@ export default function ReceptionistDashboard() {
           }} 
         />
       </div>
+
+      <ClinicQueue refreshTrigger={resetKey} />
 
       {showAddPatient && (
         <AddPatientModal 

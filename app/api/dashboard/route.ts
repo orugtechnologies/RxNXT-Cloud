@@ -84,6 +84,26 @@ export async function GET() {
       }),
     ]);
 
+    // Auto-backfill missing token numbers for Doctor's queue
+    const queueWithoutToken = queueItems.filter(q => q.tokenNumber === null);
+    if (queueWithoutToken.length > 0) {
+      let maxToken = await prisma.queueItem.aggregate({
+        where: { clinicId, createdAt: { gte: today } },
+        _max: { tokenNumber: true }
+      });
+      let currentMax = maxToken._max.tokenNumber || 0;
+      
+      const sortedWithoutToken = queueWithoutToken.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      for (const item of sortedWithoutToken) {
+        currentMax++;
+        await prisma.queueItem.update({
+          where: { id: item.id },
+          data: { tokenNumber: currentMax }
+        });
+        item.tokenNumber = currentMax;
+      }
+    }
+
     // Format recent prescriptions
     const formattedRecentRx = recentPrescriptions.map((rx) => ({
       id: rx.id,
@@ -128,16 +148,25 @@ export async function GET() {
     }));
 
     // Format Queue
-    const formattedQueue = queueItems.map((q) => ({
-      id: q.id,
-      patient_id: q.patientId,
-      patient_name: q.patient.name,
-      patient_phone: q.patient.phone,
-      patient_age: q.patient.age,
-      patient_gender: q.patient.gender,
-      waiting_since: q.createdAt.toISOString(),
-      status: q.status,
-    }));
+    const formattedQueue = queueItems.map((q) => {
+      const dd = String(q.createdAt.getDate()).padStart(2, '0');
+      const mm = String(q.createdAt.getMonth() + 1).padStart(2, '0');
+      const seq = q.tokenNumber ? String(q.tokenNumber).padStart(2, '0') : '';
+      const tokenNumberDisplay = seq ? `${dd}${mm}${seq}` : null;
+
+      return {
+        id: q.id,
+        patient_id: q.patientId,
+        patient_name: q.patient.name,
+        patient_phone: q.patient.phone,
+        patient_age: q.patient.age,
+        patient_gender: q.patient.gender,
+        waiting_since: q.createdAt.toISOString(),
+        status: q.status,
+        tokenNumber: q.tokenNumber,
+        tokenNumberDisplay,
+      };
+    });
 
     return NextResponse.json({
       stats: {

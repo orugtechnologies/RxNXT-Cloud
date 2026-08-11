@@ -1,29 +1,21 @@
-// middleware.ts
-// NextAuth middleware — protects all routes except public pages.
-// Replaces the old Supabase session middleware.
+import { NextResponse, NextRequest } from 'next/server';
 
-import { withAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
+export function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
-export default withAuth(
-  function middleware(req) {
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token,
-    },
+  // Only apply redirect to dashboard routes
+  if (
+    pathname.startsWith('/doctor') ||
+    pathname.startsWith('/receptionist') ||
+    pathname.startsWith('/nurse') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/superadmin')
+  ) {
+    const token = req.cookies.get('next-auth.session-token') || req.cookies.get('__Secure-next-auth.session-token');
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', req.url));
+    }
   }
-);
 
-export const config = {
-  matcher: [
-    /*
-     * Protect all routes EXCEPT:
-     * - /login, /register, /forgot-password (auth pages)
-     * - /api/auth/* (NextAuth endpoints)
-     * - Static files (images, fonts, etc.)
-     */
-    '/((?!login|register|forgot-password|superadmin/login|api/auth|_next/static|_next/image|favicon.ico|Logo.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
-};
+  return NextResponse.next();
+}

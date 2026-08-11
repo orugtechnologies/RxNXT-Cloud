@@ -3,6 +3,7 @@
 import React from 'react';
 import { usePatientHistory } from '@/hooks/usePatientHistory';
 import VisitTimeline from '@/components/patients/VisitTimeline';
+import AIPatientSummaryCard from '@/components/patients/AIPatientSummaryCard';
 import { X, User, Stethoscope, Loader2, AlertCircle, Calendar, Phone, Copy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -77,6 +78,8 @@ export default function PatientHistoryModal({
 
         {/* Content Body */}
         <div className="p-6 overflow-y-auto flex-1 bg-slate-50/50">
+          <AIPatientSummaryCard patientId={patientId} />
+          
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-16 gap-3">
               <Loader2 className="h-8 w-8 animate-spin text-clinic-emerald" />

@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Phone, Calendar, User, Activity } from 'lucide-react';
 import { formatDate, capitalize } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import AIPatientSummaryCard from '@/components/patients/AIPatientSummaryCard';
 
 export default function PatientProfile({ patient }: { patient: Patient }) {
   if (!patient) return null;
@@ -51,6 +52,9 @@ export default function PatientProfile({ patient }: { patient: Patient }) {
                 </Badge>
               )}
             </div>
+
+            {/* AI Patient Clinical Summary */}
+            <AIPatientSummaryCard patientId={patient.id} />
           </div>
         </div>
       </CardContent>

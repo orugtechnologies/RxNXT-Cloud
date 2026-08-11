@@ -36,7 +36,8 @@ export default function LoginPage() {
     try {
       const res = await fetch('/api/auth/session');
       const session = await res.json();
-      if (session?.user?.role === 'super_admin') {
+      const role = session?.user?.role?.toLowerCase().replace('_', '');
+      if (role === 'superadmin') {
         window.location.href = '/superadmin/login?notice=super_admin_moved';
         return;
       }
@@ -64,7 +65,7 @@ export default function LoginPage() {
                   type="email"
                   required
                   className="pl-10 py-6 bg-slate-50/50 focus:bg-white transition-colors"
-                  placeholder="doctor@clinic.com"
+                  placeholder="user@domain.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
@@ -100,11 +101,6 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Demo credentials hint */}
-          <div className="bg-blue-50/80 text-blue-800 text-xs p-3.5 rounded-xl border border-blue-200/80 space-y-1">
-            <p><strong>Doctor Login:</strong> doctor@rxnxt.com &nbsp;/&nbsp; doctor123</p>
-            <p><strong>Super Admin Portal:</strong> superadmin@rxnxt.com &nbsp;/&nbsp; admin123 (via <Link href="/superadmin/login" className="underline font-semibold text-indigo-600 hover:text-indigo-800">Super Admin Login</Link>)</p>
-          </div>
 
           <Button
             type="submit"
@@ -115,26 +111,18 @@ export default function LoginPage() {
               <Loader2 className="h-5 w-5 animate-spin mr-2" />
             ) : (
               <>
-                Sign In to Doctor Workspace
+                Sign In
                 <ArrowRight className="ml-2 h-5 w-5" />
               </>
             )}
           </Button>
         </form>
 
-        <div className="mt-8 text-center text-sm text-slate-500 space-y-2">
-          <div>
-            Don&apos;t have an account?{' '}
-            <Link href="/register" className="font-medium text-clinic-emerald hover:text-clinic-emeraldDark transition-colors">
-              Register your clinic
-            </Link>
-          </div>
-          <div className="pt-2 border-t border-slate-100 text-xs text-slate-400">
-            Platform Admin?{' '}
-            <Link href="/superadmin/login" className="font-medium text-slate-600 hover:text-slate-900 underline transition-colors">
-              Super Admin Portal Login
-            </Link>
-          </div>
+        <div className="mt-8 text-center text-xs text-slate-400">
+          Platform Admin?{' '}
+          <Link href="/superadmin/login" className="font-medium text-slate-600 hover:text-slate-900 underline transition-colors">
+            Super Admin Portal Login
+          </Link>
         </div>
       </CardContent>
     </Card>

@@ -3,8 +3,8 @@
 **Paste This at the Start of Any New Session with an AI Agent or Developer**
 
 ## 🏥 What is RxNXT?
-A **clinic workflow and drug management application** built to reduce clinical friction and prevent prescription errors. 
-Recently upgraded from a pure Node.js/HTML MVP to a modern, scalable cloud architecture.
+A **clinic workflow, drug management, and patient communication application** built to reduce clinical friction and prevent prescription errors.
+Fully migrated from a local SQLite prototype to a modern, scalable cloud architecture on Neon PostgreSQL + Vercel.
 
 ---
 
@@ -12,56 +12,109 @@ Recently upgraded from a pure Node.js/HTML MVP to a modern, scalable cloud archi
 - **Framework:** Next.js 14 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS + Radix UI components (lucide-react for icons)
-- **Database:** PostgreSQL (Schema defined via Prisma ORM)
-- **Authentication:** NextAuth.js (Credentials Provider + bcrypt hashing)
+- **Database:** PostgreSQL (Neon.tech) via Prisma ORM
+- **Authentication:** NextAuth.js (Credentials Provider + bcrypt hashing + JWT strategy)
 - **Search Engine:** Fuse.js (Fuzzy matching, typo-tolerance, and custom additive clinical scoring)
+- **WhatsApp:** Custom WhatsApp microservice hosted on Render (`rxnxt-whatsapp-service.onrender.com`). Configured via `WHATSAPP_MICROSERVICE_URL` env var. **No Twilio.**
+- **PDF Generation:** jsPDF (client-side, instant, no server lag)
+- **Hosting:** Vercel (Frontend + Serverless API + Vercel Cron Jobs)
+- **PWA:** Full Progressive Web App support (manifest.json, Apple iOS standalone metadata)
 
 ---
 
 ## 🗄️ Database Schema Overview (PostgreSQL via Prisma)
-- **Clinic:** The top-level tenant.
-- **User (Doctor):** Uses NextAuth. Tied to a Clinic. Has personalized `DoctorDrugPreference` and `TreatmentGroup`.
-- **Patient:** Belongs to a Clinic.
-- **Encounter:** A clinical visit linking a Patient and a Doctor.
-- **Prescription:** Linked to an Encounter. Contains `PrescriptionMedicine` line items.
-- **Drug:** The global medicine catalog (thousands of generic/brand medicines).
-- **Reminder:** A queue table for tracking pending/sent WhatsApp medicine reminders.
+- **Clinic:** The top-level tenant. Has `name`, `address`, `phone`, `email`, `logoUrl`, `inviteCode`.
+- **User (Doctor/Admin/Receptionist/Nurse):** Uses NextAuth. Tied to a Clinic. Has `role`, `status`, `specialization`, `registrationNumber`, `signatureUrl`.
+- **Patient:** Belongs to a Clinic. Has `name`, `phone`, `age`, `gender`, `address`.
+- **Encounter:** A clinical visit linking a Patient and a Doctor. Has `chiefComplaint`, `diagnosis`, `notes`, `followUpDate`.
+- **Prescription:** Linked to an Encounter. Contains `PrescriptionMedicine` line items. Tracks `timeTakenSeconds` and `creationMethod`.
+- **PrescriptionMedicine:** Line item — `drugId`, `customName`, `dosageForm`, `strength`, `route`, `frequency`, `duration`, `instructions`.
+- **Drug:** Global + per-clinic medicine catalog. Has `genericName`, `brandName`, `aliases`, `dosageForm`, `strength`, `isRestricted`, `prescriptionCount`. `clinicId` is optional (null = global drug).
+- **TreatmentGroup + TreatmentGroupItem:** Doctor-saved prescription templates (e.g., "Viral Fever Protocol").
+- **DoctorDrugPreference:** Tracks per-doctor prescription frequency per drug (used in search scoring).
+- **ClinicDrugPreference:** Tracks per-clinic prescription frequency per drug (used in search scoring).
+- **Reminder:** WhatsApp reminder queue. Fields: `scheduledFor`, `sentAt`, `status` (PENDING/SENT/FAILED), `messageType` (PDF/MEDICINE).
+- **QueueItem:** Patient waiting queue. Fields: `status` (WAITING/AWAY/SKIPPED/COMPLETED), `tokenNumber`, linked to Clinic + Doctor + Patient.
 
 ---
 
 ## 🔑 Authentication (NextAuth)
-- **Frontend:** `app/login/page.tsx`
+- **Frontend:** `app/(auth)/login/page.tsx`
 - **Backend Setup:** `app/api/auth/[...nextauth]/route.ts` & `lib/auth.ts`
-- **Security:** Passwords are hashed using `bcryptjs`. The JWT strategy is used, and the session strictly stores the `clinicId`, `role`, and `id` to enforce multi-tenant data isolation. API routes use `await getAuthenticatedUser()` to secure endpoints.
+- **Security:** Passwords hashed via `bcryptjs`. JWT strategy — session stores `clinicId`, `role`, `id` for strict multi-tenant isolation. All API routes use `await getAuthenticatedUser()`.
+
+---
+
+## 👥 User Roles (All Implemented)
+| Role | Dashboard Route | Access |
+|------|----------------|--------|
+| `doctor` | `/doctor/dashboard` | Prescription workspace, patients, analytics, settings |
+| `admin` | `/admin/settings` | Clinic profile, staff, drugs, superadmin tools |
+| `receptionist` | `/receptionist/dashboard` | Patient queue, patient registration |
+| `nurse` | `/nurse/` | Clinical support view |
+| `superadmin` | `/superadmin/` | Platform-wide administration |
 
 ---
 
 ## 🔍 Intelligent Medicine Search Engine
-The search API (`app/api/drugs/search/route.ts`) does not just use `LIKE %query%`. It uses an **Additive Scoring Algorithm**:
-1. Checks for Exact Alias Matches (Short-circuits for maximum speed, e.g., "PCM" -> Paracetamol).
-2. Uses `Fuse.js` for typo-tolerant fuzzy matching across Generic Names, Brand Names, and Aliases.
-3. Adds points if the Doctor frequently prescribes it (+50 pts).
-4. Adds points if the Clinic standardizes it (+20 pts).
-5. Detects "Low Confidence" searches (score < 15) to trigger a "Did you mean?" safety warning in the UI.
+The search API (`app/api/drugs/search/route.ts`) uses an **Additive Scoring Algorithm**:
+1. Exact Alias Matches (short-circuits for max speed, e.g., "PCM" → Paracetamol) — **+100 pts**
+2. Fuse.js fuzzy matching across Generic Names, Brand Names, Aliases
+3. Doctor frequently prescribes it — **+50 pts**
+4. Clinic standardizes it — **+20 pts**
+5. Low Confidence detection (score < 15) triggers "Did you mean?" warning in UI
 
 ---
 
-## 📱 WhatsApp & Cron Integrations (Cloud Ready)
-- **WhatsApp Provider:** Twilio (`services/whatsappService.ts`). (Supports fallback mocking during local dev if `.env` vars are missing).
-- **Prescription PDFs:** `POST /api/prescriptions/send` triggers a WhatsApp message containing a secure link to the prescription PDF for the patient.
-- **Medicine Reminders (Cron):** `GET /api/cron/reminders/route.ts` is designed to be pinged hourly by Vercel Cron. It queries the `Reminder` table for `PENDING` reminders, dispatches them via WhatsApp, and updates the status to `SENT` or `FAILED`.
+## 📱 WhatsApp Microservice Integration
+- **Provider:** Custom microservice at `https://rxnxt-whatsapp-service.onrender.com` (Render hosting)
+- **Service file:** `services/whatsappService.ts`
+- **Warm-up:** `ensureMicroserviceAwake()` pings `/api/whatsapp/status` before sending to wake Render from sleep
+- **Sending endpoint:** `POST /api/whatsapp/send` on the microservice — accepts `{ phone, message, pdfBase64, clinicId }`
+- **Phone sanitization:** Strips formatting, removes leading zeros, prepends `+91` if no country code
+
+### Three send functions:
+| Function | Trigger | What it sends |
+|----------|---------|---------------|
+| `sendPrescriptionPDF()` | Doctor clicks "Send via WhatsApp" | PDF as base64 + view URL to patient |
+| `sendMedicineReminder()` | Vercel Cron (hourly) | Medicine intake reminder message |
+| `sendFollowUpReminder()` | Vercel Cron (hourly) | Follow-up visit reminder from clinic/doctor |
 
 ---
 
-## 🚀 Cloud Deployment Checklist (Vercel / AWS)
-Before deploying to production, the developer MUST configure the following in the cloud environment variables:
-1. `DATABASE_URL`: Must point to your live Neon PostgreSQL database. *Note: The local `rxnxt.db` SQLite file and `updateDB.js` have been removed to enforce strict cloud parity.*
-2. `NEXTAUTH_SECRET`: A secure random string for JWT encryption.
-3. `TWILIO_ACCOUNT_SID` & `TWILIO_AUTH_TOKEN`: For WhatsApp messaging.
-4. `TWILIO_WHATSAPP_NUMBER`: The sender phone number.
-5. `CRON_SECRET`: To secure the `/api/cron/reminders` endpoint from unauthorized pings.
+## 🕐 Patient Queue System
+- **Model:** `QueueItem` — status: WAITING / AWAY / SKIPPED / COMPLETED
+- **API:** `app/api/queue/route.ts` and `app/api/queue/[id]/route.ts`
+- **Receptionist Dashboard:** `/receptionist/dashboard` — registers patients, adds to queue, auto-resets form after each registration
+- **Doctor Dashboard:** Shows live queue with waiting time timers, "NEXT UP" badges, 1-click consultation launch
 
-After setting environment variables, run `npx prisma db push` or `npx prisma migrate deploy` on the cloud provider to build the Postgres tables.
+---
+
+## ⚙️ Admin Settings Module (`/admin/settings`)
+- **Clinic Profile Tab:** Clinic name, phone, email, address, drag-and-drop logo upload (`logoUrl`)
+- **Doctor Profile Tab:** Doctor's registration number (MCI), drag-and-drop digital signature upload (`signatureUrl`)
+- **Staff Management Tab:** View all staff, "Add Staff Member" modal → creates Users via `/api/users`
+- **Drugs Management:** Custom per-clinic drug catalog (`/admin/drugs`)
+
+---
+
+## 📊 Doctor Analytics
+- Route: `/doctor/analytics`
+- API: `app/api/analytics/`
+- Shows patient volume, prescription counts, most prescribed medicines
+
+---
+
+## 🚀 Cloud Deployment Checklist (Vercel)
+Required environment variables:
+1. `DATABASE_URL` — Neon PostgreSQL connection string
+2. `NEXTAUTH_SECRET` — JWT encryption secret
+3. `NEXTAUTH_URL` — Live domain (e.g., `https://rxnxt-app.vercel.app`)
+4. `WHATSAPP_MICROSERVICE_URL` — URL of the WhatsApp microservice on Render
+5. `CRON_SECRET` — Secures `/api/cron/reminders` from unauthorized pings
+6. `NEXT_PUBLIC_APP_URL` — Used to generate prescription PDF view links
+
+After setting env vars: `npx prisma db push` to initialize PostgreSQL tables.
 
 ---
 

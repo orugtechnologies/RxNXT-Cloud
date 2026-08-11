@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.O.L.I.D Principles in RxNXT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0f172a;
+            --emerald: #10b981;
+            --blue: #2563eb;
+            --light-bg: #f8fafc;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            border-bottom: 5px solid var(--emerald);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .intro {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .principle-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            page-break-inside: avoid;
+        }
+
+        .principle-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .letter-badge {
+            background: var(--emerald);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-right: 15px;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+        }
+
+        .principle-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .concept {
+            font-weight: 600;
+            color: var(--blue);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .description {
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .alignment {
+            background: #f0fdf4;
+            border-left: 4px solid var(--emerald);
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .alignment strong {
+            color: #166534;
+        }
+
+        .summary {
+            background: var(--navy);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-top: 40px;
+            page-break-inside: avoid;
+        }
+
+        .summary h2 {
+            margin-bottom: 20px;
+            color: var(--emerald);
+        }
+
+        .summary ul {
+            list-style-type: none;
+        }
+
+        .summary li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .summary li::before {
+            content: "✓";
+            color: var(--emerald);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        /* Print optimizations for PDF conversion */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+            .principle-card {
+                border: 1px solid #cbd5e1;
+                box-shadow: none !important;
+                transform: none !important;
+            }
+            .alignment {
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-left: 4px solid var(--emerald);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>S.O.L.I.D Architecture Review</h1>
+        <p>A technical assessment of the RxNXT Platform</p>
+    </header>
+
+    <div class="content">
+        <div class="intro">
+            S.O.L.I.D. is an acronym for five design principles in software engineering that help developers write code that is clean, maintainable, scalable, and highly reliable. This report evaluates how the RxNXT platform aligns with these enterprise standards.
+        </div>
+
+        <!-- S -->
+        <div class="principle-card">
+            <div class="card-header">
+                <div class="letter-badge">S</div>
+                <div class="principle-title">Single Responsibility Principle</div>
+            </div>
+            <div class="concept">The Concept</div>
+            <div class="description">A module, class, or component should have only one reason to change, meaning it should do exactly one thing and do it well.</div>
+            <div class="alignment">
+                <strong>How RxNXT Aligns (Very Well):</strong> The UI is broken down into small, focused React components. For example, <code>PatientSearchUI.tsx</code> handles <em>only</em> searching, while <code>AssignDoctorModal.tsx</code> handles <em>only</em> assignments. Data-fetching logic is completely isolated into custom hooks (like <code>useDashboard</code>), ensuring UI components never worry about API logistics.
+            </div>
+        </div>
+
+        <!-- O -->
+        <div class="principle-card">
+            <div class="card-header">
+                <div class="letter-badge">O</div>
+                <div class="principle-title">Open-Closed Principle</div>
+            </div>
+            <div class="concept">The Concept</div>
+            <div class="description">Code should be open for extension but closed for modification. You should be able to add new functionality without rewriting existing, tested code.</div>
+            <div class="alignment">
+                <strong>How RxNXT Aligns (Good):</strong> Components heavily utilize React "props" for styling and behavior injection (via Tailwind CSS). The Prisma database schema is highly relational; adding new modules (e.g., "Lab Reports") simply requires extending the schema with a new model and linking it to the <code>Patient</code> table, leaving the core <code>Prescription</code> logic entirely untouched.
+            </div>
+        </div>
+
+        <!-- L -->
+        <div class="principle-card">
+            <div class="card-header">
+                <div class="letter-badge">L</div>
+                <div class="principle-title">Liskov Substitution Principle</div>
+            </div>
+            <div class="concept">The Concept</div>
+            <div class="description">If you replace a part of your system with a sub-type or variation, the overarching system shouldn't break or behave unexpectedly.</div>
+            <div class="alignment">
+                <strong>How RxNXT Aligns (Good):</strong> RxNXT's extensive use of <strong>TypeScript</strong> enforces this at compile time. By defining strict types (like <code>Patient</code>, <code>DashboardResponse</code>), the compiler guarantees that components receive the exact data structures they expect, eliminating a massive category of runtime errors.
+            </div>
+        </div>
+
+        <!-- I -->
+        <div class="principle-card">
+            <div class="card-header">
+                <div class="letter-badge">I</div>
+                <div class="principle-title">Interface Segregation Principle</div>
+            </div>
+            <div class="concept">The Concept</div>
+            <div class="description">A piece of code shouldn't be forced to depend on methods or data it doesn't use. Smaller, highly-specific interfaces are better than massive, generic ones.</div>
+            <div class="alignment">
+                <strong>How RxNXT Aligns (Excellent):</strong> The backend API routes are strictly segregated. Instead of one massive payload endpoint, routes are optimized for specific views (<code>/api/dashboard</code>, <code>/api/patients</code>, <code>/api/queue</code>). When a receptionist searches for a patient, the API returns only the 5 essential fields needed for the list UI, not their entire heavy medical history.
+            </div>
+        </div>
+
+        <!-- D -->
+        <div class="principle-card">
+            <div class="card-header">
+                <div class="letter-badge">D</div>
+                <div class="principle-title">Dependency Inversion Principle</div>
+            </div>
+            <div class="concept">The Concept</div>
+            <div class="description">High-level modules (UI) should not depend on low-level modules (Database). Both should depend on abstractions (APIs).</div>
+            <div class="alignment">
+                <strong>How RxNXT Aligns (Very Well):</strong> The frontend React components have zero awareness of the underlying PostgreSQL database or Prisma ORM. The frontend strictly communicates via the <code>/api/</code> abstraction layer using standard fetch requests. The database could be entirely swapped out with zero changes required to the frontend UI.
+            </div>
+        </div>
+
+        <div class="summary">
+            <h2>Summary Verdict</h2>
+            <p style="margin-bottom: 15px; opacity: 0.9;">Overall, RxNXT boasts a highly resilient architecture that strongly adheres to S.O.L.I.D principles, primarily driven by:</p>
+            <ul>
+                <li><strong>TypeScript</strong> enforcing strict data contracts and safety.</li>
+                <li><strong>Next.js App Router</strong> enforcing a clean separation of concerns between backend APIs and frontend UI.</li>
+                <li><strong>Custom React Hooks</strong> abstracting complex business logic away from visual presentation layers.</li>
+            </ul>
+            <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">As ORUG Technologies scales its engineering team, developers will find this codebase predictable, highly readable, and safe to extend without introducing regression bugs.</p>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 ORUG Technologies Pvt Ltd | RxNXT Platform Architecture Review
+    </footer>
+</div>
+
+</body>
+</html>
