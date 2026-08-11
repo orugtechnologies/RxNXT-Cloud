@@ -107,6 +107,8 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
                 <option>Other</option>
               </select>
             </div>
+          </div>
+
           {/* WhatsApp Digital Consent */}
           <div className="flex items-start gap-2.5 p-3 rounded-lg bg-emerald-50/70 border border-emerald-100">
             <input 
