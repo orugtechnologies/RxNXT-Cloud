@@ -75,13 +75,15 @@ export async function GET(request: Request) {
             reminder.patient.phone,
             reminder.patient.name,
             reminder.prescription.clinic.name,
-            reminder.prescription.doctor.fullName
+            reminder.prescription.doctor.fullName,
+            reminder.prescription.clinicId
           );
         } else {
           await sendMedicineReminder(
             reminder.patient.phone,
             reminder.patient.name,
-            medicineNames
+            medicineNames,
+            reminder.prescription.clinicId
           );
         }
 

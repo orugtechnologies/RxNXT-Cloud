@@ -1,6 +1,5 @@
-// Initialize Twilio client using environment variables
-// Ensure TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are set in .env
-// Note: We have migrated away from Twilio to a BYOD Microservice
+// Initialize WhatsApp Microservice Service
+// Note: Migrated away from Twilio to BYOD Microservice on Render
 
 const MICROSERVICE_URL = process.env.WHATSAPP_MICROSERVICE_URL || 'https://rxnxt-whatsapp-service.onrender.com';
 
@@ -14,7 +13,12 @@ function sanitizePhone(phone: string): string {
   return clean.startsWith('+') ? clean : `+91${clean}`;
 }
 
-async function sendViaMicroservice(formattedPhone: string, messageBody: string, pdfBase64?: string) {
+async function sendViaMicroservice(
+  formattedPhone: string, 
+  messageBody: string, 
+  pdfBase64?: string,
+  clinicId?: string
+) {
   try {
     const response = await fetch(`${MICROSERVICE_URL}/api/whatsapp/send`, {
       method: 'POST',
@@ -23,6 +27,7 @@ async function sendViaMicroservice(formattedPhone: string, messageBody: string, 
         phone: formattedPhone,
         message: messageBody,
         pdfBase64: pdfBase64,
+        clinicId: clinicId || 'default',
       }),
     });
 
@@ -48,12 +53,13 @@ export async function sendPrescriptionPDF(
   patientName: string,
   clinicName: string,
   pdfUrl: string,
-  pdfBase64?: string
+  pdfBase64?: string,
+  clinicId?: string
 ) {
   const formattedPhone = sanitizePhone(patientPhone);
   const messageBody = `Hello ${patientName}, your prescription from ${clinicName} is ready. \n\nYou can view it here: ${pdfUrl} \n\nGet well soon!`;
 
-  return await sendViaMicroservice(formattedPhone, messageBody, pdfBase64);
+  return await sendViaMicroservice(formattedPhone, messageBody, pdfBase64, clinicId);
 }
 
 /**
@@ -62,12 +68,13 @@ export async function sendPrescriptionPDF(
 export async function sendMedicineReminder(
   patientPhone: string,
   patientName: string,
-  medicineName: string
+  medicineName: string,
+  clinicId?: string
 ) {
   const formattedPhone = sanitizePhone(patientPhone);
   const messageBody = `Hi ${patientName}, this is a gentle reminder to take your medicine: *${medicineName}*.`;
 
-  return await sendViaMicroservice(formattedPhone, messageBody);
+  return await sendViaMicroservice(formattedPhone, messageBody, undefined, clinicId);
 }
 
 /**
@@ -77,11 +84,11 @@ export async function sendFollowUpReminder(
   patientPhone: string,
   patientName: string,
   clinicName: string,
-  doctorName: string
+  doctorName: string,
+  clinicId?: string
 ) {
   const formattedPhone = sanitizePhone(patientPhone);
   const messageBody = `Hi ${patientName}, this is a reminder from ${clinicName} for your follow-up visit with Dr. ${doctorName} today. Please contact us if you need to reschedule.`;
 
-  return await sendViaMicroservice(formattedPhone, messageBody);
+  return await sendViaMicroservice(formattedPhone, messageBody, undefined, clinicId);
 }
-
