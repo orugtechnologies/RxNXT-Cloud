@@ -56,7 +56,7 @@ async function sendViaMicroservice(
 }
 
 /**
- * Sends a WhatsApp message containing a prescription PDF URL and summary.
+ * Sends a WhatsApp message containing an AI Treatment Plan Summary and prescription PDF URL.
  */
 export async function sendPrescriptionPDF(
   patientPhone: string,
@@ -64,10 +64,17 @@ export async function sendPrescriptionPDF(
   clinicName: string,
   pdfUrl: string,
   pdfBase64?: string,
-  clinicId?: string
+  clinicId?: string,
+  aiTreatmentSummary?: string
 ) {
   const formattedPhone = sanitizePhone(patientPhone);
-  const messageBody = `Hello ${patientName}, your prescription from ${clinicName} is ready. \n\nYou can view it here: ${pdfUrl} \n\nGet well soon!`;
+
+  const messageBody = aiTreatmentSummary
+    ? `Hello ${patientName}, your prescription from *${clinicName}* is ready!\n\n` +
+      `${aiTreatmentSummary}\n\n` +
+      `📄 *View / Download Official PDF Prescription:*\n${pdfUrl}\n\n` +
+      `Get well soon!`
+    : `Hello ${patientName}, your prescription from ${clinicName} is ready. \n\nYou can view it here: ${pdfUrl} \n\nGet well soon!`;
 
   return await sendViaMicroservice(formattedPhone, messageBody, pdfBase64, clinicId);
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, CheckCircle, User, Stethoscope, Pill, FileText, Activity, Send, Loader2 } from 'lucide-react';
+import { X, CheckCircle, User, Stethoscope, Pill, FileText, Activity, Send, Loader2, Sparkles } from 'lucide-react';
 import { PrescribedMedicine } from './PrescriptionCart';
 import { Patient } from '../patients/PatientSearchUI';
 
@@ -165,6 +165,43 @@ export default function ReviewPrescriptionModal({
               <p className="text-sm text-gray-500 mt-1">
                 {patient.age} years • {patient.gender} {patient.phone ? `• ${patient.phone}` : ''}
               </p>
+            </div>
+          </div>
+
+          {/* AI Present-Day Treatment Summary Preview Card */}
+          <div className="rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50/70 via-white to-blue-50/50 p-4 shadow-sm relative overflow-hidden">
+            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-indigo-100">
+              <div className="p-1 rounded-md bg-indigo-600 text-white shadow-xs">
+                <Sparkles size={14} className="animate-pulse" />
+              </div>
+              <h4 className="text-xs font-bold text-indigo-950 uppercase tracking-wider">
+                AI Present-Day Treatment Summary (Included in WhatsApp Message)
+              </h4>
+            </div>
+
+            <div className="space-y-1.5 text-xs text-slate-700">
+              {diagnosis && (
+                <p><span className="font-bold text-indigo-900">🩺 Diagnosis:</span> {diagnosis}</p>
+              )}
+              
+              <div>
+                <span className="font-bold text-indigo-900">💊 Prescribed Medicines ({medicines.length}):</span>
+                <ul className="mt-1 space-y-1 pl-2">
+                  {medicines.map((m, idx) => (
+                    <li key={idx} className="flex items-center gap-1.5 text-slate-800">
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0"></span>
+                      <span className="font-semibold">{m.name}</span>
+                      <span className="text-slate-500">
+                        ({[m.dosage_form, m.strength].filter(Boolean).join(' ') || 'Standard'}) • Dose: <strong className="text-indigo-900">{m.frequency}</strong> for {m.duration} {m.instructions ? `[${m.instructions}]` : ''}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {notes && (
+                <p className="mt-1 pt-1 border-t border-indigo-100/60"><span className="font-bold text-indigo-900">📝 Doctor Advice:</span> {notes}</p>
+              )}
             </div>
           </div>
 
