@@ -3,14 +3,18 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendMedicineReminder, sendFollowUpReminder } from '@/services/whatsappService';
 
-// This endpoint is triggered by Vercel Cron
+// This endpoint is triggered by Render 8:00 AM Cron or Vercel Cron
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
-  if (
-    process.env.NODE_ENV === 'production' &&
-    authHeader !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
-    return new Response('Unauthorized', { status: 401 });
+  const cronSecret = process.env.CRON_SECRET;
+  
+  // If CRON_SECRET is configured in environment, verify authorization
+  if (process.env.NODE_ENV === 'production' && cronSecret) {
+    const urlSecret = new URL(request.url).searchParams.get('secret');
+    const isAuthorized = authHeader === `Bearer ${cronSecret}` || urlSecret === cronSecret;
+    if (!isAuthorized) {
+      return new Response('Unauthorized', { status: 401 });
+    }
   }
 
   try {
