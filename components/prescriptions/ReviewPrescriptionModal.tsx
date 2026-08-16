@@ -175,7 +175,7 @@ export default function ReviewPrescriptionModal({
                 <Sparkles size={14} className="animate-pulse" />
               </div>
               <h4 className="text-xs font-bold text-indigo-950 uppercase tracking-wider">
-                AI Present-Day Treatment Summary (Included in WhatsApp Message)
+                Treatment Summary (Included in WhatsApp Message)
               </h4>
             </div>
 

@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     }
 
     if (medicines.length > 0) {
-      aiTreatmentSummary += `💊 *AI Present-Day Treatment Schedule:*\n`;
+      aiTreatmentSummary += `💊 *Treatment Schedule:*\n`;
       medicines.forEach((m, idx) => {
         const medName = m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine';
         const strength = m.strength ? ` ${m.strength}` : '';
