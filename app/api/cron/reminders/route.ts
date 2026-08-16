@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { sendMedicineReminder, sendFollowUpReminder } from '@/services/whatsappService';
+import { sendMedicineReminder, sendFollowUpReminder, sendRefillReminder } from '@/services/whatsappService';
 
 // This endpoint is triggered by Render 8:00 AM Cron or Vercel Cron
 export async function GET(request: Request) {
@@ -78,8 +78,6 @@ export async function GET(request: Request) {
         const doctorName = prescription?.doctor?.fullName || 'your doctor';
         const clinicName = prescription?.clinic?.name || 'the clinic';
 
-        const message = `Hello ${patient.name}, this is a follow-up reminder from Dr. ${doctorName} at ${clinicName}. Your follow-up appointment is scheduled for ${dateStr}. Please call the clinic if you wish to reschedule.`;
-
         try {
           await sendFollowUpReminder(
             patient.phone,
@@ -92,10 +90,33 @@ export async function GET(request: Request) {
         } catch (e) {
           success = false;
         }
+      } else if (reminder.messageType === 'REFILL') {
+        const doctorName = prescription?.doctor?.fullName || 'your doctor';
+        const clinicName = prescription?.clinic?.name || 'the clinic';
+
+        try {
+          await sendRefillReminder(
+            patient.phone,
+            patient.name,
+            doctorName,
+            clinicName,
+            prescription?.clinicId || 'default'
+          );
+          success = true;
+        } catch (e) {
+          success = false;
+        }
       } else {
-        // MEDICINE reminder
+        // MEDICINE reminder (MEDICINE_MORNING, MEDICINE_AFTERNOON, MEDICINE_NIGHT, or generic MEDICINE)
         const doctorName = prescription?.doctor?.fullName || 'your doctor';
         const clinicName = prescription?.clinic?.name || 'RxNXT Clinic';
+
+        let slotType = 'MORNING';
+        if (reminder.messageType === 'MEDICINE_AFTERNOON') {
+          slotType = 'AFTERNOON';
+        } else if (reminder.messageType === 'MEDICINE_NIGHT') {
+          slotType = 'NIGHT';
+        }
 
         const medicinesList = prescription?.medicines
           ?.map((m: any) => {
@@ -115,7 +136,8 @@ export async function GET(request: Request) {
             medicinesList,
             doctorName,
             clinicName,
-            prescription?.clinicId || 'default'
+            prescription?.clinicId || 'default',
+            slotType
           );
           success = true;
         } catch (e) {

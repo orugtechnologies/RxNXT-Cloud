@@ -92,9 +92,15 @@ export async function POST(request: Request) {
         });
       }
 
-      // Determine medication course duration (e.g. 5 days, 7 days)
-      let maxDurationDays = 5; // default fallback 5 days
+      // Determine medication course duration (e.g. 5 days, 7 days vs 30 days / chronic)
+      let maxDurationDays = 5;
+      let isChronic = false;
+
       medicines.forEach((m: any) => {
+        const durStr = (m.duration || '').toLowerCase();
+        if (durStr.includes('month') || durStr.includes('30') || durStr.includes('continuous')) {
+          isChronic = true;
+        }
         if (m.duration) {
           const match = m.duration.match(/\d+/);
           if (match) {
@@ -105,25 +111,108 @@ export async function POST(request: Request) {
           }
         }
       });
-      maxDurationDays = Math.min(maxDurationDays, 14); // Cap at 14 days max per prescription for safety
 
-      // Create daily MEDICINE intake reminders for each day of the course at 8:00 AM IST
+      if (maxDurationDays > 14) isChronic = true;
+
       const now = new Date();
-      for (let day = 1; day <= maxDurationDays; day++) {
-        const reminderDate = new Date();
-        reminderDate.setDate(now.getDate() + day);
-        // Set to 8:00 AM IST (2:30 AM UTC)
-        reminderDate.setUTCHours(2, 30, 0, 0);
+
+      if (isChronic) {
+        // CHRONIC CARE: Daily morning briefings for 14 days + Refill Reminder on Day 25
+        for (let day = 1; day <= 14; day++) {
+          const reminderDate = new Date();
+          reminderDate.setDate(now.getDate() + day);
+          reminderDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
+
+          await tx.reminder.create({
+            data: {
+              prescriptionId: prescription.id,
+              patientId: patientId,
+              scheduledFor: reminderDate,
+              status: 'PENDING',
+              messageType: 'MEDICINE',
+            }
+          });
+        }
+
+        // Schedule Monthly Refill Alert on Day 25
+        const refillDate = new Date();
+        refillDate.setDate(now.getDate() + 25);
+        refillDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
 
         await tx.reminder.create({
           data: {
             prescriptionId: prescription.id,
             patientId: patientId,
-            scheduledFor: reminderDate,
+            scheduledFor: refillDate,
             status: 'PENDING',
-            messageType: 'MEDICINE',
+            messageType: 'REFILL',
           }
         });
+      } else {
+        // ACUTE CARE: Smart Slot Nudges (Morning 8:00 AM, Afternoon 1:30 PM, Night 8:30 PM)
+        let needsAfternoon = false;
+        let needsNight = true; // default true for standard acute courses
+
+        medicines.forEach((m: any) => {
+          const freq = (m.frequency || '').toLowerCase();
+          if (freq.includes('1-1-1') || freq.includes('0-1-0') || freq.includes('thrice') || freq.includes('3 times')) {
+            needsAfternoon = true;
+          }
+          if (freq.includes('1-0-1') || freq.includes('1-1-1') || freq.includes('0-0-1') || freq.includes('bedtime') || freq.includes('twice') || freq.includes('night')) {
+            needsNight = true;
+          }
+        });
+
+        for (let day = 1; day <= maxDurationDays; day++) {
+          // 1. Morning Slot (8:00 AM IST / 2:30 AM UTC)
+          const morningDate = new Date();
+          morningDate.setDate(now.getDate() + day);
+          morningDate.setUTCHours(2, 30, 0, 0);
+
+          await tx.reminder.create({
+            data: {
+              prescriptionId: prescription.id,
+              patientId: patientId,
+              scheduledFor: morningDate,
+              status: 'PENDING',
+              messageType: 'MEDICINE_MORNING',
+            }
+          });
+
+          // 2. Afternoon Slot (1:30 PM IST / 8:00 AM UTC)
+          if (needsAfternoon) {
+            const afternoonDate = new Date();
+            afternoonDate.setDate(now.getDate() + day);
+            afternoonDate.setUTCHours(8, 0, 0, 0);
+
+            await tx.reminder.create({
+              data: {
+                prescriptionId: prescription.id,
+                patientId: patientId,
+                scheduledFor: afternoonDate,
+                status: 'PENDING',
+                messageType: 'MEDICINE_AFTERNOON',
+              }
+            });
+          }
+
+          // 3. Night Slot (8:30 PM IST / 3:00 PM UTC)
+          if (needsNight) {
+            const nightDate = new Date();
+            nightDate.setDate(now.getDate() + day);
+            nightDate.setUTCHours(15, 0, 0, 0);
+
+            await tx.reminder.create({
+              data: {
+                prescriptionId: prescription.id,
+                patientId: patientId,
+                scheduledFor: nightDate,
+                status: 'PENDING',
+                messageType: 'MEDICINE_NIGHT',
+              }
+            });
+          }
+        }
       }
 
       // Mark any WAITING queue items for this patient and doctor as COMPLETED

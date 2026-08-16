@@ -80,7 +80,7 @@ export async function sendPrescriptionPDF(
 }
 
 /**
- * Sends a generic medicine reminder message.
+ * Sends a Smart Slot medicine reminder message (Morning, Afternoon, Night).
  */
 export async function sendMedicineReminder(
   patientPhone: string,
@@ -88,16 +88,31 @@ export async function sendMedicineReminder(
   medicineDetails: string,
   doctorName?: string,
   clinicName?: string,
-  clinicId?: string
+  clinicId?: string,
+  slotType: string = 'MORNING'
 ) {
   const formattedPhone = sanitizePhone(patientPhone);
   const docStr = doctorName ? `Dr. ${doctorName}` : 'your doctor';
   const clinicStr = clinicName ? `*${clinicName}*` : 'your clinic';
 
-  const messageBody = `💊 *Daily Medicine Intake Reminder*\n\n` +
-    `Hello ${patientName}, this is a health & medicine reminder from ${docStr} at ${clinicStr} to take your prescribed medications today:\n\n` +
+  let headerIcon = '🌅';
+  let slotTitle = 'Morning Dose Reminder';
+  let foodNote = '🥛 Take with water as directed. Have a healthy day!';
+
+  if (slotType === 'AFTERNOON') {
+    headerIcon = '☀️';
+    slotTitle = 'Afternoon Dose Reminder';
+    foodNote = '🍱 Take after lunch as directed. Stay active!';
+  } else if (slotType === 'NIGHT') {
+    headerIcon = '🌙';
+    slotTitle = 'Night Dose Reminder';
+    foodNote = '😴 Take after dinner/bedtime as directed. Rest well tonight!';
+  }
+
+  const messageBody = `${headerIcon} *${slotTitle}*\n\n` +
+    `Hello ${patientName}, health reminder from ${docStr} at ${clinicStr} to take your prescribed doses:\n\n` +
     `${medicineDetails}\n\n` +
-    `Please take your doses on time with water as instructed. Stay healthy and recover fast! 🩺`;
+    `${foodNote} 🩺`;
 
   return await sendViaMicroservice(formattedPhone, messageBody, undefined, clinicId);
 }
@@ -114,6 +129,28 @@ export async function sendFollowUpReminder(
 ) {
   const formattedPhone = sanitizePhone(patientPhone);
   const messageBody = `Hi ${patientName}, this is a reminder from ${clinicName} for your follow-up visit with Dr. ${doctorName} today. Please contact us if you need to reschedule.`;
+
+  return await sendViaMicroservice(formattedPhone, messageBody, undefined, clinicId);
+}
+
+/**
+ * Sends a monthly prescription refill reminder message for chronic medications.
+ */
+export async function sendRefillReminder(
+  patientPhone: string,
+  patientName: string,
+  doctorName?: string,
+  clinicName?: string,
+  clinicId?: string
+) {
+  const formattedPhone = sanitizePhone(patientPhone);
+  const docStr = doctorName ? `Dr. ${doctorName}` : 'your doctor';
+  const clinicStr = clinicName ? `*${clinicName}*` : 'your clinic';
+
+  const messageBody = `🏥 *Monthly Care & Refill Reminder*\n\n` +
+    `Hello ${patientName}, you have approximately 5 days of your regular prescribed medications remaining.\n\n` +
+    `Please schedule your monthly health checkup and prescription refill with ${docStr} at ${clinicStr}.\n\n` +
+    `📞 *Please call or visit the clinic to reserve your consultation slot!* 🩺`;
 
   return await sendViaMicroservice(formattedPhone, messageBody, undefined, clinicId);
 }
