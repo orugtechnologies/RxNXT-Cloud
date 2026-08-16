@@ -20,7 +20,7 @@ By leveraging a massive, normalized Drug Master database and a sub-100ms typo-to
 ## 4. System Architecture
 The platform operates on a heavily optimized, multi-tenant Serverless cloud architecture:
 - **Frontend / API:** Next.js 14 (App Router) executing on Vercel's Edge Network.
-- **Backend / Database:** PostgreSQL hosted on Neon.tech, accessed via Prisma ORM.
+- **Backend / Database:** PostgreSQL hosted on Supabase Mumbai (`ap-south-1`), accessed via Prisma ORM.
 - **Authentication:** NextAuth.js providing secure, multi-tenant RBAC.
 - **WhatsApp Integration:** Custom microservice hosted on Render for delivering PDFs and cron-scheduled reminders.
 - **Search Engine:** Fuse.js with custom additive clinical scoring (prioritizing doctor/clinic favorites and handling typos).

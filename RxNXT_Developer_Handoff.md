@@ -5,7 +5,7 @@ This document is intended for incoming developers to quickly understand the curr
 ---
 
 ## 1. Executive Summary
-**RxNXT** is a modern, cloud-hosted Digital Prescription and Clinical Workspace engineered to replace traditional paper prescriptions in high-volume clinics. The platform is fully multi-tenant, role-based, and cloud-deployed on Vercel + Neon PostgreSQL. It covers the complete clinic workflow — from patient registration at the front desk, to prescription generation by the doctor, to automated WhatsApp delivery of the prescription PDF to the patient, and automated follow-up / medicine reminders.
+**RxNXT** is a modern, cloud-hosted Digital Prescription and Clinical Workspace engineered to replace traditional paper prescriptions in high-volume clinics. The platform is fully multi-tenant, role-based, and cloud-deployed on Vercel + Supabase Mumbai Cloud PostgreSQL. It covers the complete clinic workflow — from patient registration at the front desk, to prescription generation by the doctor, to automated WhatsApp delivery of the prescription PDF to the patient, and automated follow-up / medicine reminders.
 
 ---
 

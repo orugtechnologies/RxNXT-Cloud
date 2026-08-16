@@ -4,7 +4,7 @@
 
 ## 🏥 What is RxNXT?
 A **clinic workflow, drug management, and patient communication application** built to reduce clinical friction and prevent prescription errors.
-Fully migrated from a local SQLite prototype to a modern, scalable cloud architecture on Neon PostgreSQL + Vercel.
+Fully migrated to a modern, scalable cloud architecture on Supabase Mumbai Cloud PostgreSQL + Vercel.
 
 ---
 
@@ -12,7 +12,7 @@ Fully migrated from a local SQLite prototype to a modern, scalable cloud archite
 - **Framework:** Next.js 14 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS + Radix UI components (lucide-react for icons)
-- **Database:** PostgreSQL (Neon.tech) via Prisma ORM
+- **Database:** PostgreSQL (Supabase Mumbai Cloud - ap-south-1) via Prisma ORM
 - **Authentication:** NextAuth.js (Credentials Provider + bcrypt hashing + JWT strategy)
 - **Search Engine:** Fuse.js (Fuzzy matching, typo-tolerance, and custom additive clinical scoring)
 - **WhatsApp:** Custom WhatsApp microservice hosted on Render (`rxnxt-whatsapp-service.onrender.com`). Configured via `WHATSAPP_MICROSERVICE_URL` env var. **No Twilio.**
@@ -107,7 +107,7 @@ The search API (`app/api/drugs/search/route.ts`) uses an **Additive Scoring Algo
 
 ## 🚀 Cloud Deployment Checklist (Vercel)
 Required environment variables:
-1. `DATABASE_URL` — Neon PostgreSQL connection string
+1. `DATABASE_URL` — Supabase Mumbai PostgreSQL connection string
 2. `NEXTAUTH_SECRET` — JWT encryption secret
 3. `NEXTAUTH_URL` — Live domain (e.g., `https://rxnxt-app.vercel.app`)
 4. `WHATSAPP_MICROSERVICE_URL` — URL of the WhatsApp microservice on Render

@@ -3,7 +3,7 @@
 RxNXT MVP for Incubator Demonstrations and Pilot Doctor Usage.
 
 ## Overview
-This Next.js App Router project serves as the Drug Management Module, backed by Neon PostgreSQL. 
+This Next.js App Router project serves as the Drug Management Module, backed by Supabase Mumbai Cloud PostgreSQL (`aws-0-ap-south-1.pooler.supabase.com`). 
 It supports advanced Type-Tolerant Search, Auto-population of dosage forms, and strict Multi-Tenant RLS for Clinic Preferences and Doctor Favorites.
 
 ## Quick Start

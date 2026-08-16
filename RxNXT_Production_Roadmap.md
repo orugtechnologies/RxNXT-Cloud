@@ -9,7 +9,7 @@ This document outlines the current state of the RxNXT platform and the roadmap f
 RxNXT has successfully transitioned from a local prototype to a **fully cloud-hosted, scalable multi-tenant architecture**.
 
 **What is Live Today:**
-- **Cloud Infrastructure:** Hosted on Vercel with Neon PostgreSQL as the database.
+- **Cloud Infrastructure:** Hosted on Vercel with Supabase Mumbai Cloud PostgreSQL as the database.
 - **WhatsApp Microservice:** A custom Render-based microservice handles automated WhatsApp delivery of PDFs and cron-based reminders. **No reliance on Twilio.**
 - **Role-Based Workflows:** Distinct, fully-functional dashboards for Doctors, Admins, Receptionists, and Nurses.
 - **Queue Management:** Live patient queuing connecting the reception desk to the doctor's dashboard.
