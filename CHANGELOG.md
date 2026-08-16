@@ -1,5 +1,10 @@
 # RxNXT Changelog
 
+## [2026-08-16] - Supabase Mumbai Migration & Smart Slot Adherence Model
+- **Supabase Mumbai Cloud PostgreSQL**: Fully migrated database infrastructure to Supabase Mumbai (`aws-0-ap-south-1.pooler.supabase.com`) via Prisma ORM for ultra-low latency across India.
+- **Smart Slot Adherence Model**: Built a 3-window WhatsApp medication reminder engine operating at 8:00 AM IST (Morning), 1:30 PM IST (Afternoon), and 8:30 PM IST (Night) with food instruction rules ("Before breakfast", "After dinner").
+- **Acute vs. Chronic Care Classifier**: Automated 2-phase lifecycle for prescriptions—Acute courses (<= 14 days) receive duration-limited Smart Slot nudges and stop automatically; Chronic courses (> 14 days) receive a 14-day morning briefing plus a Day 25 Monthly Prescription Refill & Care Alert.
+
 ## [2026-07-26] - Prescription Speed Optimization, Mobile PWA & WhatsApp BYOD
 - **Prescription Workflow Acceleration**: Replaced rigid, long `<select>` dropdowns in `PrescriptionCart.tsx` with **1-Click Quick-Select Chips (Pills)** (`1-0-1`, `5 days`, `After meals`) and type-to-search datalist combo inputs. Added smart OPD default values when adding new medicines to eliminate mandatory field validation bottlenecks.
 - **Receptionist Front Desk Auto-Reset**: Implemented automatic clearing and reset of patient registration forms and search queries in `/receptionist/dashboard` immediately after registering a patient, readying the desk for the next person in line.

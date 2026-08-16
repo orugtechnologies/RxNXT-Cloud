@@ -33,7 +33,7 @@ Fully migrated to a modern, scalable cloud architecture on Supabase Mumbai Cloud
 - **TreatmentGroup + TreatmentGroupItem:** Doctor-saved prescription templates (e.g., "Viral Fever Protocol").
 - **DoctorDrugPreference:** Tracks per-doctor prescription frequency per drug (used in search scoring).
 - **ClinicDrugPreference:** Tracks per-clinic prescription frequency per drug (used in search scoring).
-- **Reminder:** WhatsApp reminder queue. Fields: `scheduledFor`, `sentAt`, `status` (PENDING/SENT/FAILED), `messageType` (PDF/MEDICINE).
+- **Reminder:** WhatsApp reminder queue. Fields: `scheduledFor`, `sentAt`, `status` (PENDING/SENT/FAILED), `messageType` (`FOLLOW_UP`, `MEDICINE_MORNING`, `MEDICINE_AFTERNOON`, `MEDICINE_NIGHT`, `REFILL`).
 - **QueueItem:** Patient waiting queue. Fields: `status` (WAITING/AWAY/SKIPPED/COMPLETED), `tokenNumber`, linked to Clinic + Doctor + Patient.
 
 ---
@@ -66,19 +66,23 @@ The search API (`app/api/drugs/search/route.ts`) uses an **Additive Scoring Algo
 
 ---
 
-## 📱 WhatsApp Microservice Integration
-- **Provider:** Custom microservice at `https://rxnxt-whatsapp-service.onrender.com` (Render hosting)
+## 📱 WhatsApp Microservice Integration & Smart Slot Reminders
+- **Provider:** Custom microservice at `https://rxnxt-whatsapp-service.onrender.com` (Render $7 hosting with WebSockets)
 - **Service file:** `services/whatsappService.ts`
 - **Warm-up:** `ensureMicroserviceAwake()` pings `/api/whatsapp/status` before sending to wake Render from sleep
 - **Sending endpoint:** `POST /api/whatsapp/send` on the microservice — accepts `{ phone, message, pdfBase64, clinicId }`
-- **Phone sanitization:** Strips formatting, removes leading zeros, prepends `+91` if no country code
+- **Smart Slot Cron Schedules (Asia/Kolkata)**:
+  - 🌅 **8:00 AM IST**: Morning Doses (`MEDICINE_MORNING`), Follow-ups (`FOLLOW_UP`), and Refills (`REFILL`)
+  - ☀️ **1:30 PM IST**: Afternoon Doses (`MEDICINE_AFTERNOON`)
+  - 🌙 **8:30 PM IST**: Night Doses (`MEDICINE_NIGHT`)
 
-### Three send functions:
+### Four Send Functions:
 | Function | Trigger | What it sends |
 |----------|---------|---------------|
-| `sendPrescriptionPDF()` | Doctor clicks "Send via WhatsApp" | PDF as base64 + view URL to patient |
-| `sendMedicineReminder()` | Vercel Cron (hourly) | Medicine intake reminder message |
-| `sendFollowUpReminder()` | Vercel Cron (hourly) | Follow-up visit reminder from clinic/doctor |
+| `sendPrescriptionPDF()` | Doctor clicks "Send via WhatsApp" | PDF as base64 + view URL + AI Treatment Summary |
+| `sendMedicineReminder()` | Render 3-Slot Cron | Smart Slot Morning / Afternoon / Night dose alert |
+| `sendFollowUpReminder()` | Render 8:00 AM Cron | Doctor follow-up visit appointment reminder |
+| `sendRefillReminder()` | Render 8:00 AM Cron | Day 25 monthly prescription refill reminder for chronic care |
 
 ---
 
