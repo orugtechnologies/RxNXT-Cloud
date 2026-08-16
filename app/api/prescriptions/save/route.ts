@@ -92,6 +92,40 @@ export async function POST(request: Request) {
         });
       }
 
+      // Determine medication course duration (e.g. 5 days, 7 days)
+      let maxDurationDays = 5; // default fallback 5 days
+      medicines.forEach((m: any) => {
+        if (m.duration) {
+          const match = m.duration.match(/\d+/);
+          if (match) {
+            const parsed = parseInt(match[0], 10);
+            if (parsed > 0 && parsed > maxDurationDays) {
+              maxDurationDays = parsed;
+            }
+          }
+        }
+      });
+      maxDurationDays = Math.min(maxDurationDays, 14); // Cap at 14 days max per prescription for safety
+
+      // Create daily MEDICINE intake reminders for each day of the course at 8:00 AM IST
+      const now = new Date();
+      for (let day = 1; day <= maxDurationDays; day++) {
+        const reminderDate = new Date();
+        reminderDate.setDate(now.getDate() + day);
+        // Set to 8:00 AM IST (2:30 AM UTC)
+        reminderDate.setUTCHours(2, 30, 0, 0);
+
+        await tx.reminder.create({
+          data: {
+            prescriptionId: prescription.id,
+            patientId: patientId,
+            scheduledFor: reminderDate,
+            status: 'PENDING',
+            messageType: 'MEDICINE',
+          }
+        });
+      }
+
       // Mark any WAITING queue items for this patient and doctor as COMPLETED
       await tx.queueItem.updateMany({
         where: {

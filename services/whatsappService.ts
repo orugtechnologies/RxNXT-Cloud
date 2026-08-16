@@ -85,11 +85,19 @@ export async function sendPrescriptionPDF(
 export async function sendMedicineReminder(
   patientPhone: string,
   patientName: string,
-  medicineName: string,
+  medicineDetails: string,
+  doctorName?: string,
+  clinicName?: string,
   clinicId?: string
 ) {
   const formattedPhone = sanitizePhone(patientPhone);
-  const messageBody = `Hi ${patientName}, this is a gentle reminder to take your medicine: *${medicineName}*.`;
+  const docStr = doctorName ? `Dr. ${doctorName}` : 'your doctor';
+  const clinicStr = clinicName ? `*${clinicName}*` : 'your clinic';
+
+  const messageBody = `💊 *Daily Medicine Intake Reminder*\n\n` +
+    `Hello ${patientName}, this is a health & medicine reminder from ${docStr} at ${clinicStr} to take your prescribed medications today:\n\n` +
+    `${medicineDetails}\n\n` +
+    `Please take your doses on time with water as instructed. Stay healthy and recover fast! 🩺`;
 
   return await sendViaMicroservice(formattedPhone, messageBody, undefined, clinicId);
 }

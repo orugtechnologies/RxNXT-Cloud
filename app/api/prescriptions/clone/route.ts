@@ -60,6 +60,51 @@ export async function POST(request: Request) {
         })),
       });
 
+      // Create Follow-up Reminder if followUpDate exists
+      if (followUpDate) {
+        await tx.reminder.create({
+          data: {
+            prescriptionId: prescription.id,
+            patientId,
+            scheduledFor: new Date(followUpDate),
+            status: 'PENDING',
+            messageType: 'FOLLOW_UP',
+          }
+        });
+      }
+
+      // Determine medication course duration (e.g. 5 days, 7 days)
+      let maxDurationDays = 5;
+      source.medicines.forEach((m) => {
+        if (m.duration) {
+          const match = m.duration.match(/\d+/);
+          if (match) {
+            const parsed = parseInt(match[0], 10);
+            if (parsed > 0 && parsed > maxDurationDays) {
+              maxDurationDays = parsed;
+            }
+          }
+        }
+      });
+      maxDurationDays = Math.min(maxDurationDays, 14);
+
+      const now = new Date();
+      for (let day = 1; day <= maxDurationDays; day++) {
+        const reminderDate = new Date();
+        reminderDate.setDate(now.getDate() + day);
+        reminderDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
+
+        await tx.reminder.create({
+          data: {
+            prescriptionId: prescription.id,
+            patientId,
+            scheduledFor: reminderDate,
+            status: 'PENDING',
+            messageType: 'MEDICINE',
+          }
+        });
+      }
+
       return { encounter, prescription, medicines_copied: source.medicines.length };
     });
 

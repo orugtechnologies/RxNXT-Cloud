@@ -94,16 +94,27 @@ export async function GET(request: Request) {
         }
       } else {
         // MEDICINE reminder
+        const doctorName = prescription?.doctor?.fullName || 'your doctor';
+        const clinicName = prescription?.clinic?.name || 'RxNXT Clinic';
+
         const medicinesList = prescription?.medicines
-          ?.map((m: any) => m.customName || m.drug?.brandName || m.drug?.genericName)
+          ?.map((m: any) => {
+            const name = m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine';
+            const strength = m.strength ? ` ${m.strength}` : '';
+            const freq = m.frequency ? ` (${m.frequency})` : '';
+            const inst = m.instructions ? ` - ${m.instructions}` : '';
+            return `• *${name}${strength}*${freq}${inst}`;
+          })
           .filter(Boolean)
-          .join(', ') || 'your prescribed medicines';
+          .join('\n') || '• Prescribed medicines';
 
         try {
           await sendMedicineReminder(
             patient.phone,
             patient.name,
             medicinesList,
+            doctorName,
+            clinicName,
             prescription?.clinicId || 'default'
           );
           success = true;
