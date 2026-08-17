@@ -60,6 +60,17 @@ export async function POST(request: Request) {
         })),
       });
 
+      // Supersede old PENDING reminders for this patient so new prescriptions replace old schedules
+      await tx.reminder.updateMany({
+        where: {
+          patientId,
+          status: 'PENDING',
+        },
+        data: {
+          status: 'SUPERSEDED',
+        },
+      });
+
       // Create Follow-up Reminder if followUpDate exists
       if (followUpDate) {
         await tx.reminder.create({

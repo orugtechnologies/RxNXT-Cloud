@@ -118,8 +118,28 @@ export async function GET(request: Request) {
           slotType = 'NIGHT';
         }
 
-        const medicinesList = prescription?.medicines
-          ?.map((m: any) => {
+        const isMedForSlot = (freq: string, slot: string) => {
+          const f = (freq || '').toLowerCase();
+          if (slot === 'MORNING') {
+            if (f.includes('0-1-0') || f.includes('0-0-1') || f.includes('bedtime') || f.includes('hs')) {
+              if (!f.includes('1-1-1') && !f.includes('1-0-1') && !f.includes('thrice') && !f.includes('3 times')) return false;
+            }
+            return true;
+          }
+          if (slot === 'AFTERNOON') {
+            return f.includes('1-1-1') || f.includes('0-1-0') || f.includes('thrice') || f.includes('3 times') || f.includes('afternoon');
+          }
+          if (slot === 'NIGHT') {
+            return f.includes('1-0-1') || f.includes('1-1-1') || f.includes('0-0-1') || f.includes('bedtime') || f.includes('hs') || f.includes('night') || f.includes('twice') || f.includes('thrice') || f.includes('2 times') || f.includes('3 times');
+          }
+          return true;
+        };
+
+        const filteredMeds = prescription?.medicines?.filter((m: any) => isMedForSlot(m.frequency || '', slotType)) || [];
+        const targetMeds = filteredMeds.length > 0 ? filteredMeds : prescription?.medicines || [];
+
+        const medicinesList = targetMeds
+          .map((m: any) => {
             const name = m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine';
             const strength = m.strength ? ` ${m.strength}` : '';
             const freq = m.frequency ? ` (${m.frequency})` : '';
