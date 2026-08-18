@@ -16,7 +16,7 @@ export default function AuthLayout({
             <Image src="/Logo.png" alt="RxNXT Logo" width={130} height={130} className="object-contain drop-shadow-md" priority />
           </div>
           <p className="text-sm font-bold text-slate-700 tracking-wide">
-            Digital Prescription & Clinic Management
+            Doctor Led. AI Enabled
           </p>
         </div>
         
