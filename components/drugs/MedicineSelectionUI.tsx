@@ -15,7 +15,7 @@ export default function MedicineSelectionUI({ medicine, onClear, onSavePrescript
   const [route, setRoute] = useState<string>('');
   const [frequency, setFrequency] = useState<string>('1-0-1');
   const [duration, setDuration] = useState<string>('5 days');
-  const [instructions, setInstructions] = useState<string>('After meals');
+  const [instructions, setInstructions] = useState<string>('After Food');
 
   // Auto-populate fields when a medicine is selected
   useEffect(() => {

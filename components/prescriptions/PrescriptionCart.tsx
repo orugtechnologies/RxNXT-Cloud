@@ -40,19 +40,17 @@ const FREQUENCY_OPTIONS = [
   { label: 'TDS (Three times daily)', value: 'TDS' },
   { label: 'QID (Four times daily)', value: 'QID' },
   { label: 'HS (At bedtime)', value: 'HS' },
-  { label: 'AC (Before meals)', value: 'AC' },
-  { label: 'PC (After meals)', value: 'PC' },
+  { label: 'AC (Before Food)', value: 'AC' },
+  { label: 'PC (After Food)', value: 'PC' },
   // Interval-based
   { label: 'Every 4 hours', value: 'Every 4 hours' },
   { label: 'Every 6 hours', value: 'Every 6 hours' },
   { label: 'Every 8 hours', value: 'Every 8 hours' },
   { label: 'Every 12 hours', value: 'Every 12 hours' },
   // Alternate / Weekly
-  { label: 'Alternate days (EOD)', value: 'Alternate days' },
-  { label: 'Twice a week', value: 'Twice a week' },
+  { label: 'Alternate days', value: 'Alternate days' },
   { label: 'Once a week', value: 'Once a week' },
-  { label: 'Once in 2 weeks', value: 'Once in 2 weeks' },
-  { label: 'Once a month', value: 'Once a month' },
+  { label: 'Twice a week', value: 'Twice a week' },
 ];
 
 const DURATION_OPTIONS = [
@@ -60,16 +58,13 @@ const DURATION_OPTIONS = [
   { label: '1 day', value: '1 day' },
   { label: '2 days', value: '2 days' },
   { label: '3 days', value: '3 days' },
-  { label: '4 days', value: '4 days' },
   { label: '5 days', value: '5 days' },
-  { label: '6 days', value: '6 days' },
-  { label: '1 week (7 days)', value: '1 week' },
+  { label: '7 days', value: '7 days' },
   { label: '10 days', value: '10 days' },
-  { label: '2 weeks (14 days)', value: '2 weeks' },
+  { label: '14 days', value: '14 days' },
   { label: '15 days', value: '15 days' },
-  { label: '3 weeks', value: '3 weeks' },
-  { label: '1 month (30 days)', value: '1 month' },
-  { label: '45 days', value: '45 days' },
+  { label: '21 days', value: '21 days' },
+  { label: '1 month / 30 days', value: '1 month' },
   { label: '2 months', value: '2 months' },
   { label: '3 months', value: '3 months' },
   { label: '6 months', value: '6 months' },
@@ -81,9 +76,9 @@ const DURATION_OPTIONS = [
 
 const INSTRUCTIONS_OPTIONS = [
   { label: '— Select Instructions —', value: '' },
-  { label: 'Before meals', value: 'Before meals' },
-  { label: 'After meals', value: 'After meals' },
-  { label: 'With meals', value: 'With meals' },
+  { label: 'Before Food', value: 'Before Food' },
+  { label: 'After Food', value: 'After Food' },
+  { label: 'With Food', value: 'With Food' },
   { label: 'Empty stomach', value: 'Empty stomach' },
   { label: 'At bedtime', value: 'At bedtime' },
   { label: 'With warm water', value: 'With warm water' },
@@ -96,7 +91,7 @@ const INSTRUCTIONS_OPTIONS = [
 
 const QUICK_FREQUENCIES = ['1-0-1', '1-1-1', '1-0-0', '0-0-1', 'OD', 'SOS'];
 const QUICK_DURATIONS = ['3 days', '5 days', '7 days', '10 days', '15 days', '1 month'];
-const QUICK_INSTRUCTIONS = ['After meals', 'Before meals', 'At bedtime', 'SOS'];
+const QUICK_INSTRUCTIONS = ['After Food', 'Before Food', 'At bedtime', 'SOS'];
 
 export default function PrescriptionCart({ medicines, onUpdate, onRemove }: CartProps) {
   if (medicines.length === 0) return (

@@ -92,27 +92,28 @@ export async function sendMedicineReminder(
   slotType: string = 'MORNING'
 ) {
   const formattedPhone = sanitizePhone(patientPhone);
-  const docStr = doctorName ? `Dr. ${doctorName}` : 'your doctor';
+  const cleanDocName = doctorName ? (doctorName.trim().toLowerCase().startsWith('dr') ? doctorName.trim() : `Dr. ${doctorName.trim()}`) : 'your doctor';
+  const docStr = doctorName ? cleanDocName : 'your doctor';
   const clinicStr = clinicName ? `*${clinicName}*` : 'your clinic';
 
   let headerIcon = '🌅';
   let slotTitle = 'Morning Dose Reminder';
-  let foodNote = '🥛 Take with water as directed. Have a healthy day!';
+  let foodNote = '🥛 Take medicine as per the direction. Have a healthy day';
 
   if (slotType === 'AFTERNOON') {
     headerIcon = '☀️';
     slotTitle = 'Afternoon Dose Reminder';
-    foodNote = '🍱 Take after lunch as directed. Stay active!';
+    foodNote = '🍱 Take medicine as per the direction. Have a healthy day';
   } else if (slotType === 'NIGHT') {
     headerIcon = '🌙';
     slotTitle = 'Night Dose Reminder';
-    foodNote = '😴 Take after dinner/bedtime as directed. Rest well tonight!';
+    foodNote = '😴 Take medicine as per the direction. Have a healthy day';
   }
 
   const messageBody = `${headerIcon} *${slotTitle}*\n\n` +
     `Hello ${patientName}, health reminder from ${docStr} at ${clinicStr} to take your prescribed doses:\n\n` +
     `${medicineDetails}\n\n` +
-    `${foodNote} 🩺`;
+    `${foodNote}`;
 
   return await sendViaMicroservice(formattedPhone, messageBody, undefined, clinicId);
 }

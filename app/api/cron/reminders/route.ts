@@ -142,12 +142,22 @@ export async function GET(request: Request) {
           .map((m: any) => {
             const name = m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine';
             const strength = m.strength ? ` ${m.strength}` : '';
-            const freq = m.frequency ? ` (${m.frequency})` : '';
-            const inst = m.instructions ? ` - ${m.instructions}` : '';
-            return `• *${name}${strength}*${freq}${inst}`;
+            let rawInst = (m.instructions || '').trim();
+            let inst = rawInst;
+            if (rawInst) {
+              if (/after\s+(meals?|food)/i.test(rawInst)) {
+                inst = 'After Food';
+              } else if (/before\s+(meals?|food)/i.test(rawInst)) {
+                inst = 'Before Food';
+              } else if (/with\s+(meals?|food)/i.test(rawInst)) {
+                inst = 'With Food';
+              }
+            }
+            const instStr = inst ? ` - ${inst}` : '';
+            return `"${name}${strength}${instStr}"`;
           })
           .filter(Boolean)
-          .join('\n') || '• Prescribed medicines';
+          .join('\n') || '"Prescribed medicines"';
 
         try {
           await sendMedicineReminder(

@@ -163,7 +163,7 @@ function PrescriptionWorkflowContent() {
       route: drug.route,
       frequency: '1-0-1',
       duration: '5 days',
-      instructions: 'After meals'
+      instructions: 'After Food'
     };
     setMedicines([...medicines, newMed]);
   };
