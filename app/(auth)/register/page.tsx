@@ -74,7 +74,7 @@ function RegisterForm() {
   };
 
   return (
-    <Card className="glass border-0 shadow-2xl bg-white/95 backdrop-blur-md">
+    <Card className="glass border border-white/80 shadow-2xl bg-white/90 backdrop-blur-md rounded-2xl">
       <CardContent className="pt-8 px-8 pb-8">
         <div className="mb-6 text-center">
           <h2 className="text-2xl font-bold text-slate-800">
