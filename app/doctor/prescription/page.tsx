@@ -16,6 +16,7 @@ import { Suspense, useEffect } from 'react';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { ensureMicroserviceAwake } from '@/services/whatsappService';
 import AIPatientSummaryCard from '@/components/patients/AIPatientSummaryCard';
+import ProtocolPacksBar from '@/components/prescriptions/ProtocolPacksBar';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
@@ -354,8 +355,13 @@ function PrescriptionWorkflowContent() {
                 </div>
                 
                 <div className="p-6">
-                  {/* Treatment Groups UI */}
-                  <TreatmentGroupsUI key={templateKey} onLoadTemplate={loadTemplate} />
+                  {/* 1-Click My Protocol Packs Bar */}
+                  <ProtocolPacksBar 
+                    onLoadTemplate={loadTemplate} 
+                    onOpenSaveModal={() => setShowSaveTemplate(true)} 
+                    cartCount={medicines.length} 
+                    refreshKey={templateKey} 
+                  />
 
                   <DrugSearchUI onSelect={handleDrugSelect} />
                   
