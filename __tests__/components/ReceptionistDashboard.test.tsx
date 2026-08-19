@@ -1,11 +1,15 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import ReceptionistDashboard from '../../app/(dashboard)/receptionist/dashboard/page';
 
-// Mock Lucide icons
-jest.mock('lucide-react', () => ({
-  PhoneCall: () => <div data-testid="icon-phonecall" />
-}));
+jest.mock('lucide-react', () => {
+  return new Proxy({}, {
+    get: (target, prop) => {
+      const Component = (props: any) => <div data-testid={`icon-${String(prop).toLowerCase()}`} {...props} />;
+      return Component;
+    }
+  });
+});
 
 // Mock the sub-components
 jest.mock('@/components/patients/PatientSearchUI', () => {
@@ -15,7 +19,7 @@ jest.mock('@/components/patients/PatientSearchUI', () => {
         <button data-testid="select-btn" onClick={() => onSelect({ id: 'p-1', name: 'Rohan Sharma', phone: '9876543210' })}>
           Select Patient
         </button>
-        <button data-testid="add-new-btn" onClick={onAddNew}>
+        <button data-testid="add-new-btn" onClick={() => onAddNew('')}>
           Add New
         </button>
       </div>
@@ -28,9 +32,27 @@ jest.mock('@/components/patients/AddPatientModal', () => {
     return (
       <div data-testid="add-patient-modal">
         <button data-testid="close-modal-btn" onClick={onClose}>Close</button>
-        <button data-testid="success-modal-btn" onClick={() => onSuccess({ id: 'p-2', name: 'Amit Patel' })}>Success</button>
+        <button data-testid="success-modal-btn" onClick={() => onSuccess({ id: 'p-2', name: 'Amit Patel', phone: '9988776655' })}>Success</button>
       </div>
     );
+  };
+});
+
+jest.mock('@/components/patients/AssignDoctorModal', () => {
+  return function MockAssignDoctorModal({ patient, onClose, onSuccess }: any) {
+    return (
+      <div data-testid="assign-doctor-modal">
+        <span>Patient: {patient.name}</span>
+        <button data-testid="assign-success-btn" onClick={() => onSuccess(`Assigned ${patient.name} to doctor`)}>Assign Success</button>
+        <button data-testid="close-assign-btn" onClick={onClose}>Close</button>
+      </div>
+    );
+  };
+});
+
+jest.mock('@/components/receptionist/ClinicQueue', () => {
+  return function MockClinicQueue() {
+    return <div data-testid="clinic-queue" />;
   };
 });
 
@@ -43,18 +65,14 @@ describe('ReceptionistDashboard Page', () => {
     expect(screen.getByTestId('patient-search-ui')).toBeInTheDocument();
   });
 
-  it('displays a success message when a patient is selected', async () => {
-    jest.useFakeTimers();
+  it('opens assign doctor modal when a patient is selected', () => {
     render(<ReceptionistDashboard />);
     
     const selectBtn = screen.getByTestId('select-btn');
     fireEvent.click(selectBtn);
     
-    expect(screen.getByText('Selected: Rohan Sharma (9876543210)')).toBeInTheDocument();
-    
-    jest.runAllTimers();
-    expect(screen.queryByText('Selected: Rohan Sharma (9876543210)')).not.toBeInTheDocument();
-    jest.useRealTimers();
+    expect(screen.getByTestId('assign-doctor-modal')).toBeInTheDocument();
+    expect(screen.getByText('Patient: Rohan Sharma')).toBeInTheDocument();
   });
 
   it('opens and closes the add patient modal', () => {
@@ -74,24 +92,25 @@ describe('ReceptionistDashboard Page', () => {
     expect(screen.queryByTestId('add-patient-modal')).not.toBeInTheDocument();
   });
 
-  it('shows success message after successfully registering a patient', () => {
+  it('shows success message after assigning a patient to a doctor', () => {
     jest.useFakeTimers();
     render(<ReceptionistDashboard />);
     
-    // Open modal
-    const addNewBtn = screen.getByTestId('add-new-btn');
-    fireEvent.click(addNewBtn);
+    // Select patient to open assign modal
+    const selectBtn = screen.getByTestId('select-btn');
+    fireEvent.click(selectBtn);
     
-    // Trigger success
-    const successBtn = screen.getByTestId('success-modal-btn');
-    fireEvent.click(successBtn);
+    // Trigger assignment success
+    const assignBtn = screen.getByTestId('assign-success-btn');
+    fireEvent.click(assignBtn);
     
-    // Modal should close and success message should show
-    expect(screen.queryByTestId('add-patient-modal')).not.toBeInTheDocument();
-    expect(screen.getByText('Successfully registered: Amit Patel')).toBeInTheDocument();
+    // Success notification should show
+    expect(screen.getByText('Assigned Rohan Sharma to doctor')).toBeInTheDocument();
     
-    jest.runAllTimers();
-    expect(screen.queryByText('Successfully registered: Amit Patel')).not.toBeInTheDocument();
+    act(() => {
+      jest.runAllTimers();
+    });
+    expect(screen.queryByText('Assigned Rohan Sharma to doctor')).not.toBeInTheDocument();
     jest.useRealTimers();
   });
 });

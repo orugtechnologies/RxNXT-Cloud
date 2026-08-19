@@ -10,6 +10,7 @@ jest.mock('../../lib/prisma', () => ({
     prescription: { count: jest.fn(), findMany: jest.fn() },
     encounter: { findMany: jest.fn() },
     clinicDrugPreference: { findMany: jest.fn() },
+    queueItem: { findMany: jest.fn() },
   }
 }));
 
@@ -68,6 +69,9 @@ describe('Dashboard API', () => {
     
     // Frequent Meds Mock
     (prisma.clinicDrugPreference.findMany as jest.Mock).mockResolvedValue([]);
+
+    // Queue Mock
+    (prisma.queueItem.findMany as jest.Mock).mockResolvedValue([]);
 
     const response = await GET();
     const data = await response.json();

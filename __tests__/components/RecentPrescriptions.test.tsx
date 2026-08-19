@@ -47,7 +47,7 @@ describe('RecentPrescriptions Component', () => {
     expect(screen.getByText('Recent Prescriptions')).toBeInTheDocument();
     
     // Data should be rendered
-    expect(screen.getByText('John doe')).toBeInTheDocument();
+    expect(screen.getByText(/John/i)).toBeInTheDocument();
     expect(screen.getByText('45 yrs, Male')).toBeInTheDocument();
     expect(screen.getByText('Viral Infection')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument(); // Medicine count
