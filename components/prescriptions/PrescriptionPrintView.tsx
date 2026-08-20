@@ -24,7 +24,7 @@ export const generatePrescriptionPDF = (data: PrintViewProps, asBase64 = false):
   // Header: Clinic & Doctor
   doc.setFontSize(22);
   doc.setTextColor(41, 128, 185);
-  doc.text(data.clinicName || 'RxNXT Clinic', pageWidth / 2, y, { align: 'center' });
+  doc.text(data.clinicName || 'RxNXT™ Health Clinic', pageWidth / 2, y, { align: 'center' });
   
   y += 10;
   doc.setFontSize(12);

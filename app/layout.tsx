@@ -18,17 +18,17 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'RxNXT — Digital Prescription Platform',
-    template: '%s | RxNXT',
+    default: 'RxNXT™ — Doctor Led. AI Enabled Platform',
+    template: '%s | RxNXT™',
   },
   description:
-    'RxNXT is a modern digital prescription and drug management platform for clinics and doctors. Generate professional prescriptions in seconds.',
-  keywords: ['prescription', 'digital health', 'clinic management', 'EMR', 'healthcare'],
+    'RxNXT™ is a doctor-first digital prescription and clinic management platform. Generate structured prescriptions in 0.1s.',
+  keywords: ['prescription', 'digital health', 'clinic management', 'EMR', 'healthcare', 'RxNXT'],
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'RxNXT Cloud',
+    title: 'RxNXT™ Cloud',
   },
   icons: {
     icon: '/Logo.png',
