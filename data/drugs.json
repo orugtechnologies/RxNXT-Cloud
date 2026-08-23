@@ -1,152 +1,1352 @@
 [
-  {"genericName":"Paracetamol","brandName":"Crocin","dosageForm":"Tablet","strength":"500mg","route":"Oral"},
-  {"genericName":"Paracetamol","brandName":"Calpol","dosageForm":"Tablet","strength":"650mg","route":"Oral"},
-  {"genericName":"Paracetamol","brandName":"Dolo","dosageForm":"Tablet","strength":"650mg","route":"Oral"},
-  {"genericName":"Paracetamol","brandName":"Pyrigesic","dosageForm":"Syrup","strength":"120mg/5ml","route":"Oral"},
-  {"genericName":"Ibuprofen","brandName":"Brufen","dosageForm":"Tablet","strength":"400mg","route":"Oral"},
-  {"genericName":"Ibuprofen","brandName":"Combiflam","dosageForm":"Tablet","strength":"400mg","route":"Oral"},
-  {"genericName":"Diclofenac","brandName":"Voveran","dosageForm":"Tablet","strength":"50mg","route":"Oral"},
-  {"genericName":"Aceclofenac","brandName":"Aceclo","dosageForm":"Tablet","strength":"100mg","route":"Oral"},
-  {"genericName":"Naproxen","brandName":"Naprosyn","dosageForm":"Tablet","strength":"250mg","route":"Oral"},
-  {"genericName":"Aspirin","brandName":"Ecosprin","dosageForm":"Tablet","strength":"75mg","route":"Oral"},
-  {"genericName":"Tramadol","brandName":"Ultracet","dosageForm":"Tablet","strength":"50mg","route":"Oral"},
-  {"genericName":"Amoxicillin","brandName":"Mox","dosageForm":"Capsule","strength":"500mg","route":"Oral"},
-  {"genericName":"Amoxicillin","brandName":"Amoxil","dosageForm":"Syrup","strength":"125mg/5ml","route":"Oral"},
-  {"genericName":"Amoxicillin-Clavulanate","brandName":"Augmentin","dosageForm":"Tablet","strength":"625mg","route":"Oral"},
-  {"genericName":"Amoxicillin-Clavulanate","brandName":"Clavam","dosageForm":"Tablet","strength":"625mg","route":"Oral"},
-  {"genericName":"Azithromycin","brandName":"Azithral","dosageForm":"Tablet","strength":"500mg","route":"Oral"},
-  {"genericName":"Azithromycin","brandName":"Zithromax","dosageForm":"Tablet","strength":"250mg","route":"Oral"},
-  {"genericName":"Clarithromycin","brandName":"Klaricid","dosageForm":"Tablet","strength":"500mg","route":"Oral"},
-  {"genericName":"Ciprofloxacin","brandName":"Ciplox","dosageForm":"Tablet","strength":"500mg","route":"Oral"},
-  {"genericName":"Levofloxacin","brandName":"Levoflox","dosageForm":"Tablet","strength":"500mg","route":"Oral"},
-  {"genericName":"Ofloxacin","brandName":"Zanocin","dosageForm":"Tablet","strength":"200mg","route":"Oral"},
-  {"genericName":"Norfloxacin","brandName":"Norflox","dosageForm":"Tablet","strength":"400mg","route":"Oral"},
-  {"genericName":"Doxycycline","brandName":"Doxy","dosageForm":"Capsule","strength":"100mg","route":"Oral"},
-  {"genericName":"Cephalexin","brandName":"Sporidex","dosageForm":"Capsule","strength":"500mg","route":"Oral"},
-  {"genericName":"Cefixime","brandName":"Taxim-O","dosageForm":"Tablet","strength":"200mg","route":"Oral"},
-  {"genericName":"Cefuroxime","brandName":"Ceftum","dosageForm":"Tablet","strength":"250mg","route":"Oral"},
-  {"genericName":"Ceftriaxone","brandName":"Monocef","dosageForm":"Injection","strength":"1g","route":"IV/IM"},
-  {"genericName":"Clindamycin","brandName":"Dalacin","dosageForm":"Capsule","strength":"300mg","route":"Oral"},
-  {"genericName":"Metronidazole","brandName":"Flagyl","dosageForm":"Tablet","strength":"400mg","route":"Oral"},
-  {"genericName":"Nitrofurantoin","brandName":"Macrobid","dosageForm":"Capsule","strength":"100mg","route":"Oral"},
-  {"genericName":"Co-trimoxazole","brandName":"Bactrim","dosageForm":"Tablet","strength":"480mg","route":"Oral"},
-  {"genericName":"Fluconazole","brandName":"Flucan","dosageForm":"Capsule","strength":"150mg","route":"Oral"},
-  {"genericName":"Itraconazole","brandName":"Sporanox","dosageForm":"Capsule","strength":"100mg","route":"Oral"},
-  {"genericName":"Acyclovir","brandName":"Zovirax","dosageForm":"Tablet","strength":"400mg","route":"Oral"},
-  {"genericName":"Omeprazole","brandName":"Omez","dosageForm":"Capsule","strength":"20mg","route":"Oral"},
-  {"genericName":"Pantoprazole","brandName":"Pan","dosageForm":"Tablet","strength":"40mg","route":"Oral"},
-  {"genericName":"Rabeprazole","brandName":"Razo","dosageForm":"Tablet","strength":"20mg","route":"Oral"},
-  {"genericName":"Esomeprazole","brandName":"Neksium","dosageForm":"Tablet","strength":"40mg","route":"Oral"},
-  {"genericName":"Ranitidine","brandName":"Rantac","dosageForm":"Tablet","strength":"150mg","route":"Oral"},
-  {"genericName":"Domperidone","brandName":"Domstal","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Ondansetron","brandName":"Emeset","dosageForm":"Tablet","strength":"4mg","route":"Oral"},
-  {"genericName":"Metoclopramide","brandName":"Perinorm","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Loperamide","brandName":"Lopamide","dosageForm":"Tablet","strength":"2mg","route":"Oral"},
-  {"genericName":"Antacid (Aluminium+Magnesium)","brandName":"Digene","dosageForm":"Syrup","strength":"Standard","route":"Oral"},
-  {"genericName":"Sucralfate","brandName":"Sucrafil","dosageForm":"Tablet","strength":"1g","route":"Oral"},
-  {"genericName":"Metformin","brandName":"Glyciphage","dosageForm":"Tablet","strength":"500mg","route":"Oral"},
-  {"genericName":"Metformin","brandName":"Glucophage","dosageForm":"Tablet","strength":"1000mg","route":"Oral"},
-  {"genericName":"Glipizide","brandName":"Glipizide","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Glimepiride","brandName":"Amaryl","dosageForm":"Tablet","strength":"2mg","route":"Oral"},
-  {"genericName":"Glibenclamide","brandName":"Daonil","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Sitagliptin","brandName":"Januvia","dosageForm":"Tablet","strength":"100mg","route":"Oral"},
-  {"genericName":"Vildagliptin","brandName":"Galvus","dosageForm":"Tablet","strength":"50mg","route":"Oral"},
-  {"genericName":"Empagliflozin","brandName":"Jardiance","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Dapagliflozin","brandName":"Forxiga","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Pioglitazone","brandName":"Pioglit","dosageForm":"Tablet","strength":"15mg","route":"Oral"},
-  {"genericName":"Insulin Regular","brandName":"Actrapid","dosageForm":"Injection","strength":"100IU/ml","route":"Subcutaneous"},
-  {"genericName":"Insulin Glargine","brandName":"Lantus","dosageForm":"Injection","strength":"100IU/ml","route":"Subcutaneous"},
-  {"genericName":"Insulin NPH","brandName":"Humulin N","dosageForm":"Injection","strength":"100IU/ml","route":"Subcutaneous"},
-  {"genericName":"Amlodipine","brandName":"Norvasc","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Amlodipine","brandName":"Amcard","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Telmisartan","brandName":"Telma","dosageForm":"Tablet","strength":"40mg","route":"Oral"},
-  {"genericName":"Losartan","brandName":"Losar","dosageForm":"Tablet","strength":"50mg","route":"Oral"},
-  {"genericName":"Valsartan","brandName":"Diovan","dosageForm":"Tablet","strength":"80mg","route":"Oral"},
-  {"genericName":"Olmesartan","brandName":"Olsar","dosageForm":"Tablet","strength":"20mg","route":"Oral"},
-  {"genericName":"Enalapril","brandName":"Envas","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Ramipril","brandName":"Cardace","dosageForm":"Capsule","strength":"5mg","route":"Oral"},
-  {"genericName":"Lisinopril","brandName":"Lisinopril","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Atenolol","brandName":"Tenormin","dosageForm":"Tablet","strength":"50mg","route":"Oral"},
-  {"genericName":"Metoprolol","brandName":"Betaloc","dosageForm":"Tablet","strength":"50mg","route":"Oral"},
-  {"genericName":"Bisoprolol","brandName":"Concor","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Carvedilol","brandName":"Carloc","dosageForm":"Tablet","strength":"6.25mg","route":"Oral"},
-  {"genericName":"Nebivolol","brandName":"Nebicard","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Furosemide","brandName":"Lasix","dosageForm":"Tablet","strength":"40mg","route":"Oral"},
-  {"genericName":"Hydrochlorothiazide","brandName":"Aquazide","dosageForm":"Tablet","strength":"25mg","route":"Oral"},
-  {"genericName":"Spironolactone","brandName":"Aldactone","dosageForm":"Tablet","strength":"25mg","route":"Oral"},
-  {"genericName":"Atorvastatin","brandName":"Atorva","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Atorvastatin","brandName":"Lipitor","dosageForm":"Tablet","strength":"20mg","route":"Oral"},
-  {"genericName":"Rosuvastatin","brandName":"Crestor","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Simvastatin","brandName":"Zocor","dosageForm":"Tablet","strength":"20mg","route":"Oral"},
-  {"genericName":"Clopidogrel","brandName":"Plavix","dosageForm":"Tablet","strength":"75mg","route":"Oral"},
-  {"genericName":"Isosorbide Mononitrate","brandName":"ISMN","dosageForm":"Tablet","strength":"20mg","route":"Oral"},
-  {"genericName":"Glyceryl Trinitrate","brandName":"Nitrocontin","dosageForm":"Tablet","strength":"2.6mg","route":"Oral"},
-  {"genericName":"Digoxin","brandName":"Lanoxin","dosageForm":"Tablet","strength":"0.25mg","route":"Oral"},
-  {"genericName":"Amiodarone","brandName":"Cordarone","dosageForm":"Tablet","strength":"200mg","route":"Oral"},
-  {"genericName":"Diltiazem","brandName":"Dilzem","dosageForm":"Tablet","strength":"60mg","route":"Oral"},
-  {"genericName":"Prednisolone","brandName":"Wysolone","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Dexamethasone","brandName":"Dexona","dosageForm":"Tablet","strength":"0.5mg","route":"Oral"},
-  {"genericName":"Methylprednisolone","brandName":"Solu-Medrol","dosageForm":"Injection","strength":"500mg","route":"IV"},
-  {"genericName":"Hydrocortisone","brandName":"Solu-Cortef","dosageForm":"Injection","strength":"100mg","route":"IV"},
-  {"genericName":"Cetirizine","brandName":"Zyrtec","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Levocetirizine","brandName":"Levocet","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Fexofenadine","brandName":"Allegra","dosageForm":"Tablet","strength":"120mg","route":"Oral"},
-  {"genericName":"Loratadine","brandName":"Claritin","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Chlorpheniramine","brandName":"Piriton","dosageForm":"Tablet","strength":"4mg","route":"Oral"},
-  {"genericName":"Montelukast","brandName":"Montair","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Salbutamol","brandName":"Ventolin","dosageForm":"Inhaler","strength":"100mcg","route":"Inhalation"},
-  {"genericName":"Salbutamol","brandName":"Asthalin","dosageForm":"Tablet","strength":"2mg","route":"Oral"},
-  {"genericName":"Ipratropium","brandName":"Ipravent","dosageForm":"Inhaler","strength":"20mcg","route":"Inhalation"},
-  {"genericName":"Theophylline","brandName":"Theo-asthalin","dosageForm":"Tablet","strength":"200mg","route":"Oral"},
-  {"genericName":"Ambroxol","brandName":"Mucolite","dosageForm":"Syrup","strength":"15mg/5ml","route":"Oral"},
-  {"genericName":"Bromhexine","brandName":"Bisolvon","dosageForm":"Tablet","strength":"8mg","route":"Oral"},
-  {"genericName":"Dextromethorphan","brandName":"Benadryl","dosageForm":"Syrup","strength":"10mg/5ml","route":"Oral"},
-  {"genericName":"Levothyroxine","brandName":"Eltroxin","dosageForm":"Tablet","strength":"50mcg","route":"Oral"},
-  {"genericName":"Levothyroxine","brandName":"Thyronorm","dosageForm":"Tablet","strength":"100mcg","route":"Oral"},
-  {"genericName":"Carbimazole","brandName":"Neomercazole","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Gabapentin","brandName":"Gabapin","dosageForm":"Capsule","strength":"300mg","route":"Oral"},
-  {"genericName":"Pregabalin","brandName":"Lyrica","dosageForm":"Capsule","strength":"75mg","route":"Oral"},
-  {"genericName":"Carbamazepine","brandName":"Tegretol","dosageForm":"Tablet","strength":"200mg","route":"Oral"},
-  {"genericName":"Phenytoin","brandName":"Eptoin","dosageForm":"Tablet","strength":"100mg","route":"Oral"},
-  {"genericName":"Valproate","brandName":"Valparin","dosageForm":"Tablet","strength":"200mg","route":"Oral"},
-  {"genericName":"Levetiracetam","brandName":"Keppra","dosageForm":"Tablet","strength":"500mg","route":"Oral"},
-  {"genericName":"Clonazepam","brandName":"Rivotril","dosageForm":"Tablet","strength":"0.5mg","route":"Oral"},
-  {"genericName":"Alprazolam","brandName":"Alprax","dosageForm":"Tablet","strength":"0.25mg","route":"Oral"},
-  {"genericName":"Diazepam","brandName":"Valium","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Zolpidem","brandName":"Ambien","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Amitriptyline","brandName":"Tryptomer","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Sertraline","brandName":"Serta","dosageForm":"Tablet","strength":"50mg","route":"Oral"},
-  {"genericName":"Fluoxetine","brandName":"Prodep","dosageForm":"Capsule","strength":"20mg","route":"Oral"},
-  {"genericName":"Escitalopram","brandName":"Nexito","dosageForm":"Tablet","strength":"10mg","route":"Oral"},
-  {"genericName":"Venlafaxine","brandName":"Venlor","dosageForm":"Capsule","strength":"75mg","route":"Oral"},
-  {"genericName":"Hydroxychloroquine","brandName":"Plaquenil","dosageForm":"Tablet","strength":"200mg","route":"Oral"},
-  {"genericName":"Methotrexate","brandName":"Methofar","dosageForm":"Tablet","strength":"2.5mg","route":"Oral"},
-  {"genericName":"Sulfasalazine","brandName":"Salazopyrin","dosageForm":"Tablet","strength":"500mg","route":"Oral"},
-  {"genericName":"Vitamin B12 (Methylcobalamin)","brandName":"Nervijen","dosageForm":"Tablet","strength":"500mcg","route":"Oral"},
-  {"genericName":"Vitamin D3","brandName":"Calcirol","dosageForm":"Capsule","strength":"60000IU","route":"Oral"},
-  {"genericName":"Calcium + Vitamin D3","brandName":"Shelcal","dosageForm":"Tablet","strength":"500mg+250IU","route":"Oral"},
-  {"genericName":"Iron + Folic Acid","brandName":"Feronia","dosageForm":"Tablet","strength":"150mg+1.5mg","route":"Oral"},
-  {"genericName":"Folic Acid","brandName":"Folvite","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Zinc Sulphate","brandName":"Zincovit","dosageForm":"Tablet","strength":"20mg","route":"Oral"},
-  {"genericName":"Multivitamin","brandName":"Becosules","dosageForm":"Capsule","strength":"Standard","route":"Oral"},
-  {"genericName":"Multivitamin","brandName":"Supradyn","dosageForm":"Tablet","strength":"Standard","route":"Oral"},
-  {"genericName":"Albendazole","brandName":"Zentel","dosageForm":"Tablet","strength":"400mg","route":"Oral"},
-  {"genericName":"Mebendazole","brandName":"Vermox","dosageForm":"Tablet","strength":"100mg","route":"Oral"},
-  {"genericName":"Ivermectin","brandName":"Ivecop","dosageForm":"Tablet","strength":"12mg","route":"Oral"},
-  {"genericName":"ORS (Oral Rehydration Salts)","brandName":"Electral","dosageForm":"Powder","strength":"Standard","route":"Oral"},
-  {"genericName":"Lactulose","brandName":"Duphalac","dosageForm":"Syrup","strength":"3.35g/5ml","route":"Oral"},
-  {"genericName":"Bisacodyl","brandName":"Dulcolax","dosageForm":"Tablet","strength":"5mg","route":"Oral"},
-  {"genericName":"Clobetasol Cream","brandName":"Tenovate","dosageForm":"Cream","strength":"0.05%","route":"Topical"},
-  {"genericName":"Betamethasone Cream","brandName":"Betnovate","dosageForm":"Cream","strength":"0.1%","route":"Topical"},
-  {"genericName":"Clotrimazole Cream","brandName":"Candid","dosageForm":"Cream","strength":"1%","route":"Topical"},
-  {"genericName":"Mupirocin Ointment","brandName":"T-Bact","dosageForm":"Ointment","strength":"2%","route":"Topical"},
-  {"genericName":"Calamine Lotion","brandName":"Lacto Calamine","dosageForm":"Lotion","strength":"Standard","route":"Topical"},
-  {"genericName":"Ciprofloxacin Eye Drops","brandName":"Ciplox Eye Drops","dosageForm":"Eye Drops","strength":"0.3%","route":"Ophthalmic"},
-  {"genericName":"Moxifloxacin Eye Drops","brandName":"Vigamox","dosageForm":"Eye Drops","strength":"0.5%","route":"Ophthalmic"},
-  {"genericName":"Tropicamide Eye Drops","brandName":"Tropicacyl","dosageForm":"Eye Drops","strength":"1%","route":"Ophthalmic"},
-  {"genericName":"Timolol Eye Drops","brandName":"Timoptic","dosageForm":"Eye Drops","strength":"0.5%","route":"Ophthalmic"},
-  {"genericName":"Latanoprost Eye Drops","brandName":"Xalatan","dosageForm":"Eye Drops","strength":"0.005%","route":"Ophthalmic"},
-  {"genericName":"Pantoprazole + Domperidone","brandName":"Pantodac DSR","dosageForm":"Capsule","strength":"40mg+30mg","route":"Oral"},
-  {"genericName":"Paracetamol + Caffeine","brandName":"Saridon","dosageForm":"Tablet","strength":"Standard","route":"Oral"},
-  {"genericName":"Diclofenac + Paracetamol","brandName":"Voveran Plus","dosageForm":"Tablet","strength":"50mg+325mg","route":"Oral"}
+  {
+    "genericName": "Aceclofenac",
+    "brandName": "Aceclo",
+    "aliases": "Zerodol, Hifenac, Aceclo, Dolokind, ACL",
+    "dosageForm": "Tablet",
+    "strength": "100mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Acyclovir",
+    "brandName": "Zovirax",
+    "aliases": "Zovirax, Herperax, ACV",
+    "dosageForm": "Tablet",
+    "strength": "400mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Albendazole",
+    "brandName": "Zentel",
+    "aliases": "Zentel, Bandey, Noworm, ALB",
+    "dosageForm": "Tablet",
+    "strength": "400mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Alprazolam",
+    "brandName": "Alprax",
+    "aliases": "Alprax, Restyl, Trika, ALP",
+    "dosageForm": "Tablet",
+    "strength": "0.25mg",
+    "route": "Oral",
+    "isRestricted": true
+  },
+  {
+    "genericName": "Ambroxol",
+    "brandName": "Mucolite",
+    "aliases": "Mucolite, Ambrodil, AMB",
+    "dosageForm": "Syrup",
+    "strength": "15mg/5ml",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Amiodarone",
+    "brandName": "Cordarone",
+    "aliases": "Cordarone, AMI",
+    "dosageForm": "Tablet",
+    "strength": "200mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Amitriptyline",
+    "brandName": "Tryptomer",
+    "aliases": "Tryptomer, Elavil, AMI",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Amlodipine",
+    "brandName": "Norvasc",
+    "aliases": "Amlong, Stamlo, Norvasc, AML, Telma-AM, Amlokind-T, TEL-AM",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Amlodipine",
+    "brandName": "Amcard",
+    "aliases": "Amlong, Stamlo, Norvasc, AML, Telma-AM, Amlokind-T, TEL-AM, Amcard",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Amoxicillin",
+    "brandName": "Mox",
+    "aliases": "Mox, Amoxil, Novamox, AMOX, Augmentin, Clavam, Moxikind-CV, Amoxyclav, AUG, CV",
+    "dosageForm": "Capsule",
+    "strength": "500mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Amoxicillin",
+    "brandName": "Amoxil",
+    "aliases": "Mox, Amoxil, Novamox, AMOX, Augmentin, Clavam, Moxikind-CV, Amoxyclav, AUG, CV",
+    "dosageForm": "Syrup",
+    "strength": "125mg/5ml",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Amoxicillin-Clavulanate",
+    "brandName": "Augmentin",
+    "aliases": "Mox, Amoxil, Novamox, AMOX, Augmentin, Clavam, Moxikind-CV, Amoxyclav, AUG, CV",
+    "dosageForm": "Tablet",
+    "strength": "625mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Amoxicillin-Clavulanate",
+    "brandName": "Clavam",
+    "aliases": "Mox, Amoxil, Novamox, AMOX, Augmentin, Clavam, Moxikind-CV, Amoxyclav, AUG, CV",
+    "dosageForm": "Tablet",
+    "strength": "625mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Antacid (Aluminium+Magnesium)",
+    "brandName": "Digene",
+    "aliases": "Digene, Gelusil, Mucaine, ANTACID",
+    "dosageForm": "Syrup",
+    "strength": "Standard",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Aspirin",
+    "brandName": "Ecosprin",
+    "aliases": "Ecosprin, Disprin, ASA, Aspicot, Cardiprin",
+    "dosageForm": "Tablet",
+    "strength": "75mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Atenolol",
+    "brandName": "Tenormin",
+    "aliases": "Tenormin, Betacard, ATN",
+    "dosageForm": "Tablet",
+    "strength": "50mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Atorvastatin",
+    "brandName": "Atorva",
+    "aliases": "Atorva, Storvas, Lipitor, Atocor, ATOR",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Atorvastatin",
+    "brandName": "Lipitor",
+    "aliases": "Atorva, Storvas, Lipitor, Atocor, ATOR",
+    "dosageForm": "Tablet",
+    "strength": "20mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Azithromycin",
+    "brandName": "Zithromax",
+    "aliases": "Azee, Azithral, Zithromax, AZM, Azi",
+    "dosageForm": "Tablet",
+    "strength": "250mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Azithromycin",
+    "brandName": "Azithral",
+    "aliases": "Azee, Azithral, Zithromax, AZM, Azi",
+    "dosageForm": "Tablet",
+    "strength": "500mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Betamethasone Cream",
+    "brandName": "Betnovate",
+    "aliases": "Betnovate, Betamil, BET",
+    "dosageForm": "Cream",
+    "strength": "0.1%",
+    "route": "Topical",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Bisacodyl",
+    "brandName": "Dulcolax",
+    "aliases": "Dulcolax, Dulcoflex, BIS",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Bisoprolol",
+    "brandName": "Concor",
+    "aliases": "Concor, Corbis, BISO",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Bromhexine",
+    "brandName": "Bisolvon",
+    "aliases": "Bisolvon, Grilinctus-BM, BRM",
+    "dosageForm": "Tablet",
+    "strength": "8mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Calamine Lotion",
+    "brandName": "Lacto Calamine",
+    "aliases": "Lacto Calamine, Caladryl, CALAMINE, Lacto",
+    "dosageForm": "Lotion",
+    "strength": "Standard",
+    "route": "Topical",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Calcium + Vitamin D3",
+    "brandName": "Shelcal",
+    "aliases": "Shelcal, Gemcal, Cipcal, CAL-D3, Calcirol, D3 Must, Uprise D3, Tayo, Vit D3",
+    "dosageForm": "Tablet",
+    "strength": "500mg+250IU",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Carbamazepine",
+    "brandName": "Tegretol",
+    "aliases": "Tegretol, Mazetol, CBZ",
+    "dosageForm": "Tablet",
+    "strength": "200mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Carbimazole",
+    "brandName": "Neomercazole",
+    "aliases": "Neomercazole, CARB",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Carvedilol",
+    "brandName": "Carloc",
+    "aliases": "Carloc, Coreg, CARV",
+    "dosageForm": "Tablet",
+    "strength": "6.25mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Cefixime",
+    "brandName": "Taxim-O",
+    "aliases": "Zifi, Taxim-O, Cefspan, Mahacef, CFX",
+    "dosageForm": "Tablet",
+    "strength": "200mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Ceftriaxone",
+    "brandName": "Monocef",
+    "aliases": "Monocef, Rocephin, Xone, Oframax, CTR",
+    "dosageForm": "Injection",
+    "strength": "1g",
+    "route": "IV/IM",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Cefuroxime",
+    "brandName": "Ceftum",
+    "aliases": "Ceftum, Cetil, Altacef, Pulmocef, CXM",
+    "dosageForm": "Tablet",
+    "strength": "250mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Cephalexin",
+    "brandName": "Sporidex",
+    "aliases": "Sporidex",
+    "dosageForm": "Capsule",
+    "strength": "500mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Cetirizine",
+    "brandName": "Zyrtec",
+    "aliases": "Cetzine, Alerid, Zyrtec, Okacet, CET, Levocet, Vozet, Xyzal, L-Cet, LEVO-CET, Montair-LC, Telekast-L, Levocet-M, Montek-LC, MLC",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Chlorpheniramine",
+    "brandName": "Piriton",
+    "aliases": "Piriton",
+    "dosageForm": "Tablet",
+    "strength": "4mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Ciprofloxacin",
+    "brandName": "Ciplox",
+    "aliases": "Cifran, Ciplox, Cipro, CIP, Oflox, Zenflox, Tarivid, OFL",
+    "dosageForm": "Tablet",
+    "strength": "500mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Ciprofloxacin Eye Drops",
+    "brandName": "Ciplox Eye Drops",
+    "aliases": "Cifran, Ciplox, Cipro, CIP, Oflox, Zenflox, Tarivid, OFL",
+    "dosageForm": "Eye Drops",
+    "strength": "0.3%",
+    "route": "Ophthalmic",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Clarithromycin",
+    "brandName": "Klaricid",
+    "aliases": "Klaricid",
+    "dosageForm": "Tablet",
+    "strength": "500mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Clindamycin",
+    "brandName": "Dalacin",
+    "aliases": "Dalacin",
+    "dosageForm": "Capsule",
+    "strength": "300mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Clobetasol Cream",
+    "brandName": "Tenovate",
+    "aliases": "Tenovate, Cloben, CLO",
+    "dosageForm": "Cream",
+    "strength": "0.05%",
+    "route": "Topical",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Clonazepam",
+    "brandName": "Rivotril",
+    "aliases": "Clonotril, Zapiz, Rivotril, CLZ",
+    "dosageForm": "Tablet",
+    "strength": "0.5mg",
+    "route": "Oral",
+    "isRestricted": true
+  },
+  {
+    "genericName": "Clopidogrel",
+    "brandName": "Plavix",
+    "aliases": "Clopilet, Plavix, CLOP",
+    "dosageForm": "Tablet",
+    "strength": "75mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Clotrimazole Cream",
+    "brandName": "Candid",
+    "aliases": "Candid, Canesten, CLOT",
+    "dosageForm": "Cream",
+    "strength": "1%",
+    "route": "Topical",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Co-trimoxazole",
+    "brandName": "Bactrim",
+    "aliases": "Bactrim",
+    "dosageForm": "Tablet",
+    "strength": "480mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Dapagliflozin",
+    "brandName": "Forxiga",
+    "aliases": "Forxiga, Oxra, DAPA",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Dexamethasone",
+    "brandName": "Dexona",
+    "aliases": "Dexona",
+    "dosageForm": "Tablet",
+    "strength": "0.5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Dextromethorphan",
+    "brandName": "Benadryl",
+    "aliases": "Benadryl DR, Ascoril D, DXM, Benadryl",
+    "dosageForm": "Syrup",
+    "strength": "10mg/5ml",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Diazepam",
+    "brandName": "Valium",
+    "aliases": "Valium, Calmpose, DZP",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": true
+  },
+  {
+    "genericName": "Diclofenac",
+    "brandName": "Voveran",
+    "aliases": "Voveran, Dynapar, Voltaren, Diclogel, DIC",
+    "dosageForm": "Tablet",
+    "strength": "50mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Diclofenac + Paracetamol",
+    "brandName": "Voveran Plus",
+    "aliases": "PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic, Voveran, Dynapar, Voltaren, Diclogel, DIC",
+    "dosageForm": "Tablet",
+    "strength": "50mg+325mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Digoxin",
+    "brandName": "Lanoxin",
+    "aliases": "Lanoxin",
+    "dosageForm": "Tablet",
+    "strength": "0.25mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Diltiazem",
+    "brandName": "Dilzem",
+    "aliases": "Dilzem",
+    "dosageForm": "Tablet",
+    "strength": "60mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Domperidone",
+    "brandName": "Domstal",
+    "aliases": "Pan-D, Pantocid-D, Pantop-D, PAND, Domstal, Motilium, Vomistop, DOM",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Doxycycline",
+    "brandName": "Doxy",
+    "aliases": "Doxil, Doxy-1, Microdox, DOX, Doxy",
+    "dosageForm": "Capsule",
+    "strength": "100mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Empagliflozin",
+    "brandName": "Jardiance",
+    "aliases": "Jardiance, Gibtulio, EMPA",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Enalapril",
+    "brandName": "Envas",
+    "aliases": "Envas, Vasotec, ENA",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Escitalopram",
+    "brandName": "Nexito",
+    "aliases": "Nexito, Cipralex, ESC",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Esomeprazole",
+    "brandName": "Neksium",
+    "aliases": "Omez, Omee, Prilosec, OMZ, Nexpro, Sompraz, Nexium, ESO, Neksium",
+    "dosageForm": "Tablet",
+    "strength": "40mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Fexofenadine",
+    "brandName": "Allegra",
+    "aliases": "Allegra, Fexova, Altiva, FEXO",
+    "dosageForm": "Tablet",
+    "strength": "120mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Fluconazole",
+    "brandName": "Flucan",
+    "aliases": "Forcan, Flucos, Diflucan, FLZ, Flucan",
+    "dosageForm": "Capsule",
+    "strength": "150mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Fluoxetine",
+    "brandName": "Prodep",
+    "aliases": "Prodep",
+    "dosageForm": "Capsule",
+    "strength": "20mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Folic Acid",
+    "brandName": "Folvite",
+    "aliases": "Autrin, Orofer-XT, Dexorange, Fefol, IFA, Folvite",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Furosemide",
+    "brandName": "Lasix",
+    "aliases": "Lasix, Frusenex, LASIX, FUR",
+    "dosageForm": "Tablet",
+    "strength": "40mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Gabapentin",
+    "brandName": "Gabapin",
+    "aliases": "Gabapin, Neurontin, GBP",
+    "dosageForm": "Capsule",
+    "strength": "300mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Glibenclamide",
+    "brandName": "Daonil",
+    "aliases": "Daonil",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Glimepiride",
+    "brandName": "Amaryl",
+    "aliases": "Amaryl, Zoryl, Glimy, GLIM",
+    "dosageForm": "Tablet",
+    "strength": "2mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Glipizide",
+    "brandName": "Glipizide",
+    "aliases": "Glynase, Minidiab, Glipizide",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Glyceryl Trinitrate",
+    "brandName": "Nitrocontin",
+    "aliases": "Nitrocontin",
+    "dosageForm": "Tablet",
+    "strength": "2.6mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Hydrochlorothiazide",
+    "brandName": "Aquazide",
+    "aliases": "Telma-H, Telmikind-H, TEL-H, Aquazide",
+    "dosageForm": "Tablet",
+    "strength": "25mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Hydrocortisone",
+    "brandName": "Solu-Cortef",
+    "aliases": "Solu-Cortef",
+    "dosageForm": "Injection",
+    "strength": "100mg",
+    "route": "IV",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Hydroxychloroquine",
+    "brandName": "Plaquenil",
+    "aliases": "Plaquenil",
+    "dosageForm": "Tablet",
+    "strength": "200mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Ibuprofen",
+    "brandName": "Brufen",
+    "aliases": "Brufen, Combiflam, Ibugesic, IBU",
+    "dosageForm": "Tablet",
+    "strength": "400mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Ibuprofen",
+    "brandName": "Combiflam",
+    "aliases": "Brufen, Combiflam, Ibugesic, IBU",
+    "dosageForm": "Tablet",
+    "strength": "400mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Insulin Glargine",
+    "brandName": "Lantus",
+    "aliases": "Lantus",
+    "dosageForm": "Injection",
+    "strength": "100IU/ml",
+    "route": "Subcutaneous",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Insulin NPH",
+    "brandName": "Humulin N",
+    "aliases": "Humulin",
+    "dosageForm": "Injection",
+    "strength": "100IU/ml",
+    "route": "Subcutaneous",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Insulin Regular",
+    "brandName": "Actrapid",
+    "aliases": "Actrapid",
+    "dosageForm": "Injection",
+    "strength": "100IU/ml",
+    "route": "Subcutaneous",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Ipratropium",
+    "brandName": "Ipravent",
+    "aliases": "Duolin, Ipravent, IPR",
+    "dosageForm": "Inhaler",
+    "strength": "20mcg",
+    "route": "Inhalation",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Iron + Folic Acid",
+    "brandName": "Feronia",
+    "aliases": "Autrin, Orofer-XT, Dexorange, Fefol, IFA, Feronia",
+    "dosageForm": "Tablet",
+    "strength": "150mg+1.5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Isosorbide Mononitrate",
+    "brandName": "ISMN",
+    "aliases": "ISMN",
+    "dosageForm": "Tablet",
+    "strength": "20mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Itraconazole",
+    "brandName": "Sporanox",
+    "aliases": "Sporanox",
+    "dosageForm": "Capsule",
+    "strength": "100mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Ivermectin",
+    "brandName": "Ivecop",
+    "aliases": "Ivecop, Vermact, IVM",
+    "dosageForm": "Tablet",
+    "strength": "12mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Lactulose",
+    "brandName": "Duphalac",
+    "aliases": "Duphalac, Cremaffin, LAC",
+    "dosageForm": "Syrup",
+    "strength": "3.35g/5ml",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Latanoprost Eye Drops",
+    "brandName": "Xalatan",
+    "aliases": "Xalatan",
+    "dosageForm": "Eye Drops",
+    "strength": "0.005%",
+    "route": "Ophthalmic",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Levetiracetam",
+    "brandName": "Keppra",
+    "aliases": "Levera, Keppra, LEV",
+    "dosageForm": "Tablet",
+    "strength": "500mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Levocetirizine",
+    "brandName": "Levocet",
+    "aliases": "Cetzine, Alerid, Zyrtec, Okacet, CET, Levocet, Vozet, Xyzal, L-Cet, LEVO-CET, Montair-LC, Telekast-L, Levocet-M, Montek-LC, MLC, LEVO",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Levofloxacin",
+    "brandName": "Levoflox",
+    "aliases": "Levomac, Loxof, Glevo, LEVO, LVX, Oflox, Zenflox, Tarivid, OFL, Levoflox",
+    "dosageForm": "Tablet",
+    "strength": "500mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Levothyroxine",
+    "brandName": "Eltroxin",
+    "aliases": "Thyronorm, Eltroxin, Synthroid, THYRO",
+    "dosageForm": "Tablet",
+    "strength": "50mcg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Levothyroxine",
+    "brandName": "Thyronorm",
+    "aliases": "Thyronorm, Eltroxin, Synthroid, THYRO",
+    "dosageForm": "Tablet",
+    "strength": "100mcg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Lisinopril",
+    "brandName": "Lisinopril",
+    "aliases": "Lisinopril",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Loperamide",
+    "brandName": "Lopamide",
+    "aliases": "Imodium, Lopamide, LOP",
+    "dosageForm": "Tablet",
+    "strength": "2mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Loratadine",
+    "brandName": "Claritin",
+    "aliases": "Claritin",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Losartan",
+    "brandName": "Losar",
+    "aliases": "Losacar, Repace, Cozaar, LOS, Losar",
+    "dosageForm": "Tablet",
+    "strength": "50mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Mebendazole",
+    "brandName": "Vermox",
+    "aliases": "Vermox",
+    "dosageForm": "Tablet",
+    "strength": "100mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Metformin",
+    "brandName": "Glyciphage",
+    "aliases": "Glycomet, Gluconorm, Glucophage, Obimet, MET, Glyciphage",
+    "dosageForm": "Tablet",
+    "strength": "500mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Metformin",
+    "brandName": "Glucophage",
+    "aliases": "Glycomet, Gluconorm, Glucophage, Obimet, MET",
+    "dosageForm": "Tablet",
+    "strength": "1000mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Methotrexate",
+    "brandName": "Methofar",
+    "aliases": "Methofar",
+    "dosageForm": "Tablet",
+    "strength": "2.5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Methylprednisolone",
+    "brandName": "Solu-Medrol",
+    "aliases": "Solu-Medrol",
+    "dosageForm": "Injection",
+    "strength": "500mg",
+    "route": "IV",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Metoclopramide",
+    "brandName": "Perinorm",
+    "aliases": "Perinorm, Reglan, MCP",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Metoprolol",
+    "brandName": "Betaloc",
+    "aliases": "Betaloc, Metolar, Seloken, METO",
+    "dosageForm": "Tablet",
+    "strength": "50mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Metronidazole",
+    "brandName": "Flagyl",
+    "aliases": "Flagyl, Metrogyl, METRO, MTZ",
+    "dosageForm": "Tablet",
+    "strength": "400mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Montelukast",
+    "brandName": "Montair",
+    "aliases": "Montair-LC, Telekast-L, Levocet-M, Montek-LC, MLC, Montair",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Moxifloxacin Eye Drops",
+    "brandName": "Vigamox",
+    "aliases": "Vigamox",
+    "dosageForm": "Eye Drops",
+    "strength": "0.5%",
+    "route": "Ophthalmic",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Multivitamin",
+    "brandName": "Becosules",
+    "aliases": "Becosules",
+    "dosageForm": "Capsule",
+    "strength": "Standard",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Multivitamin",
+    "brandName": "Supradyn",
+    "aliases": "Supradyn",
+    "dosageForm": "Tablet",
+    "strength": "Standard",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Mupirocin Ointment",
+    "brandName": "T-Bact",
+    "aliases": "T-Bact, Bactroban, MUP",
+    "dosageForm": "Ointment",
+    "strength": "2%",
+    "route": "Topical",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Naproxen",
+    "brandName": "Naprosyn",
+    "aliases": "Naprosyn",
+    "dosageForm": "Tablet",
+    "strength": "250mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Nebivolol",
+    "brandName": "Nebicard",
+    "aliases": "Nebicard",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Nitrofurantoin",
+    "brandName": "Macrobid",
+    "aliases": "Martifur, Niftran, NFT, Macrobid",
+    "dosageForm": "Capsule",
+    "strength": "100mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Norfloxacin",
+    "brandName": "Norflox",
+    "aliases": "Norflox, Norilet, NOR",
+    "dosageForm": "Tablet",
+    "strength": "400mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Ofloxacin",
+    "brandName": "Zanocin",
+    "aliases": "Cifran, Ciplox, Cipro, CIP, Levomac, Loxof, Glevo, LEVO, LVX, Oflox, Zenflox, Tarivid, OFL, Zanocin",
+    "dosageForm": "Tablet",
+    "strength": "200mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Olmesartan",
+    "brandName": "Olsar",
+    "aliases": "Olsar",
+    "dosageForm": "Tablet",
+    "strength": "20mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Omeprazole",
+    "brandName": "Omez",
+    "aliases": "Omez, Omee, Prilosec, OMZ, Nexpro, Sompraz, Nexium, ESO",
+    "dosageForm": "Capsule",
+    "strength": "20mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Ondansetron",
+    "brandName": "Emeset",
+    "aliases": "Emeset, Ondem, Zofran, Vomikind, OND",
+    "dosageForm": "Tablet",
+    "strength": "4mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "ORS (Oral Rehydration Salts)",
+    "brandName": "Electral",
+    "aliases": "ORS, Electral, Walyte, Prolyte",
+    "dosageForm": "Powder",
+    "strength": "Standard",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Pantoprazole",
+    "brandName": "Pan",
+    "aliases": "Pan, Pantocid, Pantop, PAN, Pan-D, Pantocid-D, Pantop-D, PAND, PANTO",
+    "dosageForm": "Tablet",
+    "strength": "40mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Pantoprazole + Domperidone",
+    "brandName": "Pantodac DSR",
+    "aliases": "Pan, Pantocid, Pantop, PAN, Pan-D, Pantocid-D, Pantop-D, PAND, Domstal, Motilium, Vomistop, DOM, Pantodac",
+    "dosageForm": "Capsule",
+    "strength": "40mg+30mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Paracetamol",
+    "brandName": "Crocin",
+    "aliases": "PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic",
+    "dosageForm": "Tablet",
+    "strength": "500mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Paracetamol",
+    "brandName": "Dolo",
+    "aliases": "PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic",
+    "dosageForm": "Tablet",
+    "strength": "650mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Paracetamol",
+    "brandName": "Pyrigesic",
+    "aliases": "PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic",
+    "dosageForm": "Syrup",
+    "strength": "120mg/5ml",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Paracetamol",
+    "brandName": "Calpol",
+    "aliases": "PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic",
+    "dosageForm": "Tablet",
+    "strength": "650mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Paracetamol + Caffeine",
+    "brandName": "Saridon",
+    "aliases": "PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic, Saridon",
+    "dosageForm": "Tablet",
+    "strength": "Standard",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Phenytoin",
+    "brandName": "Eptoin",
+    "aliases": "Eptoin",
+    "dosageForm": "Tablet",
+    "strength": "100mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Pioglitazone",
+    "brandName": "Pioglit",
+    "aliases": "Pioglit",
+    "dosageForm": "Tablet",
+    "strength": "15mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Prednisolone",
+    "brandName": "Wysolone",
+    "aliases": "Wysolone",
+    "dosageForm": "Tablet",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Pregabalin",
+    "brandName": "Lyrica",
+    "aliases": "Pregalin, Lyrica, Maxgalin, PGB",
+    "dosageForm": "Capsule",
+    "strength": "75mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Rabeprazole",
+    "brandName": "Razo",
+    "aliases": "Razo, Happi, Rabicip, Rablet, RAB",
+    "dosageForm": "Tablet",
+    "strength": "20mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Ramipril",
+    "brandName": "Cardace",
+    "aliases": "Cardace, Ramirand, RAM",
+    "dosageForm": "Capsule",
+    "strength": "5mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Ranitidine",
+    "brandName": "Rantac",
+    "aliases": "Rantac, Aciloc, Zantac, RAN",
+    "dosageForm": "Tablet",
+    "strength": "150mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Rosuvastatin",
+    "brandName": "Crestor",
+    "aliases": "Rosuvas, Rozavel, Crestor, ROSU",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Salbutamol",
+    "brandName": "Ventolin",
+    "aliases": "Asthalin, Ventolin, SBL",
+    "dosageForm": "Inhaler",
+    "strength": "100mcg",
+    "route": "Inhalation",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Salbutamol",
+    "brandName": "Asthalin",
+    "aliases": "Asthalin, Ventolin, SBL",
+    "dosageForm": "Tablet",
+    "strength": "2mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Sertraline",
+    "brandName": "Serta",
+    "aliases": "Daxid, Zoloft, SERT, Serta",
+    "dosageForm": "Tablet",
+    "strength": "50mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Simvastatin",
+    "brandName": "Zocor",
+    "aliases": "Zocor",
+    "dosageForm": "Tablet",
+    "strength": "20mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Sitagliptin",
+    "brandName": "Januvia",
+    "aliases": "Januvia, Istavel, SITA",
+    "dosageForm": "Tablet",
+    "strength": "100mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Spironolactone",
+    "brandName": "Aldactone",
+    "aliases": "Aldactone, SPIR",
+    "dosageForm": "Tablet",
+    "strength": "25mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Sucralfate",
+    "brandName": "Sucrafil",
+    "aliases": "Sucrafil, Carafate, SUC",
+    "dosageForm": "Tablet",
+    "strength": "1g",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Sulfasalazine",
+    "brandName": "Salazopyrin",
+    "aliases": "Salazopyrin",
+    "dosageForm": "Tablet",
+    "strength": "500mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Telmisartan",
+    "brandName": "Telma",
+    "aliases": "Telma, Telmikind, Telpres, Micardis, TEL, Telma-H, Telmikind-H, TEL-H, Telma-AM, Amlokind-T, TEL-AM",
+    "dosageForm": "Tablet",
+    "strength": "40mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Theophylline",
+    "brandName": "Theo-asthalin",
+    "aliases": "Theo-asthalin",
+    "dosageForm": "Tablet",
+    "strength": "200mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Timolol Eye Drops",
+    "brandName": "Timoptic",
+    "aliases": "Timoptic",
+    "dosageForm": "Eye Drops",
+    "strength": "0.5%",
+    "route": "Ophthalmic",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Tramadol",
+    "brandName": "Ultracet",
+    "aliases": "Tramazac, Ultracet, Tramatas, Contramal, TRA",
+    "dosageForm": "Tablet",
+    "strength": "50mg",
+    "route": "Oral",
+    "isRestricted": true
+  },
+  {
+    "genericName": "Tropicamide Eye Drops",
+    "brandName": "Tropicacyl",
+    "aliases": "Tropicacyl",
+    "dosageForm": "Eye Drops",
+    "strength": "1%",
+    "route": "Ophthalmic",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Valproate",
+    "brandName": "Valparin",
+    "aliases": "Epilim, Encorate, Valparin, VPA",
+    "dosageForm": "Tablet",
+    "strength": "200mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Valsartan",
+    "brandName": "Diovan",
+    "aliases": "Diovan",
+    "dosageForm": "Tablet",
+    "strength": "80mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Venlafaxine",
+    "brandName": "Venlor",
+    "aliases": "Venlor",
+    "dosageForm": "Capsule",
+    "strength": "75mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Vildagliptin",
+    "brandName": "Galvus",
+    "aliases": "Galvus, Jalra, VILDA",
+    "dosageForm": "Tablet",
+    "strength": "50mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Vitamin B12 (Methylcobalamin)",
+    "brandName": "Nervijen",
+    "aliases": "Nurokind, Meganeuron, Mecobal, B12, Nervijen",
+    "dosageForm": "Tablet",
+    "strength": "500mcg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Vitamin D3",
+    "brandName": "Calcirol",
+    "aliases": "Shelcal, Gemcal, Cipcal, CAL-D3, Calcirol, D3 Must, Uprise D3, Tayo, Vit D3",
+    "dosageForm": "Capsule",
+    "strength": "60000IU",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Zinc Sulphate",
+    "brandName": "Zincovit",
+    "aliases": "Zincovit",
+    "dosageForm": "Tablet",
+    "strength": "20mg",
+    "route": "Oral",
+    "isRestricted": false
+  },
+  {
+    "genericName": "Zolpidem",
+    "brandName": "Ambien",
+    "aliases": "Ambien",
+    "dosageForm": "Tablet",
+    "strength": "10mg",
+    "route": "Oral",
+    "isRestricted": true
+  }
 ]
