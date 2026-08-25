@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RxNXT — Master Strategic Pricing & Revenue Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-900: #0f172a;
+      --navy-800: #1e293b;
+      --blue-600: #2563eb;
+      --sky-500: #0ea5e9;
+      --emerald-500: #10b981;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --white: #ffffff;
+      --radius-xl: 1rem;
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--slate-50); color: var(--slate-800); line-height: 1.6; padding-bottom: 4rem; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+    .header-banner {
+      background: linear-gradient(135deg, var(--navy-900) 0%, #1e1b4b 50%, var(--navy-800) 100%);
+      color: var(--white); padding: 3.5rem 0 3rem 0; border-bottom: 4px solid var(--emerald-500); box-shadow: var(--shadow-xl);
+    }
+    .badge-pill {
+      display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald-500);
+      color: #34d399; font-size: 0.85rem; font-weight: 700; padding: 0.4rem 1rem; border-radius: 9999px; text-transform: uppercase; margin-bottom: 1.25rem;
+    }
+    .main-title { font-family: 'Outfit', sans-serif; font-size: 2.75rem; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; }
+    .main-title span { color: var(--sky-500); }
+    .subtitle { font-size: 1.15rem; color: #94a3b8; max-width: 850px; }
+
+    .action-bar { background: var(--white); border-bottom: 1px solid var(--slate-200); padding: 1rem 0; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-md); }
+    .action-container { display: flex; justify-content: space-between; align-items: center; }
+    .btn-print { background: var(--blue-600); color: var(--white); font-weight: 700; padding: 0.6rem 1.4rem; border-radius: 0.5rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; }
+    .btn-print:hover { background: #1d4ed8; }
+
+    .section-card { background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-xl); padding: 2.5rem; margin-top: 2rem; box-shadow: var(--shadow-md); }
+    .section-title { font-family: 'Outfit', sans-serif; font-size: 1.75rem; font-weight: 700; color: var(--navy-900); margin-bottom: 1.5rem; border-bottom: 2px solid var(--slate-100); padding-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .tier-box { background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 0.75rem; padding: 1.5rem; }
+    .tier-box h4 { font-size: 1.2rem; font-weight: 700; color: var(--navy-900); margin-bottom: 0.5rem; }
+    .tier-price { font-size: 1.5rem; font-weight: 800; color: var(--blue-600); margin: 0.5rem 0; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid var(--slate-200); font-size: 0.925rem; }
+    th { background-color: var(--slate-100); color: var(--navy-900); font-weight: 700; }
+    tr:nth-child(even) { background-color: #fdfdfd; }
+
+    .alert-box { background: #f0fdf4; border-left: 4px solid var(--emerald-500); padding: 1.25rem 1.5rem; border-radius: 0 0.75rem 0.75rem 0; margin: 1.5rem 0; color: #14532d; font-size: 0.95rem; }
+
+    @media print {
+      .action-bar { display: none; }
+      body { background-color: var(--white); padding: 0; }
+      .section-card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="action-bar">
+    <div class="container action-container">
+      <div style="font-weight: 700; color: var(--navy-900); font-size: 1.05rem;">
+        💼 RxNXT Master Strategic Pricing Blueprint
+      </div>
+      <div>
+        <button onclick="window.print()" class="btn-print">
+          🖨️ Save Document as PDF / Print
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <header class="header-banner">
+    <div class="container">
+      <div class="badge-pill">
+        💼 MASTER STRATEGIC REVENUE BLUEPRINT
+      </div>
+      <h1 class="main-title">RxNXT <span>Strategic Pricing</span> Masterplan</h1>
+      <p class="subtitle">
+        A Balanced, High-Margin Pricing Model Designed for Indian Healthcare Market Acceptance, High Conversion, and Lifetime Customer Retention.
+      </p>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Executive Summary -->
+    <section class="section-card">
+      <h2 class="section-title">📋 Executive Summary</h2>
+      <p style="font-size: 1.05rem; color: var(--slate-700); margin-bottom: 1.5rem;">
+        In India, doctors are price-sensitive to upfront shocks, but demonstrate <strong>lifetime loyalty</strong> when pricing is transparent, fair, predictable, and directly tied to clear clinical ROI. The <strong>3-Tier "Price-Lock" Model</strong> maximizes conversion, eliminates purchase friction, and builds predictable recurring cash flow.
+      </p>
+    </section>
+
+    <!-- The 3-Tier Model -->
+    <section class="section-card">
+      <h2 class="section-title">🏆 The 3-Tier "Price-Lock" Model</h2>
+      <div class="grid-3">
+        <div class="tier-box">
+          <h4>🥇 Tier 1: BYOD SaaS Only</h4>
+          <div class="tier-price">₹9,999 / year</div>
+          <p style="font-size: 0.875rem; color: var(--slate-600);">
+            Or ₹999/month. Ideal for single doctors with existing laptops/iPads. High conversion, 0 hardware cost.
+          </p>
+        </div>
+        <div class="tier-box" style="border-color: var(--blue-600); background: #eff6ff;">
+          <h4>🥈 Tier 2: Hardware Bundle</h4>
+          <div class="tier-price">₹24,999 One-Time</div>
+          <p style="font-size: 0.875rem; color: var(--slate-600);">
+            Pre-configured 11" Android Tablet + Desktop Stand + 1st Year Subscription. Renews at ₹9,999/yr from Year 2.
+          </p>
+        </div>
+        <div class="tier-box">
+          <h4>🥉 Tier 3: Polyclinic Pack</h4>
+          <div class="tier-price">₹18,000 / year</div>
+          <p style="font-size: 0.875rem; color: var(--slate-600);">
+            Covers up to 3 doctors (Effective ₹6,000/doctor/yr). Multi-doctor accounts & receptionist portal.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Strategic Psychology -->
+    <section class="section-card">
+      <h2 class="section-title">🧠 Strategic Psychology & Market Alignment</h2>
+      <ul style="padding-left: 1.5rem; color: var(--slate-700); line-height: 1.8;">
+        <li><strong>The "2-Patient" Rule:</strong> At ₹999/month, writing just 2 to 3 consultations (at ₹300-₹500 consultation fee) pays for the entire monthly software cost. The remaining 500 prescriptions are 100% pure profit!</li>
+        <li><strong>No Forced Hardware:</strong> Doctors who have iPads start at ₹9,999/yr. Doctors wanting a dedicated device buy the ₹24,999 bundle. Zero friction.</li>
+        <li><strong>Lifetime Price-Lock Guarantee:</strong> Early adopters lock in their annual subscription rate for life. Eliminates fear of sudden price hikes and drives massive doctor word-of-mouth referrals.</li>
+      </ul>
+
+      <div class="alert-box">
+        <strong>🔒 The Lifetime Price Lock Promise:</strong> "Whatever price you sign up for today is LOCKED FOR LIFE. Even as we add new AI features, your annual renewal price will never increase as long as your subscription stays active."
+      </div>
+    </section>
+
+    <!-- Financial Projections -->
+    <section class="section-card">
+      <h2 class="section-title">📊 100-Clinic Revenue & Profit Simulation</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Customer Cohort</th>
+            <th>Volume</th>
+            <th>Unit Selling Price</th>
+            <th>Total Revenue Generated</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>BYOD SaaS Only Clinics</strong></td>
+            <td>70 clinics</td>
+            <td>₹9,999</td>
+            <td><strong>₹6,99,930</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Hardware Bundle Clinics</strong></td>
+            <td>30 clinics</td>
+            <td>₹24,999</td>
+            <td><strong>₹7,49,970</strong></td>
+          </tr>
+          <tr>
+            <td><strong>TOTAL YEAR 1 GROSS REVENUE</strong></td>
+            <td><strong>100 Clinics</strong></td>
+            <td>—</td>
+            <td><strong>₹14,49,900</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Less Hardware & Hosting Costs</strong></td>
+            <td>—</td>
+            <td>—</td>
+            <td><strong>-₹5,10,000</strong></td>
+          </tr>
+          <tr>
+            <td><strong>YEAR 1 NET PROFIT</strong></td>
+            <td>—</td>
+            <td>—</td>
+            <td><strong>₹9,39,900</strong> <em>(64.8% Net Margin)</em></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer style="text-align: center; margin-top: 3rem; color: var(--slate-600); font-size: 0.9rem;">
+      <p>© 2026 Orug Technologies. RxNXT — Strategic Pricing & Revenue Blueprint | DPIIT Recognized Startup</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

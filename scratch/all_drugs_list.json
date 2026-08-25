@@ -1,0 +1,752 @@
+[
+  {
+    "id": "drug-aceclofenac-aceclo-100mg",
+    "generic": "Aceclofenac",
+    "brand": "Aceclo"
+  },
+  {
+    "id": "drug-acyclovir-zovirax-400mg",
+    "generic": "Acyclovir",
+    "brand": "Zovirax"
+  },
+  {
+    "id": "drug-albendazole-zentel-400mg",
+    "generic": "Albendazole",
+    "brand": "Zentel"
+  },
+  {
+    "id": "drug-alprazolam-alprax-0-25mg",
+    "generic": "Alprazolam",
+    "brand": "Alprax"
+  },
+  {
+    "id": "drug-ambroxol-mucolite-15mg-5ml",
+    "generic": "Ambroxol",
+    "brand": "Mucolite"
+  },
+  {
+    "id": "drug-amiodarone-cordarone-200mg",
+    "generic": "Amiodarone",
+    "brand": "Cordarone"
+  },
+  {
+    "id": "drug-amitriptyline-tryptomer-10mg",
+    "generic": "Amitriptyline",
+    "brand": "Tryptomer"
+  },
+  {
+    "id": "drug-amlodipine-norvasc-5mg",
+    "generic": "Amlodipine",
+    "brand": "Norvasc"
+  },
+  {
+    "id": "drug-amlodipine-amcard-10mg",
+    "generic": "Amlodipine",
+    "brand": "Amcard"
+  },
+  {
+    "id": "drug-amoxicillin-mox-500mg",
+    "generic": "Amoxicillin",
+    "brand": "Mox"
+  },
+  {
+    "id": "drug-amoxicillin-amoxil-125mg-5ml",
+    "generic": "Amoxicillin",
+    "brand": "Amoxil"
+  },
+  {
+    "id": "drug-amoxicillin-clavulanate-augmentin-625mg",
+    "generic": "Amoxicillin-Clavulanate",
+    "brand": "Augmentin"
+  },
+  {
+    "id": "drug-amoxicillin-clavulanate-clavam-625mg",
+    "generic": "Amoxicillin-Clavulanate",
+    "brand": "Clavam"
+  },
+  {
+    "id": "drug-antacid--aluminium-magnesium--digene-standard",
+    "generic": "Antacid (Aluminium+Magnesium)",
+    "brand": "Digene"
+  },
+  {
+    "id": "drug-aspirin-ecosprin-75mg",
+    "generic": "Aspirin",
+    "brand": "Ecosprin"
+  },
+  {
+    "id": "drug-atenolol-tenormin-50mg",
+    "generic": "Atenolol",
+    "brand": "Tenormin"
+  },
+  {
+    "id": "drug-atorvastatin-atorva-10mg",
+    "generic": "Atorvastatin",
+    "brand": "Atorva"
+  },
+  {
+    "id": "drug-atorvastatin-lipitor-20mg",
+    "generic": "Atorvastatin",
+    "brand": "Lipitor"
+  },
+  {
+    "id": "drug-azithromycin-azithral-500mg",
+    "generic": "Azithromycin",
+    "brand": "Azithral"
+  },
+  {
+    "id": "drug-azithromycin-zithromax-250mg",
+    "generic": "Azithromycin",
+    "brand": "Zithromax"
+  },
+  {
+    "id": "drug-betamethasone-cream-betnovate-0-1-",
+    "generic": "Betamethasone Cream",
+    "brand": "Betnovate"
+  },
+  {
+    "id": "drug-bisacodyl-dulcolax-5mg",
+    "generic": "Bisacodyl",
+    "brand": "Dulcolax"
+  },
+  {
+    "id": "drug-bisoprolol-concor-5mg",
+    "generic": "Bisoprolol",
+    "brand": "Concor"
+  },
+  {
+    "id": "drug-bromhexine-bisolvon-8mg",
+    "generic": "Bromhexine",
+    "brand": "Bisolvon"
+  },
+  {
+    "id": "drug-calamine-lotion-lacto-calamine-standard",
+    "generic": "Calamine Lotion",
+    "brand": "Lacto Calamine"
+  },
+  {
+    "id": "drug-calcium---vitamin-d3-shelcal-500mg-250iu",
+    "generic": "Calcium + Vitamin D3",
+    "brand": "Shelcal"
+  },
+  {
+    "id": "drug-carbamazepine-tegretol-200mg",
+    "generic": "Carbamazepine",
+    "brand": "Tegretol"
+  },
+  {
+    "id": "drug-carbimazole-neomercazole-5mg",
+    "generic": "Carbimazole",
+    "brand": "Neomercazole"
+  },
+  {
+    "id": "drug-carvedilol-carloc-6-25mg",
+    "generic": "Carvedilol",
+    "brand": "Carloc"
+  },
+  {
+    "id": "drug-cefixime-taxim-o-200mg",
+    "generic": "Cefixime",
+    "brand": "Taxim-O"
+  },
+  {
+    "id": "drug-ceftriaxone-monocef-1g",
+    "generic": "Ceftriaxone",
+    "brand": "Monocef"
+  },
+  {
+    "id": "drug-cefuroxime-ceftum-250mg",
+    "generic": "Cefuroxime",
+    "brand": "Ceftum"
+  },
+  {
+    "id": "drug-cephalexin-sporidex-500mg",
+    "generic": "Cephalexin",
+    "brand": "Sporidex"
+  },
+  {
+    "id": "drug-cetirizine-zyrtec-10mg",
+    "generic": "Cetirizine",
+    "brand": "Zyrtec"
+  },
+  {
+    "id": "drug-chlorpheniramine-piriton-4mg",
+    "generic": "Chlorpheniramine",
+    "brand": "Piriton"
+  },
+  {
+    "id": "drug-ciprofloxacin-ciplox-500mg",
+    "generic": "Ciprofloxacin",
+    "brand": "Ciplox"
+  },
+  {
+    "id": "drug-ciprofloxacin-eye-drops-ciplox-eye-drops-0-3-",
+    "generic": "Ciprofloxacin Eye Drops",
+    "brand": "Ciplox Eye Drops"
+  },
+  {
+    "id": "drug-clarithromycin-klaricid-500mg",
+    "generic": "Clarithromycin",
+    "brand": "Klaricid"
+  },
+  {
+    "id": "drug-clindamycin-dalacin-300mg",
+    "generic": "Clindamycin",
+    "brand": "Dalacin"
+  },
+  {
+    "id": "drug-clobetasol-cream-tenovate-0-05-",
+    "generic": "Clobetasol Cream",
+    "brand": "Tenovate"
+  },
+  {
+    "id": "drug-clonazepam-rivotril-0-5mg",
+    "generic": "Clonazepam",
+    "brand": "Rivotril"
+  },
+  {
+    "id": "drug-clopidogrel-plavix-75mg",
+    "generic": "Clopidogrel",
+    "brand": "Plavix"
+  },
+  {
+    "id": "drug-clotrimazole-cream-candid-1-",
+    "generic": "Clotrimazole Cream",
+    "brand": "Candid"
+  },
+  {
+    "id": "drug-co-trimoxazole-bactrim-480mg",
+    "generic": "Co-trimoxazole",
+    "brand": "Bactrim"
+  },
+  {
+    "id": "drug-dapagliflozin-forxiga-10mg",
+    "generic": "Dapagliflozin",
+    "brand": "Forxiga"
+  },
+  {
+    "id": "drug-dexamethasone-dexona-0-5mg",
+    "generic": "Dexamethasone",
+    "brand": "Dexona"
+  },
+  {
+    "id": "drug-dextromethorphan-benadryl-10mg-5ml",
+    "generic": "Dextromethorphan",
+    "brand": "Benadryl"
+  },
+  {
+    "id": "drug-diazepam-valium-5mg",
+    "generic": "Diazepam",
+    "brand": "Valium"
+  },
+  {
+    "id": "drug-diclofenac-voveran-50mg",
+    "generic": "Diclofenac",
+    "brand": "Voveran"
+  },
+  {
+    "id": "drug-diclofenac---paracetamol-voveran-plus-50mg-32",
+    "generic": "Diclofenac + Paracetamol",
+    "brand": "Voveran Plus"
+  },
+  {
+    "id": "drug-digoxin-lanoxin-0-25mg",
+    "generic": "Digoxin",
+    "brand": "Lanoxin"
+  },
+  {
+    "id": "drug-diltiazem-dilzem-60mg",
+    "generic": "Diltiazem",
+    "brand": "Dilzem"
+  },
+  {
+    "id": "drug-domperidone-domstal-10mg",
+    "generic": "Domperidone",
+    "brand": "Domstal"
+  },
+  {
+    "id": "drug-doxycycline-doxy-100mg",
+    "generic": "Doxycycline",
+    "brand": "Doxy"
+  },
+  {
+    "id": "drug-empagliflozin-jardiance-10mg",
+    "generic": "Empagliflozin",
+    "brand": "Jardiance"
+  },
+  {
+    "id": "drug-enalapril-envas-5mg",
+    "generic": "Enalapril",
+    "brand": "Envas"
+  },
+  {
+    "id": "drug-escitalopram-nexito-10mg",
+    "generic": "Escitalopram",
+    "brand": "Nexito"
+  },
+  {
+    "id": "drug-esomeprazole-neksium-40mg",
+    "generic": "Esomeprazole",
+    "brand": "Neksium"
+  },
+  {
+    "id": "drug-fexofenadine-allegra-120mg",
+    "generic": "Fexofenadine",
+    "brand": "Allegra"
+  },
+  {
+    "id": "drug-fluconazole-flucan-150mg",
+    "generic": "Fluconazole",
+    "brand": "Flucan"
+  },
+  {
+    "id": "drug-fluoxetine-prodep-20mg",
+    "generic": "Fluoxetine",
+    "brand": "Prodep"
+  },
+  {
+    "id": "drug-folic-acid-folvite-5mg",
+    "generic": "Folic Acid",
+    "brand": "Folvite"
+  },
+  {
+    "id": "drug-furosemide-lasix-40mg",
+    "generic": "Furosemide",
+    "brand": "Lasix"
+  },
+  {
+    "id": "drug-gabapentin-gabapin-300mg",
+    "generic": "Gabapentin",
+    "brand": "Gabapin"
+  },
+  {
+    "id": "drug-glibenclamide-daonil-5mg",
+    "generic": "Glibenclamide",
+    "brand": "Daonil"
+  },
+  {
+    "id": "drug-glimepiride-amaryl-2mg",
+    "generic": "Glimepiride",
+    "brand": "Amaryl"
+  },
+  {
+    "id": "drug-glipizide-glipizide-5mg",
+    "generic": "Glipizide",
+    "brand": "Glipizide"
+  },
+  {
+    "id": "drug-glyceryl-trinitrate-nitrocontin-2-6mg",
+    "generic": "Glyceryl Trinitrate",
+    "brand": "Nitrocontin"
+  },
+  {
+    "id": "drug-hydrochlorothiazide-aquazide-25mg",
+    "generic": "Hydrochlorothiazide",
+    "brand": "Aquazide"
+  },
+  {
+    "id": "drug-hydrocortisone-solu-cortef-100mg",
+    "generic": "Hydrocortisone",
+    "brand": "Solu-Cortef"
+  },
+  {
+    "id": "drug-hydroxychloroquine-plaquenil-200mg",
+    "generic": "Hydroxychloroquine",
+    "brand": "Plaquenil"
+  },
+  {
+    "id": "drug-ibuprofen-brufen-400mg",
+    "generic": "Ibuprofen",
+    "brand": "Brufen"
+  },
+  {
+    "id": "drug-ibuprofen-combiflam-400mg",
+    "generic": "Ibuprofen",
+    "brand": "Combiflam"
+  },
+  {
+    "id": "drug-insulin-glargine-lantus-100iu-ml",
+    "generic": "Insulin Glargine",
+    "brand": "Lantus"
+  },
+  {
+    "id": "drug-insulin-nph-humulin-n-100iu-ml",
+    "generic": "Insulin NPH",
+    "brand": "Humulin N"
+  },
+  {
+    "id": "drug-insulin-regular-actrapid-100iu-ml",
+    "generic": "Insulin Regular",
+    "brand": "Actrapid"
+  },
+  {
+    "id": "drug-ipratropium-ipravent-20mcg",
+    "generic": "Ipratropium",
+    "brand": "Ipravent"
+  },
+  {
+    "id": "drug-iron---folic-acid-feronia-150mg-1-5mg",
+    "generic": "Iron + Folic Acid",
+    "brand": "Feronia"
+  },
+  {
+    "id": "drug-isosorbide-mononitrate-ismn-20mg",
+    "generic": "Isosorbide Mononitrate",
+    "brand": "ISMN"
+  },
+  {
+    "id": "drug-itraconazole-sporanox-100mg",
+    "generic": "Itraconazole",
+    "brand": "Sporanox"
+  },
+  {
+    "id": "drug-ivermectin-ivecop-12mg",
+    "generic": "Ivermectin",
+    "brand": "Ivecop"
+  },
+  {
+    "id": "drug-lactulose-duphalac-3-35g-5ml",
+    "generic": "Lactulose",
+    "brand": "Duphalac"
+  },
+  {
+    "id": "drug-latanoprost-eye-drops-xalatan-0-005-",
+    "generic": "Latanoprost Eye Drops",
+    "brand": "Xalatan"
+  },
+  {
+    "id": "drug-levetiracetam-keppra-500mg",
+    "generic": "Levetiracetam",
+    "brand": "Keppra"
+  },
+  {
+    "id": "drug-levocetirizine-levocet-5mg",
+    "generic": "Levocetirizine",
+    "brand": "Levocet"
+  },
+  {
+    "id": "drug-levofloxacin-levoflox-500mg",
+    "generic": "Levofloxacin",
+    "brand": "Levoflox"
+  },
+  {
+    "id": "drug-levothyroxine-eltroxin-50mcg",
+    "generic": "Levothyroxine",
+    "brand": "Eltroxin"
+  },
+  {
+    "id": "drug-levothyroxine-thyronorm-100mcg",
+    "generic": "Levothyroxine",
+    "brand": "Thyronorm"
+  },
+  {
+    "id": "drug-lisinopril-lisinopril-10mg",
+    "generic": "Lisinopril",
+    "brand": "Lisinopril"
+  },
+  {
+    "id": "drug-loperamide-lopamide-2mg",
+    "generic": "Loperamide",
+    "brand": "Lopamide"
+  },
+  {
+    "id": "drug-loratadine-claritin-10mg",
+    "generic": "Loratadine",
+    "brand": "Claritin"
+  },
+  {
+    "id": "drug-losartan-losar-50mg",
+    "generic": "Losartan",
+    "brand": "Losar"
+  },
+  {
+    "id": "drug-mebendazole-vermox-100mg",
+    "generic": "Mebendazole",
+    "brand": "Vermox"
+  },
+  {
+    "id": "drug-metformin-glyciphage-500mg",
+    "generic": "Metformin",
+    "brand": "Glyciphage"
+  },
+  {
+    "id": "drug-metformin-glucophage-1000mg",
+    "generic": "Metformin",
+    "brand": "Glucophage"
+  },
+  {
+    "id": "drug-methotrexate-methofar-2-5mg",
+    "generic": "Methotrexate",
+    "brand": "Methofar"
+  },
+  {
+    "id": "drug-methylprednisolone-solu-medrol-500mg",
+    "generic": "Methylprednisolone",
+    "brand": "Solu-Medrol"
+  },
+  {
+    "id": "drug-metoclopramide-perinorm-10mg",
+    "generic": "Metoclopramide",
+    "brand": "Perinorm"
+  },
+  {
+    "id": "drug-metoprolol-betaloc-50mg",
+    "generic": "Metoprolol",
+    "brand": "Betaloc"
+  },
+  {
+    "id": "drug-metronidazole-flagyl-400mg",
+    "generic": "Metronidazole",
+    "brand": "Flagyl"
+  },
+  {
+    "id": "drug-montelukast-montair-10mg",
+    "generic": "Montelukast",
+    "brand": "Montair"
+  },
+  {
+    "id": "drug-moxifloxacin-eye-drops-vigamox-0-5-",
+    "generic": "Moxifloxacin Eye Drops",
+    "brand": "Vigamox"
+  },
+  {
+    "id": "drug-multivitamin-becosules-standard",
+    "generic": "Multivitamin",
+    "brand": "Becosules"
+  },
+  {
+    "id": "drug-multivitamin-supradyn-standard",
+    "generic": "Multivitamin",
+    "brand": "Supradyn"
+  },
+  {
+    "id": "drug-mupirocin-ointment-t-bact-2-",
+    "generic": "Mupirocin Ointment",
+    "brand": "T-Bact"
+  },
+  {
+    "id": "drug-naproxen-naprosyn-250mg",
+    "generic": "Naproxen",
+    "brand": "Naprosyn"
+  },
+  {
+    "id": "drug-nebivolol-nebicard-5mg",
+    "generic": "Nebivolol",
+    "brand": "Nebicard"
+  },
+  {
+    "id": "drug-nitrofurantoin-macrobid-100mg",
+    "generic": "Nitrofurantoin",
+    "brand": "Macrobid"
+  },
+  {
+    "id": "drug-norfloxacin-norflox-400mg",
+    "generic": "Norfloxacin",
+    "brand": "Norflox"
+  },
+  {
+    "id": "drug-ofloxacin-zanocin-200mg",
+    "generic": "Ofloxacin",
+    "brand": "Zanocin"
+  },
+  {
+    "id": "drug-olmesartan-olsar-20mg",
+    "generic": "Olmesartan",
+    "brand": "Olsar"
+  },
+  {
+    "id": "drug-omeprazole-omez-20mg",
+    "generic": "Omeprazole",
+    "brand": "Omez"
+  },
+  {
+    "id": "drug-ondansetron-emeset-4mg",
+    "generic": "Ondansetron",
+    "brand": "Emeset"
+  },
+  {
+    "id": "drug-ors--oral-rehydration-salts--electral-standar",
+    "generic": "ORS (Oral Rehydration Salts)",
+    "brand": "Electral"
+  },
+  {
+    "id": "drug-pantoprazole-pan-40mg",
+    "generic": "Pantoprazole",
+    "brand": "Pan"
+  },
+  {
+    "id": "drug-pantoprazole---domperidone-pantodac-dsr-40mg-",
+    "generic": "Pantoprazole + Domperidone",
+    "brand": "Pantodac DSR"
+  },
+  {
+    "id": "drug-paracetamol-crocin-500mg",
+    "generic": "Paracetamol",
+    "brand": "Crocin"
+  },
+  {
+    "id": "drug-paracetamol-calpol-650mg",
+    "generic": "Paracetamol",
+    "brand": "Calpol"
+  },
+  {
+    "id": "drug-paracetamol-dolo-650mg",
+    "generic": "Paracetamol",
+    "brand": "Dolo"
+  },
+  {
+    "id": "drug-paracetamol-pyrigesic-120mg-5ml",
+    "generic": "Paracetamol",
+    "brand": "Pyrigesic"
+  },
+  {
+    "id": "drug-paracetamol---caffeine-saridon-standard",
+    "generic": "Paracetamol + Caffeine",
+    "brand": "Saridon"
+  },
+  {
+    "id": "drug-phenytoin-eptoin-100mg",
+    "generic": "Phenytoin",
+    "brand": "Eptoin"
+  },
+  {
+    "id": "drug-pioglitazone-pioglit-15mg",
+    "generic": "Pioglitazone",
+    "brand": "Pioglit"
+  },
+  {
+    "id": "drug-prednisolone-wysolone-5mg",
+    "generic": "Prednisolone",
+    "brand": "Wysolone"
+  },
+  {
+    "id": "drug-pregabalin-lyrica-75mg",
+    "generic": "Pregabalin",
+    "brand": "Lyrica"
+  },
+  {
+    "id": "drug-rabeprazole-razo-20mg",
+    "generic": "Rabeprazole",
+    "brand": "Razo"
+  },
+  {
+    "id": "drug-ramipril-cardace-5mg",
+    "generic": "Ramipril",
+    "brand": "Cardace"
+  },
+  {
+    "id": "drug-ranitidine-rantac-150mg",
+    "generic": "Ranitidine",
+    "brand": "Rantac"
+  },
+  {
+    "id": "drug-rosuvastatin-crestor-10mg",
+    "generic": "Rosuvastatin",
+    "brand": "Crestor"
+  },
+  {
+    "id": "drug-salbutamol-ventolin-100mcg",
+    "generic": "Salbutamol",
+    "brand": "Ventolin"
+  },
+  {
+    "id": "drug-salbutamol-asthalin-2mg",
+    "generic": "Salbutamol",
+    "brand": "Asthalin"
+  },
+  {
+    "id": "drug-sertraline-serta-50mg",
+    "generic": "Sertraline",
+    "brand": "Serta"
+  },
+  {
+    "id": "drug-simvastatin-zocor-20mg",
+    "generic": "Simvastatin",
+    "brand": "Zocor"
+  },
+  {
+    "id": "drug-sitagliptin-januvia-100mg",
+    "generic": "Sitagliptin",
+    "brand": "Januvia"
+  },
+  {
+    "id": "drug-spironolactone-aldactone-25mg",
+    "generic": "Spironolactone",
+    "brand": "Aldactone"
+  },
+  {
+    "id": "drug-sucralfate-sucrafil-1g",
+    "generic": "Sucralfate",
+    "brand": "Sucrafil"
+  },
+  {
+    "id": "drug-sulfasalazine-salazopyrin-500mg",
+    "generic": "Sulfasalazine",
+    "brand": "Salazopyrin"
+  },
+  {
+    "id": "drug-telmisartan-telma-40mg",
+    "generic": "Telmisartan",
+    "brand": "Telma"
+  },
+  {
+    "id": "drug-theophylline-theo-asthalin-200mg",
+    "generic": "Theophylline",
+    "brand": "Theo-asthalin"
+  },
+  {
+    "id": "drug-timolol-eye-drops-timoptic-0-5-",
+    "generic": "Timolol Eye Drops",
+    "brand": "Timoptic"
+  },
+  {
+    "id": "drug-tramadol-ultracet-50mg",
+    "generic": "Tramadol",
+    "brand": "Ultracet"
+  },
+  {
+    "id": "drug-tropicamide-eye-drops-tropicacyl-1-",
+    "generic": "Tropicamide Eye Drops",
+    "brand": "Tropicacyl"
+  },
+  {
+    "id": "drug-valproate-valparin-200mg",
+    "generic": "Valproate",
+    "brand": "Valparin"
+  },
+  {
+    "id": "drug-valsartan-diovan-80mg",
+    "generic": "Valsartan",
+    "brand": "Diovan"
+  },
+  {
+    "id": "drug-venlafaxine-venlor-75mg",
+    "generic": "Venlafaxine",
+    "brand": "Venlor"
+  },
+  {
+    "id": "drug-vildagliptin-galvus-50mg",
+    "generic": "Vildagliptin",
+    "brand": "Galvus"
+  },
+  {
+    "id": "drug-vitamin-b12--methylcobalamin--nervijen-500mcg",
+    "generic": "Vitamin B12 (Methylcobalamin)",
+    "brand": "Nervijen"
+  },
+  {
+    "id": "drug-vitamin-d3-calcirol-60000iu",
+    "generic": "Vitamin D3",
+    "brand": "Calcirol"
+  },
+  {
+    "id": "drug-zinc-sulphate-zincovit-20mg",
+    "generic": "Zinc Sulphate",
+    "brand": "Zincovit"
+  },
+  {
+    "id": "drug-zolpidem-ambien-10mg",
+    "generic": "Zolpidem",
+    "brand": "Ambien"
+  }
+]

@@ -5,7 +5,11 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   try {
-    const { fullName, email, password, clinicName, specialization, phone, inviteCode } = await request.json();
+    const { 
+      fullName, email, password, clinicName, specialization, phone, inviteCode,
+      medicalCouncil, registrationNumber, registrationYear, qualification,
+      verificationStatus, verifiedAt, verificationSource, verificationDetails
+    } = await request.json();
 
     if (!fullName || !email || !password) {
       return NextResponse.json({ error: 'Name, email, and password are required.' }, { status: 400 });
@@ -56,8 +60,16 @@ export async function POST(request: Request) {
           role: assignedRole,
           status: assignedStatus,
           clinicId: activeClinicId,
-          specialization: specialization || null,
+          specialization: specialization || qualification || null,
           phone: phone || null,
+          medicalCouncil: medicalCouncil || null,
+          registrationNumber: registrationNumber || null,
+          registrationYear: registrationYear ? Number(registrationYear) : null,
+          qualification: qualification || null,
+          verificationStatus: verificationStatus || 'UNVERIFIED',
+          verifiedAt: verifiedAt ? new Date(verifiedAt) : null,
+          verificationSource: verificationSource || null,
+          verificationDetails: verificationDetails ? JSON.stringify(verificationDetails) : null,
         },
       });
 

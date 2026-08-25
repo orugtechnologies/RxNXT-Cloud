@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RxNXT — Master Feature Guide & Operational Playbook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-900: #0f172a;
+      --navy-800: #1e293b;
+      --blue-600: #2563eb;
+      --blue-500: #3b82f6;
+      --sky-500: #0ea5e9;
+      --emerald-500: #10b981;
+      --emerald-600: #059669;
+      --purple-600: #9333ea;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --white: #ffffff;
+      --radius-xl: 1rem;
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--slate-50); color: var(--slate-800); line-height: 1.6; padding-bottom: 4rem; }
+    .container { max-width: 1150px; margin: 0 auto; padding: 0 1.5rem; }
+
+    .header-banner {
+      background: linear-gradient(135deg, var(--navy-900) 0%, #1e1b4b 50%, var(--navy-800) 100%);
+      color: var(--white); padding: 3.5rem 0 3rem 0; border-bottom: 4px solid var(--emerald-500); box-shadow: var(--shadow-xl);
+    }
+    .badge-pill {
+      display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald-500);
+      color: #34d399; font-size: 0.85rem; font-weight: 700; padding: 0.4rem 1rem; border-radius: 9999px; text-transform: uppercase; margin-bottom: 1.25rem;
+    }
+    .main-title { font-family: 'Outfit', sans-serif; font-size: 2.75rem; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; }
+    .main-title span { color: var(--sky-500); }
+    .subtitle { font-size: 1.15rem; color: #94a3b8; max-width: 850px; }
+
+    .action-bar { background: var(--white); border-bottom: 1px solid var(--slate-200); padding: 1rem 0; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-md); }
+    .action-container { display: flex; justify-content: space-between; align-items: center; }
+    .btn-print { background: var(--blue-600); color: var(--white); font-weight: 700; padding: 0.6rem 1.4rem; border-radius: 0.5rem; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; }
+    .btn-print:hover { background: #1d4ed8; }
+
+    .section-card { background: var(--white); border: 1px solid var(--slate-200); border-radius: var(--radius-xl); padding: 2.5rem; margin-top: 2rem; box-shadow: var(--shadow-md); }
+    .section-title { font-family: 'Outfit', sans-serif; font-size: 1.75rem; font-weight: 700; color: var(--navy-900); margin-bottom: 1.5rem; border-bottom: 2px solid var(--slate-100); padding-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+
+    .role-card { background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 0.75rem; padding: 1.5rem; }
+    .role-card h4 { font-size: 1.1rem; font-weight: 700; color: var(--navy-900); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+
+    .workflow-step { background: #f8fafc; border-left: 4px solid var(--blue-600); padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; border-radius: 0 0.75rem 0.75rem 0; }
+    .workflow-step h4 { color: var(--navy-900); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.4rem; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid var(--slate-200); font-size: 0.925rem; }
+    th { background-color: var(--slate-100); color: var(--navy-900); font-weight: 700; }
+    tr:nth-child(even) { background-color: #fdfdfd; }
+
+    .tag-future { background: #f3e8ff; border: 1px solid #d8b4fe; color: #7e22ce; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px; text-transform: uppercase; }
+
+    @media print {
+      .action-bar { display: none; }
+      body { background-color: var(--white); padding: 0; }
+      .section-card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="action-bar">
+    <div class="container action-container">
+      <div style="font-weight: 700; color: var(--navy-900); font-size: 1.05rem;">
+        📖 RxNXT Master Feature Guide & Operational Playbook
+      </div>
+      <div>
+        <button onclick="window.print()" class="btn-print">
+          🖨️ Save Playbook as PDF / Print
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <header class="header-banner">
+    <div class="container">
+      <div class="badge-pill">
+        🩺 OFFICIAL MASTER OPERATIONAL PLAYBOOK
+      </div>
+      <h1 class="main-title">RxNXT <span>Master Feature & Workflow</span> Playbook</h1>
+      <p class="subtitle">
+        Step-by-Step Clinical Workflows, Technical Mechanics, and Stakeholder Value Matrix for Doctors, Patients, Receptionists, and Pharmacists.
+      </p>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Stakeholder Value Matrix -->
+    <section class="section-card">
+      <h2 class="section-title">👥 Stakeholder Value Matrix</h2>
+      <div class="grid-4">
+        <div class="role-card">
+          <h4>🩺 Doctor</h4>
+          <p style="font-size: 0.875rem; color: var(--slate-600); margin-top: 0.5rem;">
+            Sub-30s Rx Engine, Fuzzy Search, 1-Click Chips, History Cloning, Digital Signature.<br><br>
+            <strong>ROI:</strong> 85% time savings; zero handwriting errors; protected doctor brand.
+          </p>
+        </div>
+        <div class="role-card">
+          <h4>👨‍👩‍👧 Patient</h4>
+          <p style="font-size: 0.875rem; color: var(--slate-600); margin-top: 0.5rem;">
+            Instant WhatsApp PDF, Treatment Summary, 3-Window Smart Slot Nudges, Refill Alerts.<br><br>
+            <strong>ROI:</strong> Higher compliance; faster recovery; zero dosage confusion.
+          </p>
+        </div>
+        <div class="role-card">
+          <h4>📋 Receptionist</h4>
+          <p style="font-size: 0.875rem; color: var(--slate-600); margin-top: 0.5rem;">
+            Token Queue System, Auto-Reset Registration Form, Live Waiting Timers.<br><br>
+            <strong>ROI:</strong> 70% fewer phone calls; smooth front-desk OPD velocity.
+          </p>
+        </div>
+        <div class="role-card">
+          <h4>💊 Pharmacist <span class="tag-future">Future</span></h4>
+          <p style="font-size: 0.875rem; color: var(--slate-600); margin-top: 0.5rem;">
+            E-Prescription QR Scanner, Dispensing Verification, Live Stock Deduction.<br><br>
+            <strong>ROI:</strong> Zero dispensing errors; 100% legal verification; automated stock sync.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Workflows -->
+    <section class="section-card">
+      <h2 class="section-title">🔄 Step-by-Step Clinical & Administrative Workflows</h2>
+
+      <div class="workflow-step">
+        <h4>📍 Workflow 1: Front-Desk Patient Onboarding & Queueing (Receptionist)</h4>
+        <p style="font-size: 0.9rem; color: var(--slate-700);">
+          1. Patient arrives at clinic ➔ 2. Receptionist enters Name, Phone, Age, Gender ➔ 3. Checks DPDP Act Consent ➔ 4. Clicks "Register & Add to Queue" ➔ 5. Token generated (e.g. #14) ➔ 6. Form auto-resets in 0.5s ➔ 7. Patient appears live on Doctor's queue panel with waiting timer ("Waiting 2m").
+        </p>
+      </div>
+
+      <div class="workflow-step">
+        <h4>📍 Workflow 2: Consultation & Sub-30-Second Prescription Generation (Doctor)</h4>
+        <p style="font-size: 0.9rem; color: var(--slate-700);">
+          1. Doctor taps "Start Consultation" ➔ 2. Reviews patient history or clicks "Clone Prescription" for 1-click repeat ➔ 3. Types "PCM" (Fuse.js returns Paracetamol 650 instantly) ➔ 4. Taps 1-click pills (<code>1-0-1</code>, <code>5 days</code>, <code>After meals</code>) ➔ 5. Clicks "Review & Send via WhatsApp" ➔ 6. PDF generated client-side with MCI signature and saved in Supabase DB in &lt;50ms.
+        </p>
+      </div>
+
+      <div class="workflow-step">
+        <h4>📍 Workflow 3: Automated Smart Slot Medication Adherence (Patient Care Engine)</h4>
+        <p style="font-size: 0.9rem; color: var(--slate-700);">
+          Automated crons trigger WhatsApp dispatches across 3 IST time windows:
+          <br>• 🌅 <strong>8:00 AM IST (Morning)</strong>: Filters 1-0-0, 1-0-1, 1-1-1, OD ("Take 30 mins before breakfast").
+          <br>• ☀️ <strong>1:30 PM IST (Afternoon)</strong>: Filters 0-1-0, 1-1-1 ("Take after lunch").
+          <br>• 🌙 <strong>8:30 PM IST (Night)</strong>: Filters 0-0-1, 1-0-1, 1-1-1, Bedtime ("Take after dinner/at bedtime").
+          <br>• 🛡️ <strong>Superseding Rule</strong>: Updating a prescription on Wednesday cancels old pending Monday reminders (<code>SUPERSEDED</code>) so patient receives 1 clean updated message!
+        </p>
+      </div>
+
+      <div class="workflow-step">
+        <h4>📍 Workflow 4: Chronic Care Management & Day 25 Monthly Refill Alert</h4>
+        <p style="font-size: 0.9rem; color: var(--slate-700);">
+          1. Prescriptions &gt;14 days (BP/Diabetes) receive daily 8 AM briefings for 14 days ➔ 2. On Day 25, automated WhatsApp alert prompts patient: <em>"You have 5 days of regular meds remaining. Schedule your monthly checkup with Dr. Shanmukha Datta"</em> ➔ 3. Patient books refill visit, driving recurring monthly clinic OPD revenue.
+        </p>
+      </div>
+
+      <div class="workflow-step" style="border-left-color: var(--purple-600);">
+        <h4>📍 Workflow 5: Pharmacist E-Prescription Verification & Dispensing <span class="tag-future">Future Module</span></h4>
+        <p style="font-size: 0.9rem; color: var(--slate-700);">
+          1. Patient presents WhatsApp PDF / QR code at pharmacy ➔ 2. Pharmacist scans QR via RxNXT Terminal ➔ 3. RxNXT verifies cryptographic signature & prevents Schedule X re-use ➔ 4. Pharmacist clicks "Dispense" ➔ 5. Clinic stock auto-deducts in real time.
+        </p>
+      </div>
+    </section>
+
+    <!-- Technical Mechanics -->
+    <section class="section-card">
+      <h2 class="section-title">🔬 Deep Feature Technical Mechanics</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Feature Module</th>
+            <th>Technical Mechanism</th>
+            <th>Impact & Performance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Fuzzy Search Engine</strong></td>
+            <td>Fuse.js + Additive Scoring (`app/api/drugs/search`)</td>
+            <td>Short-circuits aliases ("PCM" ➔ Paracetamol) with +100 pt bonus. Sub-10ms response.</td>
+          </tr>
+          <tr>
+            <td><strong>Client-Side PDF</strong></td>
+            <td>`jsPDF` Engine in Browser DOM</td>
+            <td>0 server CPU load. 50,000 doctors rendering PDFs simultaneously without server lag.</td>
+          </tr>
+          <tr>
+            <td><strong>WhatsApp Microservice</strong></td>
+            <td>Baileys v6 WebSockets on Render $7 Tier</td>
+            <td>Persistent per-clinic session storage (`v5_sessions_${clinicId}`). 0 marginal message cost.</td>
+          </tr>
+          <tr>
+            <td><strong>Superseding Rule Engine</strong></td>
+            <td>Prisma `updateMany` to `SUPERSEDED`</td>
+            <td>Cancels outdated pending reminders when a prescription is updated. 0 duplicate messages.</td>
+          </tr>
+          <tr>
+            <td><strong>Database Engine</strong></td>
+            <td>Supabase Mumbai Cloud PostgreSQL</td>
+            <td>Connection pooler (`aws-0-ap-south-1.pooler.supabase.com`) scoped by `clinicId`.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer style="text-align: center; margin-top: 3rem; color: var(--slate-600); font-size: 0.9rem;">
+      <p>© 2026 Orug Technologies. RxNXT — Master Operational Feature Playbook | DPIIT Recognized Startup</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

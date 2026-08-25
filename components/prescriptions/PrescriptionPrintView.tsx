@@ -17,6 +17,8 @@ export interface PrintViewProps {
   clinicPhone?: string;
   doctorRegNo?: string;
   doctorSpecialization?: string;
+  verificationStatus?: string;
+  medicalCouncil?: string;
 }
 
 /**
@@ -152,9 +154,17 @@ export const generatePrescriptionPDF = (data: PrintViewProps, asBase64 = false):
   if (data.clinicAddress) {
     doc.text(data.clinicAddress, margin, y + 2);
   }
+  
   if (data.doctorSpecialization || data.doctorRegNo) {
     const specText = [data.doctorSpecialization, data.doctorRegNo ? `Reg: ${data.doctorRegNo}` : ''].filter(Boolean).join(' • ');
     doc.text(specText, pageWidth - margin, y + 2, { align: 'right' });
+  }
+
+  // Verified Badge underneath Doctor Specialization
+  if (data.verificationStatus === 'VERIFIED') {
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(22, 101, 52); // Emerald-800
+    doc.text(`[✓ Verified by ${data.medicalCouncil || 'Medical Council'}]`, pageWidth - margin, y + 6, { align: 'right' });
   }
 
   y += 4;

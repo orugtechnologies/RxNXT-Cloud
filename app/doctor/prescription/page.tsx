@@ -59,6 +59,16 @@ function PrescriptionWorkflowContent() {
   const [creationMethod, setCreationMethod] = useState<'MANUAL' | 'TEMPLATE'>('MANUAL');
   const [lastTimeTaken, setLastTimeTaken] = useState<number | null>(null);
 
+  const [doctorContext, setDoctorContext] = useState<any>({});
+
+  useEffect(() => {
+    // Fetch doctor and clinic details for the PDF
+    fetch('/api/doctor/me')
+      .then(res => res.json())
+      .then(data => setDoctorContext(data))
+      .catch(err => console.error('Error fetching doctor context:', err));
+  }, []);
+
   useEffect(() => {
     const cloneId = searchParams.get('clone');
     if (cloneId) {
@@ -206,12 +216,12 @@ function PrescriptionWorkflowContent() {
       const data = await res.json();
       
       const base64 = generatePrescriptionPDF({
-        patient, medicines, chiefComplaint, diagnosis, notes, followUpDate
+        patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, ...doctorContext
       }, true) as string;
       setPdfBase64(base64);
 
       generatePrescriptionPDF({
-        patient, medicines, chiefComplaint, diagnosis, notes, followUpDate
+        patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, ...doctorContext
       }, false);
       
       setPrescriptionId(data.prescriptionId);

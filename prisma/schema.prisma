@@ -46,6 +46,13 @@ model User {
   status             String   @default("ACTIVE")
   specialization     String?
   registrationNumber String?
+  medicalCouncil     String?
+  registrationYear   Int?
+  qualification      String?
+  verificationStatus String   @default("UNVERIFIED")
+  verifiedAt         DateTime?
+  verificationSource String?
+  verificationDetails String?
   signatureUrl       String?
   phone              String?
   clinicId           String

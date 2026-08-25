@@ -1,0 +1,151 @@
+ID,Generic Name,Brand Name,Aliases,Dosage Form,Strength,Route,Is Restricted,Prescription Count
+"drug-aceclofenac-aceclo-100mg","Aceclofenac","Aceclo","Zerodol, Hifenac, Aceclo, Dolokind, ACL","Tablet","100mg","Oral",No,11
+"drug-acyclovir-zovirax-400mg","Acyclovir","Zovirax","Zovirax, Herperax, ACV","Tablet","400mg","Oral",No,20
+"drug-albendazole-zentel-400mg","Albendazole","Zentel","Zentel, Bandey, Noworm, ALB","Tablet","400mg","Oral",No,2
+"drug-alprazolam-alprax-0-25mg","Alprazolam","Alprax","Alprax, Restyl, Trika, ALP","Tablet","0.25mg","Oral",Yes,41
+"drug-ambroxol-mucolite-15mg-5ml","Ambroxol","Mucolite","Mucolite, Ambrodil, AMB","Syrup","15mg/5ml","Oral",No,27
+"drug-amiodarone-cordarone-200mg","Amiodarone","Cordarone","Cordarone, AMI","Tablet","200mg","Oral",No,38
+"drug-amitriptyline-tryptomer-10mg","Amitriptyline","Tryptomer","Tryptomer, Elavil, AMI","Tablet","10mg","Oral",No,46
+"drug-amlodipine-norvasc-5mg","Amlodipine","Norvasc","Amlong, Stamlo, Norvasc, AML, Telma-AM, Amlokind-T, TEL-AM","Tablet","5mg","Oral",No,14
+"drug-amlodipine-amcard-10mg","Amlodipine","Amcard","Amlong, Stamlo, Norvasc, AML, Telma-AM, Amlokind-T, TEL-AM, Amcard","Tablet","10mg","Oral",No,49
+"drug-amoxicillin-mox-500mg","Amoxicillin","Mox","Mox, Amoxil, Novamox, AMOX, Augmentin, Clavam, Moxikind-CV, Amoxyclav, AUG, CV","Capsule","500mg","Oral",No,15
+"drug-amoxicillin-amoxil-125mg-5ml","Amoxicillin","Amoxil","Mox, Amoxil, Novamox, AMOX, Augmentin, Clavam, Moxikind-CV, Amoxyclav, AUG, CV","Syrup","125mg/5ml","Oral",No,30
+"drug-amoxicillin-clavulanate-augmentin-625mg","Amoxicillin-Clavulanate","Augmentin","Mox, Amoxil, Novamox, AMOX, Augmentin, Clavam, Moxikind-CV, Amoxyclav, AUG, CV","Tablet","625mg","Oral",No,44
+"drug-amoxicillin-clavulanate-clavam-625mg","Amoxicillin-Clavulanate","Clavam","Mox, Amoxil, Novamox, AMOX, Augmentin, Clavam, Moxikind-CV, Amoxyclav, AUG, CV","Tablet","625mg","Oral",No,46
+"drug-antacid--aluminium-magnesium--digene-standard","Antacid (Aluminium+Magnesium)","Digene","Digene, Gelusil, Mucaine, ANTACID","Syrup","Standard","Oral",No,22
+"drug-aspirin-ecosprin-75mg","Aspirin","Ecosprin","Ecosprin, Disprin, ASA, Aspicot, Cardiprin","Tablet","75mg","Oral",No,18
+"drug-atenolol-tenormin-50mg","Atenolol","Tenormin","Tenormin, Betacard, ATN","Tablet","50mg","Oral",No,21
+"drug-atorvastatin-atorva-10mg","Atorvastatin","Atorva","Atorva, Storvas, Lipitor, Atocor, ATOR","Tablet","10mg","Oral",No,44
+"drug-atorvastatin-lipitor-20mg","Atorvastatin","Lipitor","Atorva, Storvas, Lipitor, Atocor, ATOR","Tablet","20mg","Oral",No,23
+"drug-azithromycin-zithromax-250mg","Azithromycin","Zithromax","Azee, Azithral, Zithromax, AZM, Azi","Tablet","250mg","Oral",No,36
+"drug-azithromycin-azithral-500mg","Azithromycin","Azithral","Azee, Azithral, Zithromax, AZM, Azi","Tablet","500mg","Oral",No,48
+"drug-betamethasone-cream-betnovate-0-1-","Betamethasone Cream","Betnovate","Betnovate, Betamil, BET","Cream","0.1%","Topical",No,29
+"drug-bisacodyl-dulcolax-5mg","Bisacodyl","Dulcolax","Dulcolax, Dulcoflex, BIS","Tablet","5mg","Oral",No,10
+"drug-bisoprolol-concor-5mg","Bisoprolol","Concor","Concor, Corbis, BISO","Tablet","5mg","Oral",No,31
+"drug-bromhexine-bisolvon-8mg","Bromhexine","Bisolvon","Bisolvon, Grilinctus-BM, BRM","Tablet","8mg","Oral",No,22
+"drug-calamine-lotion-lacto-calamine-standard","Calamine Lotion","Lacto Calamine","Lacto Calamine, Caladryl, CALAMINE, Lacto","Lotion","Standard","Topical",No,47
+"drug-calcium---vitamin-d3-shelcal-500mg-250iu","Calcium + Vitamin D3","Shelcal","Shelcal, Gemcal, Cipcal, CAL-D3, Calcirol, D3 Must, Uprise D3, Tayo, Vit D3","Tablet","500mg+250IU","Oral",No,40
+"drug-carbamazepine-tegretol-200mg","Carbamazepine","Tegretol","Tegretol, Mazetol, CBZ","Tablet","200mg","Oral",No,39
+"drug-carbimazole-neomercazole-5mg","Carbimazole","Neomercazole","Neomercazole, CARB","Tablet","5mg","Oral",No,22
+"drug-carvedilol-carloc-6-25mg","Carvedilol","Carloc","Carloc, Coreg, CARV","Tablet","6.25mg","Oral",No,13
+"drug-cefixime-taxim-o-200mg","Cefixime","Taxim-O","Zifi, Taxim-O, Cefspan, Mahacef, CFX","Tablet","200mg","Oral",No,47
+"drug-ceftriaxone-monocef-1g","Ceftriaxone","Monocef","Monocef, Rocephin, Xone, Oframax, CTR","Injection","1g","IV/IM",No,15
+"drug-cefuroxime-ceftum-250mg","Cefuroxime","Ceftum","Ceftum, Cetil, Altacef, Pulmocef, CXM","Tablet","250mg","Oral",No,16
+"drug-cephalexin-sporidex-500mg","Cephalexin","Sporidex","Sporidex","Capsule","500mg","Oral",No,46
+"drug-cetirizine-zyrtec-10mg","Cetirizine","Zyrtec","Cetzine, Alerid, Zyrtec, Okacet, CET, Levocet, Vozet, Xyzal, L-Cet, LEVO-CET, Montair-LC, Telekast-L, Levocet-M, Montek-LC, MLC","Tablet","10mg","Oral",No,9
+"drug-chlorpheniramine-piriton-4mg","Chlorpheniramine","Piriton","Piriton","Tablet","4mg","Oral",No,0
+"drug-ciprofloxacin-ciplox-500mg","Ciprofloxacin","Ciplox","Cifran, Ciplox, Cipro, CIP, Oflox, Zenflox, Tarivid, OFL","Tablet","500mg","Oral",No,26
+"drug-ciprofloxacin-eye-drops-ciplox-eye-drops-0-3-","Ciprofloxacin Eye Drops","Ciplox Eye Drops","Cifran, Ciplox, Cipro, CIP, Oflox, Zenflox, Tarivid, OFL","Eye Drops","0.3%","Ophthalmic",No,39
+"drug-clarithromycin-klaricid-500mg","Clarithromycin","Klaricid","Klaricid","Tablet","500mg","Oral",No,40
+"drug-clindamycin-dalacin-300mg","Clindamycin","Dalacin","Dalacin","Capsule","300mg","Oral",No,19
+"drug-clobetasol-cream-tenovate-0-05-","Clobetasol Cream","Tenovate","Tenovate, Cloben, CLO","Cream","0.05%","Topical",No,41
+"drug-clonazepam-rivotril-0-5mg","Clonazepam","Rivotril","Clonotril, Zapiz, Rivotril, CLZ","Tablet","0.5mg","Oral",Yes,14
+"drug-clopidogrel-plavix-75mg","Clopidogrel","Plavix","Clopilet, Plavix, CLOP","Tablet","75mg","Oral",No,48
+"drug-clotrimazole-cream-candid-1-","Clotrimazole Cream","Candid","Candid, Canesten, CLOT","Cream","1%","Topical",No,21
+"drug-co-trimoxazole-bactrim-480mg","Co-trimoxazole","Bactrim","Bactrim","Tablet","480mg","Oral",No,49
+"drug-dapagliflozin-forxiga-10mg","Dapagliflozin","Forxiga","Forxiga, Oxra, DAPA","Tablet","10mg","Oral",No,36
+"drug-dexamethasone-dexona-0-5mg","Dexamethasone","Dexona","Dexona","Tablet","0.5mg","Oral",No,6
+"drug-dextromethorphan-benadryl-10mg-5ml","Dextromethorphan","Benadryl","Benadryl DR, Ascoril D, DXM, Benadryl","Syrup","10mg/5ml","Oral",No,39
+"drug-diazepam-valium-5mg","Diazepam","Valium","Valium, Calmpose, DZP","Tablet","5mg","Oral",Yes,31
+"drug-diclofenac-voveran-50mg","Diclofenac","Voveran","Voveran, Dynapar, Voltaren, Diclogel, DIC","Tablet","50mg","Oral",No,4
+"drug-diclofenac---paracetamol-voveran-plus-50mg-32","Diclofenac + Paracetamol","Voveran Plus","PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic, Voveran, Dynapar, Voltaren, Diclogel, DIC","Tablet","50mg+325mg","Oral",No,46
+"drug-digoxin-lanoxin-0-25mg","Digoxin","Lanoxin","Lanoxin","Tablet","0.25mg","Oral",No,12
+"drug-diltiazem-dilzem-60mg","Diltiazem","Dilzem","Dilzem","Tablet","60mg","Oral",No,25
+"drug-domperidone-domstal-10mg","Domperidone","Domstal","Pan-D, Pantocid-D, Pantop-D, PAND, Domstal, Motilium, Vomistop, DOM","Tablet","10mg","Oral",No,38
+"drug-doxycycline-doxy-100mg","Doxycycline","Doxy","Doxil, Doxy-1, Microdox, DOX, Doxy","Capsule","100mg","Oral",No,4
+"drug-empagliflozin-jardiance-10mg","Empagliflozin","Jardiance","Jardiance, Gibtulio, EMPA","Tablet","10mg","Oral",No,23
+"drug-enalapril-envas-5mg","Enalapril","Envas","Envas, Vasotec, ENA","Tablet","5mg","Oral",No,10
+"drug-escitalopram-nexito-10mg","Escitalopram","Nexito","Nexito, Cipralex, ESC","Tablet","10mg","Oral",No,23
+"drug-esomeprazole-neksium-40mg","Esomeprazole","Neksium","Omez, Omee, Prilosec, OMZ, Nexpro, Sompraz, Nexium, ESO, Neksium","Tablet","40mg","Oral",No,45
+"drug-fexofenadine-allegra-120mg","Fexofenadine","Allegra","Allegra, Fexova, Altiva, FEXO","Tablet","120mg","Oral",No,7
+"drug-fluconazole-flucan-150mg","Fluconazole","Flucan","Forcan, Flucos, Diflucan, FLZ, Flucan","Capsule","150mg","Oral",No,26
+"drug-fluoxetine-prodep-20mg","Fluoxetine","Prodep","Prodep","Capsule","20mg","Oral",No,27
+"drug-folic-acid-folvite-5mg","Folic Acid","Folvite","Autrin, Orofer-XT, Dexorange, Fefol, IFA, Folvite","Tablet","5mg","Oral",No,47
+"drug-furosemide-lasix-40mg","Furosemide","Lasix","Lasix, Frusenex, LASIX, FUR","Tablet","40mg","Oral",No,19
+"drug-gabapentin-gabapin-300mg","Gabapentin","Gabapin","Gabapin, Neurontin, GBP","Capsule","300mg","Oral",No,41
+"drug-glibenclamide-daonil-5mg","Glibenclamide","Daonil","Daonil","Tablet","5mg","Oral",No,7
+"drug-glimepiride-amaryl-2mg","Glimepiride","Amaryl","Amaryl, Zoryl, Glimy, GLIM","Tablet","2mg","Oral",No,43
+"drug-glipizide-glipizide-5mg","Glipizide","Glipizide","Glynase, Minidiab, Glipizide","Tablet","5mg","Oral",No,35
+"drug-glyceryl-trinitrate-nitrocontin-2-6mg","Glyceryl Trinitrate","Nitrocontin","Nitrocontin","Tablet","2.6mg","Oral",No,43
+"drug-hydrochlorothiazide-aquazide-25mg","Hydrochlorothiazide","Aquazide","Telma-H, Telmikind-H, TEL-H, Aquazide","Tablet","25mg","Oral",No,11
+"drug-hydrocortisone-solu-cortef-100mg","Hydrocortisone","Solu-Cortef","Solu-Cortef","Injection","100mg","IV",No,35
+"drug-hydroxychloroquine-plaquenil-200mg","Hydroxychloroquine","Plaquenil","Plaquenil","Tablet","200mg","Oral",No,45
+"drug-ibuprofen-brufen-400mg","Ibuprofen","Brufen","Brufen, Combiflam, Ibugesic, IBU","Tablet","400mg","Oral",No,16
+"drug-ibuprofen-combiflam-400mg","Ibuprofen","Combiflam","Brufen, Combiflam, Ibugesic, IBU","Tablet","400mg","Oral",No,42
+"drug-insulin-glargine-lantus-100iu-ml","Insulin Glargine","Lantus","Lantus","Injection","100IU/ml","Subcutaneous",No,28
+"drug-insulin-nph-humulin-n-100iu-ml","Insulin NPH","Humulin N","Humulin","Injection","100IU/ml","Subcutaneous",No,43
+"drug-insulin-regular-actrapid-100iu-ml","Insulin Regular","Actrapid","Actrapid","Injection","100IU/ml","Subcutaneous",No,19
+"drug-ipratropium-ipravent-20mcg","Ipratropium","Ipravent","Duolin, Ipravent, IPR","Inhaler","20mcg","Inhalation",No,9
+"drug-iron---folic-acid-feronia-150mg-1-5mg","Iron + Folic Acid","Feronia","Autrin, Orofer-XT, Dexorange, Fefol, IFA, Feronia","Tablet","150mg+1.5mg","Oral",No,28
+"drug-isosorbide-mononitrate-ismn-20mg","Isosorbide Mononitrate","ISMN","ISMN","Tablet","20mg","Oral",No,44
+"drug-itraconazole-sporanox-100mg","Itraconazole","Sporanox","Sporanox","Capsule","100mg","Oral",No,38
+"drug-ivermectin-ivecop-12mg","Ivermectin","Ivecop","Ivecop, Vermact, IVM","Tablet","12mg","Oral",No,35
+"drug-lactulose-duphalac-3-35g-5ml","Lactulose","Duphalac","Duphalac, Cremaffin, LAC","Syrup","3.35g/5ml","Oral",No,32
+"drug-latanoprost-eye-drops-xalatan-0-005-","Latanoprost Eye Drops","Xalatan","Xalatan","Eye Drops","0.005%","Ophthalmic",No,14
+"drug-levetiracetam-keppra-500mg","Levetiracetam","Keppra","Levera, Keppra, LEV","Tablet","500mg","Oral",No,36
+"drug-levocetirizine-levocet-5mg","Levocetirizine","Levocet","Cetzine, Alerid, Zyrtec, Okacet, CET, Levocet, Vozet, Xyzal, L-Cet, LEVO-CET, Montair-LC, Telekast-L, Levocet-M, Montek-LC, MLC, LEVO","Tablet","5mg","Oral",No,0
+"drug-levofloxacin-levoflox-500mg","Levofloxacin","Levoflox","Levomac, Loxof, Glevo, LEVO, LVX, Oflox, Zenflox, Tarivid, OFL, Levoflox","Tablet","500mg","Oral",No,20
+"drug-levothyroxine-eltroxin-50mcg","Levothyroxine","Eltroxin","Thyronorm, Eltroxin, Synthroid, THYRO","Tablet","50mcg","Oral",No,41
+"drug-levothyroxine-thyronorm-100mcg","Levothyroxine","Thyronorm","Thyronorm, Eltroxin, Synthroid, THYRO","Tablet","100mcg","Oral",No,0
+"drug-lisinopril-lisinopril-10mg","Lisinopril","Lisinopril","Lisinopril","Tablet","10mg","Oral",No,48
+"drug-loperamide-lopamide-2mg","Loperamide","Lopamide","Imodium, Lopamide, LOP","Tablet","2mg","Oral",No,28
+"drug-loratadine-claritin-10mg","Loratadine","Claritin","Claritin","Tablet","10mg","Oral",No,11
+"drug-losartan-losar-50mg","Losartan","Losar","Losacar, Repace, Cozaar, LOS, Losar","Tablet","50mg","Oral",No,15
+"drug-mebendazole-vermox-100mg","Mebendazole","Vermox","Vermox","Tablet","100mg","Oral",No,38
+"drug-metformin-glyciphage-500mg","Metformin","Glyciphage","Glycomet, Gluconorm, Glucophage, Obimet, MET, Glyciphage","Tablet","500mg","Oral",No,41
+"drug-metformin-glucophage-1000mg","Metformin","Glucophage","Glycomet, Gluconorm, Glucophage, Obimet, MET","Tablet","1000mg","Oral",No,39
+"drug-methotrexate-methofar-2-5mg","Methotrexate","Methofar","Methofar","Tablet","2.5mg","Oral",No,16
+"drug-methylprednisolone-solu-medrol-500mg","Methylprednisolone","Solu-Medrol","Solu-Medrol","Injection","500mg","IV",No,11
+"drug-metoclopramide-perinorm-10mg","Metoclopramide","Perinorm","Perinorm, Reglan, MCP","Tablet","10mg","Oral",No,5
+"drug-metoprolol-betaloc-50mg","Metoprolol","Betaloc","Betaloc, Metolar, Seloken, METO","Tablet","50mg","Oral",No,5
+"drug-metronidazole-flagyl-400mg","Metronidazole","Flagyl","Flagyl, Metrogyl, METRO, MTZ","Tablet","400mg","Oral",No,31
+"drug-montelukast-montair-10mg","Montelukast","Montair","Montair-LC, Telekast-L, Levocet-M, Montek-LC, MLC, Montair","Tablet","10mg","Oral",No,4
+"drug-moxifloxacin-eye-drops-vigamox-0-5-","Moxifloxacin Eye Drops","Vigamox","Vigamox","Eye Drops","0.5%","Ophthalmic",No,15
+"drug-multivitamin-becosules-standard","Multivitamin","Becosules","Becosules","Capsule","Standard","Oral",No,1
+"drug-multivitamin-supradyn-standard","Multivitamin","Supradyn","Supradyn","Tablet","Standard","Oral",No,39
+"drug-mupirocin-ointment-t-bact-2-","Mupirocin Ointment","T-Bact","T-Bact, Bactroban, MUP","Ointment","2%","Topical",No,22
+"drug-naproxen-naprosyn-250mg","Naproxen","Naprosyn","Naprosyn","Tablet","250mg","Oral",No,7
+"drug-nebivolol-nebicard-5mg","Nebivolol","Nebicard","Nebicard","Tablet","5mg","Oral",No,49
+"drug-nitrofurantoin-macrobid-100mg","Nitrofurantoin","Macrobid","Martifur, Niftran, NFT, Macrobid","Capsule","100mg","Oral",No,47
+"drug-norfloxacin-norflox-400mg","Norfloxacin","Norflox","Norflox, Norilet, NOR","Tablet","400mg","Oral",No,26
+"drug-ofloxacin-zanocin-200mg","Ofloxacin","Zanocin","Cifran, Ciplox, Cipro, CIP, Levomac, Loxof, Glevo, LEVO, LVX, Oflox, Zenflox, Tarivid, OFL, Zanocin","Tablet","200mg","Oral",No,43
+"drug-olmesartan-olsar-20mg","Olmesartan","Olsar","Olsar","Tablet","20mg","Oral",No,42
+"drug-omeprazole-omez-20mg","Omeprazole","Omez","Omez, Omee, Prilosec, OMZ, Nexpro, Sompraz, Nexium, ESO","Capsule","20mg","Oral",No,6
+"drug-ondansetron-emeset-4mg","Ondansetron","Emeset","Emeset, Ondem, Zofran, Vomikind, OND","Tablet","4mg","Oral",No,35
+"drug-ors--oral-rehydration-salts--electral-standar","ORS (Oral Rehydration Salts)","Electral","ORS, Electral, Walyte, Prolyte","Powder","Standard","Oral",No,42
+"drug-pantoprazole-pan-40mg","Pantoprazole","Pan","Pan, Pantocid, Pantop, PAN, Pan-D, Pantocid-D, Pantop-D, PAND, PANTO","Tablet","40mg","Oral",No,12
+"drug-pantoprazole---domperidone-pantodac-dsr-40mg-","Pantoprazole + Domperidone","Pantodac DSR","Pan, Pantocid, Pantop, PAN, Pan-D, Pantocid-D, Pantop-D, PAND, Domstal, Motilium, Vomistop, DOM, Pantodac","Capsule","40mg+30mg","Oral",No,7
+"drug-paracetamol-crocin-500mg","Paracetamol","Crocin","PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic","Tablet","500mg","Oral",No,14
+"drug-paracetamol-dolo-650mg","Paracetamol","Dolo","PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic","Tablet","650mg","Oral",No,24
+"drug-paracetamol-pyrigesic-120mg-5ml","Paracetamol","Pyrigesic","PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic","Syrup","120mg/5ml","Oral",No,29
+"drug-paracetamol-calpol-650mg","Paracetamol","Calpol","PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic","Tablet","650mg","Oral",No,40
+"drug-paracetamol---caffeine-saridon-standard","Paracetamol + Caffeine","Saridon","PCM, Dolo, Calpol, Crocin, P-Mol, Pacimol, Pyrigesic, Saridon","Tablet","Standard","Oral",No,39
+"drug-phenytoin-eptoin-100mg","Phenytoin","Eptoin","Eptoin","Tablet","100mg","Oral",No,37
+"drug-pioglitazone-pioglit-15mg","Pioglitazone","Pioglit","Pioglit","Tablet","15mg","Oral",No,31
+"drug-prednisolone-wysolone-5mg","Prednisolone","Wysolone","Wysolone","Tablet","5mg","Oral",No,42
+"drug-pregabalin-lyrica-75mg","Pregabalin","Lyrica","Pregalin, Lyrica, Maxgalin, PGB","Capsule","75mg","Oral",No,34
+"drug-rabeprazole-razo-20mg","Rabeprazole","Razo","Razo, Happi, Rabicip, Rablet, RAB","Tablet","20mg","Oral",No,27
+"drug-ramipril-cardace-5mg","Ramipril","Cardace","Cardace, Ramirand, RAM","Capsule","5mg","Oral",No,36
+"drug-ranitidine-rantac-150mg","Ranitidine","Rantac","Rantac, Aciloc, Zantac, RAN","Tablet","150mg","Oral",No,41
+"drug-rosuvastatin-crestor-10mg","Rosuvastatin","Crestor","Rosuvas, Rozavel, Crestor, ROSU","Tablet","10mg","Oral",No,33
+"drug-salbutamol-ventolin-100mcg","Salbutamol","Ventolin","Asthalin, Ventolin, SBL","Inhaler","100mcg","Inhalation",No,29
+"drug-salbutamol-asthalin-2mg","Salbutamol","Asthalin","Asthalin, Ventolin, SBL","Tablet","2mg","Oral",No,44
+"drug-sertraline-serta-50mg","Sertraline","Serta","Daxid, Zoloft, SERT, Serta","Tablet","50mg","Oral",No,16
+"drug-simvastatin-zocor-20mg","Simvastatin","Zocor","Zocor","Tablet","20mg","Oral",No,6
+"drug-sitagliptin-januvia-100mg","Sitagliptin","Januvia","Januvia, Istavel, SITA","Tablet","100mg","Oral",No,22
+"drug-spironolactone-aldactone-25mg","Spironolactone","Aldactone","Aldactone, SPIR","Tablet","25mg","Oral",No,32
+"drug-sucralfate-sucrafil-1g","Sucralfate","Sucrafil","Sucrafil, Carafate, SUC","Tablet","1g","Oral",No,38
+"drug-sulfasalazine-salazopyrin-500mg","Sulfasalazine","Salazopyrin","Salazopyrin","Tablet","500mg","Oral",No,6
+"drug-telmisartan-telma-40mg","Telmisartan","Telma","Telma, Telmikind, Telpres, Micardis, TEL, Telma-H, Telmikind-H, TEL-H, Telma-AM, Amlokind-T, TEL-AM","Tablet","40mg","Oral",No,37
+"drug-theophylline-theo-asthalin-200mg","Theophylline","Theo-asthalin","Theo-asthalin","Tablet","200mg","Oral",No,27
+"drug-timolol-eye-drops-timoptic-0-5-","Timolol Eye Drops","Timoptic","Timoptic","Eye Drops","0.5%","Ophthalmic",No,24
+"drug-tramadol-ultracet-50mg","Tramadol","Ultracet","Tramazac, Ultracet, Tramatas, Contramal, TRA","Tablet","50mg","Oral",Yes,39
+"drug-tropicamide-eye-drops-tropicacyl-1-","Tropicamide Eye Drops","Tropicacyl","Tropicacyl","Eye Drops","1%","Ophthalmic",No,0
+"drug-valproate-valparin-200mg","Valproate","Valparin","Epilim, Encorate, Valparin, VPA","Tablet","200mg","Oral",No,28
+"drug-valsartan-diovan-80mg","Valsartan","Diovan","Diovan","Tablet","80mg","Oral",No,9
+"drug-venlafaxine-venlor-75mg","Venlafaxine","Venlor","Venlor","Capsule","75mg","Oral",No,42
+"drug-vildagliptin-galvus-50mg","Vildagliptin","Galvus","Galvus, Jalra, VILDA","Tablet","50mg","Oral",No,44
+"drug-vitamin-b12--methylcobalamin--nervijen-500mcg","Vitamin B12 (Methylcobalamin)","Nervijen","Nurokind, Meganeuron, Mecobal, B12, Nervijen","Tablet","500mcg","Oral",No,37
+"drug-vitamin-d3-calcirol-60000iu","Vitamin D3","Calcirol","Shelcal, Gemcal, Cipcal, CAL-D3, Calcirol, D3 Must, Uprise D3, Tayo, Vit D3","Capsule","60000IU","Oral",No,32
+"drug-zinc-sulphate-zincovit-20mg","Zinc Sulphate","Zincovit","Zincovit","Tablet","20mg","Oral",No,27
+"drug-zolpidem-ambien-10mg","Zolpidem","Ambien","Ambien","Tablet","10mg","Oral",Yes,22

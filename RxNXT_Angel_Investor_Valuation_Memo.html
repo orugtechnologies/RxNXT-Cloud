@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RxNXT Cloud — Angel Investor Investment Memorandum & Valuation Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-navy: #0f172a;
+      --accent-blue: #2563eb;
+      --accent-emerald: #10b981;
+      --accent-purple: #7c3aed;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --bg-light: #f8fafc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; color: var(--text-main); background-color: var(--bg-light); line-height: 1.6; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    .container { max-width: 1000px; margin: 0 auto; background: #ffffff; padding: 50px; box-shadow: 0 10px 35px rgba(0, 0, 0, 0.05); border-radius: 16px; }
+
+    /* Sticky Action Header */
+    .no-print-bar { position: sticky; top: 0; z-index: 1000; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); color: white; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    .no-print-bar .title { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+    .btn-print { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 10px 22px; font-size: 0.9rem; font-weight: 700; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.2s ease; display: flex; align-items: center; gap: 8px; }
+    .btn-print:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4); }
+
+    /* Hero Banner */
+    .hero-banner { background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #2563eb 100%); color: white; padding: 45px; border-radius: 16px; margin-bottom: 35px; position: relative; overflow: hidden; }
+    .hero-banner::after { content: ''; position: absolute; top: -30%; right: -10%; width: 350px; height: 350px; background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(0, 0, 0, 0) 70%); border-radius: 50%; }
+    .confidential-tag { display: inline-block; background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); padding: 4px 14px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+    .hero-banner h1 { font-family: 'Outfit', sans-serif; font-size: 2.3rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 10px; }
+    .hero-banner p { color: #cbd5e1; font-size: 1.05rem; max-width: 750px; }
+
+    /* Institutional Badges Bar */
+    .badges-bar { display: flex; gap: 12px; margin-bottom: 30px; }
+    .badge-pill { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; font-size: 0.82rem; font-weight: 700; padding: 8px 16px; border-radius: 50px; display: flex; align-items: center; gap: 6px; }
+    .badge-pill.emerald { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+    .badge-pill.purple { background: #f5f3ff; border-color: #ddd6fe; color: #5b21b6; }
+
+    /* Key Highlights Metric Grid */
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 35px; }
+    .metric-card { background: #ffffff; border: 1px solid var(--border-color); border-top: 4px solid var(--accent-blue); padding: 20px 16px; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+    .metric-card.emerald { border-top-color: var(--accent-emerald); }
+    .metric-card.purple { border-top-color: var(--accent-purple); }
+    .metric-card.navy { border-top-color: var(--primary-navy); }
+    .metric-value { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--primary-navy); margin-bottom: 4px; }
+    .metric-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
+
+    /* Section Titles */
+    .section-title { font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--primary-navy); margin: 40px 0 20px 0; padding-bottom: 8px; border-bottom: 2.5px solid var(--accent-blue); display: flex; align-items: center; gap: 10px; }
+    .section-title .icon-box { width: 32px; height: 32px; background: rgba(37, 99, 235, 0.1); color: var(--accent-blue); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+
+    /* Highlight Cards & Grid */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 25px; }
+    .info-card { background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 12px; padding: 22px; }
+    .info-card h3 { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .info-card p { font-size: 0.9rem; color: var(--text-main); margin-bottom: 10px; }
+
+    /* Tables */
+    .table-container { margin-bottom: 30px; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    thead { background: var(--primary-navy); color: white; }
+    th { padding: 14px 16px; font-weight: 700; text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+    tbody tr:nth-child(even) { background-color: var(--bg-light); }
+
+    /* Valuation Box */
+    .valuation-box { background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%); border: 2px solid #6366f1; border-radius: 14px; padding: 28px; margin: 30px 0; text-align: center; }
+    .valuation-box h2 { font-family: 'Outfit', sans-serif; font-size: 2.1rem; font-weight: 800; color: #3730a3; margin-bottom: 6px; }
+    .valuation-box p { font-size: 0.95rem; color: #4338ca; font-weight: 500; }
+
+    /* Footer */
+    .doc-footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); }
+
+    @media print {
+      .no-print-bar { display: none !important; }
+      body { background: white; }
+      .container { box-shadow: none; padding: 0; max-width: 100%; }
+      .hero-banner { border-radius: 0; padding: 30px; }
+      tr { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="no-print-bar">
+    <div class="title">
+      <span>📈</span> RxNXT Cloud — Angel Investor Valuation Memorandum
+    </div>
+    <button onclick="window.print()" class="btn-print">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+      Download / Print PDF
+    </button>
+  </div>
+
+  <div class="container">
+    
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <span class="confidential-tag">STRICTLY CONFIDENTIAL • INVESTMENT MEMORANDUM</span>
+      <h1>RxNXT Cloud — Angel Investor Valuation & Growth Pitch</h1>
+      <p>Pre-Seed / Seed Valuation Analysis, Technical Moat, Unit Economics, and Scaling Roadmap for India's Fastest OPD Prescription & Patient Revisit SaaS Engine.</p>
+    </div>
+
+    <!-- Institutional Badges Bar -->
+    <div class="badges-bar">
+      <div class="badge-pill emerald">
+        <span>🇮🇳</span> DPIIT Certified Startup
+      </div>
+      <div class="badge-pill purple">
+        <span>🏛️</span> SRiX Incubated (DST-TBI)
+      </div>
+      <div class="badge-pill">
+        <span>💰</span> ₹7 Lakhs Grant Funded & Developed
+      </div>
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value">30 Sec</div>
+        <div class="metric-label">Rx Creation Speed</div>
+      </div>
+      <div class="metric-card emerald">
+        <div class="metric-value">+25%</div>
+        <div class="metric-label">Patient Revisit Lift</div>
+      </div>
+      <div class="metric-card purple">
+        <div class="metric-value">₹16.5 Cr – ₹22 Cr</div>
+        <div class="metric-label">Pre-Money Valuation</div>
+      </div>
+      <div class="metric-card navy">
+        <div class="metric-value">75%</div>
+        <div class="metric-label">ABDM Architecture Ready</div>
+      </div>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="section-title">
+      <div class="icon-box">📌</div>
+      1. Executive Summary & Institutional Milestones
+    </div>
+
+    <div class="info-card" style="margin-bottom: 25px;">
+      <p><strong>RxNXT Cloud</strong> (developed by Orug Technologies) is a <strong>DPIIT-recognized</strong> and <strong>SRiX-incubated (DST-funded TBI)</strong> Digital Prescription & Clinical Practice SaaS Workspace built for outpatient (OPD) clinics and polyclinics across India.</p>
+      <p>Having successfully deployed a <strong>₹7 Lakhs product grant</strong> into a fully functional, live production cloud stack, RxNXT digitizes the consultation workflow in <strong>under 30 seconds</strong> and directly drives <strong>20–30% more clinic revenue</strong> through automated 8:00 AM WhatsApp patient revisit reminders.</p>
+    </div>
+
+    <!-- Market Opportunity (TAM / SAM / SOM) -->
+    <div class="section-title">
+      <div class="icon-box">🌐</div>
+      2. Market Size & Opportunity (TAM / SAM / SOM)
+    </div>
+
+    <div class="grid-2">
+      <div class="info-card">
+        <h3>Total Addressable Market (TAM)</h3>
+        <p><strong>$12 Billion OPD Market in India</strong></p>
+        <p>India has over <strong>1.4 Million registered doctors</strong> conducting over 10 Million outpatient consultations daily. 85% of doctors still write paper prescriptions manually.</p>
+      </div>
+      <div class="info-card">
+        <h3>Serviceable Obtainable Market (SOM)</h3>
+        <p><strong>15,000 OPD Clinics (Target 3-Year SOM)</strong></p>
+        <p>At an Average Revenue Per User (ARPU) of <strong>₹2,499/month</strong> (Pro Plan), capturing 15,000 clinics yields <strong>₹45 Crore ($5.4M) ARR</strong>.</p>
+      </div>
+    </div>
+
+    <!-- Technical Moat & Product Superiority -->
+    <div class="section-title">
+      <div class="icon-box">⚡</div>
+      3. Product Architecture & Technical Moat
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Competitive Capability</th>
+            <th>Legacy EMRs (Practo / MediXcel)</th>
+            <th>RxNXT Cloud Moat</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Prescription Speed</strong></td>
+            <td>3 to 5 Minutes (Slow Form Typing)</td>
+            <td><strong>Sub-30 Seconds</strong> (Fuzzy drug lookup + 1-click dosage chips)</td>
+          </tr>
+          <tr>
+            <td><strong>Patient Revisit Generator</strong></td>
+            <td>None (Static Record System)</td>
+            <td><strong>Automated 8:00 AM WhatsApp Follow-Up Engine</strong> (+25% clinic revenue)</td>
+          </tr>
+          <tr>
+            <td><strong>Patient Experience</strong></td>
+            <td>Physical Paper or Email PDF</td>
+            <td><strong>AI Present-Day Treatment Summary on WhatsApp</strong> + Vector PDF</td>
+          </tr>
+          <tr>
+            <td><strong>Infrastructure & Uptime</strong></td>
+            <td>Shared Monolithic Web Hosting</td>
+            <td><strong>Supabase Mumbai DB (ap-south-1) + Paid 24/7 Render Engine</strong> (~20ms latency)</td>
+          </tr>
+          <tr>
+            <td><strong>Government ABDM Alignment</strong></td>
+            <td>Third-party integration delay</td>
+            <td><strong>75% Architecture Ready</strong> (Prisma schema ready for ABHA & FHIR R4)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Business Model & Monetization Tiers -->
+    <div class="section-title">
+      <div class="icon-box">💳</div>
+      4. Monetization & Subscription Tier Architecture
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Tier Level</th>
+            <th>Pricing Strategy</th>
+            <th>Target Client Segment</th>
+            <th>Key Included Features</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color: #059669;">Starter Plan</strong></td>
+            <td><strong>₹999 / Month</strong></td>
+            <td>Solo General Practitioners</td>
+            <td>30-Sec Fast Rx, Patient Directory, 1-Click Rx Cloning, Schedule H Warnings, PDF Print</td>
+          </tr>
+          <tr>
+            <td><strong style="color: #2563eb;">Pro Plan ⭐</strong></td>
+            <td><strong>₹2,499 / Month</strong></td>
+            <td>High-Volume Clinics & Polyclinics</td>
+            <td>Everything in Starter + <strong>Automated Revisit Reminders</strong>, Unlimited WhatsApp, Queue Tokens, AI Patient Summary, Doctor Analytics</td>
+          </tr>
+          <tr>
+            <td><strong style="color: #6d28d9;">Enterprise Plan</strong></td>
+            <td><strong>₹5,999+ / Month</strong></td>
+            <td>Hospitals & Multi-Doctor Chains</td>
+            <td>Everything in Pro + Multi-Staff Role Management, Direct Pharmacy Fulfillment, Billing Receipts, ABDM/ABHA Integration</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Valuation Breakdown in INR -->
+    <div class="section-title">
+      <div class="icon-box">📊</div>
+      5. Investor Valuation Analysis in INR (₹)
+    </div>
+
+    <div class="info-card" style="margin-bottom: 20px;">
+      <p>Applying VC Scorecard and Berkus Valuation Frameworks for DPIIT-recognized, Incubated HealthTech Startups in India:</p>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Valuation Driver</th>
+            <th>Value Added (INR)</th>
+            <th>Strategic Rationale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. DPIIT Recognition</strong></td>
+            <td><strong>+ ₹2.0 Crore</strong></td>
+            <td>Angel Tax Exemption (Sec 56(2)(viib)), Govt. procurement preferences, and legal compliance.</td>
+          </tr>
+          <tr>
+            <td><strong>2. SRiX Incubation (DST-TBI)</strong></td>
+            <td><strong>+ ₹3.5 Crore</strong></td>
+            <td>Institutional due diligence by DST-funded incubator validates technology, governance, and team.</td>
+          </tr>
+          <tr>
+            <td><strong>3. Capital Efficiency (₹7L Grant Deployment)</strong></td>
+            <td><strong>+ ₹4.0 Crore</strong></td>
+            <td>Converted ₹7L grant into a full enterprise cloud stack (Supabase Mumbai + 24/7 Render WhatsApp engine).</td>
+          </tr>
+          <tr>
+            <td><strong>4. Live Product & Technical Moat</strong></td>
+            <td><strong>+ ₹5.0 Crore</strong></td>
+            <td>Sub-30sec Rx creation, automated 8:00 AM WhatsApp revisit generator (+25% clinic revenue).</td>
+          </tr>
+          <tr>
+            <td><strong>5. Regulatory Compliance & ABDM</strong></td>
+            <td><strong>+ ₹2.0 Crore</strong></td>
+            <td>DPDP Act 2023 consent tracking + 75% ABDM M1/M2/M3 architecture alignment.</td>
+          </tr>
+          <tr style="background: #e0e7ff; font-weight: 800;">
+            <td><strong>TOTAL PRE-MONEY VALUATION</strong></td>
+            <td style="color: #1e40af; font-size: 1.05rem;"><strong>₹16.5 Cr – ₹22.0 Cr</strong></td>
+            <td><strong>Target Pre-Seed / Seed Valuation Range</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Final Valuation Conclusion Box -->
+    <div class="valuation-box">
+      <h2>Pre-Money Valuation: ₹16.5 Crore – ₹22.0 Crore</h2>
+      <p>Target Capital Ask: ₹2.5 Crore ($300,000) for 12–15% Equity dilution to scale sales & marketing across 1,000 OPD clinics in 12 months.</p>
+    </div>
+
+    <!-- Document Footer -->
+    <div class="doc-footer">
+      <div>
+        <strong>RxNXT Cloud Enterprise Suite</strong> — Confidential Angel Investment Memorandum
+      </div>
+      <div>
+        Orug Technologies • August 2026
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
