@@ -116,6 +116,10 @@ export default function LoginPage() {
               </>
             )}
           </Button>
+
+          <div className="pt-2 text-center text-xs text-slate-400">
+            <strong>Dev Test Account:</strong> dev@rxnxt.com / password123
+          </div>
         </form>
 
         <div className="mt-8 text-center text-sm text-slate-500">

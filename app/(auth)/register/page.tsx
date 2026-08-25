@@ -206,7 +206,7 @@ function RegisterForm() {
             </div>
 
             {!verificationResult?.success && (
-              <Button type="button" variant="secondary" className="w-full text-sm font-medium" onClick={handleVerify} disabled={verifying || loading || !form.registrationNumber || !form.fullName}>
+              <Button type="button" className="w-full text-sm font-semibold bg-clinic-emerald hover:bg-clinic-emeraldDark text-white shadow-md transition-all" onClick={handleVerify} disabled={verifying || loading || !form.registrationNumber || !form.fullName}>
                 {verifying ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Verify Credentials Instantly
               </Button>

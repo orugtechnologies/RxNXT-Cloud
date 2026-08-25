@@ -58,6 +58,41 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
+        // Auto-provision a Dev Doctor for quick testing without registration
+        if (!user && cleanEmail === 'dev@rxnxt.com') {
+          try {
+            let clinic = await prisma.clinic.findFirst();
+            if (!clinic) {
+              clinic = await prisma.clinic.create({
+                data: {
+                  id: 'demo-clinic-002',
+                  name: 'Development Clinic',
+                  address: '123 Test Street, Dev City',
+                  phone: '+91 99999 99999',
+                  email: 'devclinic@rxnxtdemo.com',
+                },
+              });
+            }
+            const hashedPassword = await bcrypt.hash('password123', 12);
+            user = await prisma.user.create({
+              data: {
+                email: 'dev@rxnxt.com',
+                password: hashedPassword,
+                fullName: 'Dr. Dev Tester',
+                role: 'doctor',
+                specialization: 'General Physician',
+                medicalCouncil: 'NMC',
+                registrationNumber: 'DEV-12345',
+                verificationStatus: 'VERIFIED',
+                clinicId: clinic.id,
+              },
+              include: { clinic: true },
+            });
+          } catch (createErr) {
+            console.error('Error auto-provisioning Dev Doctor:', createErr);
+          }
+        }
+
         if (!user) return null;
 
         // Verify password with bcrypt
