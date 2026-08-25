@@ -79,7 +79,7 @@ export const authOptions: NextAuthOptions = {
                 email: 'dev@rxnxt.com',
                 password: hashedPassword,
                 fullName: 'Dr. Dev Tester',
-                role: 'doctor',
+                role: 'clinic_admin',
                 specialization: 'General Physician',
                 medicalCouncil: 'NMC',
                 registrationNumber: 'DEV-12345',
