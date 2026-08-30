@@ -2,6 +2,10 @@ node_modules/
 *.log
 rxnxt-db.json
 .env
+.env*.local
+.env.local
 .next/
 coverage/  
-test-report.html  
+test-report.html
+scratch/
+  

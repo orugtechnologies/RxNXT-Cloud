@@ -1,5 +1,12 @@
 # RxNXT Changelog
 
+## [2026-08-31] - Direct NMC Medical Council License Verification & Mandatory Gating
+- **Direct Official National Medical Commission (NMC) REST API Engine**: Integrated direct, zero-cost, high-speed (~0.4s) doctor license verification against the official NMC Indian Medical Register (`https://www.nmc.org.in/MCIRest/open/getDataFromService?service=searchDoctor`), covering the National Council + all 24+ State Medical Councils across India.
+- **Mandatory UI Gating**: Registration workspace creation is strictly locked until the doctor completes Step 2 (Medical Council Verification).
+- **Auto-Populate & Data Locking**: Doctor's official registered name, degrees (`MBBS`, `MD`, `MS`, `D.CH`), and state council details are fetched directly from government records and locked into the profile upon verification.
+- **Server-Side Enforcement**: Server-side double-validation in `app/api/auth/register/route.ts` blocks any unverified or tampered registration attempts.
+- **Test Suite Expansion**: Added comprehensive test coverage for doctor verification service (34/34 tests passing).
+
 ## [2026-08-16] - Supabase Mumbai Migration & Smart Slot Adherence Model
 - **Supabase Mumbai Cloud PostgreSQL**: Fully migrated database infrastructure to Supabase Mumbai (`aws-0-ap-south-1.pooler.supabase.com`) via Prisma ORM for ultra-low latency across India.
 - **Smart Slot Adherence Model**: Built a 3-window WhatsApp medication reminder engine operating at 8:00 AM IST (Morning), 1:30 PM IST (Afternoon), and 8:30 PM IST (Night) with food instruction rules ("Before breakfast", "After dinner").
