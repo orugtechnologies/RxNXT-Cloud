@@ -1,7 +1,7 @@
 /**
  * RxNXT Doctor Medical Council & Compliance Verification Service
  * Supports National Medical Commission (NMC) and all Indian State Medical Councils.
- * Operates in hybrid mode: Live Provider API when configured, or built-in intelligent sandbox validation.
+ * Operates in hybrid mode: Live Provider API (Surepass) when configured, or built-in intelligent sandbox validation.
  */
 
 export interface MedicalCouncilOption {
@@ -37,6 +37,70 @@ export const MEDICAL_COUNCILS: MedicalCouncilOption[] = [
   { id: 'UPMC', name: 'Uttar Pradesh Medical Council', shortCode: 'UPMC', state: 'Uttar Pradesh' },
   { id: 'UKMC', name: 'Uttarakhand Medical Council', shortCode: 'UKMC', state: 'Uttarakhand' },
   { id: 'WBMC', name: 'West Bengal Medical Council', shortCode: 'WBMC', state: 'West Bengal' },
+];
+
+export interface SandboxDoctorRecord {
+  registrationNumber: string;
+  medicalCouncilId: string;
+  registeredName: string;
+  qualification: string;
+  registrationYear: number;
+}
+
+/**
+ * Curated list of mock doctors for sandbox testing in local/staging environments.
+ * Entering invalid details not in this registry will be properly rejected.
+ */
+export const SANDBOX_REGISTRY: SandboxDoctorRecord[] = [
+  {
+    registrationNumber: 'KMC-12345',
+    medicalCouncilId: 'KMC',
+    registeredName: 'Dr. Shanmukha Datta',
+    qualification: 'MBBS, MD (General Medicine)',
+    registrationYear: 2018,
+  },
+  {
+    registrationNumber: 'NMC-889900',
+    medicalCouncilId: 'NMC',
+    registeredName: 'Dr. Shanmukha Datta',
+    qualification: 'MBBS, MD',
+    registrationYear: 2019,
+  },
+  {
+    registrationNumber: 'TEST-MCI-001',
+    medicalCouncilId: 'NMC',
+    registeredName: 'Dr. Rajesh Sharma',
+    qualification: 'MBBS, MS (Orthopaedics)',
+    registrationYear: 2015,
+  },
+  {
+    registrationNumber: 'MMC-45678',
+    medicalCouncilId: 'MMC',
+    registeredName: 'Dr. Priya Deshmukh',
+    qualification: 'MBBS, DGO (Gynaecology)',
+    registrationYear: 2020,
+  },
+  {
+    registrationNumber: 'TSMC-67890',
+    medicalCouncilId: 'TSMC',
+    registeredName: 'Dr. Suresh Reddy',
+    qualification: 'MBBS, MD (Pediatrics)',
+    registrationYear: 2017,
+  },
+  {
+    registrationNumber: 'APMC-34567',
+    medicalCouncilId: 'APMC',
+    registeredName: 'Dr. Ananya Rao',
+    qualification: 'MBBS, DNB (Cardiology)',
+    registrationYear: 2016,
+  },
+  {
+    registrationNumber: 'DMC-98765',
+    medicalCouncilId: 'DMC',
+    registeredName: 'Dr. Amit Verma',
+    qualification: 'MBBS, MD (Dermatology)',
+    registrationYear: 2021,
+  },
 ];
 
 export interface DoctorVerificationInput {
@@ -80,8 +144,8 @@ export function calculateNameSimilarity(nameA: string, nameB: string): number {
   if (str1 === str2) return 100;
   if (!str1 || !str2) return 0;
 
-  const tokens1 = new Set(str1.split(' '));
-  const tokens2 = new Set(str2.split(' '));
+  const tokens1 = new Set(str1.split(' ').filter(Boolean));
+  const tokens2 = new Set(str2.split(' ').filter(Boolean));
 
   let intersection = 0;
   for (const token of tokens1) {
@@ -90,7 +154,9 @@ export function calculateNameSimilarity(nameA: string, nameB: string): number {
     }
   }
 
-  const tokenScore = (2 * intersection) / (tokens1.size + tokens2.size);
+  const tokenScore = tokens1.size + tokens2.size > 0 
+    ? (2 * intersection) / (tokens1.size + tokens2.size) 
+    : 0;
 
   const m = str1.length;
   const n = str2.length;
@@ -109,7 +175,8 @@ export function calculateNameSimilarity(nameA: string, nameB: string): number {
     }
   }
 
-  const levScore = 1 - dp[m][n] / Math.max(m, n);
+  const maxLen = Math.max(m, n);
+  const levScore = maxLen > 0 ? 1 - dp[m][n] / maxLen : 0;
   const finalScore = Math.max(tokenScore * 100, levScore * 100);
 
   return Math.round(finalScore);
@@ -151,7 +218,7 @@ export async function verifyDoctorCredentials(
       registeredName: '',
       matchScore: 0,
       source: 'SANDBOX',
-      message: 'Invalid registration number format.',
+      message: 'Invalid registration number format. Must be 3-25 alphanumeric characters.',
       verifiedAt: new Date().toISOString(),
     };
   }
@@ -187,33 +254,88 @@ export async function verifyDoctorCredentials(
   const apiKey = process.env.DOCTOR_VERIFY_API_KEY;
   const provider = process.env.DOCTOR_VERIFY_PROVIDER;
 
+  // 1. LIVE PROVIDER VERIFICATION (Production)
   if (apiKey && provider) {
     try {
-      const liveResult = await executeLiveProviderVerification(input, apiKey, provider);
-      if (liveResult) {
-        return liveResult;
-      }
+      const liveResult = await executeLiveProviderVerification(input, apiKey, provider, selectedCouncil);
+      return liveResult;
     } catch (err: any) {
-      console.warn('Live doctor verification provider error, falling back to sandbox engine:', err?.message);
+      console.error('Live doctor verification provider error:', err);
+      return {
+        success: false,
+        verificationStatus: 'REJECTED',
+        medicalCouncil: selectedCouncil.name,
+        registrationNumber: registrationNumber.trim(),
+        registrationYear: parsedYear,
+        qualification: '',
+        registeredName: '',
+        matchScore: 0,
+        source: 'SMC_REGISTRY',
+        message: `Live verification failed: ${err?.message || 'Verification service temporarily unavailable.'}`,
+        verifiedAt: new Date().toISOString(),
+      };
     }
   }
 
-  const cleanName = fullName.replace(/^dr\.?\s+/i, '').trim();
-  const officialRegisteredName = `Dr. ${cleanName}`;
-  const verifiedDegree = qualification?.trim() || 'MBBS, MD';
-  const matchScore = calculateNameSimilarity(fullName, officialRegisteredName);
+  // 2. SANDBOX VERIFICATION ENGINE (Development/Staging)
+  const normalizedInputReg = registrationNumber.trim().toUpperCase().replace(/[\s\-_]/g, '');
+  
+  const match = SANDBOX_REGISTRY.find(
+    (doc) => doc.registrationNumber.toUpperCase().replace(/[\s\-_]/g, '') === normalizedInputReg
+  );
+
+  if (!match) {
+    return {
+      success: false,
+      verificationStatus: 'REJECTED',
+      medicalCouncil: selectedCouncil.name,
+      registrationNumber: registrationNumber.trim().toUpperCase(),
+      registrationYear: parsedYear,
+      qualification: '',
+      registeredName: '',
+      matchScore: 0,
+      source: 'SANDBOX',
+      message: `Registration number "${registrationNumber}" was not found in the ${selectedCouncil.name} registry.`,
+      verifiedAt: new Date().toISOString(),
+      rawDetails: {
+        sandboxNote: 'In sandbox mode, valid test registration numbers are: KMC-12345, NMC-889900, TEST-MCI-001, MMC-45678, TSMC-67890, APMC-34567, DMC-98765.',
+      },
+    };
+  }
+
+  const matchScore = calculateNameSimilarity(fullName, match.registeredName);
+
+  if (matchScore < 60) {
+    return {
+      success: false,
+      verificationStatus: 'REJECTED',
+      medicalCouncil: selectedCouncil.name,
+      registrationNumber: match.registrationNumber,
+      registrationYear: match.registrationYear,
+      qualification: match.qualification,
+      registeredName: match.registeredName,
+      matchScore,
+      source: 'SANDBOX',
+      message: `Name mismatch: Entered name "${fullName}" does not match the official registered name for this license (${match.registeredName}).`,
+      verifiedAt: new Date().toISOString(),
+      rawDetails: {
+        registeredName: match.registeredName,
+        matchScore,
+      },
+    };
+  }
 
   return {
     success: true,
     verificationStatus: 'VERIFIED',
     medicalCouncil: selectedCouncil.name,
-    registrationNumber: registrationNumber.trim().toUpperCase(),
-    registrationYear: parsedYear,
-    qualification: verifiedDegree,
-    registeredName: officialRegisteredName,
-    matchScore: matchScore || 100,
+    registrationNumber: match.registrationNumber,
+    registrationYear: match.registrationYear,
+    qualification: match.qualification,
+    registeredName: match.registeredName,
+    matchScore,
     source: 'SANDBOX',
-    message: `Doctor successfully verified with ${selectedCouncil.name}.`,
+    message: `Doctor successfully verified with ${selectedCouncil.name} (Sandbox Mode).`,
     verifiedAt: new Date().toISOString(),
     rawDetails: {
       councilId: selectedCouncil.id,
@@ -221,6 +343,7 @@ export async function verifyDoctorCredentials(
       councilState: selectedCouncil.state,
       registeredStatus: 'ACTIVE',
       complianceLevel: 'NABH_NMC_ALIGNED',
+      sandboxVerified: true,
     },
   };
 }
@@ -228,9 +351,10 @@ export async function verifyDoctorCredentials(
 async function executeLiveProviderVerification(
   input: DoctorVerificationInput,
   apiKey: string,
-  provider: string
-): Promise<DoctorVerificationResult | null> {
-  if (provider === 'surepass') {
+  provider: string,
+  selectedCouncil: MedicalCouncilOption
+): Promise<DoctorVerificationResult> {
+  if (provider.toLowerCase() === 'surepass') {
     const response = await fetch('https://kyc-api.surepass.io/api/v1/medical-council-verification', {
       method: 'POST',
       headers: {
@@ -239,32 +363,50 @@ async function executeLiveProviderVerification(
       },
       body: JSON.stringify({
         id_number: input.registrationNumber,
-        state: input.medicalCouncil,
+        state: selectedCouncil.shortCode || input.medicalCouncil,
         year: input.registrationYear,
       }),
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      if (data?.data) {
-        const registeredName = data.data.name || input.fullName;
-        const matchScore = calculateNameSimilarity(input.fullName, registeredName);
-        return {
-          success: true,
-          verificationStatus: matchScore >= 70 ? 'VERIFIED' : 'PENDING',
-          medicalCouncil: input.medicalCouncil,
-          registrationNumber: input.registrationNumber,
-          registrationYear: Number(input.registrationYear),
-          qualification: data.data.qualifications || 'MBBS',
-          registeredName,
-          matchScore,
-          source: 'SMC_REGISTRY',
-          message: matchScore >= 70 ? 'Verified with State Medical Council.' : 'Name mismatch detected.',
-          verifiedAt: new Date().toISOString(),
-          rawDetails: data.data,
-        };
-      }
+    const data = await response.json().catch(() => null);
+
+    if (response.ok && data?.success && data?.data) {
+      const registeredName = data.data.name || data.data.doctor_name || input.fullName;
+      const matchScore = calculateNameSimilarity(input.fullName, registeredName);
+      const isMatch = matchScore >= 60;
+
+      return {
+        success: isMatch,
+        verificationStatus: isMatch ? 'VERIFIED' : 'REJECTED',
+        medicalCouncil: selectedCouncil.name,
+        registrationNumber: input.registrationNumber.trim().toUpperCase(),
+        registrationYear: Number(input.registrationYear),
+        qualification: data.data.qualifications || data.data.degree || 'MBBS',
+        registeredName,
+        matchScore,
+        source: 'SMC_REGISTRY',
+        message: isMatch 
+          ? `Doctor successfully verified with ${selectedCouncil.name}.` 
+          : `Name mismatch: Entered name "${input.fullName}" does not match registry record "${registeredName}".`,
+        verifiedAt: new Date().toISOString(),
+        rawDetails: data.data,
+      };
+    } else {
+      return {
+        success: false,
+        verificationStatus: 'REJECTED',
+        medicalCouncil: selectedCouncil.name,
+        registrationNumber: input.registrationNumber.trim().toUpperCase(),
+        qualification: '',
+        registeredName: '',
+        matchScore: 0,
+        source: 'SMC_REGISTRY',
+        message: data?.message || data?.error || `Registration number ${input.registrationNumber} not found in ${selectedCouncil.name} registry.`,
+        verifiedAt: new Date().toISOString(),
+        rawDetails: data,
+      };
     }
   }
-  return null;
+
+  throw new Error(`Unsupported doctor verification provider: ${provider}`);
 }
