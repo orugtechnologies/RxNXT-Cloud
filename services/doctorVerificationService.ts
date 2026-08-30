@@ -1,7 +1,7 @@
 /**
  * RxNXT Doctor Medical Council & Compliance Verification Service
  * Supports National Medical Commission (NMC / erstwhile MCI) and all Indian State Medical Councils.
- * Multi-Provider Architecture: Supports Decentro, Apify (NMC Live Registry), Surepass, or built-in intelligent Sandbox.
+ * Directly queries the official National Medical Commission (NMC) REST API.
  */
 
 export interface MedicalCouncilOption {
