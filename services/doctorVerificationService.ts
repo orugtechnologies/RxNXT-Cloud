@@ -519,42 +519,87 @@ async function executeLiveProviderVerification(
   // -------------------------------------------------------------
   if (normalizedProvider === 'apify') {
     const actorId = process.env.APIFY_ACTOR_ID || 'apify~nmc-doctor-lookup';
-    const response = await fetch(`https://api.apify.com/v2/acts/${actorId}/run-sync-get-dataset-items?token=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        registrationNumber: input.registrationNumber.trim(),
-        stateMedicalCouncil: selectedCouncil.shortCode,
-        year: input.registrationYear,
-        doctorName: input.fullName,
-      }),
-    });
+    
+    try {
+      const response = await fetch(
+        `https://api.apify.com/v2/acts/${actorId}/run-sync-get-dataset-items?token=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            registrationNumber: input.registrationNumber.trim(),
+            stateMedicalCouncil: selectedCouncil.name,
+            stateCode: selectedCouncil.shortCode,
+            year: input.registrationYear,
+            doctorName: input.fullName,
+          }),
+          signal: AbortSignal.timeout(20000), // 20s timeout
+        }
+      );
 
-    const items = await response.json().catch(() => null);
+      if (response.status === 401) {
+        throw new Error('Invalid Apify API token. Please verify DOCTOR_VERIFY_API_KEY.');
+      }
 
-    if (response.ok && Array.isArray(items) && items.length > 0) {
-      const matchDoc = items[0];
-      const registeredName = matchDoc.name || matchDoc.doctorName || input.fullName;
-      const matchScore = calculateNameSimilarity(input.fullName, registeredName);
-      const isMatch = matchScore >= 60;
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null);
+        throw new Error(errBody?.error?.message || `Apify service returned HTTP status ${response.status}`);
+      }
 
-      return {
-        success: isMatch,
-        verificationStatus: isMatch ? 'VERIFIED' : 'REJECTED',
-        medicalCouncil: selectedCouncil.name,
-        registrationNumber: input.registrationNumber.trim().toUpperCase(),
-        registrationYear: Number(input.registrationYear),
-        qualification: matchDoc.qualification || matchDoc.degree || 'MBBS',
-        registeredName,
-        matchScore,
-        source: 'APIFY',
-        message: isMatch 
-          ? `Doctor successfully verified with official NMC Indian Medical Register.` 
-          : `Name mismatch: Entered name "${input.fullName}" does not match NMC record "${registeredName}".`,
-        verifiedAt: new Date().toISOString(),
-        rawDetails: matchDoc,
-      };
-    } else {
+      const items = await response.json().catch(() => null);
+
+      if (Array.isArray(items) && items.length > 0) {
+        const matchDoc = items[0];
+        const registeredName = 
+          matchDoc.name || 
+          matchDoc.doctorName || 
+          matchDoc.doctor_name || 
+          matchDoc.registeredName || 
+          matchDoc.Name || 
+          input.fullName;
+
+        const qualification = 
+          matchDoc.qualification || 
+          matchDoc.qualifications || 
+          matchDoc.degree || 
+          matchDoc.Degree || 
+          'MBBS';
+
+        const matchScore = calculateNameSimilarity(input.fullName, registeredName);
+        const isMatch = matchScore >= 60;
+
+        return {
+          success: isMatch,
+          verificationStatus: isMatch ? 'VERIFIED' : 'REJECTED',
+          medicalCouncil: selectedCouncil.name,
+          registrationNumber: input.registrationNumber.trim().toUpperCase(),
+          registrationYear: Number(input.registrationYear),
+          qualification,
+          registeredName,
+          matchScore,
+          source: 'APIFY',
+          message: isMatch 
+            ? `Doctor successfully verified with official NMC Indian Medical Register.` 
+            : `Name mismatch: Entered name "${input.fullName}" does not match NMC registry record "${registeredName}".`,
+          verifiedAt: new Date().toISOString(),
+          rawDetails: matchDoc,
+        };
+      } else {
+        return {
+          success: false,
+          verificationStatus: 'REJECTED',
+          medicalCouncil: selectedCouncil.name,
+          registrationNumber: input.registrationNumber.trim().toUpperCase(),
+          qualification: '',
+          registeredName: '',
+          matchScore: 0,
+          source: 'APIFY',
+          message: `Registration number "${input.registrationNumber}" was not found in the ${selectedCouncil.name} / NMC registry.`,
+          verifiedAt: new Date().toISOString(),
+        };
+      }
+    } catch (err: any) {
+      console.error('Apify verification error:', err);
       return {
         success: false,
         verificationStatus: 'REJECTED',
@@ -564,7 +609,7 @@ async function executeLiveProviderVerification(
         registeredName: '',
         matchScore: 0,
         source: 'APIFY',
-        message: `Registration number ${input.registrationNumber} not found in National Medical Register (NMC).`,
+        message: `Apify verification error: ${err?.message || 'Verification service temporarily unavailable.'}`,
         verifiedAt: new Date().toISOString(),
       };
     }
@@ -572,4 +617,5 @@ async function executeLiveProviderVerification(
 
   throw new Error(`Unsupported doctor verification provider: "${provider}". Supported providers: "surepass", "decentro", "apify", "sandbox".`);
 }
+
 
