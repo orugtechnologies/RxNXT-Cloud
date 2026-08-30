@@ -95,14 +95,20 @@ function RegisterForm() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+
+    if (!verificationResult?.success) {
+      setError('Medical Council License Verification is required. Please verify your credentials in Step 2 before creating your workspace.');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const payload = {
         ...form,
         qualification: verificationResult?.qualification,
-        verificationStatus: verificationResult?.verificationStatus || 'UNVERIFIED',
+        verificationStatus: 'VERIFIED',
         verifiedAt: verificationResult?.verifiedAt,
         verificationSource: verificationResult?.source,
         verificationDetails: verificationResult?.rawDetails,
@@ -196,7 +202,7 @@ function RegisterForm() {
                     value={form.fullName} 
                     onChange={handleChange} 
                     required 
-                    disabled={loading} 
+                    disabled={loading || verificationResult?.success} 
                   />
                 </div>
               </div>
@@ -224,7 +230,7 @@ function RegisterForm() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-slate-800 font-semibold text-sm">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">2</span>
-                Medical Council Verification
+                Medical Council Verification <span className="text-rose-500">*</span>
               </div>
               {verificationResult?.success && (
                 <span className="text-xs font-semibold text-emerald-800 bg-emerald-100/80 border border-emerald-300 px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
@@ -234,7 +240,11 @@ function RegisterForm() {
               )}
             </div>
 
-            <div className="p-5 sm:p-6 bg-slate-50/80 border border-slate-200/80 rounded-2xl space-y-4 shadow-inner">
+            <div className={`p-5 sm:p-6 rounded-2xl space-y-4 border transition-all ${
+              verificationResult?.success 
+                ? 'bg-emerald-50/40 border-emerald-200 shadow-sm' 
+                : 'bg-slate-50/80 border-slate-200/80 shadow-inner'
+            }`}>
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 {/* Medical Council Select */}
                 <div className="lg:col-span-6 space-y-1.5">
@@ -245,7 +255,7 @@ function RegisterForm() {
                   <select 
                     id="medicalCouncil" 
                     name="medicalCouncil" 
-                    className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all disabled:opacity-60"
+                    className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all disabled:opacity-75"
                     value={form.medicalCouncil} 
                     onChange={handleChange} 
                     disabled={loading || verificationResult?.success}
@@ -298,7 +308,7 @@ function RegisterForm() {
               </div>
 
               {/* Action Button & Status Banners */}
-              {!verificationResult?.success && (
+              {!verificationResult?.success ? (
                 <div className="pt-1">
                   <Button 
                     type="button" 
@@ -314,10 +324,24 @@ function RegisterForm() {
                     ) : (
                       <>
                         <ShieldCheck className="h-4 w-4" />
-                        Verify License Credentials
+                        Verify License Credentials (Required)
                       </>
                     )}
                   </Button>
+                </div>
+              ) : (
+                <div className="pt-1 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setVerificationResult(null)}
+                    className="text-xs text-slate-500 hover:text-slate-800 underline font-medium"
+                  >
+                    Edit Registration Details
+                  </button>
+                  <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    Ready for workspace creation
+                  </span>
                 </div>
               )}
 
@@ -328,7 +352,7 @@ function RegisterForm() {
                   <div>
                     <p className="font-semibold">{verificationError}</p>
                     <p className="text-xs text-rose-600 mt-0.5">
-                      Check your registration number or medical council. (In Sandbox mode, test credentials like <strong>KMC-12345</strong> or <strong>TEST-MCI-001</strong> are pre-configured).
+                      Check your registration number or medical council. (In Sandbox mode, test credentials like <strong>KMC-12345</strong>, <strong>TEST-MCI-001</strong>, <strong>MMC-45678</strong>, <strong>TSMC-67890</strong> are pre-configured).
                     </p>
                   </div>
                 </div>
@@ -429,8 +453,12 @@ function RegisterForm() {
           <div className="pt-2">
             <Button 
               type="submit" 
-              className="w-full h-13 py-4 text-base font-bold bg-clinic-blue hover:bg-clinic-blueDark text-white shadow-xl hover:shadow-2xl transition-all duration-200 rounded-2xl flex items-center justify-center gap-2" 
-              disabled={loading}
+              className={`w-full h-13 py-4 text-base font-bold transition-all duration-200 rounded-2xl flex items-center justify-center gap-2 ${
+                verificationResult?.success 
+                  ? 'bg-clinic-blue hover:bg-clinic-blueDark text-white shadow-xl hover:shadow-2xl'
+                  : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+              }`}
+              disabled={loading || !verificationResult?.success}
             >
               {loading ? (
                 <>
@@ -439,11 +467,16 @@ function RegisterForm() {
                 </>
               ) : (
                 <>
-                  Create Clinic Workspace 
+                  {verificationResult?.success ? 'Create Clinic Workspace' : 'Verify License to Create Workspace'}
                   <ArrowRight className="h-5 w-5" />
                 </>
               )}
             </Button>
+            {!verificationResult?.success && (
+              <p className="text-center text-xs text-slate-400 mt-2 font-medium">
+                Step 2 (Medical Council Verification) must be completed to register.
+              </p>
+            )}
           </div>
         </form>
 
@@ -466,3 +499,4 @@ export default function RegisterPage() {
     </Suspense>
   );
 }
+

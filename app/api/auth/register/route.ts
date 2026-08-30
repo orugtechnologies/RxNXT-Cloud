@@ -2,13 +2,13 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
+import { verifyDoctorCredentials } from '@/services/doctorVerificationService';
 
 export async function POST(request: Request) {
   try {
     const { 
       fullName, email, password, clinicName, specialization, phone, inviteCode,
       medicalCouncil, registrationNumber, registrationYear, qualification,
-      verificationStatus, verifiedAt, verificationSource, verificationDetails
     } = await request.json();
 
     if (!fullName || !email || !password) {
@@ -21,6 +21,28 @@ export async function POST(request: Request) {
 
     if (password.length < 6) {
       return NextResponse.json({ error: 'Password must be at least 6 characters.' }, { status: 400 });
+    }
+
+    // Strict Doctor Medical License & Council Verification
+    if (!registrationNumber || !medicalCouncil) {
+      return NextResponse.json({ 
+        error: 'Medical Council and Doctor Registration Number are required for registration.' 
+      }, { status: 400 });
+    }
+
+    const verificationResult = await verifyDoctorCredentials({
+      fullName,
+      medicalCouncil,
+      registrationNumber,
+      registrationYear,
+      qualification,
+    });
+
+    if (!verificationResult.success) {
+      return NextResponse.json({
+        error: verificationResult.message || 'Doctor license verification failed. Please verify with valid credentials.',
+        verificationResult
+      }, { status: 400 });
     }
 
     // Check if email already in use
@@ -60,16 +82,16 @@ export async function POST(request: Request) {
           role: assignedRole,
           status: assignedStatus,
           clinicId: activeClinicId,
-          specialization: specialization || qualification || null,
+          specialization: specialization || verificationResult.qualification || qualification || null,
           phone: phone || null,
-          medicalCouncil: medicalCouncil || null,
-          registrationNumber: registrationNumber || null,
-          registrationYear: registrationYear ? Number(registrationYear) : null,
-          qualification: qualification || null,
-          verificationStatus: verificationStatus || 'UNVERIFIED',
-          verifiedAt: verifiedAt ? new Date(verifiedAt) : null,
-          verificationSource: verificationSource || null,
-          verificationDetails: verificationDetails ? JSON.stringify(verificationDetails) : null,
+          medicalCouncil: verificationResult.medicalCouncil || medicalCouncil || null,
+          registrationNumber: verificationResult.registrationNumber || registrationNumber || null,
+          registrationYear: verificationResult.registrationYear || (registrationYear ? Number(registrationYear) : null),
+          qualification: verificationResult.qualification || qualification || null,
+          verificationStatus: 'VERIFIED',
+          verifiedAt: new Date(verificationResult.verifiedAt || Date.now()),
+          verificationSource: verificationResult.source,
+          verificationDetails: verificationResult.rawDetails ? JSON.stringify(verificationResult.rawDetails) : null,
         },
       });
 
@@ -77,10 +99,11 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({
-      message: 'Account created successfully.',
+      message: 'Account created successfully with verified credentials.',
       clinicId: result.clinicId,
       userId: result.user.id,
-      status: result.user.status
+      status: result.user.status,
+      verificationResult
     }, { status: 201 });
 
   } catch (err: any) {
@@ -88,4 +111,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
   }
 }
+
 
