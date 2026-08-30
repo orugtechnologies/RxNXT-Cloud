@@ -50,7 +50,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="glass border border-white/80 shadow-2xl bg-white/90 backdrop-blur-md rounded-2xl">
+    <Card className="glass border border-white/80 shadow-2xl bg-white/90 backdrop-blur-md rounded-2xl max-w-md mx-auto">
       <CardContent className="pt-8 px-8 pb-8">
         <form className="space-y-6" onSubmit={handleLogin}>
           <div className="space-y-4">

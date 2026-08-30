@@ -8,7 +8,22 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Mail, Lock, User, Building2, Loader2, ArrowRight } from 'lucide-react';
+import { 
+  Mail, 
+  Lock, 
+  User, 
+  Building2, 
+  Loader2, 
+  ArrowRight, 
+  ShieldCheck, 
+  CheckCircle2, 
+  AlertCircle,
+  Stethoscope,
+  Award,
+  Calendar,
+  Hash
+} from 'lucide-react';
+import { MEDICAL_COUNCILS } from '@/services/doctorVerificationService';
 
 function RegisterForm() {
   const searchParams = useSearchParams();
@@ -37,11 +52,17 @@ function RegisterForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     if (verificationResult && (e.target.name === 'fullName' || e.target.name === 'registrationNumber' || e.target.name === 'medicalCouncil')) {
-      setVerificationResult(null); // reset if they change crucial details
+      setVerificationResult(null); // Reset verified state if core details change
+      setVerificationError('');
     }
   };
 
   const handleVerify = async () => {
+    if (!form.fullName.trim() || !form.registrationNumber.trim()) {
+      setVerificationError('Please enter your Full Name and Medical Registration Number first.');
+      return;
+    }
+
     setVerifying(true);
     setVerificationError('');
     try {
@@ -52,12 +73,12 @@ function RegisterForm() {
           fullName: form.fullName,
           medicalCouncil: form.medicalCouncil,
           registrationNumber: form.registrationNumber,
-          registrationYear: form.registrationYear
+          registrationYear: form.registrationYear,
         }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        setVerificationError(data.message || data.error || 'Verification failed');
+        setVerificationError(data.message || data.error || 'Verification failed. Please check your credentials.');
         setVerificationResult(null);
       } else {
         setVerificationResult(data);
@@ -66,7 +87,7 @@ function RegisterForm() {
         }
       }
     } catch (err) {
-      setVerificationError('Error connecting to verification service');
+      setVerificationError('Error connecting to verification service. Please try again.');
     } finally {
       setVerifying(false);
     }
@@ -81,10 +102,10 @@ function RegisterForm() {
       const payload = {
         ...form,
         qualification: verificationResult?.qualification,
-        verificationStatus: verificationResult?.verificationStatus,
+        verificationStatus: verificationResult?.verificationStatus || 'UNVERIFIED',
         verifiedAt: verificationResult?.verifiedAt,
         verificationSource: verificationResult?.source,
-        verificationDetails: verificationResult?.rawDetails
+        verificationDetails: verificationResult?.rawDetails,
       };
 
       const res = await fetch('/api/auth/register', {
@@ -95,7 +116,7 @@ function RegisterForm() {
 
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'Registration failed.');
+        setError(data.error || 'Registration failed. Please review your details.');
         setLoading(false);
         return;
       }
@@ -108,7 +129,7 @@ function RegisterForm() {
       });
 
       if (result?.error) {
-        setError('Registered but login failed. Please go to login page.');
+        setError('Account created! Please navigate to login page to sign in.');
         setLoading(false);
         return;
       }
@@ -119,155 +140,318 @@ function RegisterForm() {
         window.location.href = '/doctor/dashboard';
       }
     } catch (err) {
-      setError('An unexpected error occurred.');
+      setError('An unexpected error occurred. Please try again.');
       setLoading(false);
     }
   };
 
   return (
-    <Card className="glass border border-white/80 shadow-2xl bg-white/90 backdrop-blur-md rounded-2xl">
-      <CardContent className="pt-8 px-8 pb-8">
-        <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold text-slate-800">
-            {inviteCodeParam ? 'Join Your Team' : 'Create Your Clinic'}
-          </h2>
-          <p className="text-slate-500 text-sm mt-1">
-            {inviteCodeParam ? 'Complete registration to join the clinic workspace' : 'Set up your RxNXT workspace'}
-          </p>
+    <Card className="glass border border-slate-200/80 shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl overflow-hidden">
+      <CardContent className="p-6 sm:p-10">
+        {/* Header */}
+        <div className="mb-8 text-center sm:text-left border-b border-slate-100 pb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                {inviteCodeParam ? 'Join Your Team' : 'Create Your Clinic Workspace'}
+              </h2>
+              <p className="text-slate-500 text-sm sm:text-base mt-1">
+                {inviteCodeParam 
+                  ? 'Complete registration to join the clinic team' 
+                  : 'Start writing high-speed, legally compliant digital prescriptions in seconds'}
+              </p>
+            </div>
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200/60 rounded-full text-emerald-700 text-xs font-semibold self-start">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              NMC / DPDP Compliant
+            </div>
+          </div>
         </div>
 
         {inviteCodeParam && (
-          <div className="bg-emerald-50 text-emerald-700 text-sm p-3 rounded-md border border-emerald-100 mb-6 text-center font-medium">
-            You have been invited to join a clinic. Your account will be linked automatically.
+          <div className="bg-emerald-50 text-emerald-800 text-sm p-4 rounded-xl border border-emerald-200 mb-6 flex items-center gap-3">
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
+            <span>You have been invited to join an existing clinic. Your doctor profile will be automatically linked.</span>
           </div>
         )}
 
-        <form className="space-y-4" onSubmit={handleRegister}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label htmlFor="fullName">Full Name</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <Input id="fullName" name="fullName" placeholder="Dr. Shanmukha Datta" className="pl-9" value={form.fullName} onChange={handleChange} required disabled={loading} />
-              </div>
+        <form className="space-y-8" onSubmit={handleRegister}>
+          {/* SECTION 1: Doctor Profile */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-slate-800 font-semibold text-sm">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">1</span>
+              Doctor Profile Information
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="specialization">Specialization</Label>
-              <Input id="specialization" name="specialization" placeholder="General Physician" value={form.specialization} onChange={handleChange} disabled={loading} />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-1.5">
+                <Label htmlFor="fullName" className="text-xs font-semibold text-slate-700">Doctor Full Name <span className="text-rose-500">*</span></Label>
+                <div className="relative">
+                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    id="fullName" 
+                    name="fullName" 
+                    placeholder="e.g. Dr. Shanmukha Datta" 
+                    className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
+                    value={form.fullName} 
+                    onChange={handleChange} 
+                    required 
+                    disabled={loading} 
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="specialization" className="text-xs font-semibold text-slate-700">Specialization / Degrees</Label>
+                <div className="relative">
+                  <Stethoscope className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    id="specialization" 
+                    name="specialization" 
+                    placeholder="e.g. General Physician, MBBS, MD" 
+                    className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
+                    value={form.specialization} 
+                    onChange={handleChange} 
+                    disabled={loading} 
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl space-y-3">
-            <div className="flex items-center justify-between mb-2">
-              <Label className="text-sm font-semibold text-slate-700">Medical Council Verification</Label>
+          {/* SECTION 2: Medical Council Verification */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-sm">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">2</span>
+                Medical Council Verification
+              </div>
               {verificationResult?.success && (
-                <span className="text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center">
-                  <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
-                  Verified
+                <span className="text-xs font-semibold text-emerald-800 bg-emerald-100/80 border border-emerald-300 px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  Verified Credentials
                 </span>
               )}
             </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label htmlFor="medicalCouncil" className="text-xs">State Medical Council / NMC</Label>
-                <select 
-                  id="medicalCouncil" 
-                  name="medicalCouncil" 
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  value={form.medicalCouncil} 
-                  onChange={handleChange} 
-                  disabled={loading || verificationResult?.success}
-                >
-                  <option value="NMC">National Medical Commission (NMC)</option>
-                  <option value="KMC">Karnataka Medical Council</option>
-                  <option value="MMC">Maharashtra Medical Council</option>
-                  <option value="DMC">Delhi Medical Council</option>
-                  <option value="TSMC">Telangana State Medical Council</option>
-                  <option value="APMC">Andhra Pradesh Medical Council</option>
-                  <option value="TNMC">Tamil Nadu Medical Council</option>
-                  <option value="UPMC">Uttar Pradesh Medical Council</option>
-                  <option value="GMC">Gujarat Medical Council</option>
-                  <option value="RMC">Rajasthan Medical Council</option>
-                  <option value="WBMC">West Bengal Medical Council</option>
-                  <option value="Other">Other State Council</option>
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <Label htmlFor="registrationNumber" className="text-xs">Reg. Number</Label>
-                  <Input id="registrationNumber" name="registrationNumber" placeholder="e.g. KMC-123" value={form.registrationNumber} onChange={handleChange} required disabled={loading || verificationResult?.success} />
+
+            <div className="p-5 sm:p-6 bg-slate-50/80 border border-slate-200/80 rounded-2xl space-y-4 shadow-inner">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                {/* Medical Council Select */}
+                <div className="lg:col-span-6 space-y-1.5">
+                  <Label htmlFor="medicalCouncil" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                    <Award className="w-3.5 h-3.5 text-slate-400" />
+                    Medical Council / State Registry
+                  </Label>
+                  <select 
+                    id="medicalCouncil" 
+                    name="medicalCouncil" 
+                    className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all disabled:opacity-60"
+                    value={form.medicalCouncil} 
+                    onChange={handleChange} 
+                    disabled={loading || verificationResult?.success}
+                  >
+                    {MEDICAL_COUNCILS.map((council) => (
+                      <option key={council.id} value={council.id}>
+                        {council.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="registrationYear" className="text-xs">Year</Label>
-                  <Input id="registrationYear" name="registrationYear" type="number" min="1950" max={new Date().getFullYear()} value={form.registrationYear} onChange={handleChange} required disabled={loading || verificationResult?.success} />
+
+                {/* Registration Number */}
+                <div className="lg:col-span-4 space-y-1.5">
+                  <Label htmlFor="registrationNumber" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                    <Hash className="w-3.5 h-3.5 text-slate-400" />
+                    Registration Number <span className="text-rose-500">*</span>
+                  </Label>
+                  <Input 
+                    id="registrationNumber" 
+                    name="registrationNumber" 
+                    placeholder="e.g. KMC-12345 / 45678" 
+                    className="h-11 text-sm bg-white border-slate-200 focus:bg-white transition-all rounded-xl font-mono uppercase" 
+                    value={form.registrationNumber} 
+                    onChange={handleChange} 
+                    required 
+                    disabled={loading || verificationResult?.success} 
+                  />
+                </div>
+
+                {/* Registration Year */}
+                <div className="lg:col-span-2 space-y-1.5">
+                  <Label htmlFor="registrationYear" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                    Year
+                  </Label>
+                  <Input 
+                    id="registrationYear" 
+                    name="registrationYear" 
+                    type="number" 
+                    min="1950" 
+                    max={new Date().getFullYear()} 
+                    value={form.registrationYear} 
+                    onChange={handleChange} 
+                    required 
+                    className="h-11 text-sm bg-white border-slate-200 rounded-xl"
+                    disabled={loading || verificationResult?.success} 
+                  />
                 </div>
               </div>
+
+              {/* Action Button & Status Banners */}
+              {!verificationResult?.success && (
+                <div className="pt-1">
+                  <Button 
+                    type="button" 
+                    className="w-full h-11 text-sm font-semibold bg-clinic-emerald hover:bg-clinic-emeraldDark text-white shadow-md hover:shadow-lg transition-all rounded-xl flex items-center justify-center gap-2" 
+                    onClick={handleVerify} 
+                    disabled={verifying || loading || !form.registrationNumber || !form.fullName}
+                  >
+                    {verifying ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Verifying with Medical Registry...
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="h-4 w-4" />
+                        Verify License Credentials
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {/* Error Message */}
+              {verificationError && (
+                <div className="text-xs sm:text-sm text-rose-700 bg-rose-50/90 p-3.5 rounded-xl border border-rose-200 flex items-start gap-2.5 animate-fade-in">
+                  <AlertCircle className="w-4 h-4 text-rose-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold">{verificationError}</p>
+                    <p className="text-xs text-rose-600 mt-0.5">
+                      Check your registration number or medical council. (In Sandbox mode, test credentials like <strong>KMC-12345</strong> or <strong>TEST-MCI-001</strong> are pre-configured).
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Success Banner */}
+              {verificationResult?.success && (
+                <div className="text-xs sm:text-sm text-emerald-800 bg-emerald-50/90 p-3.5 rounded-xl border border-emerald-200 flex items-center justify-between animate-fade-in">
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                    <div>
+                      <span className="font-bold text-slate-900">{verificationResult.registeredName}</span>
+                      <span className="text-emerald-700 ml-2 font-medium">• {verificationResult.qualification}</span>
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-md">
+                    Active License
+                  </span>
+                </div>
+              )}
             </div>
-
-            {!verificationResult?.success && (
-              <Button type="button" className="w-full text-sm font-semibold bg-clinic-emerald hover:bg-clinic-emeraldDark text-white shadow-md transition-all" onClick={handleVerify} disabled={verifying || loading || !form.registrationNumber || !form.fullName}>
-                {verifying ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                Verify Credentials Instantly
-              </Button>
-            )}
-
-            {verificationError && (
-              <div className="text-xs text-red-600 bg-red-50 p-2 rounded border border-red-100">{verificationError}</div>
-            )}
-            
-            {verificationResult?.success && (
-              <div className="text-xs text-emerald-700 bg-emerald-50 p-2 rounded border border-emerald-100">
-                Official Match: <strong>{verificationResult.registeredName}</strong> • {verificationResult.qualification}
-              </div>
-            )}
           </div>
 
-          {!inviteCodeParam && (
-            <div className="space-y-1">
-              <Label htmlFor="clinicName">Clinic Name</Label>
-              <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <Input id="clinicName" name="clinicName" placeholder="City Health Clinic" className="pl-9" value={form.clinicName} onChange={handleChange} required disabled={loading} />
+          {/* SECTION 3: Clinic & Account Security */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-slate-800 font-semibold text-sm">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">3</span>
+              Clinic & Account Details
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {!inviteCodeParam && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="clinicName" className="text-xs font-semibold text-slate-700">Clinic Name <span className="text-rose-500">*</span></Label>
+                  <div className="relative">
+                    <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input 
+                      id="clinicName" 
+                      name="clinicName" 
+                      placeholder="e.g. City Health Clinic" 
+                      className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
+                      value={form.clinicName} 
+                      onChange={handleChange} 
+                      required 
+                      disabled={loading} 
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className={`space-y-1.5 ${inviteCodeParam ? 'md:col-span-2' : ''}`}>
+                <Label htmlFor="email" className="text-xs font-semibold text-slate-700">Email Address <span className="text-rose-500">*</span></Label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    id="email" 
+                    name="email" 
+                    type="email" 
+                    placeholder="doctor@clinic.com" 
+                    className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
+                    value={form.email} 
+                    onChange={handleChange} 
+                    required 
+                    disabled={loading} 
+                  />
+                </div>
               </div>
-            </div>
-          )}
 
-          <div className="space-y-1">
-            <Label htmlFor="email">Email Address</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input id="email" name="email" type="email" placeholder="doctor@clinic.com" className="pl-9" value={form.email} onChange={handleChange} required disabled={loading} />
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input id="password" name="password" type="password" placeholder="Minimum 6 characters" className="pl-9" value={form.password} onChange={handleChange} required minLength={6} disabled={loading} />
+              <div className="space-y-1.5 md:col-span-2">
+                <Label htmlFor="password" className="text-xs font-semibold text-slate-700">Password <span className="text-rose-500">*</span></Label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    id="password" 
+                    name="password" 
+                    type="password" 
+                    placeholder="Minimum 6 characters" 
+                    className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
+                    value={form.password} 
+                    onChange={handleChange} 
+                    required 
+                    minLength={6} 
+                    disabled={loading} 
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
           {error && (
-            <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md border border-red-100">
-              {error}
+            <div className="bg-rose-50 text-rose-700 text-sm p-4 rounded-xl border border-rose-200 flex items-center gap-2.5 animate-fade-in">
+              <AlertCircle className="w-5 h-5 text-rose-500 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
-          <Button type="submit" className="w-full py-6 text-base font-semibold" disabled={loading}>
-            {loading ? (
-              <Loader2 className="h-5 w-5 animate-spin mr-2" />
-            ) : (
-              <>Create Workspace <ArrowRight className="ml-2 h-5 w-5" /></>
-            )}
-          </Button>
+          {/* Submit Button */}
+          <div className="pt-2">
+            <Button 
+              type="submit" 
+              className="w-full h-13 py-4 text-base font-bold bg-clinic-blue hover:bg-clinic-blueDark text-white shadow-xl hover:shadow-2xl transition-all duration-200 rounded-2xl flex items-center justify-center gap-2" 
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Creating Workspace...
+                </>
+              ) : (
+                <>
+                  Create Clinic Workspace 
+                  <ArrowRight className="h-5 w-5" />
+                </>
+              )}
+            </Button>
+          </div>
         </form>
 
-        <div className="mt-6 text-center text-sm text-slate-500">
+        {/* Footer */}
+        <div className="mt-8 text-center text-sm text-slate-500 border-t border-slate-100 pt-6">
           Already have an account?{' '}
-          <Link href="/login" className="font-medium text-clinic-emerald hover:text-clinic-emeraldDark transition-colors">
-            Sign in
+          <Link href="/login" className="font-semibold text-clinic-emerald hover:text-clinic-emeraldDark transition-colors">
+            Sign In to Clinic Workspace
           </Link>
         </div>
       </CardContent>
@@ -277,7 +461,7 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={<div className="flex justify-center p-8"><Loader2 className="animate-spin text-clinic-blue h-8 w-8" /></div>}>
+    <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="animate-spin text-clinic-blue h-10 w-10" /></div>}>
       <RegisterForm />
     </Suspense>
   );
