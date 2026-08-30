@@ -469,6 +469,35 @@ export async function executeDirectNMCVerification(
             const matchScore = calculateNameSimilarity(fullName, registeredName);
             const isMatch = matchScore >= 50;
 
+            // Check if License has been cancelled, removed, or suspended by NMC / State Council
+            const isCancelledOrSuspended = Boolean(
+              matched.removedStatus || 
+              matched.removedOn || 
+              (matched.remarks && /suspended|removed|cancelled|blacklisted|de-registered|erased/i.test(matched.remarks))
+            );
+
+            if (isCancelledOrSuspended && !matched.restoredStatus) {
+              return resolve({
+                success: false,
+                verificationStatus: 'REJECTED',
+                medicalCouncil: matched.smcName || selectedCouncil.name,
+                registrationNumber: matched.registrationNo || cleanRegNo,
+                registrationYear: Number(matched.yearInfo) || undefined,
+                qualification,
+                registeredName,
+                matchScore,
+                source: 'NMC_REGISTRY',
+                message: `License Inactive: This medical license has been suspended, removed, or cancelled by the ${matched.smcName || 'Medical Council'} (${matched.removedStatus || matched.remarks || 'Status: Cancelled'}).`,
+                verifiedAt: new Date().toISOString(),
+                rawDetails: {
+                  isBlocked: true,
+                  removedStatus: matched.removedStatus,
+                  removedOn: matched.removedOn,
+                  remarks: matched.remarks,
+                },
+              });
+            }
+
             if (!isMatch) {
               return resolve({
                 success: false,
