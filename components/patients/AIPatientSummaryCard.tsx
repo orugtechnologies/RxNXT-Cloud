@@ -14,28 +14,34 @@ export interface EncounterSummary {
 }
 
 interface AIPatientSummaryCardProps {
-  patientId: string;
-  encounters?: EncounterSummary[];
+  patientId?: string;
+  encounters?: EncounterSummary[] | null;
 }
 
 export default function AIPatientSummaryCard({ patientId, encounters: propEncounters }: AIPatientSummaryCardProps) {
   const [encounters, setEncounters] = useState<EncounterSummary[] | null>(propEncounters || null);
-  const [loading, setLoading] = useState<boolean>(!propEncounters);
+  const [loading, setLoading] = useState<boolean>(!propEncounters || propEncounters.length === 0);
 
   useEffect(() => {
-    if (propEncounters !== undefined) {
+    // If propEncounters is supplied with actual records, use them directly
+    if (propEncounters && propEncounters.length > 0) {
       setEncounters(propEncounters);
       setLoading(false);
       return;
     }
 
-    if (!patientId) return;
+    if (!patientId) {
+      setEncounters([]);
+      setLoading(false);
+      return;
+    }
 
+    // If propEncounters is not supplied or empty, fetch directly to guarantee history is never missed
     setLoading(true);
     fetch(`/api/patients/${patientId}`)
       .then(res => res.json())
       .then(json => {
-        if (json && json.encounters) {
+        if (json && Array.isArray(json.encounters)) {
           setEncounters(json.encounters);
         } else {
           setEncounters([]);

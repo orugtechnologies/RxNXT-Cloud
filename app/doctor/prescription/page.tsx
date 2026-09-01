@@ -71,11 +71,13 @@ function PrescriptionWorkflowContent() {
 
   useEffect(() => {
     const cloneId = searchParams.get('clone');
+    const paramPatientId = searchParams.get('patient') || searchParams.get('patientId');
+
     if (cloneId) {
       setFetchingPastRx(true);
       fetch(`/api/prescriptions/${cloneId}`)
         .then(res => res.json())
-        .then(json => {
+        .then(async (json) => {
           if (json.data) {
             setPatient(json.data.patient);
             if (!startTime) setStartTime(Date.now());
@@ -84,7 +86,7 @@ function PrescriptionWorkflowContent() {
             setNotes(json.data.notes || '');
             
             // Map formatted medicines from backend back to PrescribedMedicine for the frontend
-            const medsToLoad = json.data.medicines.map((m: any) => ({
+            const medsToLoad = (json.data.medicines || []).map((m: any) => ({
               id: Math.random().toString(36).substr(2, 9),
               generic_id: m.drugId,
               name: m.name,
@@ -97,37 +99,49 @@ function PrescriptionWorkflowContent() {
             }));
             
             setMedicines(medsToLoad);
+
+            // Fetch patient encounters history for AI summary & past visit timeline
+            const targetPatientId = json.data.patient?.id || paramPatientId;
+            if (targetPatientId) {
+              try {
+                const histRes = await fetch(`/api/patients/${targetPatientId}`);
+                if (histRes.ok) {
+                  const histJson = await histRes.json();
+                  setPatientEncounters(histJson.encounters || []);
+                }
+              } catch (e) {
+                console.error('Error fetching patient history on clone:', e);
+              }
+            }
           }
         })
+        .catch(err => console.error('Error cloning prescription:', err))
         .finally(() => setFetchingPastRx(false));
-    } else {
-      const patientId = searchParams.get('patientId');
-      if (patientId) {
-        setFetchingPastRx(true);
-        fetch(`/api/patients/${patientId}`)
-          .then(res => res.json())
-          .then(json => {
-            if (json.patient) {
-              setPatient(json.patient);
-              setPatientEncounters(json.encounters || []);
-              if (!startTime) setStartTime(Date.now());
-              
-              // Now fetch recent Rx
-              return fetch(`/api/prescriptions/recent?patientId=${patientId}`)
-                .then(r => r.json())
-                .then(rxJson => {
-                  if (rxJson.data && rxJson.data.medicines && rxJson.data.medicines.length > 0) {
-                    setChiefComplaint(rxJson.data.chiefComplaint || '');
-                    setDiagnosis(rxJson.data.diagnosis || '');
-                    setNotes(rxJson.data.notes || '');
-                    setMedicines(rxJson.data.medicines);
-                  }
-                });
-            }
-          })
-          .catch(err => console.error('Error loading patient from URL:', err))
-          .finally(() => setFetchingPastRx(false));
-      }
+    } else if (paramPatientId) {
+      setFetchingPastRx(true);
+      fetch(`/api/patients/${paramPatientId}`)
+        .then(res => res.json())
+        .then(json => {
+          if (json.patient) {
+            setPatient(json.patient);
+            setPatientEncounters(json.encounters || []);
+            if (!startTime) setStartTime(Date.now());
+            
+            // Now fetch recent Rx
+            return fetch(`/api/prescriptions/recent?patientId=${paramPatientId}`)
+              .then(r => r.json())
+              .then(rxJson => {
+                if (rxJson.data && rxJson.data.medicines && rxJson.data.medicines.length > 0) {
+                  setChiefComplaint(rxJson.data.chiefComplaint || '');
+                  setDiagnosis(rxJson.data.diagnosis || '');
+                  setNotes(rxJson.data.notes || '');
+                  setMedicines(rxJson.data.medicines);
+                }
+              });
+          }
+        })
+        .catch(err => console.error('Error loading patient from URL:', err))
+        .finally(() => setFetchingPastRx(false));
     }
   }, [searchParams]);
 
