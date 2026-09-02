@@ -261,9 +261,14 @@ model Reminder {
   patient        Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
   scheduledFor   DateTime
   sentAt         DateTime?
-  status         String       @default("PENDING") // PENDING, SENT, FAILED
-  messageType    String       @default("MEDICINE") // PDF, MEDICINE
+  status         String       @default("PENDING") // PENDING, PROCESSING, SENT, FAILED, SUPERSEDED
+  messageType    String       @default("MEDICINE") // PDF, MEDICINE, FOLLOW_UP, REFILL
   createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
+
+  @@index([status, scheduledFor])
+  @@index([prescriptionId])
+  @@index([patientId])
 }
 
 // ─────────────────────────────────────────────

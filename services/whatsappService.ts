@@ -1,62 +1,162 @@
-const MICROSERVICE_URL = process.env.WHATSAPP_MICROSERVICE_URL || 'https://rxnxt-whatsapp-service.onrender.com';
+/**
+ * RxNXT WhatsApp Service — 100% Meta WhatsApp Cloud API
+ * 
+ * Official Enterprise Transport via Meta Graph API.
+ * Handles:
+ * 1. Instant Prescription PDF Delivery
+ * 2. Smart Slot Medicine Dose Reminders (8 AM, 1:30 PM, 8:30 PM)
+ * 3. Doctor Follow-up Appointment Reminders
+ * 4. Monthly 25-Day Chronic Care Refill Alerts
+ */
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
- * Fires a non-blocking background ping to wake up the Render microservice if sleeping.
+ * Normalizes phone numbers to standard international E.164 digits format (e.g. 919876543210).
  */
-export function ensureMicroserviceAwake(clinicId?: string) {
-  try {
-    fetch(`${MICROSERVICE_URL}/api/whatsapp/status?clinicId=${clinicId || 'default'}`).catch(() => {});
-  } catch (e) {
-    // Ignore error - background warm up
-  }
-}
-
-function sanitizePhone(phone: string): string {
+export function sanitizePhone(phone: string): string {
   if (!phone) return '';
   let clean = phone.replace(/(?!^\+)[^\d]/g, '');
-  clean = clean.replace(/^0+/, '');
-  return clean.startsWith('+') ? clean : `+91${clean}`;
-}
+  clean = clean.replace(/^0+/, ''); // strip leading zeroes
+  clean = clean.replace(/^\+/, ''); // strip leading '+' for Meta payload compatibility
 
-async function sendViaMicroservice(
-  formattedPhone: string, 
-  messageBody: string, 
-  pdfBase64?: string, 
-  clinicId?: string
-) {
-  try {
-    const response = await fetch(`${MICROSERVICE_URL}/api/whatsapp/send`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        phone: formattedPhone,
-        message: messageBody,
-        pdfBase64: pdfBase64,
-        clinicId: clinicId || 'default'
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.warn('[WhatsApp Microservice Error]', errorData);
-      
-      let errMsg = errorData.error || 'Failed to send WhatsApp message via microservice';
-      if (errorData.details) {
-        errMsg += ` (Details: ${errorData.details})`;
-      }
-      throw new Error(errMsg);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error: any) {
-    console.warn('[WhatsApp Microservice] Failed to reach microservice:', error);
-    throw new Error(error.message || 'WhatsApp microservice is offline or unreachable');
+  // If 10 digits (standard Indian mobile number), prepend India country code 91
+  if (clean.length === 10) {
+    clean = `91${clean}`;
   }
+  return clean;
 }
 
 /**
- * Sends a WhatsApp message containing an AI Treatment Plan Summary and prescription PDF URL.
+ * Checks if Meta Cloud API is configured in the current environment.
+ */
+export function isMetaConfigured(): boolean {
+  return Boolean(process.env.META_WA_PHONE_NUMBER_ID && process.env.META_WA_ACCESS_TOKEN);
+}
+
+/**
+ * Dispatches a message via Meta WhatsApp Cloud API with automatic retries for transient errors.
+ */
+async function sendViaMetaCloudAPI(
+  payload: {
+    to: string;
+    type: 'text' | 'document' | 'template';
+    text?: { preview_url?: boolean; body: string };
+    document?: { link: string; filename: string; caption?: string };
+    template?: { name: string; language: { code: string }; components?: any[] };
+  },
+  maxRetries = 2
+): Promise<any> {
+  const phoneNumberId = process.env.META_WA_PHONE_NUMBER_ID;
+  const accessToken = process.env.META_WA_ACCESS_TOKEN;
+  const graphApiVersion = process.env.META_GRAPH_API_VERSION || 'v19.0';
+
+  // Fallback to local dev mock if keys are not set
+  if (!phoneNumberId || !accessToken) {
+    console.log(`[Meta WhatsApp Mock] Dispatched message to +${payload.to}:`, payload);
+    return {
+      success: true,
+      provider: 'meta_mock',
+      messageId: `mock_${Date.now()}`,
+    };
+  }
+
+  const endpoint = `https://graph.facebook.com/${graphApiVersion}/${phoneNumberId}/messages`;
+  let attempt = 0;
+  let lastError: any = null;
+
+  while (attempt <= maxRetries) {
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          recipient_type: 'individual',
+          ...payload,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        const errorInfo = data.error || {};
+        const isTransient = response.status === 429 || response.status >= 500 || errorInfo.code === 80007;
+
+        if (isTransient && attempt < maxRetries) {
+          const backoffMs = (attempt + 1) * 1000;
+          console.warn(`[Meta WhatsApp] Transient error (HTTP ${response.status}), retrying in ${backoffMs}ms...`);
+          await sleep(backoffMs);
+          attempt++;
+          continue;
+        }
+
+        const errMsg = errorInfo.message || `Meta Cloud API request failed with HTTP status ${response.status}`;
+        throw new Error(`[Meta WhatsApp API Error] ${errMsg}`);
+      }
+
+      return {
+        success: true,
+        provider: 'meta',
+        messageId: data.messages?.[0]?.id || 'sent',
+        contacts: data.contacts,
+      };
+    } catch (err: any) {
+      lastError = err;
+      if (attempt < maxRetries) {
+        attempt++;
+        await sleep(attempt * 1000);
+      } else {
+        break;
+      }
+    }
+  }
+
+  throw lastError || new Error('Failed to send WhatsApp message via Meta Cloud API');
+}
+
+/**
+ * Unified dispatch router for Meta WhatsApp Cloud API.
+ */
+async function dispatchWhatsAppMessage(options: {
+  phone: string;
+  messageBody: string;
+  documentUrl?: string;
+  clinicId?: string;
+}) {
+  const cleanPhone = sanitizePhone(options.phone);
+
+  if (options.documentUrl) {
+    return await sendViaMetaCloudAPI({
+      to: cleanPhone,
+      type: 'document',
+      document: {
+        link: options.documentUrl,
+        filename: 'RxNXT_Prescription.pdf',
+        caption: options.messageBody,
+      },
+    });
+  } else {
+    return await sendViaMetaCloudAPI({
+      to: cleanPhone,
+      type: 'text',
+      text: {
+        preview_url: true,
+        body: options.messageBody,
+      },
+    });
+  }
+}
+
+// ─────────────────────────────────────────────
+// APPLICATION-LEVEL PUBLIC INTERFACES
+// ─────────────────────────────────────────────
+
+/**
+ * Sends a WhatsApp message containing an AI Treatment Plan Summary and prescription PDF URL via Meta Cloud API.
  */
 export async function sendPrescriptionPDF(
   patientPhone: string,
@@ -67,20 +167,23 @@ export async function sendPrescriptionPDF(
   clinicId?: string,
   aiTreatmentSummary?: string
 ) {
-  const formattedPhone = sanitizePhone(patientPhone);
-
   const messageBody = aiTreatmentSummary
     ? `Hello ${patientName}, your prescription from *${clinicName}* is ready!\n\n` +
       `${aiTreatmentSummary}\n\n` +
       `📄 *View / Download Official PDF Prescription:*\n${pdfUrl}\n\n` +
       `Get well soon!`
-    : `Hello ${patientName}, your prescription from ${clinicName} is ready. \n\nYou can view it here: ${pdfUrl} \n\nGet well soon!`;
+    : `Hello ${patientName}, your prescription from ${clinicName} is ready.\n\nYou can view it here: ${pdfUrl}\n\nGet well soon!`;
 
-  return await sendViaMicroservice(formattedPhone, messageBody, pdfBase64, clinicId);
+  return await dispatchWhatsAppMessage({
+    phone: patientPhone,
+    messageBody,
+    documentUrl: pdfUrl,
+    clinicId,
+  });
 }
 
 /**
- * Sends a Smart Slot medicine reminder message (Morning, Afternoon, Night).
+ * Sends a Smart Slot medicine reminder message (Morning, Afternoon, Night) via Meta Cloud API.
  */
 export async function sendMedicineReminder(
   patientPhone: string,
@@ -91,8 +194,11 @@ export async function sendMedicineReminder(
   clinicId?: string,
   slotType: string = 'MORNING'
 ) {
-  const formattedPhone = sanitizePhone(patientPhone);
-  const cleanDocName = doctorName ? (doctorName.trim().toLowerCase().startsWith('dr') ? doctorName.trim() : `Dr. ${doctorName.trim()}`) : 'your doctor';
+  const cleanDocName = doctorName
+    ? doctorName.trim().toLowerCase().startsWith('dr')
+      ? doctorName.trim()
+      : `Dr. ${doctorName.trim()}`
+    : 'your doctor';
   const docStr = doctorName ? cleanDocName : 'your doctor';
   const clinicStr = clinicName ? `*${clinicName}*` : 'your clinic';
 
@@ -110,16 +216,21 @@ export async function sendMedicineReminder(
     foodNote = '😴 Take medicine as per the direction. Have a healthy day';
   }
 
-  const messageBody = `${headerIcon} *${slotTitle}*\n\n` +
+  const messageBody =
+    `${headerIcon} *${slotTitle}*\n\n` +
     `Hello ${patientName}, health reminder from ${docStr} at ${clinicStr} to take your prescribed doses:\n\n` +
     `${medicineDetails}\n\n` +
     `${foodNote}`;
 
-  return await sendViaMicroservice(formattedPhone, messageBody, undefined, clinicId);
+  return await dispatchWhatsAppMessage({
+    phone: patientPhone,
+    messageBody,
+    clinicId,
+  });
 }
 
 /**
- * Sends a follow-up reminder message.
+ * Sends a follow-up reminder message via Meta Cloud API.
  */
 export async function sendFollowUpReminder(
   patientPhone: string,
@@ -128,14 +239,17 @@ export async function sendFollowUpReminder(
   doctorName: string,
   clinicId?: string
 ) {
-  const formattedPhone = sanitizePhone(patientPhone);
   const messageBody = `Hi ${patientName}, this is a reminder from ${clinicName} for your follow-up visit with Dr. ${doctorName} today. Please contact us if you need to reschedule.`;
 
-  return await sendViaMicroservice(formattedPhone, messageBody, undefined, clinicId);
+  return await dispatchWhatsAppMessage({
+    phone: patientPhone,
+    messageBody,
+    clinicId,
+  });
 }
 
 /**
- * Sends a monthly prescription refill reminder message for chronic medications.
+ * Sends a monthly prescription refill reminder message for chronic medications via Meta Cloud API.
  */
 export async function sendRefillReminder(
   patientPhone: string,
@@ -144,14 +258,18 @@ export async function sendRefillReminder(
   clinicName?: string,
   clinicId?: string
 ) {
-  const formattedPhone = sanitizePhone(patientPhone);
   const docStr = doctorName ? `Dr. ${doctorName}` : 'your doctor';
   const clinicStr = clinicName ? `*${clinicName}*` : 'your clinic';
 
-  const messageBody = `🏥 *Monthly Care & Refill Reminder*\n\n` +
+  const messageBody =
+    `🏥 *Monthly Care & Refill Reminder*\n\n` +
     `Hello ${patientName}, you have approximately 5 days of your regular prescribed medications remaining.\n\n` +
     `Please schedule your monthly health checkup and prescription refill with ${docStr} at ${clinicStr}.\n\n` +
     `📞 *Please call or visit the clinic to reserve your consultation slot!* 🩺`;
 
-  return await sendViaMicroservice(formattedPhone, messageBody, undefined, clinicId);
+  return await dispatchWhatsAppMessage({
+    phone: patientPhone,
+    messageBody,
+    clinicId,
+  });
 }
