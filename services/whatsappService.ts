@@ -95,7 +95,9 @@ async function sendViaMetaCloudAPI(
         }
 
         const errMsg = errorInfo.message || `Meta Cloud API request failed with HTTP status ${response.status}`;
-        throw new Error(`[Meta WhatsApp API Error] ${errMsg}`);
+        const finalErr = new Error(`[Meta WhatsApp API Error] ${errMsg}`);
+        (finalErr as any).isPermanent = !isTransient;
+        throw finalErr;
       }
 
       return {
@@ -106,6 +108,9 @@ async function sendViaMetaCloudAPI(
       };
     } catch (err: any) {
       lastError = err;
+      if (err.isPermanent) {
+        throw err;
+      }
       if (attempt < maxRetries) {
         attempt++;
         await sleep(attempt * 1000);

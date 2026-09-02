@@ -25,39 +25,37 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
     return { id: reminder.id, status: 'FAILED', reason: 'No phone number' };
   }
 
-  let success = false;
+  let sendResult: any = null;
 
   if (reminder.messageType === 'FOLLOW_UP') {
     const doctorName = prescription?.doctor?.fullName || 'your doctor';
     const clinicName = prescription?.clinic?.name || 'the clinic';
 
     try {
-      await sendFollowUpReminder(
+      sendResult = await sendFollowUpReminder(
         patient.phone,
         patient.name,
         clinicName,
         doctorName,
         prescription?.clinicId || 'default'
       );
-      success = true;
     } catch (e) {
-      success = false;
+      sendResult = null;
     }
   } else if (reminder.messageType === 'REFILL') {
     const doctorName = prescription?.doctor?.fullName || 'your doctor';
     const clinicName = prescription?.clinic?.name || 'the clinic';
 
     try {
-      await sendRefillReminder(
+      sendResult = await sendRefillReminder(
         patient.phone,
         patient.name,
         doctorName,
         clinicName,
         prescription?.clinicId || 'default'
       );
-      success = true;
     } catch (e) {
-      success = false;
+      sendResult = null;
     }
   } else {
     // MEDICINE reminder (MEDICINE_MORNING, MEDICINE_AFTERNOON, MEDICINE_NIGHT, or generic MEDICINE)
@@ -113,7 +111,7 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
       .join('\n') || '"Prescribed medicines"';
 
     try {
-      await sendMedicineReminder(
+      sendResult = await sendMedicineReminder(
         patient.phone,
         patient.name,
         medicinesList,
@@ -122,18 +120,18 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
         prescription?.clinicId || 'default',
         slotType
       );
-      success = true;
     } catch (e) {
-      success = false;
+      sendResult = null;
     }
   }
 
-  if (success) {
+  if (sendResult?.success) {
     await prisma.reminder.update({
       where: { id: reminder.id },
       data: {
         status: 'SENT',
         sentAt: new Date(),
+        providerMessageId: sendResult.messageId || null,
       },
     });
     return { id: reminder.id, status: 'SENT' };
@@ -164,12 +162,27 @@ export async function GET(request: Request) {
     const now = new Date();
 
     // 1. Stalled Job Recovery Safety Net:
-    // Any reminder in 'PROCESSING' for > 15 minutes is reset back to 'PENDING'
+    // For jobs stuck in 'PROCESSING' > 15 mins:
+    // - If already attempted >= 2 times: Hard-fail to prevent duplicate sends
+    // - If attempted 1 time: Reset to 'PENDING' for one safe retry
     const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+    
+    await prisma.reminder.updateMany({
+      where: {
+        status: 'PROCESSING',
+        updatedAt: { lte: fifteenMinutesAgo },
+        attempts: { gte: 2 },
+      },
+      data: {
+        status: 'FAILED',
+      },
+    });
+
     const recovered = await prisma.reminder.updateMany({
       where: {
         status: 'PROCESSING',
         updatedAt: { lte: fifteenMinutesAgo },
+        attempts: { lt: 2 },
       },
       data: {
         status: 'PENDING',
@@ -177,7 +190,7 @@ export async function GET(request: Request) {
     });
 
     // 2. Truly Atomic Batch Claiming:
-    // Atomically claim due reminders so concurrent crons never race
+    // Atomically claim due reminders & increment attempt counter
     let claimedIds: string[] = [];
 
     try {
@@ -191,7 +204,7 @@ export async function GET(request: Request) {
           FOR UPDATE SKIP LOCKED
         )
         UPDATE "Reminder" r
-        SET "status" = 'PROCESSING', "updatedAt" = NOW()
+        SET "status" = 'PROCESSING', "attempts" = r."attempts" + 1, "lastAttemptAt" = NOW(), "updatedAt" = NOW()
         FROM due_batch
         WHERE r.id = due_batch.id
         RETURNING r.id;
@@ -215,7 +228,11 @@ export async function GET(request: Request) {
 
         await tx.reminder.updateMany({
           where: { id: { in: ids }, status: 'PENDING' },
-          data: { status: 'PROCESSING' },
+          data: {
+            status: 'PROCESSING',
+            attempts: { increment: 1 },
+            lastAttemptAt: new Date(),
+          },
         });
 
         return ids;

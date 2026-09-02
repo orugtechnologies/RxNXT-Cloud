@@ -34,6 +34,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Prescription or Patient not found' }, { status: 404 });
     }
 
+    // Strict Multi-Tenant Authorization Guard
+    if (prescription.clinicId !== user.clinicId && user.role !== 'superadmin') {
+      return NextResponse.json(
+        { error: 'Forbidden: Access to this prescription is not allowed for your clinic' },
+        { status: 403 }
+      );
+    }
+
     // Ensure we have a phone number to send to
     if (!prescription.patient.phone) {
       return NextResponse.json({ error: 'Patient does not have a phone number' }, { status: 400 });
