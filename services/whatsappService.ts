@@ -142,26 +142,31 @@ async function dispatchWhatsAppMessage(options: {
   const cleanPhone = sanitizePhone(options.phone);
 
   if (options.documentUrl) {
-    return await sendViaMetaCloudAPI({
-      to: cleanPhone,
-      type: 'document',
-      document: {
-        link: options.documentUrl,
-        filename: 'RxNXT_Prescription.pdf',
-        caption: options.messageBody,
-      },
-    });
-  } else {
-    return await sendViaMetaCloudAPI({
-      to: cleanPhone,
-      type: 'text',
-      text: {
-        preview_url: true,
-        body: options.messageBody,
-      },
-    });
+    try {
+      return await sendViaMetaCloudAPI({
+        to: cleanPhone,
+        type: 'document',
+        document: {
+          link: options.documentUrl,
+          filename: 'RxNXT_Prescription.pdf',
+          caption: options.messageBody,
+        },
+      });
+    } catch (docErr) {
+      console.warn('[Meta WhatsApp] Document media dispatch failed, falling back to rich text message:', docErr);
+    }
   }
+
+  return await sendViaMetaCloudAPI({
+    to: cleanPhone,
+    type: 'text',
+    text: {
+      preview_url: true,
+      body: options.messageBody,
+    },
+  });
 }
+
 
 // ─────────────────────────────────────────────
 // APPLICATION-LEVEL PUBLIC INTERFACES
