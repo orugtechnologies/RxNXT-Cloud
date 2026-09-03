@@ -42,9 +42,11 @@ export async function GET(request: Request) {
       testResult = {
         success: false,
         errorMessage: err.message,
+        metaDebug: err.metaDebug || null,
         errorStack: err.stack,
       };
     }
+
   } else if (doTest && rawToken && rawPhoneId) {
 
     try {

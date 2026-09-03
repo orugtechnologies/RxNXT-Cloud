@@ -104,10 +104,19 @@ async function sendViaMetaCloudAPI(
         }
 
         const errMsg = errorInfo.message || `Meta Cloud API request failed with HTTP status ${response.status}`;
-        const finalErr = new Error(`[Meta WhatsApp API Error] ${errMsg}`);
+        const finalErr = new Error(`[Meta WhatsApp API Error] ${errMsg} (Status: ${response.status}, Code: ${errorInfo.code}, Subcode: ${errorInfo.error_subcode})`);
         (finalErr as any).isPermanent = !isTransient;
+        (finalErr as any).metaDebug = {
+          endpoint,
+          status: response.status,
+          errorInfo,
+          tokenLen: accessToken.length,
+          tokenPrefix: accessToken.slice(0, 8),
+          tokenSuffix: accessToken.slice(-8),
+        };
         throw finalErr;
       }
+
 
       return {
         success: true,
