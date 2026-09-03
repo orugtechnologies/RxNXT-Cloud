@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
-import { isMetaConfigured } from '@/services/whatsappService';
+import { isMetaConfigured, sendPrescriptionPDF } from '@/services/whatsappService';
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
+
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
