@@ -194,13 +194,17 @@ export async function sendPrescriptionPDF(
       `Get well soon!`
     : `Hello ${patientName}, your prescription from ${clinicName} is ready.\n\nYou can view it here: ${pdfUrl}\n\nGet well soon!`;
 
+  // Only attach documentUrl if it points to a direct downloadable .pdf file
+  const isDirectPdf = Boolean(pdfUrl && pdfUrl.toLowerCase().endsWith('.pdf'));
+
   return await dispatchWhatsAppMessage({
     phone: patientPhone,
     messageBody,
-    documentUrl: pdfUrl,
+    documentUrl: isDirectPdf ? pdfUrl : undefined,
     clinicId,
   });
 }
+
 
 /**
  * Sends a Smart Slot medicine reminder message (Morning, Afternoon, Night) via Meta Cloud API.
