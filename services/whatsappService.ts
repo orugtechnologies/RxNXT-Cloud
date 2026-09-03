@@ -27,11 +27,13 @@ export function sanitizePhone(phone: string): string {
   return clean;
 }
 
+const cleanEnv = (val?: string) => (val || '').trim().replace(/^["']|["']$/g, '').trim();
+
 /**
  * Checks if Meta Cloud API is configured in the current environment.
  */
 export function isMetaConfigured(): boolean {
-  return Boolean(process.env.META_WA_PHONE_NUMBER_ID && process.env.META_WA_ACCESS_TOKEN);
+  return Boolean(cleanEnv(process.env.META_WA_PHONE_NUMBER_ID) && cleanEnv(process.env.META_WA_ACCESS_TOKEN));
 }
 
 /**
@@ -54,9 +56,10 @@ async function sendViaMetaCloudAPI(
   },
   maxRetries = 2
 ): Promise<any> {
-  const phoneNumberId = process.env.META_WA_PHONE_NUMBER_ID;
-  const accessToken = process.env.META_WA_ACCESS_TOKEN;
-  const graphApiVersion = process.env.META_GRAPH_API_VERSION || 'v19.0';
+  const phoneNumberId = cleanEnv(process.env.META_WA_PHONE_NUMBER_ID);
+  const accessToken = cleanEnv(process.env.META_WA_ACCESS_TOKEN);
+  const graphApiVersion = cleanEnv(process.env.META_GRAPH_API_VERSION) || 'v20.0';
+
 
   // Fallback to local dev mock if keys are not set
   if (!phoneNumberId || !accessToken) {
