@@ -51,7 +51,7 @@ async function sendViaMetaCloudAPI(
     to: string;
     type: 'text' | 'document' | 'template';
     text?: { preview_url?: boolean; body: string };
-    document?: { link: string; filename: string; caption?: string };
+    document?: { link?: string; id?: string; filename: string; caption?: string };
     template?: { name: string; language: { code: string }; components?: any[] };
   },
   maxRetries = 2
@@ -59,7 +59,6 @@ async function sendViaMetaCloudAPI(
   const phoneNumberId = cleanEnv(process.env.META_WA_PHONE_NUMBER_ID);
   const accessToken = cleanEnv(process.env.META_WA_ACCESS_TOKEN);
   const graphApiVersion = cleanEnv(process.env.META_GRAPH_API_VERSION) || 'v20.0';
-
 
   // Fallback to local dev mock if keys are not set
   if (!phoneNumberId || !accessToken) {
@@ -134,15 +133,68 @@ async function sendViaMetaCloudAPI(
 }
 
 /**
+ * Uploads a base64 PDF to Meta WhatsApp Cloud API Media endpoint.
+ * Returns the assigned Meta media ID.
+ */
+async function uploadPDFToMetaMedia(pdfBase64: string): Promise<string | null> {
+  const phoneNumberId = cleanEnv(process.env.META_WA_PHONE_NUMBER_ID);
+  const accessToken = cleanEnv(process.env.META_WA_ACCESS_TOKEN);
+  const graphApiVersion = cleanEnv(process.env.META_GRAPH_API_VERSION) || 'v20.0';
+
+  if (!phoneNumberId || !accessToken) return null;
+
+  try {
+    const cleanBase64 = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
+    const pdfBuffer = Buffer.from(cleanBase64, 'base64');
+
+    const formData = new FormData();
+    formData.append('messaging_product', 'whatsapp');
+    formData.append('type', 'application/pdf');
+    formData.append('file', new Blob([pdfBuffer], { type: 'application/pdf' }), 'RxNXT_Prescription.pdf');
+
+    const response = await fetch(`https://graph.facebook.com/${graphApiVersion}/${phoneNumberId}/media`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json().catch(() => ({}));
+    return data?.id || null;
+  } catch (err) {
+    console.warn('[Meta WhatsApp] Media upload failed, falling back to text dispatch:', err);
+    return null;
+  }
+}
+
+/**
  * Unified dispatch router for Meta WhatsApp Cloud API.
  */
 async function dispatchWhatsAppMessage(options: {
   phone: string;
   messageBody: string;
   documentUrl?: string;
+  documentMediaId?: string;
   clinicId?: string;
 }) {
   const cleanPhone = sanitizePhone(options.phone);
+
+  if (options.documentMediaId) {
+    try {
+      return await sendViaMetaCloudAPI({
+        to: cleanPhone,
+        type: 'document',
+        document: {
+          id: options.documentMediaId,
+          filename: 'RxNXT_Prescription.pdf',
+          caption: options.messageBody,
+        },
+      });
+    } catch (docErr) {
+      console.warn('[Meta WhatsApp] Media ID document dispatch failed, falling back to text:', docErr);
+    }
+  }
 
   if (options.documentUrl) {
     try {
@@ -176,7 +228,7 @@ async function dispatchWhatsAppMessage(options: {
 // ─────────────────────────────────────────────
 
 /**
- * Sends a WhatsApp message containing an AI Treatment Plan Summary and prescription PDF URL via Meta Cloud API.
+ * Sends a WhatsApp message containing an AI Treatment Plan Summary and prescription PDF via Meta Cloud API.
  */
 export async function sendPrescriptionPDF(
   patientPhone: string,
@@ -190,9 +242,16 @@ export async function sendPrescriptionPDF(
   const messageBody = aiTreatmentSummary
     ? `Hello ${patientName}, your prescription from *${clinicName}* is ready!\n\n` +
       `${aiTreatmentSummary}\n\n` +
-      `📄 *View / Download Official PDF Prescription:*\n${pdfUrl}\n\n` +
       `Get well soon!`
-    : `Hello ${patientName}, your prescription from ${clinicName} is ready.\n\nYou can view it here: ${pdfUrl}\n\nGet well soon!`;
+    : `Hello ${patientName}, your prescription from ${clinicName} is ready.\n\nGet well soon!`;
+
+  let documentMediaId: string | undefined;
+  if (pdfBase64) {
+    const uploadedId = await uploadPDFToMetaMedia(pdfBase64);
+    if (uploadedId) {
+      documentMediaId = uploadedId;
+    }
+  }
 
   // Only attach documentUrl if it points to a direct downloadable .pdf file
   const isDirectPdf = Boolean(pdfUrl && pdfUrl.toLowerCase().endsWith('.pdf'));
@@ -200,10 +259,12 @@ export async function sendPrescriptionPDF(
   return await dispatchWhatsAppMessage({
     phone: patientPhone,
     messageBody,
-    documentUrl: isDirectPdf ? pdfUrl : undefined,
+    documentMediaId,
+    documentUrl: !documentMediaId && isDirectPdf ? pdfUrl : undefined,
     clinicId,
   });
 }
+
 
 
 /**
