@@ -35,6 +35,13 @@ export function isMetaConfigured(): boolean {
 }
 
 /**
+ * Backwards compatibility: Meta Cloud API is hosted by Meta and does not require wake-up pings.
+ */
+export function ensureMicroserviceAwake(): void {
+  // No-op
+}
+
+/**
  * Dispatches a message via Meta WhatsApp Cloud API with automatic retries for transient errors.
  */
 async function sendViaMetaCloudAPI(
