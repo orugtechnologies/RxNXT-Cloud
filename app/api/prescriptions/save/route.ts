@@ -90,16 +90,23 @@ export async function POST(request: Request) {
         },
       });
 
+      // Collect all reminders for high-performance bulk creation
+      const remindersToCreate: Array<{
+        prescriptionId: string;
+        patientId: string;
+        scheduledFor: Date;
+        status: 'PENDING';
+        messageType: 'FOLLOW_UP' | 'REFILL' | 'MEDICINE' | 'MEDICINE_MORNING' | 'MEDICINE_AFTERNOON' | 'MEDICINE_NIGHT';
+      }> = [];
+
       // Create Follow-up Reminder if followUpDate exists
       if (followUpDate) {
-        await tx.reminder.create({
-          data: {
-            prescriptionId: prescription.id,
-            patientId: patientId,
-            scheduledFor: new Date(followUpDate),
-            status: 'PENDING',
-            messageType: 'FOLLOW_UP',
-          }
+        remindersToCreate.push({
+          prescriptionId: prescription.id,
+          patientId: patientId,
+          scheduledFor: new Date(followUpDate),
+          status: 'PENDING',
+          messageType: 'FOLLOW_UP',
         });
       }
 
@@ -134,14 +141,12 @@ export async function POST(request: Request) {
           reminderDate.setDate(now.getDate() + day);
           reminderDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
 
-          await tx.reminder.create({
-            data: {
-              prescriptionId: prescription.id,
-              patientId: patientId,
-              scheduledFor: reminderDate,
-              status: 'PENDING',
-              messageType: 'MEDICINE',
-            }
+          remindersToCreate.push({
+            prescriptionId: prescription.id,
+            patientId: patientId,
+            scheduledFor: reminderDate,
+            status: 'PENDING',
+            messageType: 'MEDICINE',
           });
         }
 
@@ -150,17 +155,15 @@ export async function POST(request: Request) {
         refillDate.setDate(now.getDate() + 25);
         refillDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
 
-        await tx.reminder.create({
-          data: {
-            prescriptionId: prescription.id,
-            patientId: patientId,
-            scheduledFor: refillDate,
-            status: 'PENDING',
-            messageType: 'REFILL',
-          }
+        remindersToCreate.push({
+          prescriptionId: prescription.id,
+          patientId: patientId,
+          scheduledFor: refillDate,
+          status: 'PENDING',
+          messageType: 'REFILL',
         });
       } else {
-        // ACUTE CARE: Smart Slot Nudges (Morning 8:00 AM, Afternoon 1:30 PM, Night 8:30 PM)
+        // ACUTE CARE: Smart Slot Nudges (Morning 8:00 AM, Afternoon 1:00 PM, Night 8:30 PM)
         let needsAfternoon = false;
         let needsNight = true; // default true for standard acute courses
 
@@ -180,14 +183,12 @@ export async function POST(request: Request) {
           morningDate.setDate(now.getDate() + day);
           morningDate.setUTCHours(2, 30, 0, 0);
 
-          await tx.reminder.create({
-            data: {
-              prescriptionId: prescription.id,
-              patientId: patientId,
-              scheduledFor: morningDate,
-              status: 'PENDING',
-              messageType: 'MEDICINE_MORNING',
-            }
+          remindersToCreate.push({
+            prescriptionId: prescription.id,
+            patientId: patientId,
+            scheduledFor: morningDate,
+            status: 'PENDING',
+            messageType: 'MEDICINE_MORNING',
           });
 
           // 2. Afternoon Slot (1:00 PM IST / 7:30 AM UTC)
@@ -196,14 +197,12 @@ export async function POST(request: Request) {
             afternoonDate.setDate(now.getDate() + day);
             afternoonDate.setUTCHours(7, 30, 0, 0);
 
-            await tx.reminder.create({
-              data: {
-                prescriptionId: prescription.id,
-                patientId: patientId,
-                scheduledFor: afternoonDate,
-                status: 'PENDING',
-                messageType: 'MEDICINE_AFTERNOON',
-              }
+            remindersToCreate.push({
+              prescriptionId: prescription.id,
+              patientId: patientId,
+              scheduledFor: afternoonDate,
+              status: 'PENDING',
+              messageType: 'MEDICINE_AFTERNOON',
             });
           }
 
@@ -213,17 +212,22 @@ export async function POST(request: Request) {
             nightDate.setDate(now.getDate() + day);
             nightDate.setUTCHours(15, 0, 0, 0);
 
-            await tx.reminder.create({
-              data: {
-                prescriptionId: prescription.id,
-                patientId: patientId,
-                scheduledFor: nightDate,
-                status: 'PENDING',
-                messageType: 'MEDICINE_NIGHT',
-              }
+            remindersToCreate.push({
+              prescriptionId: prescription.id,
+              patientId: patientId,
+              scheduledFor: nightDate,
+              status: 'PENDING',
+              messageType: 'MEDICINE_NIGHT',
             });
           }
         }
+      }
+
+      // Fast single-query batch insert for all scheduled reminders
+      if (remindersToCreate.length > 0) {
+        await tx.reminder.createMany({
+          data: remindersToCreate,
+        });
       }
 
       // Mark any WAITING queue items for this patient and doctor as COMPLETED
@@ -267,6 +271,9 @@ export async function POST(request: Request) {
       }
 
       return { encounter, prescription };
+    }, {
+      maxWait: 10000,
+      timeout: 25000,
     });
 
     return NextResponse.json({
