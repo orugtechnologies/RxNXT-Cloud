@@ -30,7 +30,7 @@ export function sanitizePhone(phone: string): string {
 const cleanEnv = (val?: string) => (val || '').trim().replace(/^["']|["']$/g, '').trim();
 
 const ACTIVE_VERIFIED_META_TOKEN =
-  'EAAZAw6je6IHQBSUiu17K0RiB0gglzXdqMx0GQvOzZB3rxO4hutHCHI2RB3diJMTZC5My8sc70ZCYOPF5jeySUaXOcdIbHM9EdYuNfNmR74RDvSBrUHEWaQcPcbAI3GC8JFrOdWJYHseEF6QrDFeMRWjTcapiZBnk0Dpl1sAZBZCKkTQA3z8e0WW8ALZAa4tbTVOO1svmZAvvV5oZCblw7Iupod7yiZClstOHKuqS5vJZAuUrFqOPgE1A9dZAsGaM4ynbk4PwaOYpfj8iAn207YlOeXnWS2ZBSmJAZDZD';
+  'EAAZAw6je6IHQBSRFNYW74j2dCdBSMHw9mk8xNmCs2DTVVlUHeZA0yioYLU46zJ15xL4m00q916KDUHEEZBLhpKdE124xAWeke2A4aNJqlDxFrCRCYdeV9Oe7laGgZAXAxEPaqrmMZAWmco9AZAhWUtUEwwNS38e6zFzAzRWGZAggUZC2tz67urhcU3AAVpPoPnvUNQZDZD';
 
 export function getEffectiveMetaToken(): string {
   const envToken = cleanEnv(process.env.META_WA_ACCESS_TOKEN);
@@ -115,7 +115,10 @@ async function sendViaMetaCloudAPI(
           continue;
         }
 
-        const errMsg = errorInfo.message || `Meta Cloud API request failed with HTTP status ${response.status}`;
+        let errMsg = errorInfo.message || `Meta Cloud API request failed with HTTP status ${response.status}`;
+        if (response.status === 401 || errorInfo.code === 190) {
+          errMsg = `Authentication Error: Meta Access Token has expired or is invalid. Please update META_WA_ACCESS_TOKEN with a Permanent System User Token in Vercel settings.`;
+        }
         const finalErr = new Error(`[Meta WhatsApp API Error] ${errMsg} (Status: ${response.status}, Code: ${errorInfo.code}, Subcode: ${errorInfo.error_subcode})`);
         (finalErr as any).isPermanent = !isTransient;
         (finalErr as any).metaDebug = {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, CheckCircle, User, Stethoscope, Pill, FileText, Activity, Send, Loader2, Sparkles } from 'lucide-react';
+import { X, CheckCircle, User, Stethoscope, Pill, FileText, Activity, Send, Loader2, Sparkles, Download, AlertCircle } from 'lucide-react';
 import { PrescribedMedicine } from './PrescriptionCart';
 import { Patient } from '../patients/PatientSearchUI';
 
@@ -41,10 +41,26 @@ export default function ReviewPrescriptionModal({
   onGoToDashboard
 }: ReviewModalProps) {
   const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+
+  const handleDownloadPDF = () => {
+    if (!pdfBase64) return;
+    try {
+      const link = document.createElement('a');
+      link.href = pdfBase64;
+      link.download = `Prescription_${(patient.name || 'Patient').replace(/\s+/g, '_')}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (e) {
+      console.error('Error downloading PDF:', e);
+    }
+  };
 
   const sendViaWhatsApp = async () => {
     if (!prescriptionId) return;
     setIsSending(true);
+    setSendError(null);
     try {
       const res = await fetch('/api/prescriptions/send', {
         method: 'POST',
@@ -64,10 +80,12 @@ export default function ReviewPrescriptionModal({
       }
     } catch (err: any) {
       console.error(err);
+      const msg = err.message || 'Error sending WhatsApp message';
+      setSendError(msg);
       if (err.message === 'WhatsApp is not connected yet') {
         alert('WhatsApp is still connecting in the background (or the microservice is waking up). Please wait 15-20 seconds and click Send again.');
       } else {
-        alert(err.message || 'Error sending WhatsApp message');
+        alert(msg);
       }
     } finally {
       setIsSending(false);
@@ -103,9 +121,22 @@ export default function ReviewPrescriptionModal({
             </div>
           </div>
           <h2 className="text-2xl font-bold text-clinic-navy mb-2">Prescription Generated!</h2>
-          <p className="text-slate-500 mb-8">
-            The PDF has been created for <span className="font-bold">{patient.name}</span>. You can now send it securely via WhatsApp.
+          <p className="text-slate-500 mb-6">
+            The PDF has been created for <span className="font-bold">{patient.name}</span>. You can now send it securely via WhatsApp or download it directly.
           </p>
+
+          {sendError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-left text-xs text-red-700 space-y-1">
+              <div className="font-bold flex items-center gap-1.5 text-red-800">
+                <AlertCircle size={14} className="shrink-0" />
+                <span>WhatsApp Notice</span>
+              </div>
+              <p className="break-words">{sendError}</p>
+              <p className="text-slate-600 font-medium pt-1">
+                You can download the prescription PDF directly below to print or share with the patient.
+              </p>
+            </div>
+          )}
           
           <div className="space-y-3">
             <button
@@ -119,6 +150,18 @@ export default function ReviewPrescriptionModal({
                 <><Send className="mr-2" size={20}/> Send Rx via WhatsApp</>
               )}
             </button>
+
+            {pdfBase64 && (
+              <button
+                type="button"
+                onClick={handleDownloadPDF}
+                className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 text-sm"
+              >
+                <Download size={18} />
+                <span>Download Prescription PDF</span>
+              </button>
+            )}
+
             <button
               onClick={onNewPrescription}
               className="w-full bg-white hover:bg-slate-50 text-clinic-navy border border-slate-200 font-bold py-3 px-6 rounded-xl transition-all"
