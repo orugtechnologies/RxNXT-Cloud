@@ -34,7 +34,7 @@ const ACTIVE_VERIFIED_META_TOKEN =
 
 export function getEffectiveMetaToken(): string {
   const envToken = cleanEnv(process.env.META_WA_ACCESS_TOKEN);
-  if (!envToken || envToken.includes('ZAhrkitJK8') || envToken.length < 10) {
+  if (!envToken || envToken.includes('ZAhrkitJK8') || envToken.includes('BSUiu17K0Ri') || envToken.length < 10) {
     return ACTIVE_VERIFIED_META_TOKEN;
   }
   return envToken;
