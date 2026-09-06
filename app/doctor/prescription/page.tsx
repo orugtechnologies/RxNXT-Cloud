@@ -220,27 +220,37 @@ function PrescriptionWorkflowContent() {
         })
       });
       
-      if (!res.ok) throw new Error('Failed to save prescription');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          throw new Error('Your session has expired. Please refresh the page and log in again.');
+        }
+        throw new Error(errData.error || `Server error (${res.status}): Failed to save prescription`);
+      }
       
       const data = await res.json();
       
-      const base64 = generatePrescriptionPDF({
-        patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, ...doctorContext
-      }, true) as string;
-      setPdfBase64(base64);
+      try {
+        const base64 = generatePrescriptionPDF({
+          patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, ...doctorContext
+        }, true) as string;
+        setPdfBase64(base64);
 
-      generatePrescriptionPDF({
-        patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, ...doctorContext
-      }, false);
+        generatePrescriptionPDF({
+          patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, ...doctorContext
+        }, false);
+      } catch (pdfErr) {
+        console.warn('PDF rendering warning on client:', pdfErr);
+      }
       
       setPrescriptionId(data.prescriptionId);
       if (startTime) {
         setLastTimeTaken(Math.floor((Date.now() - startTime) / 1000));
       }
       setIsSuccess(true);
-    } catch (err) {
-      console.error(err);
-      alert('Error saving prescription');
+    } catch (err: any) {
+      console.error('Prescription save error:', err);
+      alert(err.message || 'Error saving prescription');
     } finally {
       setSaving(false);
     }
