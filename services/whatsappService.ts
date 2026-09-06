@@ -137,6 +137,11 @@ async function sendViaMetaCloudAPI(
         }
         const finalErr = new Error(`[Meta WhatsApp API Error] ${errMsg} (Status: ${response.status}, Code: ${errorInfo.code}, Subcode: ${errorInfo.error_subcode})`);
         (finalErr as any).isPermanent = !isTransient;
+        (finalErr as any).isTemplateError =
+          errorInfo.code === 131058 ||
+          errorInfo.code === 132000 ||
+          errorInfo.code === 132001 ||
+          Boolean(errorInfo.message && errorInfo.message.toLowerCase().includes('template'));
         (finalErr as any).metaDebug = {
           endpoint,
           status: response.status,
@@ -218,9 +223,32 @@ async function dispatchWhatsAppMessage(options: {
   documentUrl?: string;
   documentMediaId?: string;
   clinicId?: string;
+  template?: {
+    name: string;
+    language: { code: string };
+    components?: any[];
+  };
 }) {
   const cleanPhone = sanitizePhone(options.phone);
 
+  // 1. If an approved template is specified, try template delivery first (unlocks cold patient reach)
+  if (options.template) {
+    try {
+      return await sendViaMetaCloudAPI({
+        to: cleanPhone,
+        type: 'template',
+        template: options.template,
+      });
+    } catch (tmplErr: any) {
+      if (tmplErr.isTemplateError) {
+        console.warn(`[Meta WhatsApp] Template '${options.template.name}' pending/unavailable, falling back to direct delivery:`, tmplErr.message);
+      } else {
+        throw tmplErr;
+      }
+    }
+  }
+
+  // 2. If PDF media was uploaded to Meta, dispatch official PDF document
   if (options.documentMediaId) {
     try {
       return await sendViaMetaCloudAPI({
@@ -237,6 +265,7 @@ async function dispatchWhatsAppMessage(options: {
     }
   }
 
+  // 3. Fallback to direct download link if available
   if (options.documentUrl) {
     try {
       return await sendViaMetaCloudAPI({
@@ -253,6 +282,7 @@ async function dispatchWhatsAppMessage(options: {
     }
   }
 
+  // 4. Session / Standard rich text dispatch
   return await sendViaMetaCloudAPI({
     to: cleanPhone,
     type: 'text',
@@ -303,10 +333,22 @@ export async function sendPrescriptionPDF(
     documentMediaId,
     documentUrl: !documentMediaId && isDirectPdf ? pdfUrl : undefined,
     clinicId,
+    template: {
+      name: 'rxnxt_prescription_ready',
+      language: { code: 'en_US' },
+      components: [
+        {
+          type: 'body',
+          parameters: [
+            { type: 'text', text: patientName || 'Patient' },
+            { type: 'text', text: clinicName || 'Clinic' },
+            { type: 'text', text: (aiTreatmentSummary || 'Prescription ready.').slice(0, 1000) },
+          ],
+        },
+      ],
+    },
   });
 }
-
-
 
 /**
  * Sends a Smart Slot medicine reminder message (Morning, Afternoon, Night) via Meta Cloud API.
@@ -348,10 +390,27 @@ export async function sendMedicineReminder(
     `${medicineDetails}\n\n` +
     `${foodNote}`;
 
+  const slotLabel = `${slotType.charAt(0) + slotType.slice(1).toLowerCase()} Dose`;
+
   return await dispatchWhatsAppMessage({
     phone: patientPhone,
     messageBody,
     clinicId,
+    template: {
+      name: 'rxnxt_dose_reminder',
+      language: { code: 'en_US' },
+      components: [
+        {
+          type: 'body',
+          parameters: [
+            { type: 'text', text: patientName || 'Patient' },
+            { type: 'text', text: clinicName || 'Clinic' },
+            { type: 'text', text: slotLabel },
+            { type: 'text', text: medicineDetails || 'Prescribed doses' },
+          ],
+        },
+      ],
+    },
   });
 }
 
@@ -371,6 +430,20 @@ export async function sendFollowUpReminder(
     phone: patientPhone,
     messageBody,
     clinicId,
+    template: {
+      name: 'rxnxt_followup_reminder',
+      language: { code: 'en_US' },
+      components: [
+        {
+          type: 'body',
+          parameters: [
+            { type: 'text', text: patientName || 'Patient' },
+            { type: 'text', text: clinicName || 'Clinic' },
+            { type: 'text', text: doctorName || 'Doctor' },
+          ],
+        },
+      ],
+    },
   });
 }
 
@@ -397,5 +470,19 @@ export async function sendRefillReminder(
     phone: patientPhone,
     messageBody,
     clinicId,
+    template: {
+      name: 'rxnxt_refill_reminder',
+      language: { code: 'en_US' },
+      components: [
+        {
+          type: 'body',
+          parameters: [
+            { type: 'text', text: patientName || 'Patient' },
+            { type: 'text', text: doctorName || 'Doctor' },
+            { type: 'text', text: clinicName || 'Clinic' },
+          ],
+        },
+      ],
+    },
   });
 }
