@@ -190,11 +190,11 @@ export async function POST(request: Request) {
             }
           });
 
-          // 2. Afternoon Slot (1:30 PM IST / 8:00 AM UTC)
+          // 2. Afternoon Slot (1:00 PM IST / 7:30 AM UTC)
           if (needsAfternoon) {
             const afternoonDate = new Date();
             afternoonDate.setDate(now.getDate() + day);
-            afternoonDate.setUTCHours(8, 0, 0, 0);
+            afternoonDate.setUTCHours(7, 30, 0, 0);
 
             await tx.reminder.create({
               data: {

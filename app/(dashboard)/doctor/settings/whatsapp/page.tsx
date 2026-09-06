@@ -76,7 +76,7 @@ export default function WhatsAppSettingsPage() {
               Smart Slot Dose Reminders
             </CardTitle>
             <CardDescription>
-              Automated 3-slot daily schedule (8:00 AM Morning, 1:30 PM Afternoon, 8:30 PM Night) tailored to medicine instructions.
+              Automated 3-slot daily schedule (8:00 AM Morning, 1:00 PM Afternoon, 8:30 PM Night) tailored to medicine instructions.
             </CardDescription>
           </CardHeader>
           <CardContent>
