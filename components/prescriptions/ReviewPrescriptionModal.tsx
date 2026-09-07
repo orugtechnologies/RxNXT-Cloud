@@ -46,8 +46,11 @@ export default function ReviewPrescriptionModal({
   const handleDownloadPDF = () => {
     if (!pdfBase64) return;
     try {
+      const dataUri = pdfBase64.startsWith('data:')
+        ? pdfBase64
+        : `data:application/pdf;base64,${pdfBase64}`;
       const link = document.createElement('a');
-      link.href = pdfBase64;
+      link.href = dataUri;
       link.download = `Prescription_${(patient.name || 'Patient').replace(/\s+/g, '_')}.pdf`;
       document.body.appendChild(link);
       link.click();

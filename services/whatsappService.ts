@@ -204,7 +204,13 @@ async function uploadPDFToMetaMedia(pdfBase64: string): Promise<string | null> {
   if (!phoneNumberId || !accessToken) return null;
 
   try {
-    const cleanBase64 = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
+    let cleanBase64 = pdfBase64;
+    if (cleanBase64.includes('base64,')) {
+      cleanBase64 = cleanBase64.split('base64,')[1];
+    } else {
+      cleanBase64 = cleanBase64.replace(/^data:application\/pdf.*?;base64,/, '');
+    }
+    cleanBase64 = cleanBase64.trim();
     const pdfBuffer = Buffer.from(cleanBase64, 'base64');
 
     const formData = new FormData();
@@ -220,8 +226,12 @@ async function uploadPDFToMetaMedia(pdfBase64: string): Promise<string | null> {
       body: formData,
     });
 
-    const data = await response.json().catch(() => ({}));
-    return data?.id || null;
+    const data: any = await response.json().catch(() => ({}));
+    if (!response.ok || !data?.id) {
+      console.error('[Meta WhatsApp Media Upload Error]:', response.status, data);
+      return null;
+    }
+    return data.id;
   } catch (err) {
     console.warn('[Meta WhatsApp] Media upload failed, falling back to text dispatch:', err);
     return null;
