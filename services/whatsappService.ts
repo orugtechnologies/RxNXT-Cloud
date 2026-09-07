@@ -245,10 +245,12 @@ async function dispatchWhatsAppMessage(options: {
 }) {
   const cleanPhone = sanitizePhone(options.phone);
 
+  let templateResult: any = null;
+
   // 1. If an approved template is specified, try template delivery first (unlocks cold patient reach)
   if (options.template) {
     try {
-      return await sendViaMetaCloudAPI({
+      templateResult = await sendViaMetaCloudAPI({
         to: cleanPhone,
         type: 'template',
         template: options.template,
@@ -271,7 +273,7 @@ async function dispatchWhatsAppMessage(options: {
         document: {
           id: options.documentMediaId,
           filename: 'RxNXT_Prescription.pdf',
-          caption: options.messageBody,
+          caption: options.template ? '📄 Digital Prescription PDF' : options.messageBody,
         },
       });
     } catch (docErr) {
@@ -288,12 +290,17 @@ async function dispatchWhatsAppMessage(options: {
         document: {
           link: options.documentUrl,
           filename: 'RxNXT_Prescription.pdf',
-          caption: options.messageBody,
+          caption: options.template ? '📄 Digital Prescription PDF' : options.messageBody,
         },
       });
     } catch (docErr) {
       console.warn('[Meta WhatsApp] Document media dispatch failed, falling back to rich text message:', docErr);
     }
+  }
+
+  // If template already succeeded and there was no document to attach, return template result
+  if (templateResult) {
+    return templateResult;
   }
 
   // 4. Session / Standard rich text dispatch
