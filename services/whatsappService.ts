@@ -27,6 +27,20 @@ export function sanitizePhone(phone: string): string {
   return clean;
 }
 
+/**
+ * Normalizes text for Meta WhatsApp Template parameters.
+ * Meta strictly forbids newlines (\n), tabs, or more than 4 consecutive spaces in template parameters.
+ */
+export function sanitizeTemplateParam(val?: string, maxLen = 1024): string {
+  if (!val) return '';
+  return val
+    .replace(/[\r\n\t]+/g, ' • ')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/^(\s*•\s*)+|(\s*•\s*)+$/g, '')
+    .trim()
+    .slice(0, maxLen);
+}
+
 const cleanEnv = (val?: string) => (val || '').trim().replace(/^["']|["']$/g, '').trim();
 
 const ACTIVE_VERIFIED_META_TOKEN =
@@ -340,9 +354,9 @@ export async function sendPrescriptionPDF(
         {
           type: 'body',
           parameters: [
-            { type: 'text', text: patientName || 'Patient' },
-            { type: 'text', text: clinicName || 'Clinic' },
-            { type: 'text', text: (aiTreatmentSummary || 'Prescription ready.').slice(0, 1000) },
+            { type: 'text', text: sanitizeTemplateParam(patientName) || 'Patient' },
+            { type: 'text', text: sanitizeTemplateParam(clinicName) || 'Clinic' },
+            { type: 'text', text: sanitizeTemplateParam(aiTreatmentSummary) || 'Prescription ready.' },
           ],
         },
       ],
@@ -403,10 +417,10 @@ export async function sendMedicineReminder(
         {
           type: 'body',
           parameters: [
-            { type: 'text', text: patientName || 'Patient' },
-            { type: 'text', text: clinicName || 'Clinic' },
-            { type: 'text', text: slotLabel },
-            { type: 'text', text: medicineDetails || 'Prescribed doses' },
+            { type: 'text', text: sanitizeTemplateParam(patientName) || 'Patient' },
+            { type: 'text', text: sanitizeTemplateParam(clinicName) || 'Clinic' },
+            { type: 'text', text: sanitizeTemplateParam(slotLabel) },
+            { type: 'text', text: sanitizeTemplateParam(medicineDetails) || 'Prescribed doses' },
           ],
         },
       ],
@@ -437,9 +451,9 @@ export async function sendFollowUpReminder(
         {
           type: 'body',
           parameters: [
-            { type: 'text', text: patientName || 'Patient' },
-            { type: 'text', text: clinicName || 'Clinic' },
-            { type: 'text', text: doctorName || 'Doctor' },
+            { type: 'text', text: sanitizeTemplateParam(patientName) || 'Patient' },
+            { type: 'text', text: sanitizeTemplateParam(clinicName) || 'Clinic' },
+            { type: 'text', text: sanitizeTemplateParam(doctorName) || 'Doctor' },
           ],
         },
       ],
@@ -477,9 +491,9 @@ export async function sendRefillReminder(
         {
           type: 'body',
           parameters: [
-            { type: 'text', text: patientName || 'Patient' },
-            { type: 'text', text: doctorName || 'Doctor' },
-            { type: 'text', text: clinicName || 'Clinic' },
+            { type: 'text', text: sanitizeTemplateParam(patientName) || 'Patient' },
+            { type: 'text', text: sanitizeTemplateParam(doctorName) || 'Doctor' },
+            { type: 'text', text: sanitizeTemplateParam(clinicName) || 'Clinic' },
           ],
         },
       ],
