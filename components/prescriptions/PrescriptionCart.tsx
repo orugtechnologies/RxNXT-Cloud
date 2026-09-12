@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Trash2, PlusCircle } from 'lucide-react';
+import { Trash2, PlusCircle, AlertCircle, Check } from 'lucide-react';
 
 export interface PrescribedMedicine {
   id: string;
@@ -120,7 +120,18 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
               <div className="flex items-start">
                 <span className="text-gray-300 font-bold mr-3 mt-0.5 select-none">{index + 1}.</span>
                 <div>
-                  <p className="font-bold text-clinic-navy text-lg leading-tight">{med.name}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-bold text-clinic-navy text-lg leading-tight">{med.name}</p>
+                    {(!med.frequency?.trim() || !med.duration?.trim() || !med.instructions?.trim()) ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full">
+                        <AlertCircle size={12} className="text-amber-600" /> Details Incomplete
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded-full">
+                        <Check size={12} className="text-emerald-600" /> Complete
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm font-medium text-gray-500 mt-1 uppercase tracking-wide">
                     {[med.dosage_form, med.strength, med.route].filter(Boolean).join(' • ') || 'Generic / Standard Form'}
                   </p>
@@ -138,9 +149,18 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
             {/* Smart Inputs & Quick-Select Chips Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ml-0 sm:ml-7 mt-2">
               {/* Frequency */}
-              <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+              <div className={`p-3 rounded-xl border transition-all shadow-xs space-y-2 ${
+                !med.frequency?.trim() ? 'bg-amber-50/40 border-amber-300 ring-1 ring-amber-200/50' : 'bg-slate-50/70 border-slate-200/80'
+              }`}>
                 <div className="flex items-center justify-between">
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Frequency *</label>
+                  <div className="flex items-center gap-1.5">
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Frequency *</label>
+                    {!med.frequency?.trim() ? (
+                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded">Required</span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-emerald-600 flex items-center">✓</span>
+                    )}
+                  </div>
                   <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -165,8 +185,12 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                     list={`freq-list-${med.id}`}
                     value={med.frequency}
                     onChange={(e) => onUpdate(med.id, { frequency: e.target.value })}
-                    placeholder="Type or pick from list..."
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 font-bold focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb] outline-none transition-shadow shadow-xs"
+                    placeholder="e.g. 1-0-1, TDS, SOS (Required)..."
+                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-bold outline-none transition-shadow shadow-xs ${
+                      !med.frequency?.trim()
+                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/80'
+                        : 'border-slate-300 focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb]'
+                    }`}
                   />
                   <datalist id={`freq-list-${med.id}`}>
                     {FREQUENCY_OPTIONS.filter(o => o.value).map(opt => (
@@ -177,9 +201,18 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
               </div>
 
               {/* Duration */}
-              <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+              <div className={`p-3 rounded-xl border transition-all shadow-xs space-y-2 ${
+                !med.duration?.trim() ? 'bg-amber-50/40 border-amber-300 ring-1 ring-amber-200/50' : 'bg-slate-50/70 border-slate-200/80'
+              }`}>
                 <div className="flex items-center justify-between">
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Duration *</label>
+                  <div className="flex items-center gap-1.5">
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Duration *</label>
+                    {!med.duration?.trim() ? (
+                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded">Required</span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-emerald-600 flex items-center">✓</span>
+                    )}
+                  </div>
                   <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -204,8 +237,12 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                     list={`dur-list-${med.id}`}
                     value={med.duration}
                     onChange={(e) => onUpdate(med.id, { duration: e.target.value })}
-                    placeholder="Type or pick from list..."
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 font-bold focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb] outline-none transition-shadow shadow-xs"
+                    placeholder="e.g. 3 days, 5 days, 1 month (Required)..."
+                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-bold outline-none transition-shadow shadow-xs ${
+                      !med.duration?.trim()
+                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/80'
+                        : 'border-slate-300 focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb]'
+                    }`}
                   />
                   <datalist id={`dur-list-${med.id}`}>
                     {DURATION_OPTIONS.filter(o => o.value).map(opt => (
@@ -216,9 +253,18 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
               </div>
 
               {/* Instructions */}
-              <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80 shadow-xs space-y-2">
+              <div className={`p-3 rounded-xl border transition-all shadow-xs space-y-2 ${
+                !med.instructions?.trim() ? 'bg-amber-50/40 border-amber-300 ring-1 ring-amber-200/50' : 'bg-slate-50/70 border-slate-200/80'
+              }`}>
                 <div className="flex items-center justify-between">
-                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Instructions</label>
+                  <div className="flex items-center gap-1.5">
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Instructions *</label>
+                    {!med.instructions?.trim() ? (
+                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded">Required</span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-emerald-600 flex items-center">✓</span>
+                    )}
+                  </div>
                   <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -243,8 +289,12 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                     list={`inst-list-${med.id}`}
                     value={med.instructions}
                     onChange={(e) => onUpdate(med.id, { instructions: e.target.value })}
-                    placeholder="Type or pick from list..."
-                    className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 font-bold focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb] outline-none transition-shadow shadow-xs"
+                    placeholder="e.g. After Food, Before Food (Required)..."
+                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-bold outline-none transition-shadow shadow-xs ${
+                      !med.instructions?.trim()
+                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/80'
+                        : 'border-slate-300 focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb]'
+                    }`}
                   />
                   <datalist id={`inst-list-${med.id}`}>
                     {INSTRUCTIONS_OPTIONS.filter(o => o.value).map(opt => (

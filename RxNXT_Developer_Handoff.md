@@ -19,14 +19,14 @@ This document is intended for incoming developers to quickly understand the curr
 | Database | PostgreSQL (Neon.tech) via Prisma ORM |
 | Authentication | NextAuth.js — Credentials Provider + bcrypt + JWT |
 | Search Engine | Fuse.js — additive clinical scoring algorithm |
-| WhatsApp | Custom microservice on Render (`rxnxt-whatsapp-service.onrender.com`) |
+| WhatsApp | Official Meta WhatsApp Cloud API (Graph API v20.0) |
 | PDF Generation | jsPDF (client-side, instant) |
 | Hosting | Vercel (Frontend + Serverless API + Vercel Cron) |
 | PWA | Full PWA support — manifest.json + Apple iOS standalone metadata |
 | CI/CD | GitHub Actions → auto-deploy to Vercel on `main` push |
 
 > [!IMPORTANT]
-> **There is NO Twilio and NO SQLite** in this codebase. The WhatsApp integration uses a **custom microservice** (`services/whatsappService.ts`). The database is **PostgreSQL on Neon**, not SQLite. Any legacy docs referencing these are outdated.
+> **There is NO Twilio, NO Render microservice, and NO SQLite** in this codebase. The WhatsApp integration uses the **official Meta WhatsApp Cloud API** (`services/whatsappService.ts`). The database is **PostgreSQL on Supabase**, not SQLite. Any legacy docs referencing these are outdated.
 
 ---
 
@@ -55,9 +55,9 @@ This document is intended for incoming developers to quickly understand the curr
       ├── clinic/               # Clinic profile management
       ├── users/                # Staff management
       ├── receptionist/         # Receptionist-specific endpoints
-      ├── cron/reminders/       # Vercel Cron — hourly WhatsApp reminders
-      ├── cron/wakeup/          # Wakeup ping for Render microservice
-      ├── whatsapp-status/      # WhatsApp microservice health check
+      ├── cron/reminders/       # Vercel Cron — Smart Slot WhatsApp reminders
+      ├── cron/wakeup/          # 24/7 Meta API health status
+      ├── whatsapp-status/      # Meta WhatsApp Cloud API status check
       └── health/               # App health check endpoint
 
 /components
@@ -68,7 +68,7 @@ This document is intended for incoming developers to quickly understand the curr
   └── ui/                       # Reusable base elements (Button, Input, Card, etc.)
 
 /services
-  ├── whatsappService.ts        # WhatsApp microservice client (send Rx PDF, reminders, follow-ups)
+  ├── whatsappService.ts        # Meta WhatsApp Cloud API client (send Rx PDF, reminders, follow-ups)
   └── drugService.ts            # Drug lookup utilities
 
 /prisma
@@ -133,13 +133,12 @@ This document is intended for incoming developers to quickly understand the curr
 
 ### WhatsApp Integration
 - ✅ "Send Rx via WhatsApp" button in prescription review modal
-- ✅ Sends prescription PDF (base64) + view URL to patient's WhatsApp via custom microservice
-- ✅ Automated medicine reminders via Vercel Cron (hourly) — `messageType: MEDICINE`
-- ✅ Automated follow-up visit reminders via Vercel Cron — `messageType: PDF`
-- ✅ Microservice warm-up ping (`ensureMicroserviceAwake()`) before sending
-- ✅ Phone sanitization — strips formatting, strips leading zeros, auto-prepends `+91`
-- ✅ WhatsApp BYOD guide for single-device doctors (QR save to gallery flow)
-- ✅ WhatsApp microservice health status endpoint (`/api/whatsapp-status`)
+- ✅ Sends prescription PDF directly via Meta WhatsApp Cloud API (`/media` upload + template delivery)
+- ✅ Automated medicine reminders via Vercel 3-Slot Cron — `messageType: MEDICINE`
+- ✅ Automated follow-up visit reminders via Vercel Cron — `messageType: FOLLOW_UP`
+- ✅ Zero cold starts — 100% cloud-hosted on Meta Graph API v20.0
+- ✅ Phone sanitization — strips formatting, strips leading zeros, auto-prepends `91`
+- ✅ WhatsApp Cloud API health status endpoint (`/api/whatsapp-status`)
 
 ### Patient Queue System
 - ✅ QueueItem model with token numbers and statuses (WAITING/AWAY/SKIPPED/COMPLETED)
@@ -169,10 +168,12 @@ This document is intended for incoming developers to quickly understand the curr
 ## 7. Environment Variables Required
 
 ```env
-DATABASE_URL=                    # Neon PostgreSQL connection string
+DATABASE_URL=                    # Supabase Mumbai PostgreSQL connection string
 NEXTAUTH_SECRET=                 # JWT encryption secret (openssl rand -base64 32)
 NEXTAUTH_URL=                    # Live domain e.g. https://rxnxt-app.vercel.app
-WHATSAPP_MICROSERVICE_URL=       # https://rxnxt-whatsapp-service.onrender.com
+META_WA_PHONE_NUMBER_ID=         # Meta WhatsApp Cloud API Phone Number ID
+META_WA_ACCESS_TOKEN=            # Meta System User Permanent Access Token
+META_WA_BUSINESS_ACCOUNT_ID=     # Meta WhatsApp Business Account (WABA) ID
 CRON_SECRET=                     # Secures /api/cron/reminders endpoint
 NEXT_PUBLIC_APP_URL=             # Used to build prescription PDF view links
 ```

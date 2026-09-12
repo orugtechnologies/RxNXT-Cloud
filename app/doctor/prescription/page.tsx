@@ -9,7 +9,7 @@ import TreatmentGroupsUI from '@/components/prescriptions/TreatmentGroupsUI';
 import SaveTemplateModal from '@/components/prescriptions/SaveTemplateModal';
 import ReviewPrescriptionModal from '@/components/prescriptions/ReviewPrescriptionModal';
 import { generatePrescriptionPDF } from '@/components/prescriptions/PrescriptionPrintView';
-import { Activity, User, Pill, Stethoscope, Save, Layers, Eye } from 'lucide-react';
+import { Activity, User, Pill, Stethoscope, Save, Layers, Eye, AlertCircle } from 'lucide-react';
 import TemplateManagementUI from '@/components/prescriptions/TemplateManagementUI';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
@@ -181,9 +181,9 @@ function PrescriptionWorkflowContent() {
       dosage_form: drug.dosage_form,
       strength: drug.strength,
       route: drug.route,
-      frequency: '1-0-1',
-      duration: '5 days',
-      instructions: 'After Food'
+      frequency: '',
+      duration: '',
+      instructions: ''
     };
     setMedicines([...medicines, newMed]);
   };
@@ -201,8 +201,46 @@ function PrescriptionWorkflowContent() {
     setMedicines(medicines.filter(m => m.id !== id));
   };
 
+  const validatePrescriptionMedicines = () => {
+    if (medicines.length === 0) {
+      return { isValid: false, message: 'Please add at least one medicine to the prescription.' };
+    }
+
+    const missingDetails: string[] = [];
+    medicines.forEach((m, idx) => {
+      const missing: string[] = [];
+      if (!m.frequency || !m.frequency.trim()) missing.push('Frequency');
+      if (!m.duration || !m.duration.trim()) missing.push('Duration');
+      if (!m.instructions || !m.instructions.trim()) missing.push('Instructions');
+
+      if (missing.length > 0) {
+        missingDetails.push(`• ${m.name || `Medicine #${idx + 1}`}: Missing ${missing.join(', ')}`);
+      }
+    });
+
+    if (missingDetails.length > 0) {
+      return {
+        isValid: false,
+        message: `Please complete all mandatory details for each prescribed medicine before proceeding:\n\n${missingDetails.join('\n')}`
+      };
+    }
+
+    return { isValid: true, message: '' };
+  };
+
+  const handleProceedToReview = () => {
+    const validation = validatePrescriptionMedicines();
+    if (!validation.isValid) {
+      alert(validation.message);
+      return;
+    }
+    setShowReview(true);
+  };
+
   const savePrescription = async () => {
     if (!patient || medicines.length === 0) return alert('Patient and Medicines are required');
+    const validation = validatePrescriptionMedicines();
+    if (!validation.isValid) return alert(validation.message);
     setSaving(true);
     try {
       const res = await fetch('/api/prescriptions/save', {
@@ -432,24 +470,57 @@ function PrescriptionWorkflowContent() {
             )}
 
             {/* Action Bar */}
-            {patient && (
-              <div className="sticky bottom-0 z-40 bg-white/95 backdrop-blur-md p-4 border-t border-slate-200 shadow-2xl md:static md:bg-transparent md:p-0 md:border-0 md:shadow-none flex flex-wrap justify-end gap-3 rounded-b-2xl md:rounded-none -mx-4 sm:mx-0 px-4 sm:px-0 mt-6 animate-in fade-in">
-                <button 
-                  onClick={() => setShowSaveTemplate(true)}
-                  disabled={medicines.length === 0}
-                  className="bg-white hover:bg-gray-50 text-clinic-navy border border-gray-200 font-bold py-3 px-5 rounded-xl shadow-sm hover:shadow transition-all duration-200 flex items-center text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Layers className="mr-2 text-blue-500" size={18} /> Save as Group
-                </button>
-                <button 
-                  onClick={() => setShowReview(true)}
-                  disabled={medicines.length === 0}
-                  className="bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-emerald-400"
-                >
-                  <Eye className="mr-2" size={18} /> Review & Print Rx
-                </button>
-              </div>
-            )}
+            {patient && (() => {
+              const hasIncompleteMedicines = medicines.some(
+                m => !m.frequency?.trim() || !m.duration?.trim() || !m.instructions?.trim()
+              );
+
+              return (
+                <div className="mt-6">
+                  {medicines.length > 0 && hasIncompleteMedicines && (
+                    <div className="flex items-center gap-2.5 p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-amber-900 text-xs font-semibold mb-3 animate-in fade-in shadow-xs">
+                      <AlertCircle size={18} className="text-amber-600 shrink-0" />
+                      <span>
+                        <strong>Medication Details Required:</strong> Please enter Frequency, Duration, and Instructions for all added medicines before advancing.
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="sticky bottom-0 z-40 bg-white/95 backdrop-blur-md p-4 border-t border-slate-200 shadow-2xl md:static md:bg-transparent md:p-0 md:border-0 md:shadow-none flex flex-wrap justify-end gap-3 rounded-b-2xl md:rounded-none -mx-4 sm:mx-0 px-4 sm:px-0">
+                    <button 
+                      onClick={() => {
+                        const validation = validatePrescriptionMedicines();
+                        if (!validation.isValid) {
+                          alert(validation.message);
+                          return;
+                        }
+                        setShowSaveTemplate(true);
+                      }}
+                      disabled={medicines.length === 0}
+                      className="bg-white hover:bg-gray-50 text-clinic-navy border border-gray-200 font-bold py-3 px-5 rounded-xl shadow-sm hover:shadow transition-all duration-200 flex items-center text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Layers className="mr-2 text-blue-500" size={18} /> Save as Group
+                    </button>
+                    <button 
+                      onClick={handleProceedToReview}
+                      disabled={medicines.length === 0}
+                      className={`font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center text-sm sm:text-base ${
+                        hasIncompleteMedicines
+                          ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'
+                          : 'bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white hover:shadow-xl'
+                      } disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-emerald-400`}
+                    >
+                      <Eye className="mr-2" size={18} /> Review & Print Rx
+                      {hasIncompleteMedicines && (
+                        <span className="ml-2 text-[10px] bg-white/30 text-white px-2 py-0.5 rounded-full uppercase font-extrabold tracking-wider">
+                          Incomplete
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
         </div>

@@ -10,7 +10,7 @@ RxNXT has successfully transitioned from a local prototype to a **fully cloud-ho
 
 **What is Live Today:**
 - **Cloud Infrastructure:** Hosted on Vercel with Supabase Mumbai Cloud PostgreSQL as the database.
-- **WhatsApp Microservice:** A custom Render-based microservice handles automated WhatsApp delivery of PDFs and cron-based reminders. **No reliance on Twilio.**
+- **WhatsApp Gateway:** Official Meta WhatsApp Cloud API (v20.0) handles automated WhatsApp delivery of PDFs and cron-based Smart Slot reminders. **No reliance on Twilio or third-party scrapers.**
 - **Role-Based Workflows:** Distinct, fully-functional dashboards for Doctors, Admins, Receptionists, and Nurses.
 - **Queue Management:** Live patient queuing connecting the reception desk to the doctor's dashboard.
 - **Intelligent Prescribing:** Sub-100ms drug search with additive scoring, one-click templates, and historical cloning.
@@ -22,13 +22,13 @@ RxNXT has successfully transitioned from a local prototype to a **fully cloud-ho
 
 With the core architecture deployed, the immediate focus is on onboarding the first pilot clinics and ensuring stability.
 
-### 1. WhatsApp Number Verification & Scaling
-- Currently, the custom WhatsApp microservice sends PDFs and reminders successfully.
-- **Goal:** Transition the microservice sending number to a verified Meta WhatsApp Business API number for the clinic to remove any sending limits and prevent spam blocks when messaging new patients.
+### 1. WhatsApp Template Approval & Multi-Clinic Phone ID Mapping
+- The official Meta WhatsApp Cloud API is connected and active.
+- **Goal:** Support per-clinic dedicated WhatsApp Business Phone Number IDs (`META_WA_PHONE_NUMBER_ID`) in Clinic settings so larger polyclinics can send from their own clinic brand identity.
 
 ### 2. PDF Cloud Storage Integration
-- Currently, the WhatsApp message sends a secure link to view the prescription generated on the fly.
-- **Goal:** Implement an AWS S3 or Supabase Storage bucket. When a doctor generates a PDF, it will be uploaded to this bucket, and the WhatsApp microservice will download it and attach it as a physical `.pdf` document directly in the chat, improving the patient experience.
+- Currently, prescriptions are converted to Base64 and uploaded to Meta Cloud Media API or sent as secure view links.
+- **Goal:** Implement an AWS S3 or Supabase Storage bucket for permanent archival of generated prescription PDFs.
 
 ---
 

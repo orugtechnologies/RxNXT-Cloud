@@ -86,7 +86,7 @@ export default function ReviewPrescriptionModal({
       const msg = err.message || 'Error sending WhatsApp message';
       setSendError(msg);
       if (err.message === 'WhatsApp is not connected yet') {
-        alert('WhatsApp is still connecting in the background (or the microservice is waking up). Please wait 15-20 seconds and click Send again.');
+        alert('WhatsApp service is still connecting. Please verify your Meta WhatsApp Cloud API credentials and try again.');
       } else {
         alert(msg);
       }
@@ -280,6 +280,7 @@ export default function ReviewPrescriptionModal({
                     <th className="px-4 py-3 font-semibold">Dosage</th>
                     <th className="px-4 py-3 font-semibold">Frequency</th>
                     <th className="px-4 py-3 font-semibold">Duration</th>
+                    <th className="px-4 py-3 font-semibold">Instructions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -289,8 +290,9 @@ export default function ReviewPrescriptionModal({
                       <td className="px-4 py-3 text-gray-600">
                         {[med.dosage_form, med.strength].filter(Boolean).join(' ') || 'Standard'}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{med.frequency}</td>
-                      <td className="px-4 py-3 text-gray-600">{med.duration}</td>
+                      <td className="px-4 py-3 text-gray-600 font-semibold">{med.frequency}</td>
+                      <td className="px-4 py-3 text-gray-600 font-semibold">{med.duration}</td>
+                      <td className="px-4 py-3 text-gray-600">{med.instructions}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -333,8 +335,17 @@ export default function ReviewPrescriptionModal({
             Edit Prescription
           </button>
           <button 
-            onClick={onConfirm}
-            disabled={saving}
+            onClick={() => {
+              const incomplete = medicines.some(
+                m => !m.frequency?.trim() || !m.duration?.trim() || !m.instructions?.trim()
+              );
+              if (incomplete) {
+                alert('All medicines must have Frequency, Duration, and Instructions specified before generating the prescription.');
+                return;
+              }
+              onConfirm();
+            }}
+            disabled={saving || medicines.length === 0}
             className="bg-clinic-emerald hover:bg-clinic-emeraldDark text-white font-bold px-8 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center disabled:bg-emerald-300"
           >
             {saving ? (

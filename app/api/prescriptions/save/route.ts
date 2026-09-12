@@ -15,6 +15,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Patient and at least 1 medicine are required' }, { status: 400 });
     }
 
+    // Strict Clinical Validation: Frequency, Duration, and Instructions are mandatory for every prescribed medicine
+    for (let i = 0; i < medicines.length; i++) {
+      const m = medicines[i];
+      const medName = m.name || m.customName || `Medicine #${i + 1}`;
+      if (!m.frequency || !m.frequency.trim()) {
+        return NextResponse.json({ error: `Frequency is mandatory for "${medName}".` }, { status: 400 });
+      }
+      if (!m.duration || !m.duration.trim()) {
+        return NextResponse.json({ error: `Duration is mandatory for "${medName}".` }, { status: 400 });
+      }
+      if (!m.instructions || !m.instructions.trim()) {
+        return NextResponse.json({ error: `Instructions are mandatory for "${medName}".` }, { status: 400 });
+      }
+    }
+
     // 1. Strict Validation: Check for Restricted Drugs (Schedule X / Narcotics)
     // Custom names via keyword match
     const hasRestrictedCustom = medicines.some((m: any) => isDrugNameRestricted(m.name));
@@ -110,8 +125,8 @@ export async function POST(request: Request) {
         });
       }
 
-      // Determine medication course duration (e.g. 5 days, 7 days vs 30 days / chronic)
-      let maxDurationDays = 5;
+      // Determine medication course duration (e.g. 3 days, 5 days, 7 days vs 30 days / chronic)
+      const detectedDurations: number[] = [];
       let isChronic = false;
 
       medicines.forEach((m: any) => {
@@ -123,13 +138,14 @@ export async function POST(request: Request) {
           const match = m.duration.match(/\d+/);
           if (match) {
             const parsed = parseInt(match[0], 10);
-            if (parsed > 0 && parsed > maxDurationDays) {
-              maxDurationDays = parsed;
+            if (parsed > 0) {
+              detectedDurations.push(parsed);
             }
           }
         }
       });
 
+      const maxDurationDays = detectedDurations.length > 0 ? Math.max(...detectedDurations) : 5;
       if (maxDurationDays > 14) isChronic = true;
 
       const now = new Date();

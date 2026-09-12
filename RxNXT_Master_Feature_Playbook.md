@@ -136,12 +136,12 @@ For chronic conditions (Diabetes, Hypertension, Thyroid, duration > 14 days):
 ### 2. Client-Side PDF Renderer (`jsPDF`)
 - Renders the complete PDF directly inside the doctor's web browser DOM.
 - **Zero Server CPU Load**: 50,000 doctors rendering PDFs simultaneously consumes 0 server processing power.
-- Encodes PDF as a Base64 stream for instant dispatch via WhatsApp microservice.
+- Encodes PDF as a Base64 stream for instant dispatch via Meta WhatsApp Cloud API.
 
-### 3. WhatsApp Microservice & Render Architecture
-- **Microservice URL**: `https://rxnxt-whatsapp-service.onrender.com` (Render Paid $7 WebSockets).
-- **Session Isolation**: Multi-file state storage (`v5_sessions_${clinicId}`) maintaining separate persistent WhatsApp WebSocket connections per clinic.
-- **Rate-Limiting Safeguard**: Enforces a 1.2s to 1.5s delay between dispatches to maintain single-number safety under Meta anti-spam policies.
+### 3. Meta WhatsApp Cloud API Architecture
+- **Official Enterprise Transport**: Meta Graph API (`https://graph.facebook.com/v20.0/`).
+- **Direct PDF Media Upload**: Base64 prescription PDF is converted to an official Meta document media object (`uploadPDFToMetaMedia()`).
+- **High Throughput & Anti-Spam Safety**: Uses Meta approved utility templates (`rxnxt_prescription_ready`, `rxnxt_dose_reminder`, `rxnxt_followup_reminder`, `rxnxt_refill_reminder`) with exponential backoff retries.
 
 ### 4. Admin Settings & Multi-Tenant Control (`/admin/settings`)
 - **Clinic Profile**: Drag-and-drop clinic logo upload (`logoUrl`).

@@ -19,6 +19,14 @@ export default function SaveTemplateModal({
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
+
+    const incomplete = medicines.some(
+      m => !m.frequency?.trim() || !m.duration?.trim() || !m.instructions?.trim()
+    );
+    if (incomplete) {
+      alert('All medicines must have Frequency, Duration, and Instructions before saving as a Treatment Group.');
+      return;
+    }
     
     setLoading(true);
     try {
