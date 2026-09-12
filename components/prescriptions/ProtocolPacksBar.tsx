@@ -87,7 +87,7 @@ export default function ProtocolPacksBar({
 
   return (
     <div className="bg-gradient-to-r from-emerald-50/70 via-teal-50/40 to-blue-50/50 p-3.5 rounded-2xl border border-emerald-100/80 mb-4 shadow-sm">
-      <div className="flex items-center justify-between mb-2 px-1">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2 px-1">
         <div className="flex items-center space-x-2">
           <div className="bg-emerald-600 text-white p-1 rounded-lg shadow-sm">
             <Zap size={14} className="fill-current" />

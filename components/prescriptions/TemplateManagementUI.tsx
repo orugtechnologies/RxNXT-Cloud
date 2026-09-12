@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Layers, Loader2, Trash2, Pill, Search, Plus } from 'lucide-react';
+import { Layers, Loader2, Trash2, Pill, Search, Plus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { TreatmentGroup } from './TreatmentGroupsUI';
 
@@ -61,13 +61,22 @@ export default function TemplateManagementUI() {
           <p className="text-slate-500 mt-1 ml-11 text-sm font-medium">Manage your saved prescription templates</p>
         </div>
         
-        <Link 
-          href="/doctor/prescription"
-          className="bg-clinic-emerald hover:bg-clinic-emeraldDark text-white font-bold py-2.5 px-5 rounded-xl shadow-sm hover:shadow transition-all duration-200 flex items-center justify-center whitespace-nowrap"
-        >
-          <Plus size={18} className="mr-2" />
-          Create New Group
-        </Link>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link 
+            href="/doctor/prescription"
+            className="bg-white hover:bg-gray-50 text-clinic-navy border border-gray-200 font-bold py-2.5 px-4 rounded-xl shadow-xs hover:shadow transition-all duration-200 flex items-center justify-center whitespace-nowrap text-sm"
+          >
+            <ArrowLeft size={16} className="mr-1.5 text-clinic-emerald" />
+            Back to Prescription
+          </Link>
+          <Link 
+            href="/doctor/prescription"
+            className="bg-clinic-emerald hover:bg-clinic-emeraldDark text-white font-bold py-2.5 px-5 rounded-xl shadow-sm hover:shadow transition-all duration-200 flex items-center justify-center whitespace-nowrap text-sm"
+          >
+            <Plus size={18} className="mr-2" />
+            Create New Group
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-clinic-border overflow-hidden">
