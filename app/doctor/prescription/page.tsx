@@ -328,12 +328,12 @@ function PrescriptionWorkflowContent() {
         </div>
       </div>
 
-      <div className="max-w-5xl">
+      <div className="w-full max-w-[1500px]">
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8">
           
           {/* Left Column: Patient & Clinical Details */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-4 xl:col-span-3 space-y-6">
             
             {/* Step 1: Patient Selection */}
             <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 hover:shadow-md relative z-20">
@@ -410,7 +410,7 @@ function PrescriptionWorkflowContent() {
           </div>
 
           {/* Right Column: Medications & Actions */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 xl:col-span-9 space-y-6">
             {/* Step 3: Medication */}
             {patient && (
               <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 animate-in fade-in slide-in-from-bottom-8 relative z-20">

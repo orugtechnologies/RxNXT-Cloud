@@ -147,21 +147,21 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
             </div>
 
             {/* Smart Inputs & Quick-Select Chips Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ml-0 sm:ml-7 mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
               {/* Frequency */}
-              <div className={`p-3 rounded-xl border transition-all shadow-xs space-y-2 ${
+              <div className={`p-3.5 rounded-xl border transition-all shadow-xs space-y-2.5 ${
                 !med.frequency?.trim() ? 'bg-amber-50/40 border-amber-300 ring-1 ring-amber-200/50' : 'bg-slate-50/70 border-slate-200/80'
               }`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Frequency *</label>
+                <div className="flex items-center justify-between gap-1.5">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">Frequency *</label>
                     {!med.frequency?.trim() ? (
-                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded">Required</span>
+                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded whitespace-nowrap">Required</span>
                     ) : (
-                      <span className="text-[10px] font-bold text-emerald-600 flex items-center">✓</span>
+                      <span className="text-[10px] font-bold text-emerald-600 flex items-center shrink-0">✓</span>
                     )}
                   </div>
-                  <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
+                  <span className="text-[10px] text-slate-400 font-semibold whitespace-nowrap shrink-0">Quick Pick:</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {QUICK_FREQUENCIES.map(q => (
@@ -169,7 +169,7 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                       key={q}
                       type="button"
                       onClick={() => onUpdate(med.id, { frequency: q })}
-                      className={`text-[11px] font-bold px-2 py-1 rounded-md transition-all shadow-2xs ${
+                      className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all shadow-2xs whitespace-nowrap ${
                         med.frequency === q
                           ? 'bg-[#2563eb] text-white ring-2 ring-[#2563eb]/20'
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#2563eb] hover:border-blue-200'
@@ -185,10 +185,10 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                     list={`freq-list-${med.id}`}
                     value={med.frequency}
                     onChange={(e) => onUpdate(med.id, { frequency: e.target.value })}
-                    placeholder="e.g. 1-0-1, TDS, SOS (Required)..."
-                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-bold outline-none transition-shadow shadow-xs ${
+                    placeholder="e.g. 1-0-1, TDS, SOS..."
+                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-semibold outline-none transition-shadow shadow-xs ${
                       !med.frequency?.trim()
-                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/80'
+                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/70'
                         : 'border-slate-300 focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb]'
                     }`}
                   />
@@ -201,19 +201,19 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
               </div>
 
               {/* Duration */}
-              <div className={`p-3 rounded-xl border transition-all shadow-xs space-y-2 ${
+              <div className={`p-3.5 rounded-xl border transition-all shadow-xs space-y-2.5 ${
                 !med.duration?.trim() ? 'bg-amber-50/40 border-amber-300 ring-1 ring-amber-200/50' : 'bg-slate-50/70 border-slate-200/80'
               }`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Duration *</label>
+                <div className="flex items-center justify-between gap-1.5">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">Duration *</label>
                     {!med.duration?.trim() ? (
-                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded">Required</span>
+                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded whitespace-nowrap">Required</span>
                     ) : (
-                      <span className="text-[10px] font-bold text-emerald-600 flex items-center">✓</span>
+                      <span className="text-[10px] font-bold text-emerald-600 flex items-center shrink-0">✓</span>
                     )}
                   </div>
-                  <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
+                  <span className="text-[10px] text-slate-400 font-semibold whitespace-nowrap shrink-0">Quick Pick:</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {QUICK_DURATIONS.map(q => (
@@ -221,7 +221,7 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                       key={q}
                       type="button"
                       onClick={() => onUpdate(med.id, { duration: q })}
-                      className={`text-[11px] font-bold px-2 py-1 rounded-md transition-all shadow-2xs ${
+                      className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all shadow-2xs whitespace-nowrap ${
                         med.duration === q
                           ? 'bg-[#2563eb] text-white ring-2 ring-[#2563eb]/20'
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#2563eb] hover:border-blue-200'
@@ -237,10 +237,10 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                     list={`dur-list-${med.id}`}
                     value={med.duration}
                     onChange={(e) => onUpdate(med.id, { duration: e.target.value })}
-                    placeholder="e.g. 3 days, 5 days, 1 month (Required)..."
-                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-bold outline-none transition-shadow shadow-xs ${
+                    placeholder="e.g. 3 days, 5 days, 1 month..."
+                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-semibold outline-none transition-shadow shadow-xs ${
                       !med.duration?.trim()
-                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/80'
+                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/70'
                         : 'border-slate-300 focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb]'
                     }`}
                   />
@@ -253,19 +253,19 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
               </div>
 
               {/* Instructions */}
-              <div className={`p-3 rounded-xl border transition-all shadow-xs space-y-2 ${
+              <div className={`p-3.5 rounded-xl border transition-all shadow-xs space-y-2.5 ${
                 !med.instructions?.trim() ? 'bg-amber-50/40 border-amber-300 ring-1 ring-amber-200/50' : 'bg-slate-50/70 border-slate-200/80'
               }`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">Instructions *</label>
+                <div className="flex items-center justify-between gap-1.5">
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">Instructions *</label>
                     {!med.instructions?.trim() ? (
-                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded">Required</span>
+                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded whitespace-nowrap">Required</span>
                     ) : (
-                      <span className="text-[10px] font-bold text-emerald-600 flex items-center">✓</span>
+                      <span className="text-[10px] font-bold text-emerald-600 flex items-center shrink-0">✓</span>
                     )}
                   </div>
-                  <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
+                  <span className="text-[10px] text-slate-400 font-semibold whitespace-nowrap shrink-0">Quick Pick:</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {QUICK_INSTRUCTIONS.map(q => (
@@ -273,7 +273,7 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                       key={q}
                       type="button"
                       onClick={() => onUpdate(med.id, { instructions: q })}
-                      className={`text-[11px] font-bold px-2 py-1 rounded-md transition-all shadow-2xs ${
+                      className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all shadow-2xs whitespace-nowrap ${
                         med.instructions === q
                           ? 'bg-[#2563eb] text-white ring-2 ring-[#2563eb]/20'
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#2563eb] hover:border-blue-200'
@@ -289,10 +289,10 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                     list={`inst-list-${med.id}`}
                     value={med.instructions}
                     onChange={(e) => onUpdate(med.id, { instructions: e.target.value })}
-                    placeholder="e.g. After Food, Before Food (Required)..."
-                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-bold outline-none transition-shadow shadow-xs ${
+                    placeholder="e.g. After Food, Before Food..."
+                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-semibold outline-none transition-shadow shadow-xs ${
                       !med.instructions?.trim()
-                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/80'
+                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/70'
                         : 'border-slate-300 focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb]'
                     }`}
                   />
