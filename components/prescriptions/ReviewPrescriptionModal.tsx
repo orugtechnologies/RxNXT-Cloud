@@ -42,21 +42,28 @@ export default function ReviewPrescriptionModal({
 }: ReviewModalProps) {
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [targetPhone, setTargetPhone] = useState(patient.phone || '');
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
 
   const handleDownloadPDF = () => {
-    if (!pdfBase64) return;
-    try {
-      const dataUri = pdfBase64.startsWith('data:')
-        ? pdfBase64
-        : `data:application/pdf;base64,${pdfBase64}`;
-      const link = document.createElement('a');
-      link.href = dataUri;
-      link.download = `Prescription_${(patient.name || 'Patient').replace(/\s+/g, '_')}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (e) {
-      console.error('Error downloading PDF:', e);
+    if (pdfBase64) {
+      try {
+        const dataUri = pdfBase64.startsWith('data:')
+          ? pdfBase64
+          : `data:application/pdf;base64,${pdfBase64}`;
+        const link = document.createElement('a');
+        link.href = dataUri;
+        link.download = `Prescription_${(patient.name || 'Patient').replace(/\s+/g, '_')}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+      } catch (e) {
+        console.error('Error downloading PDF from base64:', e);
+      }
+    }
+    if (prescriptionId) {
+      window.open(`/api/prescriptions/${prescriptionId}/pdf`, '_blank');
     }
   };
 
@@ -68,7 +75,7 @@ export default function ReviewPrescriptionModal({
       const res = await fetch('/api/prescriptions/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prescriptionId, pdfBase64 })
+        body: JSON.stringify({ prescriptionId, pdfBase64, overridePhone: targetPhone })
       });
       
       if (!res.ok) {
@@ -77,9 +84,9 @@ export default function ReviewPrescriptionModal({
       }
       
       if (timeTakenSeconds) {
-        alert(`✅ Prescription sent successfully! (Completed in ${timeTakenSeconds} seconds 🚀)`);
+        alert(`✅ Prescription sent successfully to ${targetPhone || patient.phone}! (Completed in ${timeTakenSeconds} seconds 🚀)`);
       } else {
-        alert('✅ Prescription sent successfully!');
+        alert(`✅ Prescription sent successfully to ${targetPhone || patient.phone}!`);
       }
     } catch (err: any) {
       console.error(err);
@@ -141,29 +148,56 @@ export default function ReviewPrescriptionModal({
             </div>
           )}
           
+          {/* Target WhatsApp Recipient Box */}
+          <div className="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-xl text-left text-xs text-slate-700">
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                📱 WhatsApp Recipient
+              </span>
+              <button 
+                type="button" 
+                onClick={() => setIsEditingPhone(!isEditingPhone)}
+                className="text-xs text-blue-600 hover:underline font-semibold"
+              >
+                {isEditingPhone ? 'Save' : 'Change number'}
+              </button>
+            </div>
+            {isEditingPhone ? (
+              <input
+                type="tel"
+                value={targetPhone}
+                onChange={(e) => setTargetPhone(e.target.value)}
+                placeholder="+91 99999 99999"
+                className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-sm font-mono mt-1 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              />
+            ) : (
+              <div className="font-mono text-sm font-bold text-slate-900">
+                {targetPhone || 'No phone number set'}
+              </div>
+            )}
+          </div>
+
           <div className="space-y-3">
             <button
               onClick={sendViaWhatsApp}
-              disabled={isSending}
-              className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center disabled:opacity-70"
+              disabled={isSending || !targetPhone}
+              className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center disabled:opacity-70 gap-2"
             >
               {isSending ? (
-                <><Loader2 className="animate-spin mr-2" size={20}/> Sending...</>
+                <><Loader2 className="animate-spin" size={20}/> Sending...</>
               ) : (
-                <><Send className="mr-2" size={20}/> Send Rx via WhatsApp</>
+                <><Send size={20}/> Send Rx via WhatsApp {targetPhone ? `(${targetPhone})` : ''}</>
               )}
             </button>
 
-            {pdfBase64 && (
-              <button
-                type="button"
-                onClick={handleDownloadPDF}
-                className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 text-sm"
-              >
-                <Download size={18} />
-                <span>Download Prescription PDF</span>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={handleDownloadPDF}
+              className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 text-sm"
+            >
+              <Download size={18} />
+              <span>Download Prescription PDF</span>
+            </button>
 
             <button
               onClick={onNewPrescription}

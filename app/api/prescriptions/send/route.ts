@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { prescriptionId, pdfBase64 } = await request.json();
+    const { prescriptionId, pdfBase64, overridePhone } = await request.json();
 
     if (!prescriptionId) {
       return NextResponse.json({ error: 'Missing prescriptionId' }, { status: 400 });
@@ -43,9 +43,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Ensure we have a phone number to send to
-    if (!prescription.patient.phone) {
-      return NextResponse.json({ error: 'Patient does not have a phone number' }, { status: 400 });
+    // Ensure we have a destination phone number to send to
+    const destinationPhone = overridePhone?.trim() || prescription.patient.phone;
+    if (!destinationPhone) {
+      return NextResponse.json({ error: 'No phone number provided for prescription delivery' }, { status: 400 });
     }
 
     // Synthesize AI Present-Day Treatment Summary
@@ -124,7 +125,7 @@ export async function POST(request: Request) {
 
     // Dispatch WhatsApp Message with AI Treatment Summary and Official PDF
     const result = await sendPrescriptionPDF(
-      prescription.patient.phone,
+      destinationPhone,
       prescription.patient.name,
       prescription.clinic.name,
       pdfDirectUrl,
