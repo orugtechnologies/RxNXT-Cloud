@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { sendPrescriptionPDF } from '@/services/whatsappService';
+import { generatePrescriptionPDF } from '@/components/prescriptions/PrescriptionPrintView';
 
 export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
@@ -84,13 +85,50 @@ export async function POST(request: Request) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const pdfDownloadUrl = `${baseUrl}/patient/prescription/${prescription.id}/view`;
 
-    // Dispatch WhatsApp Message with AI Treatment Summary
+    // Ensure PDF Base64 is generated if not sent by client (guaranteed fallback)
+    let finalPdfBase64 = pdfBase64;
+    if (!finalPdfBase64) {
+      try {
+        const doctor = await prisma.user.findUnique({
+          where: { id: prescription.doctorId || user.id }
+        });
+        finalPdfBase64 = generatePrescriptionPDF({
+          patient: prescription.patient as any,
+          medicines: (prescription.medicines || []).map(m => ({
+            id: m.id,
+            name: m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine',
+            dosage_form: m.dosageForm || undefined,
+            strength: m.strength || undefined,
+            route: m.route || undefined,
+            frequency: m.frequency || '',
+            duration: m.duration || '',
+            instructions: m.instructions || ''
+          })),
+          chiefComplaint: prescription.encounter?.chiefComplaint || undefined,
+          diagnosis: prescription.encounter?.diagnosis || undefined,
+          notes: prescription.encounter?.notes || undefined,
+          followUpDate: prescription.encounter?.followUpDate || undefined,
+          doctorName: doctor?.fullName || user.fullName || undefined,
+          clinicName: prescription.clinic?.name || undefined,
+          clinicAddress: prescription.clinic?.address || undefined,
+          clinicPhone: prescription.clinic?.phone || undefined,
+          doctorRegNo: doctor?.registrationNumber || undefined,
+          doctorSpecialization: doctor?.specialization || undefined,
+          verificationStatus: doctor?.verificationStatus || undefined,
+          medicalCouncil: doctor?.medicalCouncil || undefined,
+        }, true) as string;
+      } catch (genErr) {
+        console.warn('[Server PDF Gen Warning]:', genErr);
+      }
+    }
+
+    // Dispatch WhatsApp Message with AI Treatment Summary and Official PDF
     const result = await sendPrescriptionPDF(
       prescription.patient.phone,
       prescription.patient.name,
       prescription.clinic.name,
       pdfDownloadUrl,
-      pdfBase64,
+      finalPdfBase64,
       prescription.clinicId,
       aiTreatmentSummary
     );

@@ -274,16 +274,18 @@ async function dispatchWhatsAppMessage(options: {
     }
   }
 
+  let docResult: any = null;
+
   // 2. If PDF media was uploaded to Meta, dispatch official PDF document
   if (options.documentMediaId) {
     try {
-      return await sendViaMetaCloudAPI({
+      docResult = await sendViaMetaCloudAPI({
         to: cleanPhone,
         type: 'document',
         document: {
           id: options.documentMediaId,
           filename: 'RxNXT_Prescription.pdf',
-          caption: options.template ? '📄 Digital Prescription PDF' : options.messageBody,
+          caption: '📄 Official Prescription PDF (NMC 2023 Compliant)',
         },
       });
     } catch (docErr) {
@@ -291,16 +293,16 @@ async function dispatchWhatsAppMessage(options: {
     }
   }
 
-  // 3. Fallback to direct download link if available
-  if (options.documentUrl) {
+  // 3. Fallback to direct download link if available and mediaId failed
+  if (!docResult && options.documentUrl) {
     try {
-      return await sendViaMetaCloudAPI({
+      docResult = await sendViaMetaCloudAPI({
         to: cleanPhone,
         type: 'document',
         document: {
           link: options.documentUrl,
           filename: 'RxNXT_Prescription.pdf',
-          caption: options.template ? '📄 Digital Prescription PDF' : options.messageBody,
+          caption: '📄 Official Prescription PDF',
         },
       });
     } catch (docErr) {
@@ -308,20 +310,21 @@ async function dispatchWhatsAppMessage(options: {
     }
   }
 
-  // If template already succeeded and there was no document to attach, return template result
-  if (templateResult) {
-    return templateResult;
+  // 4. Also dispatch the rich treatment summary text message so the patient receives both the PDF document AND their dosage instructions!
+  try {
+    const textResult = await sendViaMetaCloudAPI({
+      to: cleanPhone,
+      type: 'text',
+      text: {
+        preview_url: true,
+        body: options.messageBody,
+      },
+    });
+    return docResult || textResult || templateResult;
+  } catch (textErr) {
+    if (docResult) return docResult;
+    throw textErr;
   }
-
-  // 4. Session / Standard rich text dispatch
-  return await sendViaMetaCloudAPI({
-    to: cleanPhone,
-    type: 'text',
-    text: {
-      preview_url: true,
-      body: options.messageBody,
-    },
-  });
 }
 
 
