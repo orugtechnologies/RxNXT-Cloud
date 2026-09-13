@@ -293,7 +293,7 @@ async function dispatchWhatsAppMessage(options: {
     }
   }
 
-  // 3. Fallback to direct download link if available and mediaId failed
+  // 3. Fallback to direct download link if available and mediaId was not used or failed
   if (!docResult && options.documentUrl) {
     try {
       docResult = await sendViaMetaCloudAPI({
@@ -302,11 +302,11 @@ async function dispatchWhatsAppMessage(options: {
         document: {
           link: options.documentUrl,
           filename: 'RxNXT_Prescription.pdf',
-          caption: '📄 Official Prescription PDF',
+          caption: '📄 Official Prescription PDF (NMC 2023 Compliant)',
         },
       });
     } catch (docErr) {
-      console.warn('[Meta WhatsApp] Document media dispatch failed, falling back to rich text message:', docErr);
+      console.warn('[Meta WhatsApp] Document direct link dispatch failed, falling back to rich text message:', docErr);
     }
   }
 
@@ -342,7 +342,8 @@ export async function sendPrescriptionPDF(
   pdfUrl: string,
   pdfBase64?: string,
   clinicId?: string,
-  aiTreatmentSummary?: string
+  aiTreatmentSummary?: string,
+  prescriptionId?: string
 ) {
   const messageBody = aiTreatmentSummary
     ? `Hello ${patientName}, your prescription from *${clinicName}* is ready!\n\n` +
@@ -351,21 +352,24 @@ export async function sendPrescriptionPDF(
     : `Hello ${patientName}, your prescription from ${clinicName} is ready.\n\nGet well soon!`;
 
   let documentMediaId: string | undefined;
-  if (pdfBase64) {
+  if (pdfBase64 && pdfBase64.length > 50) {
     const uploadedId = await uploadPDFToMetaMedia(pdfBase64);
     if (uploadedId) {
       documentMediaId = uploadedId;
     }
   }
 
-  // Only attach documentUrl if it points to a direct downloadable .pdf file
-  const isDirectPdf = Boolean(pdfUrl && pdfUrl.toLowerCase().endsWith('.pdf'));
+  // Construct official direct downloadable PDF link (e.g. https://app.rxnxt.in/api/prescriptions/{id}/pdf)
+  const appBaseUrl = cleanEnv(process.env.NEXT_PUBLIC_APP_URL) || 'https://app.rxnxt.in';
+  const directPdfUrl = prescriptionId
+    ? `${appBaseUrl.replace(/\/$/, '')}/api/prescriptions/${prescriptionId}/pdf`
+    : pdfUrl;
 
   return await dispatchWhatsAppMessage({
     phone: patientPhone,
     messageBody,
     documentMediaId,
-    documentUrl: !documentMediaId && isDirectPdf ? pdfUrl : undefined,
+    documentUrl: directPdfUrl,
     clinicId,
     template: {
       name: 'rxnxt_prescription_ready',

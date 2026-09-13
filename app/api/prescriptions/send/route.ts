@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { sendPrescriptionPDF } from '@/services/whatsappService';
-import { generatePrescriptionPDF } from '@/components/prescriptions/PrescriptionPrintView';
+import { generatePrescriptionBase64 } from '@/lib/prescriptionPdfGenerator';
 
 export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
@@ -82,8 +82,8 @@ export async function POST(request: Request) {
       aiTreatmentSummary += `\n📅 *Next Follow-up Visit:* ${formattedFollowUp}\n`;
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const pdfDownloadUrl = `${baseUrl}/patient/prescription/${prescription.id}/view`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.rxnxt.in';
+    const pdfDirectUrl = `${baseUrl.replace(/\/$/, '')}/api/prescriptions/${prescription.id}/pdf`;
 
     // Ensure PDF Base64 is generated if not sent by client (guaranteed fallback)
     let finalPdfBase64 = pdfBase64;
@@ -92,8 +92,8 @@ export async function POST(request: Request) {
         const doctor = await prisma.user.findUnique({
           where: { id: prescription.doctorId || user.id }
         });
-        finalPdfBase64 = generatePrescriptionPDF({
-          patient: prescription.patient as any,
+        finalPdfBase64 = generatePrescriptionBase64({
+          patient: prescription.patient,
           medicines: (prescription.medicines || []).map(m => ({
             id: m.id,
             name: m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine',
@@ -116,7 +116,7 @@ export async function POST(request: Request) {
           doctorSpecialization: doctor?.specialization || undefined,
           verificationStatus: doctor?.verificationStatus || undefined,
           medicalCouncil: doctor?.medicalCouncil || undefined,
-        }, true) as string;
+        });
       } catch (genErr) {
         console.warn('[Server PDF Gen Warning]:', genErr);
       }
@@ -127,10 +127,11 @@ export async function POST(request: Request) {
       prescription.patient.phone,
       prescription.patient.name,
       prescription.clinic.name,
-      pdfDownloadUrl,
+      pdfDirectUrl,
       finalPdfBase64,
       prescription.clinicId,
-      aiTreatmentSummary
+      aiTreatmentSummary,
+      prescription.id
     );
 
     return NextResponse.json({ success: true, result });
