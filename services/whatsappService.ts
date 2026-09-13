@@ -372,6 +372,60 @@ export async function sendPrescriptionPDF(
     ? `${aiTreatmentSummary} • PDF: ${directPdfUrl}`
     : `Download Prescription PDF: ${directPdfUrl}`;
 
+  const cleanPhone = sanitizePhone(patientPhone);
+
+  // 1. If newly created Document Header template is approved, deliver the actual attached PDF file directly in the chat bubble!
+  const docTemplateCandidates = [
+    { name: 'rxnxt_prescription_doc', lang: 'en' },
+    { name: 'rxnxt_prescription_doc', lang: 'en_US' },
+    { name: 'rxnxt_prescription_do', lang: 'en' },
+    { name: 'rxnxt_prescription_do', lang: 'en_US' },
+  ];
+
+  for (const candidate of docTemplateCandidates) {
+    try {
+      const docResult = await sendViaMetaCloudAPI({
+        to: cleanPhone,
+        type: 'template',
+        template: {
+          name: candidate.name,
+          language: { code: candidate.lang },
+          components: [
+            {
+              type: 'header',
+              parameters: [
+                {
+                  type: 'document',
+                  document: {
+                    link: directPdfUrl,
+                    filename: `Prescription_${sanitizeTemplateParam(patientName).replace(/\s+/g, '_') || 'Patient'}.pdf`,
+                  },
+                },
+              ],
+            },
+            {
+              type: 'body',
+              parameters: [
+                { type: 'text', text: sanitizeTemplateParam(patientName) || 'Patient' },
+                { type: 'text', text: sanitizeTemplateParam(clinicName) || 'Clinic' },
+                { type: 'text', text: sanitizeTemplateParam(aiTreatmentSummary) || 'Prescription ready.' },
+              ],
+            },
+          ],
+        },
+      });
+      if (docResult?.success) {
+        console.log(`[Meta WhatsApp] Successfully delivered attached PDF via template '${candidate.name}' (${candidate.lang})`);
+        return docResult;
+      }
+    } catch (docErr: any) {
+      if (docErr.isTemplateError || docErr.message?.includes('132001') || docErr.message?.includes('template')) {
+        continue;
+      }
+    }
+  }
+
+  // 2. Active Fallback: Use approved rxnxt_prescription_ready with live 1-tap PDF link in parameter 3
   return await dispatchWhatsAppMessage({
     phone: patientPhone,
     messageBody,
