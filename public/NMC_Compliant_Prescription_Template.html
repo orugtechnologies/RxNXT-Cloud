@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NMC-Compliant Medical Prescription Template (Gazette 2023)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --primary: #0369a1;
+      --border-color: #cbd5e1;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      margin: 0;
+      padding: 20px;
+    }
+    .rx-paper {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      padding: 16mm 18mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      position: relative;
+    }
+    @media print {
+      body {
+        background: transparent !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .rx-paper {
+        box-shadow: none !important;
+        margin: 0 !important;
+        width: 100% !important;
+        min-height: 100vh !important;
+        padding: 12mm 15mm !important;
+      }
+    }
+    .rx-symbol {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 28px;
+      font-weight: bold;
+      font-style: italic;
+      color: #0369a1;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-sky-500 selection:text-white">
+
+  <!-- Top Action Bar -->
+  <div class="no-print max-w-[210mm] mx-auto mb-4 flex flex-wrap items-center justify-between gap-3 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-lg">
+    <div class="flex items-center gap-3">
+      <span class="h-8 w-8 rounded-lg bg-sky-500 flex items-center justify-center font-bold text-white text-sm">Rx</span>
+      <div>
+        <h1 class="text-sm font-bold tracking-tight">NMC Gazette 2023 Compliant Prescription Format</h1>
+        <p class="text-xs text-slate-400">P. 76–77 (Guidelines 1 & 2) • P. 108 (Sec 3.7.9) • Telemedicine Guidelines</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="toggleData()" id="toggleBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold border border-slate-700 transition">
+        Switch to Blank Template
+      </button>
+      <button onclick="window.print()" class="px-3.5 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+        Print / PDF
+      </button>
+      <button onclick="downloadSelf()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 shadow transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Download HTML
+      </button>
+    </div>
+  </div>
+
+  <!-- A4 Prescription Sheet -->
+  <div class="rx-paper border border-slate-300 rounded-sm">
+
+    <!-- TOP SECTION: CLINIC / DOCTOR HEADER (Mandatory under P. 70, 77, 104, 108) -->
+    <div>
+      <div class="flex justify-between items-start border-b-2 border-sky-700 pb-3">
+        <div>
+          <!-- Doctor Name & Accredited Qualifications (Reg 3.B, P. 70 & P. 108) -->
+          <h2 id="docName" class="text-xl font-black text-slate-900 tracking-tight">DR. ARVIND SHARMA</h2>
+          <p id="docQual" class="text-xs font-semibold text-sky-800">MBBS, MD (General Medicine) <span class="text-slate-500 font-normal">[NMC Recognized]</span></p>
+          <p class="text-[11px] text-slate-600 font-medium">Consultant Physician</p>
+          <!-- NMC & State Registration Number (Reg 3.A, P. 70; Sec 1.7, P. 104; P. 108) -->
+          <p class="text-xs font-bold text-slate-900 mt-1">
+            NMC / State Council Reg. No.: <span id="docReg" class="font-mono text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200">MCI-19842-TS</span>
+          </p>
+        </div>
+
+        <div class="text-right text-xs text-slate-600 space-y-0.5">
+          <p id="clinicName" class="font-bold text-slate-900 text-sm">LIFECARE CLINIC & DIAGNOSTICS</p>
+          <p id="clinicAddr">Plot 42, Road No. 3, Banjara Hills, Hyderabad, Telangana - 500034</p>
+          <p><strong>Emergency / Clinic Phone:</strong> <span id="clinicPhone" class="font-mono text-slate-800">+91 98765 43210</span></p>
+          <p><strong>Email:</strong> dr.sharma@lifecareclinic.in | <strong>Web:</strong> www.lifecareclinic.in</p>
+          <p class="text-[10px] text-slate-500">Timings: Mon–Sat: 09:00 AM – 01:00 PM & 05:00 PM – 08:30 PM</p>
+        </div>
+      </div>
+
+      <!-- PATIENT IDENTIFICATION & CONSULTATION DETAILS (Mandatory under P. 77 & P. 108) -->
+      <div class="grid grid-cols-4 gap-y-2 gap-x-4 py-3 border-b border-slate-200 text-xs bg-slate-50/70 px-3 mt-2 rounded">
+        <div>
+          <span class="text-slate-500 font-medium">Patient Name:</span>
+          <p id="patName" class="font-bold text-slate-900">MR. RAMESH REDDY</p>
+        </div>
+        <div>
+          <span class="text-slate-500 font-medium">Age / Sex:</span>
+          <p id="patAgeSex" class="font-bold text-slate-900">45 Yrs / Male</p>
+        </div>
+        <div>
+          <span class="text-slate-500 font-medium">Patient ID / UHID:</span>
+          <p id="patId" class="font-mono text-slate-800">LC-2026-8841</p>
+        </div>
+        <div>
+          <span class="text-slate-500 font-medium">Date & Time:</span>
+          <p id="rxDateTime" class="font-medium text-slate-900">13-Sep-2026 | 05:45 PM</p>
+        </div>
+
+        <div>
+          <span class="text-slate-500 font-medium">Weight / Height:</span>
+          <p id="patVitals" class="text-slate-800">74 kg / 172 cm (BMI: 25.0)</p>
+        </div>
+        <div>
+          <span class="text-slate-500 font-medium">Contact (WhatsApp):</span>
+          <p id="patPhone" class="font-mono text-slate-800">+91 94401 23456</p>
+        </div>
+        <div>
+          <span class="text-slate-500 font-medium">Place of Consultation:</span>
+          <p id="rxPlace" class="text-slate-800">Hyderabad (In-Clinic / Teleconsult)</p>
+        </div>
+        <div>
+          <span class="text-slate-500 font-medium">Minor / Guardian ID:</span>
+          <p id="patGuardian" class="text-slate-600">N/A (Adult Patient)</p>
+        </div>
+      </div>
+
+      <!-- CLINICAL SUMMARY & PROVISIONAL DIAGNOSIS (Mandatory under P. 77) -->
+      <div class="py-2.5 border-b border-slate-200 flex items-start gap-4 text-xs">
+        <div class="flex-1">
+          <span class="font-bold text-slate-700 uppercase tracking-wider text-[11px]">Provisional Diagnosis / Clinical Indication:</span>
+          <p id="clinicalDiagnosis" class="font-semibold text-slate-900 mt-0.5">
+            Essential Hypertension (Stage 1) with Mild Bronchial Asthma (Stable)
+          </p>
+        </div>
+        <div class="text-right text-[11px] text-slate-500">
+          <span>Vitals: BP: <strong>142/90 mmHg</strong> | Pulse: <strong>76/min</strong> | SpO2: <strong>99%</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIDDLE SECTION: PRESCRIPTION TABLE (Rx) (Strict adherence to P. 76-77 Guideline 1 & 2 and P. 108 Sec 3.7.9) -->
+    <div class="my-3 flex-1">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="rx-symbol">℞</span>
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">
+          Prescribed Medications (Generic Names in CAPITALS — NMC Guideline-1 & 2)
+        </span>
+      </div>
+
+      <table class="w-full text-left text-xs border border-slate-200 rounded overflow-hidden">
+        <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200 text-[11px]">
+          <tr>
+            <th class="py-2 px-2.5 w-8 text-center">#</th>
+            <th class="py-2 px-3">Formulation & Drug Name (GENERIC IN CAPITALS)</th>
+            <th class="py-2 px-3 w-20">Strength</th>
+            <th class="py-2 px-3 w-36">Dosage & Frequency</th>
+            <th class="py-2 px-3 w-20 text-center">Duration</th>
+            <th class="py-2 px-3">Instructions / Timing</th>
+          </tr>
+        </thead>
+        <tbody id="medTableBody" class="divide-y divide-slate-200 text-slate-800">
+          <!-- Drug 1 -->
+          <tr>
+            <td class="py-2.5 px-2.5 text-center font-bold text-slate-400">1</td>
+            <td class="py-2.5 px-3">
+              <span class="font-bold text-slate-900 tracking-wide">TAB. TELMISARTAN</span>
+              <p class="text-[10px] text-slate-500 italic">Antihypertensive (Angiotensin II Receptor Blocker)</p>
+            </td>
+            <td class="py-2.5 px-3 font-mono">40 mg</td>
+            <td class="py-2.5 px-3">
+              <span class="font-bold text-slate-900">1 - 0 - 0</span>
+              <span class="text-[11px] text-slate-600">(Once daily in morning)</span>
+            </td>
+            <td class="py-2.5 px-3 text-center font-semibold">30 Days</td>
+            <td class="py-2.5 px-3 text-[11px] text-slate-600">
+              Take daily after breakfast. Do not miss dose.
+            </td>
+          </tr>
+
+          <!-- Drug 2 -->
+          <tr>
+            <td class="py-2.5 px-2.5 text-center font-bold text-slate-400">2</td>
+            <td class="py-2.5 px-3">
+              <span class="font-bold text-slate-900 tracking-wide">TAB. AMLODIPINE</span>
+              <p class="text-[10px] text-slate-500 italic">Calcium Channel Blocker</p>
+            </td>
+            <td class="py-2.5 px-3 font-mono">5 mg</td>
+            <td class="py-2.5 px-3">
+              <span class="font-bold text-slate-900">0 - 0 - 1</span>
+              <span class="text-[11px] text-slate-600">(Once daily at bedtime)</span>
+            </td>
+            <td class="py-2.5 px-3 text-center font-semibold">30 Days</td>
+            <td class="py-2.5 px-3 text-[11px] text-slate-600">
+              Take at night after dinner.
+            </td>
+          </tr>
+
+          <!-- Drug 3 -->
+          <tr>
+            <td class="py-2.5 px-2.5 text-center font-bold text-slate-400">3</td>
+            <td class="py-2.5 px-3">
+              <span class="font-bold text-slate-900 tracking-wide">INHALER BUDESONIDE + FORMOTEROL</span>
+              <p class="text-[10px] text-slate-500 italic">Metered Dose Inhaler (Approved Rational Combination)</p>
+            </td>
+            <td class="py-2.5 px-3 font-mono">200/6 mcg</td>
+            <td class="py-2.5 px-3">
+              <span class="font-bold text-slate-900">1 puff BID</span>
+              <span class="text-[11px] text-slate-600">(Morning & Night)</span>
+            </td>
+            <td class="py-2.5 px-3 text-center font-semibold">30 Days</td>
+            <td class="py-2.5 px-3 text-[11px] text-slate-600">
+              Rinse mouth thoroughly with water after inhalation.
+            </td>
+          </tr>
+
+          <!-- Drug 4 (OTC / List O Sample) -->
+          <tr>
+            <td class="py-2.5 px-2.5 text-center font-bold text-slate-400">4</td>
+            <td class="py-2.5 px-3">
+              <span class="font-bold text-slate-900 tracking-wide">TAB. PARACETAMOL</span>
+              <p class="text-[10px] text-slate-500 italic">Analgesic / Antipyretic [List O - Safe OTC]</p>
+            </td>
+            <td class="py-2.5 px-3 font-mono">650 mg</td>
+            <td class="py-2.5 px-3">
+              <span class="font-bold text-slate-900">SOS</span>
+              <span class="text-[11px] text-slate-600">(As needed for fever/pain)</span>
+            </td>
+            <td class="py-2.5 px-3 text-center font-semibold">3 Days</td>
+            <td class="py-2.5 px-3 text-[11px] text-slate-600">
+              Take with food. Minimum 6 hours between doses. Max 3/day.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- GENERAL ADVICE, INVESTIGATIONS & REVIEW (Mandatory under P. 77 Guideline-2) -->
+      <div class="mt-3 grid grid-cols-2 gap-4 text-xs">
+        <div class="border border-slate-200 rounded p-2.5 bg-slate-50/50">
+          <span class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">Advice, Diet & Lifestyle Counseling:</span>
+          <ul id="adviceList" class="list-disc list-inside text-slate-700 mt-1 space-y-0.5 text-[11px]">
+            <li>Low sodium diet (less than 5 grams table salt per day).</li>
+            <li>Daily brisk walking for 30–40 minutes; avoid strenuous exertion in cold air.</li>
+            <li>Monitor Blood Pressure weekly in home log; record morning and evening values.</li>
+            <li>Generic equivalents available at Pradhan Mantri Jan Aushadhi Kendras.</li>
+          </ul>
+        </div>
+
+        <div class="border border-slate-200 rounded p-2.5 bg-slate-50/50 flex flex-col justify-between">
+          <div>
+            <span class="font-bold text-slate-800 uppercase tracking-wide text-[10px]">Investigations Advised:</span>
+            <p id="investigations" class="text-slate-700 mt-1 text-[11px]">
+              Serum Creatinine, Blood Urea, Serum Electrolytes (Na+, K+), Fasting Lipid Profile.
+            </p>
+          </div>
+          <div class="mt-2 pt-1.5 border-t border-slate-200 flex justify-between items-center font-semibold text-slate-900 text-[11px]">
+            <span>Repeat Prescription: <span class="text-red-600 font-bold">NOT TO BE REPEATED</span></span>
+            <span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300">
+              Review: After 30 Days (or SOS)
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM SECTION: SIGNATURE, STAMP & STATUTORY LEGAL FOOTNOTE (P. 73 Reg 28, P. 77, P. 108 Sec 3.7.9) -->
+    <div class="pt-3 border-t-2 border-slate-800 mt-auto">
+      <div class="flex justify-between items-end mb-3">
+        <div class="text-[10px] text-slate-500 max-w-md space-y-1">
+          <p><strong>Dispensing Instructions:</strong> Pharmacist shall dispense generic formulations matching active pharmacological ingredient, strength, and dosage form.</p>
+          <p><strong>Patient Right:</strong> Patient has full freedom of choice to procure medications from any licensed pharmacy or Jan Aushadhi Kendra.</p>
+        </div>
+
+        <!-- Doctor Signature Block with Name, Stamp, Reg No, Date (Mandatory under Reg 28 & P. 108) -->
+        <div class="text-right flex flex-col items-end">
+          <div class="w-44 h-12 border-b border-slate-400 flex items-center justify-center relative">
+            <!-- Simulated Signature / Stamp -->
+            <span class="font-serif italic text-sky-800 text-lg tracking-wider opacity-85">Arvind Sharma</span>
+            <div class="absolute right-0 top-0 border border-sky-400/50 rounded-full px-1 text-[8px] text-sky-600 uppercase font-mono tracking-tighter">
+              Verified e-Sign
+            </div>
+          </div>
+          <p class="font-bold text-slate-900 text-xs mt-1">DR. ARVIND SHARMA, MD</p>
+          <p class="text-[10px] text-slate-600">NMC / State Reg No: <strong>MCI-19842-TS</strong></p>
+          <p class="text-[10px] text-slate-500">Date: 13-Sep-2026 | Stamp Affixed</p>
+        </div>
+      </div>
+
+      <!-- Mandatory Statutory Footnote (Verbatim Compliance from Page 108 Sec 3.7.9) -->
+      <div class="bg-slate-100 p-2 rounded text-[9.5px] text-slate-600 border border-slate-200 leading-tight">
+        <div class="flex justify-between items-center font-bold text-slate-700 mb-0.5">
+          <span>STATUTORY VALIDITY & COMPLIANCE NOTICE (NMC Gazette Aug 2023, P. 108, Sec 3.7.9)</span>
+          <span class="text-sky-700">Digital / WhatsApp e-Prescription</span>
+        </div>
+        <p>
+          • <strong>Validity:</strong> This e-prescription is legally valid for <strong>two (2) weeks</strong> from the date of issue or once a registered pharmacist dispenses the prescribed medications, whichever is earlier.
+        </p>
+        <p>
+          • <strong>Printout Not Mandatory:</strong> As per NMC Telemedicine Regulations, a clear photograph, scanned, or digital PDF copy of this duly signed prescription conveyed over messaging platforms (WhatsApp/Email) is legally valid for dispensing without requiring a physical printout.
+        </p>
+        <p>
+          • <strong>Prohibited Categories:</strong> This prescription does not contain any Schedule X drugs or Narcotic/Psychotropic substances under the NDPS Act, 1985.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    let isBlank = false;
+
+    const sampleData = {
+      docName: "DR. ARVIND SHARMA",
+      docQual: "MBBS, MD (General Medicine) [NMC Recognized]",
+      docReg: "MCI-19842-TS",
+      clinicName: "LIFECARE CLINIC & DIAGNOSTICS",
+      clinicAddr: "Plot 42, Road No. 3, Banjara Hills, Hyderabad, Telangana - 500034",
+      clinicPhone: "+91 98765 43210",
+      patName: "MR. RAMESH REDDY",
+      patAgeSex: "45 Yrs / Male",
+      patId: "LC-2026-8841",
+      rxDateTime: "13-Sep-2026 | 05:45 PM",
+      patVitals: "74 kg / 172 cm (BMI: 25.0)",
+      patPhone: "+91 94401 23456",
+      rxPlace: "Hyderabad (In-Clinic / Teleconsult)",
+      patGuardian: "N/A (Adult Patient)",
+      clinicalDiagnosis: "Essential Hypertension (Stage 1) with Mild Bronchial Asthma (Stable)"
+    };
+
+    function toggleData() {
+      isBlank = !isBlank;
+      const btn = document.getElementById("toggleBtn");
+      const tbody = document.getElementById("medTableBody");
+
+      if (isBlank) {
+        btn.innerText = "Load Sample Clinical Data";
+        document.getElementById("patName").innerText = "___________________________";
+        document.getElementById("patAgeSex").innerText = "___ Yrs / ___";
+        document.getElementById("patId").innerText = "________________";
+        document.getElementById("rxDateTime").innerText = "Date: ___/___/2026 Time: ____";
+        document.getElementById("patVitals").innerText = "Wt: ___ kg / Ht: ___ cm";
+        document.getElementById("patPhone").innerText = "+91 ________________";
+        document.getElementById("patGuardian").innerText = "________________";
+        document.getElementById("clinicalDiagnosis").innerText = "________________________________________________________________";
+        document.getElementById("investigations").innerText = "________________________________________________________________";
+        document.getElementById("adviceList").innerHTML = "<li>_____________________________________________________</li><li>_____________________________________________________</li>";
+
+        // Blank rows in table
+        tbody.innerHTML = `
+          <tr>
+            <td class="py-3 px-2 text-center text-slate-400">1</td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+          </tr>
+          <tr>
+            <td class="py-3 px-2 text-center text-slate-400">2</td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+          </tr>
+          <tr>
+            <td class="py-3 px-2 text-center text-slate-400">3</td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+            <td class="py-3 px-3"><div class="h-4 border-b border-slate-300"></div></td>
+          </tr>
+        `;
+      } else {
+        location.reload();
+      }
+    }
+
+    function downloadSelf() {
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'NMC_Compliant_Prescription_Template.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RxNXT Compliance Analysis — NMC Regulations 2023</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --secondary: #0d9488;
+      --accent: #6366f1;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0b0f19;
+      color: #f1f5f9;
+      overflow-x: hidden;
+    }
+    .slide {
+      display: none;
+      min-height: calc(100vh - 120px);
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .badge-compliant {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .badge-conditional {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .slide {
+        display: block !important;
+        page-break-after: always;
+        min-height: auto;
+        padding: 20px 0;
+      }
+      .glass-panel {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #000000 !important;
+      }
+    }
+  </style>
+</head>
+<body class="selection:bg-sky-500 selection:text-white">
+
+  <!-- Top Presentation Toolbar -->
+  <header class="no-print sticky top-0 z-50 glass-panel border-b border-slate-800 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-sky-500 to-teal-400 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-sky-500/20">
+        Rx
+      </div>
+      <div>
+        <h1 class="text-sm font-bold tracking-tight text-white flex items-center gap-2">
+          RxNXT Regulatory Assessment
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-medium border border-sky-500/30">NMC 2023 Guidelines</span>
+        </h1>
+        <p class="text-xs text-slate-400">Gazette Notification Analysis (P. 70–124) • WhatsApp Rx & Reminders</p>
+      </div>
+    </div>
+
+    <!-- Slide Navigation Controls -->
+    <div class="flex items-center gap-2">
+      <button id="prevBtn" onclick="prevSlide()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 border border-slate-700 transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Prev
+      </button>
+
+      <span id="slideCounter" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-sky-400 font-bold min-w-[75px] text-center">
+        1 / 8
+      </span>
+
+      <button id="nextBtn" onclick="nextSlide()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 border border-slate-700 transition">
+        Next
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </button>
+
+      <div class="h-4 w-[1px] bg-slate-800 mx-1"></div>
+
+      <!-- Jump dropdown -->
+      <select id="slideJump" onchange="goToSlide(parseInt(this.value))" class="text-xs bg-slate-800 text-slate-300 rounded-lg px-2 py-1.5 border border-slate-700 focus:outline-none focus:border-sky-500">
+        <option value="0">1. Executive Summary</option>
+        <option value="1">2. Legal Foundation</option>
+        <option value="2">3. PDF Rx via WhatsApp</option>
+        <option value="3">4. WhatsApp Reminders</option>
+        <option value="4">5. RxNXT Compliance Matrix</option>
+        <option value="5">6. RxNXT vs Aggregators</option>
+        <option value="6">7. Doctor's Checklist</option>
+        <option value="7">8. Summary & Status</option>
+      </select>
+
+      <div class="h-4 w-[1px] bg-slate-800 mx-1"></div>
+
+      <!-- Action Buttons -->
+      <button onclick="downloadSelf()" title="Download Presentation HTML File" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-teal-500/20 transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Download Presentation
+      </button>
+
+      <button onclick="window.print()" title="Print / Export PDF" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1 border border-slate-700 transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+        Print / PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Presentation Container -->
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+    <!-- SLIDE 1: TITLE & EXECUTIVE SUMMARY -->
+    <section id="slide-0" class="slide active justify-between">
+      <div class="my-auto space-y-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          National Medical Commission (NMC) Gazette Review
+        </div>
+
+        <div>
+          <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            Compliance Evaluation of <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-teal-300 to-emerald-400">RxNXT</span>
+          </h1>
+          <p class="mt-4 text-lg text-slate-300 max-w-3xl leading-relaxed">
+            A comprehensive regulatory assessment under the <span class="text-sky-300 font-semibold">NMC Registered Medical Practitioner (Professional Conduct) Regulations, 2023</span> (Notification dated Aug 2, 2023, Pages 70–124) and India’s Telemedicine Practice Guidelines.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+          <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-emerald-500">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs uppercase font-bold tracking-wider text-emerald-400">Question 1</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold badge-compliant">100% Permitted</span>
+            </div>
+            <h2 class="text-lg font-bold text-white mb-2">Can PDF Prescriptions be sent via WhatsApp?</h2>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              <strong class="text-emerald-300">YES.</strong> Section 3.7.9 (Page 108) explicitly sanctions transmitting digital copies (e-prescriptions) over messaging platforms like WhatsApp without requiring any paper printout.
+            </p>
+          </div>
+
+          <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-sky-500">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs uppercase font-bold tracking-wider text-sky-400">Question 2</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold badge-compliant">Fully Permitted</span>
+            </div>
+            <h2 class="text-lg font-bold text-white mb-2">Can Medication Reminders be sent via WhatsApp?</h2>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              <strong class="text-sky-300">YES.</strong> Recognized under Section 3.7 & 1.3(c) as critical components of <em class="text-white">patient counseling, adherence, and continuity of care</em>, provided communication is 1-to-1 and non-commercial.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-8 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+        <div>Evaluation Target: <strong>RxNXT (rxnxt.in)</strong> • Digital Prescriptions & Adherence</div>
+        <div>Press <kbd class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">Space</kbd> or <kbd class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">→</kbd> to navigate</div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: LEGAL FOUNDATION -->
+    <section id="slide-1" class="slide">
+      <div class="space-y-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Regulatory Framework</span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">Statutory Backbone in the Gazette (Pages 70–124)</h2>
+          <p class="text-slate-400 text-sm mt-1">The gazette is split into Hindi (P. 1–69) and English (P. 70–124). Telemedicine & messaging are governed under Chapter 2 & Guideline-11.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="glass-panel p-5 rounded-xl border border-slate-800">
+            <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold mb-3">1</div>
+            <h3 class="text-base font-bold text-white mb-1">Tools for Telemedicine</h3>
+            <span class="text-xs font-mono text-sky-400">Page 100, Sec 1.4 & 2.1</span>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+              NMC classifies tools into Video, Audio, and Text. WhatsApp is explicitly cited: <em>"General messaging/text/chat platforms (WhatsApp, Google Hangouts, Facebook Messenger etc.)"</em>.
+            </p>
+          </div>
+
+          <div class="glass-panel p-5 rounded-xl border border-slate-800">
+            <div class="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold mb-3">2</div>
+            <h3 class="text-base font-bold text-white mb-1">Electronic ID Display</h3>
+            <span class="text-xs font-mono text-teal-400">Page 104, Sec 1.7</span>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+              <em>"Every RMP shall display the registration number accorded by the State Medical Council or NMC on all prescriptions, website, electronic communications (WhatsApp/email etc.)"</em>.
+            </p>
+          </div>
+
+          <div class="glass-panel p-5 rounded-xl border border-slate-800">
+            <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold mb-3">3</div>
+            <h3 class="text-base font-bold text-white mb-1">Public vs Private Messaging</h3>
+            <span class="text-xs font-mono text-indigo-400">Page 82, Guideline-6</span>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+              RMPs are barred from prescribing on <strong>public</strong> social media forums. However, private 1-to-1 encrypted transmission via WhatsApp directly to the consulting patient is fully sanctioned.
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-panel p-5 rounded-xl bg-slate-900/60 border border-slate-800">
+          <h4 class="text-sm font-bold text-sky-300 mb-2 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Regulation 29 (Page 73) & Telemedicine Practice Guidelines
+          </h4>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Regulation 29 explicitly recognizes telemedicine consultations conducted in compliance with the Telemedicine Guidelines. Both the 2020 Guidelines and the 2023 Gazette maintain complete consistency regarding the legality of e-prescriptions transmitted via electronic channels.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: PDF PRESCRIPTIONS VIA WHATSAPP -->
+    <section id="slide-2" class="slide">
+      <div class="space-y-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Deep Dive: Prescriptions</span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">Transmitting PDF Prescriptions via WhatsApp</h2>
+          <p class="text-slate-400 text-sm mt-1">Verification against Section 3.7.9 (Page 108) of the NMC Gazette Notification.</p>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-emerald-500">
+          <h3 class="text-sm font-mono text-emerald-400 uppercase tracking-wide">Direct Gazette Excerpt (Page 108)</h3>
+          <blockquote class="text-base md:text-lg text-slate-100 font-medium italic mt-2 leading-relaxed border-l-2 border-slate-700 pl-4 py-1">
+            "RMPs shall provide a clear photograph, scanned or digital copy of a duly signed prescription (e-Prescription) to the patient via email or over any other messaging platform with their full name, qualifications and registration number with the State medical council or the Indian Medical register clearly visible on the prescription. There is no need to take print out of the e-prescription."
+          </blockquote>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="glass-panel p-5 rounded-xl border border-slate-800 space-y-3">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              Statutory Requirements for the PDF
+            </h4>
+            <ul class="text-xs text-slate-300 space-y-2">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">✓</span>
+                <span><strong>RMP Identifiers:</strong> Full Name, Qualifications, Clinic/Hospital Address, Contact Info, and NMC/SMC Reg No.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">✓</span>
+                <span><strong>Patient Details:</strong> Full Name, Age, Sex, Contact Details, and Date/Time/Place of consultation.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">✓</span>
+                <span><strong>Generic Names:</strong> Prescribe using generic names in CAPITAL letters with formulation, dose, frequency, and duration.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">✓</span>
+                <span><strong>Signature:</strong> Duly signed (scanned or authenticated digital signature) with official stamp.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="glass-panel p-5 rounded-xl border border-slate-800 space-y-3">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+              Validity & Operational Rules
+            </h4>
+            <ul class="text-xs text-slate-300 space-y-2">
+              <li class="flex items-start gap-2">
+                <span class="text-sky-400 font-bold">✓</span>
+                <span><strong>No Physical Printout:</strong> The digital PDF received via WhatsApp is legally sufficient for pharmacists to dispense medicines.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-sky-400 font-bold">✓</span>
+                <span><strong>Validity Window:</strong> Valid for <strong>2 weeks</strong> from issue or until dispensed once by the pharmacist.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-sky-400 font-bold">✓</span>
+                <span><strong>Pharmacy Choice:</strong> Direct transfer to a third-party pharmacy cannot be automated without explicit patient consent.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-amber-400 font-bold">⚠</span>
+                <span><strong>Prohibited Drugs:</strong> Cannot prescribe Schedule X drugs or NDPS narcotics over telemedicine/electronic prescriptions.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: WHATSAPP MEDICATION REMINDERS -->
+    <section id="slide-3" class="slide">
+      <div class="space-y-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-teal-400">Deep Dive: Adherence & Reminders</span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">Medication Reminders via WhatsApp</h2>
+          <p class="text-slate-400 text-sm mt-1">Enabling treatment adherence while maintaining statutory clinical boundaries.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="glass-panel p-5 rounded-xl border border-slate-800">
+            <div class="text-2xl mb-2">⏱️</div>
+            <h3 class="text-sm font-bold text-white mb-1">Continuity of Care</h3>
+            <span class="text-xs font-mono text-teal-400">Page 109, Sec 1.3(c)</span>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+              NMC mandates doctors to take proactive steps to promote continuity of care and ensure patients adhere to the treatment plan. Scheduled reminders directly serve this ethical objective.
+            </p>
+          </div>
+
+          <div class="glass-panel p-5 rounded-xl border border-slate-800">
+            <div class="text-2xl mb-2">📋</div>
+            <h3 class="text-sm font-bold text-white mb-1">Patient Counseling</h3>
+            <span class="text-xs font-mono text-teal-400">Page 106, Sec 3.7.3</span>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+              Defines counseling as specific instructions on dos and don'ts, timely intake, and following through on the medical regimen prescribed during the consultation.
+            </p>
+          </div>
+
+          <div class="glass-panel p-5 rounded-xl border border-slate-800">
+            <div class="text-2xl mb-2">🔒</div>
+            <h3 class="text-sm font-bold text-white mb-1">Doctor-Only Authority</h3>
+            <span class="text-xs font-mono text-teal-400">Page 116, Sec 5.7</span>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+              AI/tech platforms are strictly forbidden from prescribing or dispensing medical advice autonomously. Reminders must only relay the exact regimen authored by the RMP.
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl border border-slate-800 bg-slate-900/40 space-y-4">
+          <h4 class="text-sm font-bold text-sky-400 uppercase tracking-wider">Guardrails for 100% WhatsApp Reminder Compliance</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-300">
+            <div class="flex items-start gap-2 bg-slate-800/40 p-3 rounded-lg border border-slate-700/50">
+              <span class="text-emerald-400 text-sm font-bold">1.</span>
+              <div>
+                <strong class="text-white">Opt-in / Direct Number:</strong> Sent strictly to the patient's verified mobile number given during intake (implied consent for treatment management).
+              </div>
+            </div>
+            <div class="flex items-start gap-2 bg-slate-800/40 p-3 rounded-lg border border-slate-700/50">
+              <span class="text-emerald-400 text-sm font-bold">2.</span>
+              <div>
+                <strong class="text-white">Confidential 1-to-1 Channel:</strong> Never send health notifications in groups or shared family links without authorization (Reg. 24).
+              </div>
+            </div>
+            <div class="flex items-start gap-2 bg-slate-800/40 p-3 rounded-lg border border-slate-700/50">
+              <span class="text-emerald-400 text-sm font-bold">3.</span>
+              <div>
+                <strong class="text-white">Zero Commercial Solicitation:</strong> Never bundle pharmacy discount codes, commercial brand promotions, or clinic referral links (Reg. 7 & 10).
+              </div>
+            </div>
+            <div class="flex items-start gap-2 bg-slate-800/40 p-3 rounded-lg border border-slate-700/50">
+              <span class="text-emerald-400 text-sm font-bold">4.</span>
+              <div>
+                <strong class="text-white">Doctor Identification:</strong> Header or footer clearly identifying the consulting doctor and their registration number (Sec. 1.7).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: RXNXT COMPLIANCE MATRIX -->
+    <section id="slide-4" class="slide">
+      <div class="space-y-5">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Benchmarking</span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">RxNXT Feature-by-Feature Compliance Matrix</h2>
+          <p class="text-slate-400 text-sm mt-1">Systematic evaluation of RxNXT's core capabilities against NMC 2023 regulations.</p>
+        </div>
+
+        <div class="glass-panel rounded-2xl overflow-hidden border border-slate-800">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-900 text-slate-300 uppercase tracking-wider font-semibold border-b border-slate-800">
+                <tr>
+                  <th class="p-3.5">RxNXT Feature</th>
+                  <th class="p-3.5">NMC Rule Citation</th>
+                  <th class="p-3.5">Compliance Mechanism</th>
+                  <th class="p-3.5 text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 text-slate-300">
+                <tr class="hover:bg-slate-800/30">
+                  <td class="p-3.5 font-semibold text-white">Digital Prescription Generation</td>
+                  <td class="p-3.5 font-mono text-sky-400">Page 108 (Sec 3.7.9)</td>
+                  <td class="p-3.5">Doctor types prescription in clinic; generates standardized digital document.</td>
+                  <td class="p-3.5 text-center"><span class="px-2.5 py-1 rounded-full badge-compliant font-bold">Compliant</span></td>
+                </tr>
+                <tr class="hover:bg-slate-800/30">
+                  <td class="p-3.5 font-semibold text-white">Direct WhatsApp Rx Delivery</td>
+                  <td class="p-3.5 font-mono text-sky-400">Page 100, 102 & 108</td>
+                  <td class="p-3.5">Dispatches e-prescription directly to patient's WhatsApp without 3rd-party app install.</td>
+                  <td class="p-3.5 text-center"><span class="px-2.5 py-1 rounded-full badge-compliant font-bold">Compliant</span></td>
+                </tr>
+                <tr class="hover:bg-slate-800/30">
+                  <td class="p-3.5 font-semibold text-white">Scheduled WhatsApp Dose Reminders</td>
+                  <td class="p-3.5 font-mono text-sky-400">Page 106 & 109 (1.3.c)</td>
+                  <td class="p-3.5">Automates intake reminders based solely on the doctor's prescribed schedule.</td>
+                  <td class="p-3.5 text-center"><span class="px-2.5 py-1 rounded-full badge-compliant font-bold">Compliant</span></td>
+                </tr>
+                <tr class="hover:bg-slate-800/30">
+                  <td class="p-3.5 font-semibold text-white">No AI/Platform Prescribing</td>
+                  <td class="p-3.5 font-mono text-sky-400">Page 116 (Sec 5.7)</td>
+                  <td class="p-3.5">RMP holds exclusive control over clinical entries; RxNXT only handles delivery.</td>
+                  <td class="p-3.5 text-center"><span class="px-2.5 py-1 rounded-full badge-compliant font-bold">Compliant</span></td>
+                </tr>
+                <tr class="hover:bg-slate-800/30">
+                  <td class="p-3.5 font-semibold text-white">Non-Aggregator Architecture</td>
+                  <td class="p-3.5 font-mono text-sky-400">Page 116 (Sec 5.2) & Reg 7</td>
+                  <td class="p-3.5">Private clinical tool for existing patients; no public doctor rankings or reviews.</td>
+                  <td class="p-3.5 text-center"><span class="px-2.5 py-1 rounded-full badge-compliant font-bold">Compliant</span></td>
+                </tr>
+                <tr class="hover:bg-slate-800/30">
+                  <td class="p-3.5 font-semibold text-white">Prescription Fields & Reg No.</td>
+                  <td class="p-3.5 font-mono text-sky-400">Page 76-77 & Page 104</td>
+                  <td class="p-3.5">Prescription template must mandate doctor's NMC Reg No. and capital generic names.</td>
+                  <td class="p-3.5 text-center"><span class="px-2.5 py-1 rounded-full badge-conditional font-bold">Conditional*</span></td>
+                </tr>
+                <tr class="hover:bg-slate-800/30">
+                  <td class="p-3.5 font-semibold text-white">3-Year Medical Record Retention</td>
+                  <td class="p-3.5 font-mono text-sky-400">Page 72 (Reg 13) & Page 106</td>
+                  <td class="p-3.5">Cloud infrastructure must securely store consultation and Rx logs for ≥ 3 years.</td>
+                  <td class="p-3.5 text-center"><span class="px-2.5 py-1 rounded-full badge-conditional font-bold">Conditional*</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="p-3 bg-slate-900/80 text-[11px] text-slate-400 border-t border-slate-800">
+            * <em>Conditional:</em> Compliant when configured properly by the platform/doctor (incorporating registration numbers and maintaining multi-year cloud logs).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: RXNXT VS AGGREGATORS -->
+    <section id="slide-5" class="slide">
+      <div class="space-y-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-indigo-400">Architecture Advantage</span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">Why RxNXT Avoids Aggregator Pitfalls</h2>
+          <p class="text-slate-400 text-sm mt-1">Understanding Section 5.2 (Page 116) and Regulation 7 (Page 71) on patient solicitation.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-rose-500 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-bold text-white">Aggregators (Practo, Lybrate, etc.)</h3>
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">Regulatory Risks</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Open healthcare discovery marketplaces face severe compliance challenges under the 2023 Guidelines:
+            </p>
+            <ul class="text-xs text-slate-300 space-y-2 pt-2">
+              <li class="flex items-start gap-2">
+                <span class="text-rose-400 font-bold">✕</span>
+                <span><strong>Doctor Ratings & Reviews:</strong> Section 5.2 explicitly bars doctors from participating in platforms with user reviews or star ratings.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-rose-400 font-bold">✕</span>
+                <span><strong>Search Algorithm Promotions:</strong> Regulation 5 (P. 82) prohibits paying to be prioritized at top of doctor directories.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-rose-400 font-bold">✕</span>
+                <span><strong>Patient Solicitation / Commission:</strong> Regulation 7 & 9 forbid fee splitting and soliciting patients via agents/lead-gen platforms.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-emerald-500 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-bold text-white">RxNXT (Private Workflow SaaS)</h3>
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Fully Safe</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              RxNXT functions purely as a clinical utility and engagement tool for the doctor's existing clinic practice:
+            </p>
+            <ul class="text-xs text-slate-300 space-y-2 pt-2">
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">✓</span>
+                <span><strong>No Public Directory:</strong> Not a consumer marketplace; does not host public ratings or commercial advertisements.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">✓</span>
+                <span><strong>Established Relationship:</strong> Used strictly between the doctor and their own consulting patients (Implied Consent).</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <span class="text-emerald-400 font-bold">✓</span>
+                <span><strong>Pure Adherence Focus:</strong> Designed to bridge the gap between prescribing and treatment completion, fulfilling NMC continuity rules.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="glass-panel p-4 rounded-xl text-center text-xs text-slate-300 bg-slate-900/60 border border-slate-800">
+          💡 <strong>Key Takeaway:</strong> By positioning itself as an EMR engagement layer rather than a doctor discovery marketplace, RxNXT provides doctors with safe, compliant technology infrastructure.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: DOCTOR'S CHECKLIST FOR RXNXT -->
+    <section id="slide-6" class="slide">
+      <div class="space-y-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Action Plan</span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">5-Point Compliance Checklist for Doctors Using RxNXT</h2>
+          <p class="text-slate-400 text-sm mt-1">Best practices to maintain flawless compliance while utilizing RxNXT in daily practice.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-full bg-sky-500/20 text-sky-400 font-bold flex items-center justify-center mx-auto mb-3">1</div>
+              <h3 class="text-xs font-bold text-white mb-2">Display NMC Reg No.</h3>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Ensure your profile header on RxNXT contains your full name, qualifications, and state/NMC registration number.
+              </p>
+            </div>
+            <span class="text-[10px] font-mono text-sky-400 mt-3">Sec 1.7 (P. 104)</span>
+          </div>
+
+          <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-full bg-teal-500/20 text-teal-400 font-bold flex items-center justify-center mx-auto mb-3">2</div>
+              <h3 class="text-xs font-bold text-white mb-2">Generic Capital Names</h3>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Type generic/non-proprietary names in CAPITALS with exact dosage, route, frequency, and treatment duration.
+              </p>
+            </div>
+            <span class="text-[10px] font-mono text-teal-400 mt-3">Guideline-1 (P. 76)</span>
+          </div>
+
+          <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center mx-auto mb-3">3</div>
+              <h3 class="text-xs font-bold text-white mb-2">Digital Signature</h3>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Configure your digital signature/stamp in RxNXT so that every generated PDF e-prescription carries a verified signature.
+              </p>
+            </div>
+            <span class="text-[10px] font-mono text-emerald-400 mt-3">Sec 3.7.9 (P. 108)</span>
+          </div>
+
+          <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center mx-auto mb-3">4</div>
+              <h3 class="text-xs font-bold text-white mb-2">Non-Commercial Messages</h3>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Keep automated WhatsApp reminder copy strictly clinical. Never attach promotional discounts or brand tie-ins.
+              </p>
+            </div>
+            <span class="text-[10px] font-mono text-amber-400 mt-3">Reg 7 & 10 (P. 71)</span>
+          </div>
+
+          <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center mx-auto mb-3">5</div>
+              <h3 class="text-xs font-bold text-white mb-2">3-Year Cloud Archive</h3>
+              <p class="text-[11px] text-slate-300 leading-relaxed">
+                Verify that your RxNXT subscription retains patient records and prescription history for at least 3 years.
+              </p>
+            </div>
+            <span class="text-[10px] font-mono text-indigo-400 mt-3">Reg 13 (P. 72)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: SUMMARY & LEGAL STATUS -->
+    <section id="slide-7" class="slide">
+      <div class="space-y-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Conclusion</span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">Regulatory Verdict & Current Legal Status</h2>
+          <p class="text-slate-400 text-sm mt-1">Final summary on RxNXT compliance and ongoing NMC developments.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+              The Verdict on RxNXT
+            </h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              RxNXT's core workflow—enabling doctors to generate digital prescriptions, transmit them over WhatsApp, and send automated medication schedule reminders—is <strong class="text-emerald-400">completely compliant</strong> with the guidelines established by the National Medical Commission.
+            </p>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              By avoiding the controversial aggregator business model (public star ratings, sponsored directory rankings, and commercial commission-splitting), RxNXT provides a compliant, legally sound infrastructure for modern medical clinics.
+            </p>
+          </div>
+
+          <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-sky-400"></span>
+              Note on the August 23, 2023 Abeyance
+            </h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              On August 23, 2023, the NMC placed the 2023 Conduct Regulations in temporary abeyance primarily due to disputes surrounding mandatory generic prescribing and pharma conference sponsorship restrictions.
+            </p>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong class="text-sky-300">Crucial Point:</strong> Even under the earlier regulations (2002 Code of Ethics + 2020 Telemedicine Practice Guidelines), <strong>WhatsApp transmission of digital prescriptions and treatment adherence communications remain 100% lawful</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="glass-panel p-6 rounded-2xl bg-gradient-to-r from-sky-900/40 via-slate-900/40 to-teal-900/40 border border-sky-500/20 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h4 class="text-sm font-bold text-white">Save this presentation for your clinic records or team review</h4>
+            <p class="text-xs text-slate-300">Download this self-contained HTML slide deck for offline presentation anytime.</p>
+          </div>
+          <button onclick="downloadSelf()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-teal-400 hover:from-sky-400 hover:to-teal-300 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-lg shadow-sky-500/25 transition shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Download HTML Presentation
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Presentation Script (Navigation, Keyboard Shortcuts, Download) -->
+  <script>
+    let currentSlide = 0;
+    const totalSlides = 8;
+
+    function showSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= totalSlides) index = totalSlides - 1;
+      currentSlide = index;
+
+      document.querySelectorAll('.slide').forEach((slide, idx) => {
+        if (idx === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+
+      document.getElementById('slideCounter').innerText = (currentSlide + 1) + ' / ' + totalSlides;
+      document.getElementById('slideJump').value = currentSlide;
+
+      // Update button disabled state
+      document.getElementById('prevBtn').disabled = (currentSlide === 0);
+      document.getElementById('prevBtn').classList.toggle('opacity-50', currentSlide === 0);
+      document.getElementById('nextBtn').disabled = (currentSlide === totalSlides - 1);
+      document.getElementById('nextBtn').classList.toggle('opacity-50', currentSlide === totalSlides - 1);
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    function goToSlide(index) {
+      showSlide(index);
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        showSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        showSlide(totalSlides - 1);
+      }
+    });
+
+    // Function to download the entire HTML file self-contained
+    function downloadSelf() {
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'RxNXT_NMC_Compliance_Presentation.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Initialize state
+    showSlide(0);
+  </script>
+</body>
+</html>

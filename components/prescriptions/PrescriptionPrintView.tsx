@@ -111,11 +111,11 @@ export const generatePrescriptionPDF = (data: PrintViewProps, asBase64 = false):
     doc.setTextColor(100, 116, 139);
     doc.text(data.doctorRegNo ? `Reg. No: ${data.doctorRegNo}` : 'Authorized Medical Signatory', pageWidth - margin - 27.5, footerY + 3, { align: 'center' });
 
-    // Legal / System watermark footer
-    doc.setFontSize(7);
+    // Legal / System watermark footer (NMC Gazette 2023 P. 108 Sec 3.7.9 compliant)
+    doc.setFontSize(6.5);
     doc.setTextColor(148, 163, 184);
     doc.text(
-      'Digitally generated via RxNXT™ Healthcare Cloud • Valid under Information Technology Act, 2000.',
+      'Digitally generated via RxNXT™ • Valid under NMC Regulations 2023 & IT Act, 2000 • e-Prescription valid for 2 weeks from issue or once dispensed.',
       margin,
       pageHeight - 10
     );
@@ -293,8 +293,8 @@ export const generatePrescriptionPDF = (data: PrintViewProps, asBase64 = false):
   data.medicines.forEach((med, index) => {
     const isEven = index % 2 === 0;
 
-    // Build text strings
-    const medTitle = med.name;
+    // Build text strings (NMC Guideline-1 P.76 & P.108: Drug name in CAPITAL letters)
+    const medTitle = (med.name || '').toUpperCase();
     const formStrength = [
       med.dosage_form || '',
       med.strength ? `(${med.strength})` : '',
