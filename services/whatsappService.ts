@@ -348,8 +348,11 @@ export async function sendPrescriptionPDF(
   const messageBody = aiTreatmentSummary
     ? `Hello ${patientName}, your prescription from *${clinicName}* is ready!\n\n` +
       `${aiTreatmentSummary}\n\n` +
+      `📄 *Official Prescription PDF:* ${directPdfUrl}\n\n` +
       `Get well soon!`
-    : `Hello ${patientName}, your prescription from ${clinicName} is ready.\n\nGet well soon!`;
+    : `Hello ${patientName}, your prescription from ${clinicName} is ready.\n\n` +
+      `📄 *Official Prescription PDF:* ${directPdfUrl}\n\n` +
+      `Get well soon!`;
 
   let documentMediaId: string | undefined;
   if (pdfBase64 && pdfBase64.length > 50) {
@@ -364,6 +367,10 @@ export async function sendPrescriptionPDF(
   const directPdfUrl = prescriptionId
     ? `${appBaseUrl.replace(/\/$/, '')}/api/prescriptions/${prescriptionId}/pdf`
     : pdfUrl;
+
+  const templateSummaryWithPdf = aiTreatmentSummary
+    ? `${aiTreatmentSummary} • PDF: ${directPdfUrl}`
+    : `Download Prescription PDF: ${directPdfUrl}`;
 
   return await dispatchWhatsAppMessage({
     phone: patientPhone,
@@ -380,7 +387,7 @@ export async function sendPrescriptionPDF(
           parameters: [
             { type: 'text', text: sanitizeTemplateParam(patientName) || 'Patient' },
             { type: 'text', text: sanitizeTemplateParam(clinicName) || 'Clinic' },
-            { type: 'text', text: sanitizeTemplateParam(aiTreatmentSummary) || 'Prescription ready.' },
+            { type: 'text', text: sanitizeTemplateParam(templateSummaryWithPdf) || 'Prescription ready.' },
           ],
         },
       ],
