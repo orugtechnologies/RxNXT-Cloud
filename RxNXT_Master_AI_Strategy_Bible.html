@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RxNXT — Master Strategic AI Context & Business Bible</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- html2pdf.js CDN for 1-click client-side PDF download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    :root {
+      --primary-blue: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary-sky: #0ea5e9;
+      --accent-emerald: #10b981;
+      --accent-emerald-dark: #059669;
+      --dark-navy: #0f172a;
+      --slate-800: #1e293b;
+      --light-bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --badge-bg: #eff6ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      background-color: var(--light-bg);
+      line-height: 1.6;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Floating Navigation Bar */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      color: white;
+      padding: 12px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+
+    .nav-badge {
+      background: rgba(37, 99, 235, 0.4);
+      border: 1px solid #3b82f6;
+      color: #93c5fd;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-emerald {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-emerald:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-blue {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-blue:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.1);
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px 80px;
+    }
+
+    .page-sheet {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 50px 60px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border-color);
+    }
+
+    /* Document Header Banner */
+    .doc-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2563eb 100%);
+      color: white;
+      padding: 45px;
+      border-radius: 14px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .doc-hero::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .doc-hero h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .doc-hero p.subtitle {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      max-width: 780px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .pill {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .pill.green {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #a7f3d0;
+      font-weight: 600;
+    }
+
+    /* Section Styles */
+    .section-card {
+      margin-bottom: 45px;
+      scroll-margin-top: 80px;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--dark-navy);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 22px;
+    }
+
+    .section-number {
+      background: var(--primary-blue);
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--slate-800);
+      margin: 22px 0 10px 0;
+    }
+
+    p {
+      margin-bottom: 14px;
+      color: #334155;
+    }
+
+    /* Tables */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 18px 0;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      color: var(--dark-navy);
+      font-weight: 700;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #fafafa;
+    }
+
+    /* Alert / Callout Boxes */
+    .callout {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary-blue);
+      padding: 18px 22px;
+      border-radius: 0 10px 10px 0;
+      margin: 20px 0;
+      font-size: 0.92rem;
+    }
+
+    .callout.success {
+      background: #ecfdf5;
+      border-left-color: var(--accent-emerald);
+    }
+
+    .callout.warning {
+      background: #fffbeb;
+      border-left-color: #f59e0b;
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--dark-navy);
+    }
+
+    /* Feature Grid / Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin: 20px 0;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 22px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .card:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-header {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--dark-navy);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .price-tag {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 8px 0;
+    }
+
+    .price-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    /* Code / Prompt Blocks */
+    .code-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 18px 22px;
+      border-radius: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin: 18px 0;
+      position: relative;
+      overflow-x: auto;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary-blue);
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--dark-navy);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      display: none;
+      align-items: center;
+      gap: 10px;
+      z-index: 9999;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Print Styles */
+    @media print {
+      .top-nav, #toast, .copy-btn {
+        display: none !important;
+      }
+      body {
+        background: white;
+        color: black;
+      }
+      .container {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      .page-sheet {
+        padding: 0;
+        border: none;
+        box-shadow: none;
+      }
+      .section-card {
+        page-break-inside: avoid;
+      }
+      .doc-hero {
+        background: #1e293b !important;
+        -webkit-print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Top Actions Bar -->
+  <div class="top-nav">
+    <div class="nav-brand">
+      <span>🩺 RxNXT</span>
+      <span class="nav-badge">Master Strategic AI Bible</span>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-outline" onclick="copyFullContext()">
+        📋 Copy Prompt for AI
+      </button>
+      <button class="btn btn-blue" onclick="window.print()">
+        🖨️ Print / Save PDF
+      </button>
+      <button class="btn btn-emerald" onclick="downloadDirectPDF()">
+        📥 1-Click Download PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="container" id="printable-document">
+    <div class="page-sheet">
+
+      <!-- Header Banner -->
+      <div class="doc-hero">
+        <h1>🩺 RxNXT — Master Strategic AI Context & Business Bible</h1>
+        <p class="subtitle">The complete system prompt, commercial blueprint, clinical architecture, and market analysis context file for AI-powered strategy, pricing, sales, product roadmap, and valuation modeling.</p>
+        <div class="meta-pills">
+          <span class="pill green">● Production Cloud Ready</span>
+          <span class="pill">Stack: Next.js 14 + Supabase Mumbai</span>
+          <span class="pill">Meta WhatsApp API v20.0</span>
+          <span class="pill">NMC Verified Engine</span>
+          <span class="pill">Sub-30s Digital Rx</span>
+        </div>
+      </div>
+
+      <!-- Section 1 -->
+      <div class="section-card" id="sec-1">
+        <div class="section-title">
+          <span class="section-number">01</span>
+          Executive Summary & Core Identity
+        </div>
+        
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 25%;">Attribute</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Product Name</strong></td>
+                <td><strong>RxNXT</strong> (Doctor-Led, AI-Enabled OPD Clinical Command Engine)</td>
+              </tr>
+              <tr>
+                <td><strong>Tagline</strong></td>
+                <td><em>"Write a 100% compliant prescription in under 30 seconds; keep patients adherent for life on WhatsApp."</em></td>
+              </tr>
+              <tr>
+                <td><strong>Parent Company</strong></td>
+                <td><strong>Orug Technologies Private Limited</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Target Geography</strong></td>
+                <td>Primary: India (Tier-1, Tier-2, Tier-3 cities) | Secondary: South Asia & MENA</td>
+              </tr>
+              <tr>
+                <td><strong>Core Problem</strong></td>
+                <td>
+                  1. Doctors spend 4-6 mins writing illegible paper prescriptions.<br>
+                  2. 60%+ patients forget medicine schedules or lose paper slips.<br>
+                  3. Clinics have chaotic walk-in queues and zero automated chronic refill recall.<br>
+                  4. Legacy EMRs (Practo, etc.) are slow, desktop-bound, and disrupt doctor flow.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Core Solution</strong></td>
+                <td>A lightning-fast PWA prescription engine generating structured prescriptions in under 30s with instant branded WhatsApp PDFs, 3-window Smart Slot dosage reminders, and Day 25 chronic refill alerts.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 2 -->
+      <div class="section-card" id="sec-2">
+        <div class="section-title">
+          <span class="section-number">02</span>
+          Technical Architecture & Infrastructure Economics
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">⚡ Next-Gen Tech Stack</div>
+            <p><strong>Frontend:</strong> Next.js 14 App Router, TypeScript, Tailwind CSS, Radix UI, Mobile PWA.</p>
+            <p><strong>Database:</strong> PostgreSQL on Supabase Mumbai (<code>ap-south-1</code>) with multi-tenant isolation.</p>
+            <p><strong>Search:</strong> Fuse.js with Additive Scoring (+100 Alias, +50 Doctor Preference, +20 Clinic Formulary).</p>
+            <p><strong>Licensing:</strong> Direct National Medical Commission (NMC) REST API (~0.4s verification).</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">💰 Unbeatable Unit Economics</div>
+            <p><strong>Zero Server CPU PDF:</strong> Client-side <code>jsPDF</code> renders 100,000 PDFs at $0.00 server cost.</p>
+            <p><strong>Messaging:</strong> Official Meta WhatsApp Cloud API v20.0 (no Twilio, zero cold starts).</p>
+            <p><strong>Server Cost / Prescription:</strong> <strong>&lt; ₹0.02 ($0.0002)</strong>.</p>
+            <p><strong>Gross SaaS Margin:</strong> <strong>&gt; 96.0%</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3 -->
+      <div class="section-card" id="sec-3">
+        <div class="section-title">
+          <span class="section-number">03</span>
+          Clinical Workflows & Features
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-header">📋 Front-Desk Queue</div>
+            <p>• 0.5s auto-reset registration form.</p>
+            <p>• Token generation & waiting timers.</p>
+            <p>• DPDP Act 2023 consent capture.</p>
+          </div>
+          <div class="card">
+            <div class="card-header">🩺 Sub-30s Rx Engine</div>
+            <p>• 1-Click Quick Chips (1-0-1, 5 days).</p>
+            <p>• 1-Click History Cloning.</p>
+            <p>• NMC compliant digital signature & logo.</p>
+          </div>
+          <div class="card">
+            <div class="card-header">🌅 Smart Slot WhatsApp</div>
+            <p>• 8:00 AM: Morning doses & follow-ups.</p>
+            <p>• 1:30 PM: Afternoon doses.</p>
+            <p>• 8:30 PM: Night doses & bedtime rules.</p>
+          </div>
+        </div>
+
+        <div class="callout success">
+          <strong>💊 The Day 25 Chronic Care Refill Radar:</strong>
+          Prescriptions longer than 14 days automatically trigger a personalized WhatsApp health checkup reminder on Day 25. This boosts patient recovery and guarantees predictable recurring OPD consultation revenue for the clinic.
+        </div>
+      </div>
+
+      <!-- Section 4 -->
+      <div class="section-card" id="sec-4">
+        <div class="section-title">
+          <span class="section-number">04</span>
+          Product-Market Fit & Competitive Analysis
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Feature / Metric</th>
+                <th>📝 Pen & Paper</th>
+                <th>🏢 Practo / Clinicea</th>
+                <th>📱 HealthPlix</th>
+                <th style="background:#dbeafe; color:#1e40af;">⚡ RxNXT</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Time per Rx</strong></td>
+                <td>~45 - 60s (Illegible)</td>
+                <td>3 - 5 mins (Clunky)</td>
+                <td>1.5 - 2.5 mins</td>
+                <td style="font-weight:700; color:#2563eb;">15 - 30 seconds</td>
+              </tr>
+              <tr>
+                <td><strong>Learning Curve</strong></td>
+                <td>Zero</td>
+                <td>2-3 weeks training</td>
+                <td>1 week</td>
+                <td style="font-weight:700; color:#10b981;">Zero (1-Click Chips)</td>
+              </tr>
+              <tr>
+                <td><strong>Hardware</strong></td>
+                <td>Paper Pad</td>
+                <td>High-end Desktop PC</td>
+                <td>Laptop / Tablet</td>
+                <td style="font-weight:700; color:#2563eb;">Any Device (Phone/Tab/PC)</td>
+              </tr>
+              <tr>
+                <td><strong>Patient Delivery</strong></td>
+                <td>Paper (lost in 48h)</td>
+                <td>SMS link (low open)</td>
+                <td>SMS / WhatsApp</td>
+                <td style="font-weight:700; color:#10b981;">Direct WhatsApp PDF</td>
+              </tr>
+              <tr>
+                <td><strong>Smart Reminders</strong></td>
+                <td>None</td>
+                <td>None</td>
+                <td>Sporadic SMS</td>
+                <td style="font-weight:700; color:#10b981;">3-Window Smart Slots</td>
+              </tr>
+              <tr>
+                <td><strong>Refill Alerts</strong></td>
+                <td>None</td>
+                <td>None</td>
+                <td>None</td>
+                <td style="font-weight:700; color:#10b981;">Day 25 Refill Radar</td>
+              </tr>
+              <tr>
+                <td><strong>Price to Clinic</strong></td>
+                <td>₹500 (Pads)</td>
+                <td>₹2,500 - ₹5,000/mo</td>
+                <td>₹1,500 - ₹3,000/mo</td>
+                <td style="font-weight:700; color:#2563eb;">₹833/mo (₹9,999/yr)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 5 -->
+      <div class="section-card" id="sec-5">
+        <div class="section-title">
+          <span class="section-number">05</span>
+          Pricing Strategy & Commercial Tiers
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-header">Tier 1: BYOD SaaS</div>
+            <div class="price-tag">₹9,999<span style="font-size:0.9rem; font-weight:500; color:#64748b;">/year</span></div>
+            <div class="price-sub">Or ₹999 / month • Single Doctor</div>
+            <p>• 1 Doctor + Receptionist account</p>
+            <p>• Unlimited Sub-30s Prescriptions</p>
+            <p>• Branded WhatsApp PDFs & Reminders</p>
+            <p>• Lifetime Price-Lock Guarantee</p>
+          </div>
+
+          <div class="card" style="border: 2px solid var(--primary-blue); position:relative;">
+            <div style="position:absolute; top:-12px; right:15px; background:var(--primary-blue); color:white; font-size:0.7rem; font-weight:700; padding:2px 8px; border-radius:10px;">MOST POPULAR</div>
+            <div class="card-header">Tier 2: Hardware Bundle</div>
+            <div class="price-tag">₹24,999<span style="font-size:0.9rem; font-weight:500; color:#64748b;"> one-time</span></div>
+            <div class="price-sub">Renews at ₹9,999/yr from Year 2</div>
+            <p>• <strong>11" Android Kiosk Tablet + Heavy Stand</strong></p>
+            <p>• Pre-configured, unbox & start</p>
+            <p>• 1-Year RxNXT SaaS included</p>
+            <p>• Free Onboarding & Staff Training</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">Tier 3: Polyclinic Hub</div>
+            <div class="price-tag">₹18,000<span style="font-size:0.9rem; font-weight:500; color:#64748b;">/year</span></div>
+            <div class="price-sub">Effective ₹4,500/doctor/yr</div>
+            <p>• Up to 4 Doctor accounts</p>
+            <p>• Central Receptionist Desk</p>
+            <p>• Multi-Doctor Queue Routing</p>
+            <p>• Consolidated Clinical Reports</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>🧠 The "2-Patient" Psychological ROI Pitch:</strong>
+          In India, an outpatient consultation fee is ₹300–₹500. Writing <strong>just 2 to 3 prescriptions a month pays off the entire RxNXT subscription</strong>. The remaining 500+ prescriptions written every month are 100% pure profit for the clinic.
+        </div>
+      </div>
+
+      <!-- Section 6 & 7 -->
+      <div class="section-card" id="sec-6">
+        <div class="section-title">
+          <span class="section-number">06</span>
+          Sales Playbook & Objection Handling
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header">🎯 The 10-Second Live WhatsApp Demo Script</div>
+          <p><strong>Step 1:</strong> Walk up to the doctor: <em>"Doctor, can I borrow 30 seconds to show you a prescription on your phone?"</em></p>
+          <p><strong>Step 2:</strong> Enter their mobile number, tap 2 medicine chips: <code>[PCM 650]</code> ➔ <code>[1-0-1]</code> ➔ <code>[3 Days]</code> ➔ <code>[After meals]</code>.</p>
+          <p><strong>Step 3:</strong> Tap <strong>"Send via WhatsApp"</strong> (18 seconds elapsed).</p>
+          <p><strong>Step 4:</strong> Doctor's phone pings with the official PDF and dose schedule. <strong>The sale is 80% closed right there!</strong></p>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 30%;">Doctor Objection</th>
+                <th>Winning Sales Response</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><em>"I write faster with a pen."</em></td>
+                <td><em>"Doctor, with RxNXT you don't type—you tap 1-click pills. Most doctors write an Rx in 18 seconds—faster than pen—and your patient never calls back asking to decipher handwriting."</em></td>
+              </tr>
+              <tr>
+                <td><em>"My patients won't download apps."</em></td>
+                <td><em>"Patients download nothing! They receive the PDF and dose reminders directly on their existing WhatsApp."</em></td>
+              </tr>
+              <tr>
+                <td><em>"Is it legally compliant with NMC?"</em></td>
+                <td><em>"100% compliant. RxNXT verifies your NMC registration number against the government registry and prints full credentials on every PDF."</em></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 8 & 9 -->
+      <div class="section-card" id="sec-8">
+        <div class="section-title">
+          <span class="section-number">07</span>
+          Unit Economics & 3-Year Scale Model
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Growth Metric</th>
+                <th>Year 1 (100 Clinics)</th>
+                <th>Year 2 (500 Clinics)</th>
+                <th>Year 3 (2,500 Clinics)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Total Subscribed Clinics</strong></td>
+                <td>100</td>
+                <td>500</td>
+                <td>2,500</td>
+              </tr>
+              <tr>
+                <td><strong>Gross Annual Revenue</strong></td>
+                <td><strong>₹14.5 Lakhs</strong></td>
+                <td><strong>₹81.5 Lakhs</strong></td>
+                <td><strong>₹4.01 Crores</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Annual Recurring Revenue (ARR)</strong></td>
+                <td><strong>₹10.0 Lakhs</strong></td>
+                <td><strong>₹50.0 Lakhs</strong></td>
+                <td><strong>₹2.50 Crores</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Estimated EBITDA / Net Profit</strong></td>
+                <td><strong>₹9.4 Lakhs (65%)</strong></td>
+                <td><strong>₹48.2 Lakhs (78%)</strong></td>
+                <td><strong>₹2.85 Crores (88%)</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 10 & 11 -->
+      <div class="section-card" id="sec-10">
+        <div class="section-title">
+          <span class="section-number">08</span>
+          Valuation & Investor Pitch
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">💼 Current Seed Round Ask</div>
+            <p><strong>Round Size:</strong> <strong>₹50 Lakhs ($60,000 USD)</strong></p>
+            <p><strong>Pre-Money Valuation:</strong> <strong>₹5.0 to ₹7.5 Crores ($600K - $900K)</strong></p>
+            <p><strong>Equity Offered:</strong> 6.25% to 9.09%</p>
+            <p><strong>Use of Funds:</strong> 50% Field Sales Onboarding, 30% Tech/AI Modules, 20% Hardware Buffer.</p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">🔮 5-Year Valuation Projection</div>
+            <p><strong>Exit Multiple:</strong> 8x - 15x ARR in B2B HealthTech SaaS.</p>
+            <p><strong>Year 3 (2,500 Clinics):</strong> ARR ₹2.5 Cr ➔ <strong>Valuation: ₹25 - ₹35 Crores</strong>.</p>
+            <p><strong>Year 5 (10,000 Clinics):</strong> ARR ₹12.0 Cr ➔ <strong>Valuation: ₹120 - ₹180 Crores</strong>.</p>
+            <p><strong>Moat:</strong> High switching cost, doctor habit lock-in, and local clinical habit graphs.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 12: Prompt Library -->
+      <div class="section-card" id="sec-12">
+        <div class="section-title">
+          <span class="section-number">09</span>
+          Pre-Built AI Prompts Library
+        </div>
+        <p>Copy and run these prompts in ChatGPT / Claude / Gemini along with this document:</p>
+
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyPrompt('prompt1')">Copy</button>
+          <div id="prompt1">"Using the RxNXT Strategy Bible, create a 4-week field sales execution plan to sign up 50 clinics in Hyderabad. Include daily quotas, visit schedules, target clinic types, and the exact pitch script for receptionists and doctors."</div>
+        </div>
+
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyPrompt('prompt2')">Copy</button>
+          <div id="prompt2">"Evaluate our 3-tier pricing model and design an upsell strategy for the upcoming Pharmacy and Billing modules. How should we price them to maximize ARR without increasing sales friction?"</div>
+        </div>
+
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyPrompt('prompt3')">Copy</button>
+          <div id="prompt3">"Draft 5 high-converting video and carousel ad copies for Facebook/Instagram targeting Indian doctors, highlighting sub-30s speed, zero typing, and automated WhatsApp patient adherence."</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast">📋 Copied to clipboard!</div>
+
+  <script>
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'flex';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    function copyPrompt(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('📋 Prompt copied to clipboard!');
+      });
+    }
+
+    function copyFullContext() {
+      const text = document.getElementById('printable-document').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('📋 Full Master Context Copied! Ready to paste into ChatGPT/Claude.');
+      });
+    }
+
+    function downloadDirectPDF() {
+      showToast('⏳ Generating high-resolution PDF...');
+      const element = document.getElementById('printable-document');
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: 'RxNXT_Master_AI_Strategy_Bible.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        showToast('✅ PDF Downloaded Successfully!');
+      }).catch((err) => {
+        console.error('PDF generation error, falling back to print:', err);
+        window.print();
+      });
+    }
+  </script>
+</body>
+</html>
