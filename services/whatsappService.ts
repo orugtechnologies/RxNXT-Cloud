@@ -345,6 +345,12 @@ export async function sendPrescriptionPDF(
   aiTreatmentSummary?: string,
   prescriptionId?: string
 ) {
+  // Construct official direct downloadable PDF link (e.g. https://app.rxnxt.in/api/prescriptions/{id}/pdf)
+  const appBaseUrl = cleanEnv(process.env.NEXT_PUBLIC_APP_URL) || 'https://app.rxnxt.in';
+  const directPdfUrl = prescriptionId
+    ? `${appBaseUrl.replace(/\/$/, '')}/api/prescriptions/${prescriptionId}/pdf`
+    : pdfUrl;
+
   const messageBody = aiTreatmentSummary
     ? `Hello ${patientName}, your prescription from *${clinicName}* is ready!\n\n` +
       `${aiTreatmentSummary}\n\n` +
@@ -362,12 +368,6 @@ export async function sendPrescriptionPDF(
     }
   }
 
-  // Construct official direct downloadable PDF link (e.g. https://app.rxnxt.in/api/prescriptions/{id}/pdf)
-  const appBaseUrl = cleanEnv(process.env.NEXT_PUBLIC_APP_URL) || 'https://app.rxnxt.in';
-  const directPdfUrl = prescriptionId
-    ? `${appBaseUrl.replace(/\/$/, '')}/api/prescriptions/${prescriptionId}/pdf`
-    : pdfUrl;
-
   const templateSummaryWithPdf = aiTreatmentSummary
     ? `${aiTreatmentSummary} • PDF: ${directPdfUrl}`
     : `Download Prescription PDF: ${directPdfUrl}`;
@@ -378,6 +378,8 @@ export async function sendPrescriptionPDF(
   const docTemplateCandidates = [
     { name: 'rxnxt_prescription_doc', lang: 'en' },
     { name: 'rxnxt_prescription_doc', lang: 'en_US' },
+    { name: 'rxnxt_prescription_document', lang: 'en' },
+    { name: 'rxnxt_prescription_document', lang: 'en_US' },
     { name: 'rxnxt_prescription_do', lang: 'en' },
     { name: 'rxnxt_prescription_do', lang: 'en_US' },
   ];
