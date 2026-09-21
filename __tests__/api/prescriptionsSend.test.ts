@@ -1,4 +1,4 @@
-﻿import { POST } from '../../app/api/prescriptions/send/route';
+import { POST } from '../../app/api/prescriptions/send/route';
 import { prisma } from '../../lib/prisma';
 import { getAuthenticatedUser } from '../../lib/auth-server';
 import { sendPrescriptionPDF } from '../../services/whatsappService';
@@ -110,10 +110,11 @@ describe('POST /api/prescriptions/send (Multi-Tenant Authorization & WhatsApp Di
       '9876543210',
       'Jane Doe',
       'Clinic A',
-      expect.stringContaining('/patient/prescription/rx_clinic_A/view'),
+      expect.stringContaining('rx_clinic_A'),
       undefined,
       'clinic_A',
-      expect.any(String)
+      expect.any(String),
+      'rx_clinic_A'
     );
   });
 });

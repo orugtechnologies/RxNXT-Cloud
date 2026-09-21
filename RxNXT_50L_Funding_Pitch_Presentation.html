@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RxNXT Cloud — ₹50 Lakhs Seed Expansion Pitch Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #090e1a;
+      --navy-card: #121b2d;
+      --navy-card-border: #1e2c47;
+      --blue: #2563eb;
+      --blue-light: #38bdf8;
+      --emerald: #10b981;
+      --emerald-light: #34d399;
+      --purple: #8b5cf6;
+      --amber: #f59e0b;
+      --slate-light: #f8fafc;
+      --text-white: #ffffff;
+      --text-gray: #94a3b8;
+      --text-dark: #0f172a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b132b;
+      color: var(--text-white);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    @page {
+      size: 297mm 210mm; /* A4 Landscape */
+      margin: 0;
+    }
+
+    .slide {
+      width: 297mm;
+      height: 210mm;
+      page-break-after: always;
+      page-break-inside: avoid;
+      position: relative;
+      overflow: hidden;
+      padding: 18mm 22mm 16mm 22mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: linear-gradient(145deg, #090e1a 0%, #0f172a 100%);
+    }
+
+    /* Ambient Glow Effects */
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, rgba(0,0,0,0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .slide::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: -60px;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(0,0,0,0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* Slide Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 2;
+    }
+    .slide-header .brand {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-badge {
+      background: linear-gradient(135deg, #2563eb, #10b981);
+      color: white;
+      font-size: 0.65rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .slide-category {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--blue-light);
+    }
+    .slide-number {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-gray);
+    }
+
+    /* Slide Title Area */
+    .title-block {
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 2;
+    }
+    .title-block h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+    .title-block p {
+      font-size: 0.88rem;
+      color: var(--text-gray);
+      margin-top: 4px;
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Grids */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+    /* Cards */
+    .card {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-card-border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      position: relative;
+    }
+    .card.emerald { border-top: 3px solid var(--emerald); }
+    .card.blue { border-top: 3px solid var(--blue); }
+    .card.purple { border-top: 3px solid var(--purple); }
+    .card.amber { border-top: 3px solid var(--amber); }
+
+    .card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+    }
+    .card p, .card li {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+    .card ul { list-style: none; margin-top: 6px; }
+    .card ul li {
+      position: relative;
+      padding-left: 16px;
+      margin-bottom: 5px;
+    }
+    .card ul li::before {
+      content: '✔';
+      position: absolute;
+      left: 0;
+      color: var(--emerald-light);
+      font-size: 0.72rem;
+    }
+
+    /* Metric Box */
+    .stat-box {
+      background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(16,185,129,0.05));
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-value.green { color: var(--emerald-light); }
+    .stat-value.blue { color: var(--blue-light); }
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Tables */
+    .table-container {
+      border: 1px solid var(--navy-card-border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--navy-card);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    th {
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--blue-light);
+      padding: 10px 14px;
+      font-weight: 700;
+      text-align: left;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--navy-card-border);
+    }
+    td {
+      padding: 9px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+    }
+    tr.highlight {
+      background: rgba(16, 185, 129, 0.1);
+      font-weight: 700;
+    }
+    tr.highlight td { color: var(--emerald-light); }
+
+    /* Slide Footer */
+    .slide-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      color: var(--text-gray);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Cover Slide Specifics */
+    .cover-slide {
+      background: linear-gradient(135deg, #060913 0%, #0c1427 50%, #172554 100%);
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      padding: 25mm 25mm;
+    }
+    .cover-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+      padding: 6px 18px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+    .cover-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 40%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .cover-subtitle {
+      font-size: 1.15rem;
+      color: #94a3b8;
+      max-width: 780px;
+      margin: 0 auto 30px auto;
+      line-height: 1.5;
+    }
+    .cover-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 820px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .cover-meta-card {
+      background: rgba(18, 27, 45, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+    .cover-meta-card .label { font-size: 0.68rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+    .cover-meta-card .val { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 800; color: #e2e8f0; margin-top: 4px; }
+
+  </style>
+</head>
+<body>
+
+  <!-- ==================== SLIDE 1: COVER ==================== -->
+  <div class="slide cover-slide">
+    <div>
+      <div class="cover-badge">
+        🏛️ SRiX Incubator • SISFS Phase 1 Completed
+      </div>
+      <h1 class="cover-title">RxNXT CLOUD</h1>
+      <p class="cover-subtitle">
+        Accelerating Indian Outpatient Clinics with Sub-30s Prescribing, Direct Meta WhatsApp Care & Live NMC Medical License Verification.
+      </p>
+
+      <div class="cover-meta-grid">
+        <div class="cover-meta-card">
+          <div class="label">Phase 1 Grant Completed</div>
+          <div class="val">₹7.0 Lakhs (SISFS)</div>
+        </div>
+        <div class="cover-meta-card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="label">Phase 2 Target Ask</div>
+          <div class="val" style="color: #38bdf8;">₹50.0 Lakhs (Debt/CCD)</div>
+        </div>
+        <div class="cover-meta-card">
+          <div class="label">Host Incubator</div>
+          <div class="val">SRiX (Warangal/Hyd)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-footer" style="width: 100%; max-width: 820px; margin: 0 auto;">
+      <div>RxNXT Technologies Pvt. Ltd. • Pitch Presentation</div>
+      <div>Confidential • September 2026</div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 2: THE PROBLEM ==================== -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="brand">RxNXT <span>Cloud</span> <span class="brand-badge">Clinical Moat</span></div>
+      <div class="slide-category">1. The Problem & Market Gap</div>
+      <div class="slide-number">Slide 02</div>
+    </div>
+
+    <div class="title-block">
+      <h2>The Critical Bottlenecks Crippling Indian Outpatient Clinics</h2>
+      <p>Over 80% of India's 1.3M+ registered doctors operate standalone private OPD practices with acute administrative friction.</p>
+    </div>
+
+    <div class="content-area">
+      <div class="grid-3">
+        <div class="card amber">
+          <h3>⏱️ Clinical Documentation</h3>
+          <p><strong>3 to 5 minutes wasted per patient</strong> typing into clunky legacy hospital software or illegibly scribbling on paper slips.</p>
+          <ul>
+            <li>Causes doctor fatigue during peak 50+ patient footfall.</li>
+            <li>Leads to frequent dispensing mistakes by pharmacists.</li>
+            <li>Doctors abandon digital EMRs due to typing friction.</li>
+          </ul>
+        </div>
+
+        <div class="card blue">
+          <h3>📉 Severe Patient Non-Adherence</h3>
+          <p><strong>Over 45% of acute patients</strong> forget dosage schedules or abandon antibiotic courses once initial fever drops.</p>
+          <ul>
+            <li>Paper slips get misplaced or water-damaged.</li>
+            <li>Zero automated reminders for Morning/Night doses.</li>
+            <li>Chronic diabetes/BP patients miss regular refills.</li>
+          </ul>
+        </div>
+
+        <div class="card purple">
+          <h3>⚠️ Regulatory Risk & Fraud</h3>
+          <p><strong>Spike in unqualified quacks</strong> writing illegal Schedule X/Narcotics without verified Medical Council credentials.</p>
+          <ul>
+            <li>Government bodies (NMC) enforcing stricter audits.</li>
+            <li>No real-time license verification in conventional software.</li>
+            <li>Growing clinic liability in telemedicine prescribing.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <div>RxNXT — ₹50L Expansion Pitch Deck</div>
+      <div>Target Market: 1.3M Doctors | 250,000+ Standalone Clinics across Tier 1, 2 & 3 India</div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 3: THE SOLUTION ==================== -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="brand">RxNXT <span>Cloud</span> <span class="brand-badge">Product Engine</span></div>
+      <div class="slide-category">2. The RxNXT Solution</div>
+      <div class="slide-number">Slide 03</div>
+    </div>
+
+    <div class="title-block">
+      <h2>An Ultra-Fast, Zero-Bloat Clinical Operating System</h2>
+      <p>Engineered to deliver complete digital prescriptions in under 30 seconds with 100% automated post-consultation care.</p>
+    </div>
+
+    <div class="content-area">
+      <div class="grid-2">
+        <div class="card emerald">
+          <h3>⚡ Sub-30s Prescribing Engine</h3>
+          <ul>
+            <li><strong>Additive Scoring Search:</strong> Exact alias match (+100 pts), doctor favorite (+50 pts), and clinic favorite (+20 pts).</li>
+            <li><strong>1-Click Quick Chips:</strong> Dosage, duration, and food timings selected in 1 tap (<code>1-0-1</code>, <code>5 days</code>, <code>After meals</code>).</li>
+            <li><strong>Protocol Packs:</strong> 1-click loading of entire treatment sets (e.g. "Viral Fever Protocol").</li>
+            <li><strong>1-Click Cloning:</strong> Re-prescribes previous regimens for returning chronic patients in 2 seconds.</li>
+          </ul>
+        </div>
+
+        <div class="card blue">
+          <h3>💬 Direct Meta WhatsApp Automation</h3>
+          <ul>
+            <li><strong>Zero Microservices:</strong> Direct enterprise integration with Meta WhatsApp Cloud API (Graph API v20.0).</li>
+            <li><strong>Official PDF Delivery:</strong> Converts prescription into base64 and uploads directly to Meta Media endpoint.</li>
+            <li><strong>Smart Slot Nudges:</strong> Automated daily 3-slot schedules (8 AM, 1 PM, 8:30 PM) based on food instructions.</li>
+            <li><strong>Day-25 Refill Alerts:</strong> Proactive monthly reminder for chronic diabetic and hypertension care.</li>
+          </ul>
+        </div>
+
+        <div class="card purple">
+          <h3>🛡️ Live Government NMC Verification</h3>
+          <ul>
+            <li><strong>Direct NMC REST API:</strong> Live verification against National Medical Commission & 24+ State Medical Councils in ~0.4s.</li>
+            <li><strong>Mandatory Gating:</strong> Workspace creation blocked until government credentials confirm legitimate doctor status.</li>
+            <li><strong>Tamper-Proof Profiles:</strong> Official registered name, degrees (MBBS/MD), and council year auto-locked.</li>
+          </ul>
+        </div>
+
+        <div class="card amber">
+          <h3>📄 Zero-Server-Cost PDF Engine</h3>
+          <ul>
+            <li><strong>Client-Side Compilation:</strong> Prescriptions compile in the doctor's web browser using <code>jsPDF</code>.</li>
+            <li><strong>Zero Server CPU Load:</strong> 5,000 doctors generating PDFs at the exact same second consumes 0 server compute.</li>
+            <li><strong>Clinic Customization:</strong> Dynamic letterhead with clinic logo and doctor's verified digital signature.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <div>RxNXT — ₹50L Expansion Pitch Deck</div>
+      <div>Eliminating clinical friction while creating an unbreakable patient retention loop</div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 4: PHASE 1 MILESTONES ==================== -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="brand">RxNXT <span>Cloud</span> <span class="brand-badge">Execution Proof</span></div>
+      <div class="slide-category">3. Phase 1 (₹7L) Milestones Delivered</div>
+      <div class="slide-number">Slide 04</div>
+    </div>
+
+    <div class="title-block">
+      <h2>100% Delivery of Phase 1 Grant Objectives</h2>
+      <p>How the initial ₹7.0 Lakhs SISFS grant was deployed to transform a prototype into a production cloud architecture.</p>
+    </div>
+
+    <div class="content-area">
+      <div class="grid-4" style="margin-bottom: 14px;">
+        <div class="stat-box">
+          <div class="stat-value blue">100%</div>
+          <div class="stat-label">Cloud Multi-Tenant</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value green">~0.4s</div>
+          <div class="stat-label">NMC Verify Latency</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value green">&lt; 30s</div>
+          <div class="stat-label">Avg Prescription Time</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value blue">v20.0</div>
+          <div class="stat-label">Meta Cloud API</div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Phase 1 Deliverable</th>
+              <th>Status</th>
+              <th>Technical & Operational Outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Cloud DB Migration</strong></td>
+              <td><span style="color: #34d399; font-weight: 700;">COMPLETED</span></td>
+              <td>Migrated from local SQLite to Supabase Mumbai Cloud PostgreSQL (ap-south-1) with Prisma connection pooling.</td>
+            </tr>
+            <tr>
+              <td><strong>NMC Government Verification</strong></td>
+              <td><span style="color: #34d399; font-weight: 700;">COMPLETED</span></td>
+              <td>Live zero-cost REST query covering NMC + all 24+ Indian State Councils. Mandatory registration gate.</td>
+            </tr>
+            <tr>
+              <td><strong>Meta WhatsApp Architecture</strong></td>
+              <td><span style="color: #34d399; font-weight: 700;">COMPLETED</span></td>
+              <td>Direct Graph API integration; eliminated Render microservice and third-party scrapers. Zero cold starts.</td>
+            </tr>
+            <tr>
+              <td><strong>Receptionist Queue Sync</strong></td>
+              <td><span style="color: #34d399; font-weight: 700;">COMPLETED</span></td>
+              <td>Real-time live queue connecting reception to doctor workspace with auto-resetting intake forms.</td>
+            </tr>
+            <tr>
+              <td><strong>Progressive Web App (PWA)</strong></td>
+              <td><span style="color: #34d399; font-weight: 700;">COMPLETED</span></td>
+              <td>Installable mobile PWA with thumb-accessible sticky footer for fast smartphone prescribing.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <div>RxNXT — ₹50L Expansion Pitch Deck</div>
+      <div>Phase 1 Grant successfully deployed with zero technical debt and clean production build</div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 5: UNIT ECONOMICS ==================== -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="brand">RxNXT <span>Cloud</span> <span class="brand-badge">Financial Model</span></div>
+      <div class="slide-category">4. Business Model & Unit Economics</div>
+      <div class="slide-number">Slide 05</div>
+    </div>
+
+    <div class="title-block">
+      <h2>Unbeatable High-Margin SaaS Architecture (75%–80% Gross Margin)</h2>
+      <p>Priced for rapid Indian OPD adoption with near-zero marginal cost of hosting.</p>
+    </div>
+
+    <div class="content-area">
+      <div class="grid-2">
+        <div class="card blue">
+          <h3>🏷️ Strategic 3-Tier Pricing Model</h3>
+          <p>From <code>RxNXT_Strategic_Pricing_Masterplan.md</code>:</p>
+          <ul>
+            <li><strong>Tier 1 (SaaS BYOD):</strong> <strong>₹9,999 / year</strong> (~₹833/mo) for solo clinic practitioners.</li>
+            <li><strong>Tier 2 (Hardware Bundle):</strong> <strong>₹24,999 One-Time</strong> (Includes dedicated 11-inch Android Kiosk tablet + 1-year SaaS).</li>
+            <li><strong>Tier 3 (Polyclinic Pack):</strong> <strong>₹18,000 / year</strong> for 2 to 4 doctor polyclinics.</li>
+          </ul>
+          <p style="margin-top: 8px; font-size: 0.78rem; color: #93c5fd;">
+            💡 <em>The 2-Patient Pitch: Writing 3 prescriptions pays for the software for the month. The remaining 500+ are 100% pure profit.</em>
+          </p>
+        </div>
+
+        <div class="card emerald">
+          <h3>💵 Single-Clinic Monthly Cost Breakdown</h3>
+          <table style="margin-top: 4px;">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Monthly Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Allocated Serverless API (Vercel Pro)</td>
+                <td>~₹60 / mo</td>
+              </tr>
+              <tr>
+                <td>Allocated PostgreSQL DB (Supabase Pro)</td>
+                <td>~₹75 / mo</td>
+              </tr>
+              <tr>
+                <td>Meta WhatsApp Utility API (~600 msgs @ ₹0.13)</td>
+                <td>~₹78 / mo</td>
+              </tr>
+              <tr>
+                <td>Client-Side PDF Generation (jsPDF)</td>
+                <td>₹0 / mo</td>
+              </tr>
+              <tr class="highlight">
+                <td><strong>TOTAL HOSTING COST TO SERVE 1 CLINIC</strong></td>
+                <td><strong>~₹213 / month</strong></td>
+              </tr>
+              <tr class="highlight">
+                <td><strong>NET MONTHLY PROFIT PER CLINIC (from ₹833)</strong></td>
+                <td><strong>₹620 / mo (74.4% Margin)</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <div>RxNXT — ₹50L Expansion Pitch Deck</div>
+      <div>High-margin software economics allows rapid reinvestment of cash flow into doctor acquisition</div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 6: USE OF FUNDS ==================== -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="brand">RxNXT <span>Cloud</span> <span class="brand-badge">Capital Allocation</span></div>
+      <div class="slide-category">5. ₹50 Lakhs Use of Funds</div>
+      <div class="slide-number">Slide 06</div>
+    </div>
+
+    <div class="title-block">
+      <h2>Deployment of the ₹50 Lakhs Seed Expansion Capital</h2>
+      <p>An 18-month commercial runway focused on clinic acquisition across Telangana and Andhra Pradesh.</p>
+    </div>
+
+    <div class="content-area">
+      <div class="grid-4" style="margin-bottom: 14px;">
+        <div class="card blue">
+          <h3>₹20.0 Lakhs (40%)</h3>
+          <p style="color: var(--blue-light); font-weight: 700; font-size: 0.85rem;">Clinical Sales & Expansion</p>
+          <ul>
+            <li>Field sales reps in Hyderabad & Warangal.</li>
+            <li>Onboarding 150–200 paying clinics.</li>
+            <li>Doctor CME sponsorships & demo kiosks.</li>
+          </ul>
+        </div>
+
+        <div class="card emerald">
+          <h3>₹15.0 Lakhs (30%)</h3>
+          <p style="color: var(--emerald-light); font-weight: 700; font-size: 0.85rem;">Product & AI Roadmap</p>
+          <ul>
+            <li>In-clinic Pharmacy stock deduction.</li>
+            <li>WhatsApp UPI / Razorpay payment links.</li>
+            <li>AI Drug-Drug Interaction warnings.</li>
+          </ul>
+        </div>
+
+        <div class="card purple">
+          <h3>₹8.0 Lakhs (16%)</h3>
+          <p style="color: #c084fc; font-weight: 700; font-size: 0.85rem;">ABDM & Compliance</p>
+          <ul>
+            <li>Ayushman Bharat Digital Mission (M1/M2).</li>
+            <li>ABHA ID creation for patients.</li>
+            <li>HIPAA & ISO-27001 data compliance audits.</li>
+          </ul>
+        </div>
+
+        <div class="card amber">
+          <h3>₹7.0 Lakhs (14%)</h3>
+          <p style="color: #fcd34d; font-weight: 700; font-size: 0.85rem;">Runway & Operations</p>
+          <ul>
+            <li>18-month serverless cloud hosting.</li>
+            <li>Meta enterprise WABA volume deposits.</li>
+            <li>Customer support desk & legal.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stat-box" style="text-align: left; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span style="color: var(--emerald-light); font-weight: 800; font-size: 1rem;">Target Runway Milestone:</span>
+          <span style="color: #cbd5e1; font-size: 0.85rem; margin-left: 8px;">Reach 200 Paying Clinics by Month 12 &rarr; ₹20,00,000 Annual Recurring Revenue (ARR).</span>
+        </div>
+        <div style="font-family: 'Outfit'; font-weight: 800; color: #38bdf8; font-size: 1.1rem;">Cashflow Positive by Month 14</div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <div>RxNXT — ₹50L Expansion Pitch Deck</div>
+      <div>Strict capital efficiency: 70% of capital directly drives clinic acquisition and product monetization</div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 7: 12-MONTH ROADMAP ==================== -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="brand">RxNXT <span>Cloud</span> <span class="brand-badge">Growth Milestones</span></div>
+      <div class="slide-category">6. 12-Month Execution Roadmap</div>
+      <div class="slide-number">Slide 07</div>
+    </div>
+
+    <div class="title-block">
+      <h2>12-Month Operational Milestones & Traction Trajectory</h2>
+      <p>Clear, measurable operational quarterly gates from 10 pilot clinics to 200 commercial deployments.</p>
+    </div>
+
+    <div class="content-area">
+      <div class="grid-4">
+        <div class="card blue">
+          <div style="font-size: 0.7rem; font-weight: 800; color: var(--blue-light); text-transform: uppercase;">Q1 • Months 1-3</div>
+          <h3 style="margin-top: 4px;">Pilot Lock-In</h3>
+          <ul>
+            <li><strong>30 Active Clinics</strong> in Warangal & Hyderabad.</li>
+            <li><strong>₹3.0 Lakhs</strong> in pilot / annual subscription billing.</li>
+            <li>Meta Tier 2 verification (10,000 msgs/day).</li>
+            <li>Doctor feedback NPS &gt; 70.</li>
+          </ul>
+        </div>
+
+        <div class="card emerald">
+          <div style="font-size: 0.7rem; font-weight: 800; color: var(--emerald-light); text-transform: uppercase;">Q2 • Months 4-6</div>
+          <h3 style="margin-top: 4px;">Commercial Scaling</h3>
+          <ul>
+            <li><strong>75 Active Clinics</strong> across Telangana.</li>
+            <li><strong>₹7.5 Lakhs ARR</strong> run rate.</li>
+            <li>Launch Clinic Pharmacy Module.</li>
+            <li>Deploy WhatsApp UPI billing links.</li>
+          </ul>
+        </div>
+
+        <div class="card purple">
+          <div style="font-size: 0.7rem; font-weight: 800; color: #c084fc; text-transform: uppercase;">Q3 • Months 7-9</div>
+          <h3 style="margin-top: 4px;">Regional Expansion</h3>
+          <ul>
+            <li><strong>130 Active Clinics</strong> (Enter Andhra Pradesh).</li>
+            <li><strong>₹13.0 Lakhs ARR</strong> run rate.</li>
+            <li>Full ABDM M1/M2 integration.</li>
+            <li>AI prescription suggestion engine.</li>
+          </ul>
+        </div>
+
+        <div class="card amber">
+          <div style="font-size: 0.7rem; font-weight: 800; color: #fcd34d; text-transform: uppercase;">Q4 • Months 10-12</div>
+          <h3 style="margin-top: 4px;">Series Pre-A Round</h3>
+          <ul>
+            <li><strong>200+ Active Clinics</strong>.</li>
+            <li><strong>₹20.0 Lakhs ARR</strong> baseline.</li>
+            <li>&gt; 150,000 patient prescriptions/mo.</li>
+            <li>Open ₹2.5 Cr Pre-A institutional round.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <div>RxNXT — ₹50L Expansion Pitch Deck</div>
+      <div>Designed for institutional scalability and venture-backed pre-A readiness</div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 8: 30-DAY ACTION PLAN ==================== -->
+  <div class="slide">
+    <div class="slide-header">
+      <div class="brand">RxNXT <span>Cloud</span> <span class="brand-badge">Immediate Plan</span></div>
+      <div class="slide-category">7. 30-Day Sprint to Close ₹50L</div>
+      <div class="slide-number">Slide 08</div>
+    </div>
+
+    <div class="title-block">
+      <h2>The 30-Day Action Plan to Unlock the ₹50L Funding</h2>
+      <p>The exact steps to package existing product excellence into indisputable committee traction proof.</p>
+    </div>
+
+    <div class="content-area">
+      <div class="grid-3">
+        <div class="card emerald">
+          <h3>Step 1: Onboard 10-15 Doctors</h3>
+          <p><strong>Timeline: Days 1 – 14</strong></p>
+          <ul>
+            <li>Deploy RxNXT into 10–15 private clinics in Warangal & Hyderabad.</li>
+            <li>Leverage SRiX clinical network and local doctor associations (IMA).</li>
+            <li>Ensure each doctor writes 15–25 prescriptions daily.</li>
+          </ul>
+        </div>
+
+        <div class="card blue">
+          <h3>Step 2: Extract Traction Proof</h3>
+          <p><strong>Timeline: Days 15 – 22</strong></p>
+          <ul>
+            <li>Pull database analytics: Total prescriptions generated (5,000+).</li>
+            <li>Measure average prescribing speed: Under 32 seconds verified.</li>
+            <li>Meta WhatsApp delivery rates: &gt;94% successful delivery.</li>
+            <li>Record 3 video testimonials from senior practitioners.</li>
+          </ul>
+        </div>
+
+        <div class="card purple">
+          <h3>Step 3: Secure 3-5 Paid LOIs</h3>
+          <p><strong>Timeline: Days 23 – 30</strong></p>
+          <ul>
+            <li>Collect 3 to 5 signed Letters of Intent (LOIs) or paid pilot cheques.</li>
+            <li>Present traction report to SRiX Incubator Review Board.</li>
+            <li>Formally submit SISFS Component 2 / DST NIDHI-SSS application.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="profit-box" style="background: rgba(18, 27, 45, 0.8); border: 1px solid rgba(16, 185, 129, 0.4); padding: 14px; margin-top: 14px; border-radius: 10px; display: flex; align-items: center; justify-content: space-around;">
+        <div style="font-size: 0.85rem; color: #cbd5e1;">🎯 <strong>Funding Route 1:</strong> SISFS Component 2 (SRiX Incubator Portal)</div>
+        <div style="font-size: 0.85rem; color: #cbd5e1;">🎯 <strong>Funding Route 2:</strong> DST NIDHI-SSS Seed Support</div>
+        <div style="font-size: 0.85rem; color: #cbd5e1;">🎯 <strong>Funding Route 3:</strong> BIRAC BIG / Angel Syndicates</div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <div>RxNXT — ₹50L Expansion Pitch Deck</div>
+      <div>Phase 1 technology is 100% built — the next 30 days are dedicated to clinical proof of adoption</div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 9: CONCLUSION ==================== -->
+  <div class="slide cover-slide">
+    <div>
+      <div class="cover-badge">
+        🚀 Ready for Scale
+      </div>
+      <h1 class="cover-title" style="font-size: 2.6rem;">Let's Transform Indian OPD Care</h1>
+      <p class="cover-subtitle" style="max-width: 700px;">
+        RxNXT combines sub-30-second prescribing speed with zero-cost client-side architecture, regulatory-grade doctor verification, and an automated WhatsApp patient retention loop.
+      </p>
+
+      <div class="card blue" style="max-width: 650px; margin: 0 auto 25px auto; text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span style="font-family: 'Outfit'; font-weight: 800; font-size: 1.1rem; color: white;">RxNXT Technologies Pvt. Ltd.</span>
+          <span style="font-size: 0.75rem; color: var(--emerald-light); font-weight: 700;">SRiX Incubator Cohort</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 4px;">📍 Supported by SR Innovation Exchange (SRiX), DST, Govt of India</p>
+        <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 4px;">🌐 Live Cloud Platform: Deployed on Vercel Edge + Supabase Mumbai</p>
+        <p style="font-size: 0.85rem; color: #94a3b8;">📧 Contact: founders@rxnxt.com | Warangal & Hyderabad, Telangana</p>
+      </div>
+    </div>
+
+    <div class="slide-footer" style="width: 100%; max-width: 820px; margin: 0 auto;">
+      <div>Thank You • RxNXT Seed Expansion Pitch Deck</div>
+      <div>September 2026</div>
+    </div>
+  </div>
+
+</body>
+</html>

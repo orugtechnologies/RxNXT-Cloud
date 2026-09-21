@@ -33,6 +33,7 @@ export interface DashboardResponse {
   recentPrescriptions: RecentPrescription[];
   followUps: UpcomingFollowUp[];
   frequentMedicines: FrequentMedicine[];
+  todayQueue?: any[];
 }
 
 // ==========================================

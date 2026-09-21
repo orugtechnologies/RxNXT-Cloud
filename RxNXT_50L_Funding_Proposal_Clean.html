@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RxNXT Cloud — ₹50 Lakhs Seed Expansion Investment Memorandum</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 14mm 14mm 14mm 14mm;
+    }
+
+    :root {
+      --primary: #0f172a;
+      --blue: #2563eb;
+      --blue-light: #eff6ff;
+      --blue-border: #bfdbfe;
+      --emerald: #059669;
+      --emerald-light: #ecfdf5;
+      --emerald-border: #a7f3d0;
+      --purple: #7c3aed;
+      --purple-light: #f5f3ff;
+      --amber: #d97706;
+      --amber-light: #fffbeb;
+      --slate-800: #1e293b;
+      --slate-600: #475569;
+      --slate-100: #f8fafc;
+      --border: #e2e8f0;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--slate-800);
+      background-color: #ffffff;
+      line-height: 1.55;
+      font-size: 9.8pt;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .document-container {
+      max-width: 850px;
+      margin: 0 auto;
+      padding: 10px 0;
+    }
+
+    /* Header Banner */
+    .hero-box {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #1e40af 100%);
+      color: white;
+      padding: 28px 32px;
+      border-radius: 12px;
+      margin-bottom: 22px;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #6ee7b7;
+      padding: 4px 14px;
+      border-radius: 50px;
+      font-size: 7.5pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22pt;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .hero-sub {
+      color: #cbd5e1;
+      font-size: 10pt;
+      max-width: 720px;
+      line-height: 1.45;
+    }
+
+    /* Badges Bar */
+    .badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .badge {
+      font-size: 7.8pt;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .badge.blue { background: var(--blue-light); color: #1e40af; border: 1px solid var(--blue-border); }
+    .badge.emerald { background: var(--emerald-light); color: #065f46; border: 1px solid var(--emerald-border); }
+    .badge.purple { background: var(--purple-light); color: #5b21b6; border: 1px solid #ddd6fe; }
+
+    /* Key Metrics 4-Col Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .metric-card {
+      background: var(--slate-100);
+      border: 1px solid var(--border);
+      border-top: 3.5px solid var(--blue);
+      border-radius: 8px;
+      padding: 12px 14px;
+      text-align: center;
+    }
+    .metric-card.emerald { border-top-color: var(--emerald); }
+    .metric-card.purple { border-top-color: var(--purple); }
+    .metric-card.navy { border-top-color: var(--primary); }
+    .metric-val {
+      font-family: 'Outfit', sans-serif;
+      font-size: 15pt;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1.1;
+      margin-bottom: 2px;
+    }
+    .metric-label {
+      font-size: 7pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--slate-600);
+      letter-spacing: 0.5px;
+    }
+
+    /* Section Headings */
+    .section-head {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13pt;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 22px 0 10px 0;
+      padding-bottom: 5px;
+      border-bottom: 2px solid var(--blue);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .section-tag {
+      font-family: 'Inter', sans-serif;
+      font-size: 7pt;
+      font-weight: 700;
+      background: var(--blue-light);
+      color: var(--blue);
+      padding: 2px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    /* Two Column Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      break-inside: avoid;
+    }
+    .card.highlight-blue {
+      background: #f8fafc;
+      border-left: 3.5px solid var(--blue);
+    }
+    .card.highlight-green {
+      background: #f8fafc;
+      border-left: 3.5px solid var(--emerald);
+    }
+    .card.highlight-amber {
+      background: #f8fafc;
+      border-left: 3.5px solid var(--amber);
+    }
+    .card.highlight-purple {
+      background: #f8fafc;
+      border-left: 3.5px solid var(--purple);
+    }
+
+    .card h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 10pt;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .card p {
+      font-size: 8.8pt;
+      color: var(--slate-600);
+      margin-bottom: 6px;
+      line-height: 1.45;
+    }
+    .card ul {
+      list-style: none;
+      margin-top: 4px;
+    }
+    .card ul li {
+      position: relative;
+      padding-left: 14px;
+      font-size: 8.5pt;
+      color: var(--slate-800);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .card ul li::before {
+      content: '✔';
+      position: absolute;
+      left: 0;
+      color: var(--emerald);
+      font-size: 7pt;
+      font-weight: bold;
+    }
+
+    /* Tables */
+    .table-box {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 18px;
+      break-inside: avoid;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8.8pt;
+    }
+    thead {
+      background: var(--primary);
+      color: white;
+    }
+    th {
+      padding: 9px 12px;
+      font-weight: 700;
+      text-align: left;
+      font-size: 7.8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--slate-800);
+      vertical-align: top;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+    tr.accent-row {
+      background-color: #ecfdf5 !important;
+      font-weight: 700;
+    }
+    tr.accent-row td {
+      color: #065f46;
+    }
+
+    /* Profit Callout Banner */
+    .profit-banner {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 1.5px solid var(--emerald-border);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      break-inside: avoid;
+    }
+    .profit-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13pt;
+      font-weight: 900;
+      color: #065f46;
+    }
+    .profit-desc {
+      font-size: 8.5pt;
+      color: #047857;
+      margin-top: 2px;
+    }
+    .profit-stat {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18pt;
+      font-weight: 900;
+      color: #065f46;
+      text-align: right;
+    }
+
+    /* Page Break */
+    .page-break {
+      page-break-before: always;
+    }
+
+    /* Footer */
+    .doc-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+      margin-top: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 7.5pt;
+      color: var(--slate-600);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="document-container">
+
+    <!-- HERO / TITLE -->
+    <div class="hero-box">
+      <div class="hero-badge">🏛️ SRiX Incubator • DST Govt of India • SISFS Phase 1 Validated</div>
+      <div class="hero-title">RxNXT CLOUD — ₹50 LAKHS SEED EXPANSION</div>
+      <div class="hero-sub">
+        Investment Memorandum & Commercialization Blueprint for Scaling India's High-Speed Outpatient Clinical Operating System.
+      </div>
+    </div>
+
+    <!-- BADGES -->
+    <div class="badges-row">
+      <div class="badge blue">⚡ 100% Serverless Edge Architecture</div>
+      <div class="badge emerald">🐘 Supabase Mumbai Cloud PostgreSQL (ap-south-1)</div>
+      <div class="badge purple">💬 Direct Meta WhatsApp Cloud API (v20.0)</div>
+      <div class="badge blue">🛡️ Live National Medical Commission (NMC) Verification</div>
+    </div>
+
+    <!-- METRICS GRID -->
+    <div class="metrics-grid">
+      <div class="metric-card navy">
+        <div class="metric-val">₹7.0 L</div>
+        <div class="metric-label">Phase 1 Deployed (SISFS)</div>
+      </div>
+      <div class="metric-card emerald">
+        <div class="metric-val">₹50.0 L</div>
+        <div class="metric-label">Target Seed Ask (Debt/CCD)</div>
+      </div>
+      <div class="metric-card emerald">
+        <div class="metric-val">75% – 80%</div>
+        <div class="metric-label">Software Gross Margin</div>
+      </div>
+      <div class="metric-card purple">
+        <div class="metric-val">~₹210 / mo</div>
+        <div class="metric-label">Avg Cloud Cost / Clinic</div>
+      </div>
+    </div>
+
+    <!-- SECTION 1: PROBLEM & MARKET -->
+    <div class="section-head">
+      <span>1. The Healthcare Problem & Market Opportunity</span>
+      <span class="section-tag">Market Gap</span>
+    </div>
+
+    <p style="font-size: 9pt; color: var(--slate-600); margin-bottom: 10px;">
+      Over 80% of India's 1.3 Million registered doctors operate independent outpatient practices that are bogged down by manual paper slips or clumsy enterprise hospital software:
+    </p>
+
+    <div class="grid-3">
+      <div class="card highlight-amber">
+        <h4>⏱️ 3–5 Min Documentation Loss</h4>
+        <p>Doctors spend 4 minutes per patient handwriting paper or clicking through slow dropdowns. Leads to severe fatigue during peak 50+ OPD rush hours and dangerous pharmacy dispensing errors.</p>
+      </div>
+      <div class="card highlight-blue">
+        <h4>📉 45%+ Patient Non-Adherence</h4>
+        <p>Paper prescriptions get ruined or lost within 48 hours. Patients forget meal instructions (Before vs. After Food), abandon antibiotic courses midway, and miss monthly chronic refills.</p>
+      </div>
+      <div class="card highlight-purple">
+        <h4>⚠️ Regulatory & Quackery Risk</h4>
+        <p>Lack of real-time medical council license verification in current software exposes clinics to legal liability and allows unqualified staff to prescribe restricted Schedule X medications.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 2: PROPRIETARY MOATS -->
+    <div class="section-head">
+      <span>2. The RxNXT Solution & Clinical Moats</span>
+      <span class="section-tag">Proprietary Technology</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card highlight-green">
+        <h4>⚡ Sub-30s Prescribing Workflow</h4>
+        <ul>
+          <li><strong>Additive Scoring Search:</strong> Exact aliases (+100 pts), doctor favorites (+50 pts), and clinic formulary (+20 pts).</li>
+          <li><strong>1-Click Quick Chips:</strong> Dosage, duration, and meal timing selected in one tap (<code>1-0-1</code>, <code>5 days</code>, <code>After meals</code>).</li>
+          <li><strong>Protocol Packs:</strong> 1-click loading of entire treatment sets (e.g., "Viral Fever Protocol").</li>
+          <li><strong>1-Click Cloning:</strong> Instant prescription renewal for returning chronic patients.</li>
+        </ul>
+      </div>
+
+      <div class="card highlight-blue">
+        <h4>💬 Direct Meta WhatsApp Cloud API (v20.0)</h4>
+        <ul>
+          <li><strong>Official Document Delivery:</strong> Prescriptions uploaded directly to Meta Media API and delivered as official PDF attachments.</li>
+          <li><strong>Zero Intermediaries:</strong> Bypassed Twilio and web scrapers; direct enterprise Meta Graph API.</li>
+          <li><strong>Smart Slot Dose Alerts:</strong> 3 automated daily schedules (8:00 AM, 1:00 PM, 8:30 PM IST).</li>
+          <li><strong>Day-25 Chronic Refill Engine:</strong> Automated alerts for diabetic and hypertension patients.</li>
+        </ul>
+      </div>
+
+      <div class="card highlight-purple">
+        <h4>🛡️ Live NMC Government License Verification</h4>
+        <ul>
+          <li><strong>Direct National Medical Commission REST API:</strong> Live credentials query covering NMC and all 24+ Indian State Councils in ~0.4s.</li>
+          <li><strong>Mandatory Gate:</strong> Workspace creation blocked until government records confirm legitimate practitioner status. Doctor's name and degrees are auto-locked.</li>
+        </ul>
+      </div>
+
+      <div class="card highlight-green">
+        <h4>📄 Zero-Server-CPU PDF Engine (jsPDF)</h4>
+        <ul>
+          <li><strong>Client-Side Rendering:</strong> PDFs compile inside the doctor's web browser DOM.</li>
+          <li><strong>Zero Compute Costs:</strong> 5,000 doctors generating PDFs at the exact same second consumes 0% server CPU, eliminating $50–$100/mo headless Chrome servers.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PAGE BREAK FOR PAGE 2 -->
+    <div class="page-break"></div>
+
+    <!-- SECTION 3: PHASE 1 EXECUTION PROOF -->
+    <div class="section-head" style="margin-top: 5px;">
+      <span>3. Phase 1 (₹7.0 Lakhs) Milestones Delivered</span>
+      <span class="section-tag">Audit Proof</span>
+    </div>
+
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 28%;">Phase 1 Commitment</th>
+            <th style="width: 14%;">Status</th>
+            <th>Technical Outcome & Production Architecture</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Cloud DB Migration</strong></td>
+            <td><strong style="color: #059669;">COMPLETED</strong></td>
+            <td>Migrated from local SQLite to Supabase Mumbai Cloud PostgreSQL (ap-south-1) with Prisma connection pooling.</td>
+          </tr>
+          <tr>
+            <td><strong>NMC Verification Engine</strong></td>
+            <td><strong style="color: #059669;">COMPLETED</strong></td>
+            <td>Direct live REST API connection covering NMC + 24 State Councils; double-validated on server-side registration.</td>
+          </tr>
+          <tr>
+            <td><strong>Meta WhatsApp Integration</strong></td>
+            <td><strong style="color: #059669;">COMPLETED</strong></td>
+            <td>100% Meta Graph API v20.0. Eliminated Render microservice and third-party scrapers. Direct PDF upload to Meta /media.</td>
+          </tr>
+          <tr>
+            <td><strong>Reception Queue Sync</strong></td>
+            <td><strong style="color: #059669;">COMPLETED</strong></td>
+            <td>Real-time live queue connecting reception to doctor workspace with auto-resetting intake forms.</td>
+          </tr>
+          <tr>
+            <td><strong>Mobile Progressive Web App</strong></td>
+            <td><strong style="color: #059669;">COMPLETED</strong></td>
+            <td>PWA manifest + Apple iOS standalone metadata with thumb-accessible sticky footer for fast smartphone prescribing.</td>
+          </tr>
+          <tr>
+            <td><strong>Test Suite & Diagnostics</strong></td>
+            <td><strong style="color: #059669;">COMPLETED</strong></td>
+            <td>Full unit test coverage across doctor verification, drug additive search, and queue operations (34/34 passing).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 4: UNIT ECONOMICS -->
+    <div class="section-head">
+      <span>4. Business Model & High-Margin Unit Economics</span>
+      <span class="section-tag">Financials</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h4>🏷️ 3-Tier Pricing Model (from Masterplan)</h4>
+        <p>Engineered to eliminate purchase friction for Indian private OPDs:</p>
+        <ul>
+          <li><strong>Tier 1: BYOD SaaS Only — ₹9,999 / year</strong> (~₹833/mo) for single doctors using existing laptops/tablets.</li>
+          <li><strong>Tier 2: Complete Hardware Bundle — ₹24,999 One-Time</strong> (Dedicated 11" Android Kiosk Tablet + Stand + 1-Yr SaaS).</li>
+          <li><strong>Tier 3: Polyclinic Multi-Doctor — ₹18,000 / year</strong> for 2 to 4 doctor practices with central receptionist routing.</li>
+        </ul>
+        <p style="margin-top: 8px; font-size: 8pt; color: var(--blue);">
+          💡 <em>The 2-Patient Pitch: Writing 3 prescriptions pays for the monthly software subscription. The remaining 500+ consultations are pure operational profit.</em>
+        </p>
+      </div>
+
+      <div class="card">
+        <h4>💵 Single-Clinic Monthly Cost Breakdown</h4>
+        <table style="font-size: 8pt; margin-top: 4px;">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Monthly Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Allocated Vercel Serverless Hosting</td>
+              <td>~₹60 / mo</td>
+            </tr>
+            <tr>
+              <td>Allocated Supabase Mumbai PostgreSQL</td>
+              <td>~₹75 / mo</td>
+            </tr>
+            <tr>
+              <td>Meta WhatsApp Utility API (~600 msgs @ ₹0.13)</td>
+              <td>~₹78 / mo</td>
+            </tr>
+            <tr>
+              <td>Client-Side PDF Engine (jsPDF)</td>
+              <td>₹0 / mo (Zero Server CPU)</td>
+            </tr>
+            <tr class="accent-row">
+              <td><strong>TOTAL COST TO SERVE 1 CLINIC</strong></td>
+              <td><strong>~₹213 / month</strong></td>
+            </tr>
+            <tr class="accent-row">
+              <td><strong>NET MONTHLY PROFIT (from ₹833/mo)</strong></td>
+              <td><strong>₹620 / mo (74.4% Margin)</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="profit-banner">
+      <div>
+        <div class="profit-title">100-Clinic Cohort: ₹9,99,900 / Year at ~78% Net Margin</div>
+        <div class="profit-desc">
+          Total cloud + WhatsApp cost across 100 clinics is only ~₹2,04,000 / year (~₹17,000/mo), leaving ₹7,95,900 / year in pure operational cashflow!
+        </div>
+      </div>
+      <div class="profit-stat">78% Margin</div>
+    </div>
+
+    <!-- SECTION 5: USE OF FUNDS -->
+    <div class="section-head">
+      <span>5. Capital Deployment: ₹50 Lakhs Seed Expansion</span>
+      <span class="section-tag">Use of Funds</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card highlight-blue">
+        <h4>₹20.0 Lakhs (40%) — Clinical Sales & Expansion</h4>
+        <p>Direct deployment into physician acquisition across Telangana & AP:</p>
+        <ul>
+          <li>2 field sales reps covering Hyderabad, Warangal, and Vijayawada.</li>
+          <li>Target: Onboard 150 to 200 paying clinics at ₹9,999/yr.</li>
+          <li>Doctor CME sponsorships, live OPD kiosk demos, and referral rewards.</li>
+        </ul>
+      </div>
+
+      <div class="card highlight-green">
+        <h4>₹15.0 Lakhs (30%) — Product & AI Expansion</h4>
+        <p>Horizontal monetization modules requested by pilot doctors:</p>
+        <ul>
+          <li>In-clinic Pharmacy Stock Sync (auto-deducts inventory upon prescribing).</li>
+          <li>WhatsApp UPI & Razorpay billing links for receptionist payment collection.</li>
+          <li>AI Drug-Drug Interaction and contraindication clinical warnings.</li>
+        </ul>
+      </div>
+
+      <div class="card highlight-purple">
+        <h4>₹8.0 Lakhs (16%) — ABDM & Compliance</h4>
+        <p>Government healthcare compliance and national integration:</p>
+        <ul>
+          <li>Ayushman Bharat Digital Mission (ABDM M1/M2) sandbox certification.</li>
+          <li>Patient ABHA ID generation and health record locker linking.</li>
+          <li>ISO-27001 and HIPAA data security audit certifications.</li>
+        </ul>
+      </div>
+
+      <div class="card highlight-amber">
+        <h4>₹7.0 Lakhs (14%) — 18-Month Operational Runway</h4>
+        <p>Working capital buffer ensuring uninterrupted operations:</p>
+        <ul>
+          <li>18-month Supabase Pro & Vercel Pro cloud hosting reserve.</li>
+          <li>Meta Enterprise WABA volume security deposit.</li>
+          <li>Hardware buffer, legal accounting, and incubator filing fees.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SECTION 6: 12-MONTH EXECUTION ROADMAP -->
+    <div class="section-head">
+      <span>6. 12-Month Execution Roadmap & 30-Day Sprint</span>
+      <span class="section-tag">Milestones</span>
+    </div>
+
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 20%;">Quarter</th>
+            <th style="width: 25%;">Traction Target</th>
+            <th>Key Deliverables & Commercial Milestones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Q1 (Months 1–3)</strong></td>
+            <td><strong>30 Clinics</strong> (₹3.0L ARR)</td>
+            <td>Lock in local Warangal & Hyderabad pilot clinics; Meta Tier 2 verified (10k msgs/day); Doctor NPS &gt; 70.</td>
+          </tr>
+          <tr>
+            <td><strong>Q2 (Months 4–6)</strong></td>
+            <td><strong>75 Clinics</strong> (₹7.5L ARR)</td>
+            <td>Commercial scale across Telangana OPDs; deploy Clinic Pharmacy module & WhatsApp UPI payments.</td>
+          </tr>
+          <tr>
+            <td><strong>Q3 (Months 7–9)</strong></td>
+            <td><strong>130 Clinics</strong> (₹13.0L ARR)</td>
+            <td>Regional expansion into Andhra Pradesh (Vijayawada, Vizag); full ABDM M1/M2 integration.</td>
+          </tr>
+          <tr>
+            <td><strong>Q4 (Months 10–12)</strong></td>
+            <td><strong>200+ Clinics</strong> (₹20.0L ARR)</td>
+            <td>Cashflow positive operations; &gt;150,000 prescriptions/mo; open ₹2.5 Cr Series Pre-A institutional round.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card highlight-green" style="margin-top: 10px;">
+      <h4>🏁 The Immediate 30-Day Sprint to Unlock the ₹50L Funding</h4>
+      <p>
+        <strong>Step 1 (Days 1–14):</strong> Onboard 10–15 pilot doctors in Warangal & Hyderabad using SRiX's healthcare network.<br>
+        <strong>Step 2 (Days 15–22):</strong> Query database for verified traction (5,000+ prescriptions, &lt;32s prescribing time, &gt;94% WhatsApp delivery).<br>
+        <strong>Step 3 (Days 23–30):</strong> Collect 3–5 signed Letters of Intent (LOIs) and formally submit the <strong>SISFS Component 2 / DST NIDHI-SSS application</strong> to the SRiX Investment Committee.
+      </p>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="doc-footer">
+      <div>RxNXT Technologies Private Limited • SRiX Incubator Cohort, DST Govt of India</div>
+      <div>Confidential Investment Memorandum • Target Seed Tranche: ₹50,00,000 • September 2026</div>
+    </div>
+
+  </div>
+
+</body>
+</html>

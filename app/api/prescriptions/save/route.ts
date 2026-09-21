@@ -94,16 +94,34 @@ export async function POST(request: Request) {
         })),
       });
 
-      // Supersede old PENDING reminders for this patient so new prescriptions replace old schedules
-      await tx.reminder.updateMany({
+      // ── Doctor-Scoped & Type-Aware Smart Superseding ──────────────────────────
+      // Look up previous prescriptions by the SAME DOCTOR for this patient
+      const prevDocPrescriptions = await tx.prescription.findMany({
         where: {
           patientId: patientId,
-          status: 'PENDING',
+          doctorId: user.id,
         },
-        data: {
-          status: 'SUPERSEDED',
-        },
+        select: { id: true },
       });
+      const prevPrescriptionIds = prevDocPrescriptions.map((p) => p.id);
+
+      if (prevPrescriptionIds.length > 0) {
+        // Only supersede acute dose reminders and follow-ups belonging to THIS DOCTOR.
+        // Standing chronic care monthly refills (REFILL) and other specialists' care plans remain protected.
+        await tx.reminder.updateMany({
+          where: {
+            patientId: patientId,
+            prescriptionId: { in: prevPrescriptionIds },
+            status: 'PENDING',
+            messageType: {
+              in: ['MEDICINE', 'MEDICINE_MORNING', 'MEDICINE_AFTERNOON', 'MEDICINE_NIGHT', 'FOLLOW_UP'],
+            },
+          },
+          data: {
+            status: 'SUPERSEDED',
+          },
+        });
+      }
 
       // Collect all reminders for high-performance bulk creation
       const remindersToCreate: Array<{

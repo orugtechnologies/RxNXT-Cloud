@@ -8,4 +8,5 @@ rxnxt-db.json
 coverage/  
 test-report.html
 scratch/
-  
+*.tsbuildinfo
+test_download.pdf

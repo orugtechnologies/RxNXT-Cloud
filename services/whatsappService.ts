@@ -131,6 +131,10 @@ async function sendViaMetaCloudAPI(
         }),
       });
 
+      if (!response) {
+        throw new Error('No response received from Meta Graph API');
+      }
+
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
@@ -322,7 +326,7 @@ async function dispatchWhatsAppMessage(options: {
     });
     return docResult || textResult || templateResult;
   } catch (textErr) {
-    if (docResult) return docResult;
+    if (docResult || templateResult) return docResult || templateResult;
     throw textErr;
   }
 }

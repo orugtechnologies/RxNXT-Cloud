@@ -53,7 +53,7 @@ export async function GET(
 
     // Process medical history for AI summarization
     const historyData = encounters.map((enc) => {
-      const meds = enc.prescription?.medicines.map(m => m.customName || m.drug?.name).filter(Boolean) || [];
+      const meds = enc.prescription?.medicines.map(m => m.customName || m.drug?.brandName || m.drug?.genericName).filter(Boolean) || [];
       return {
         date: enc.createdAt.toISOString().split('T')[0],
         chiefComplaint: enc.chiefComplaint || 'None noted',
