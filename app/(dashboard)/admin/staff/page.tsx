@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, Users, PlusCircle, Building2, Stethoscope, PhoneCall, X } from 'lucide-react';
+import { Loader2, Users, PlusCircle, Building2, Stethoscope, PhoneCall, Pill, X } from 'lucide-react';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 
 export default function StaffManagementPage() {
@@ -73,6 +73,9 @@ export default function StaffManagementPage() {
     if (role === 'nurse') {
       return <span className="bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1"><Stethoscope className="w-3 h-3" /> Nurse</span>;
     }
+    if (role === 'pharmacist') {
+      return <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1"><Pill className="w-3 h-3" /> Pharmacist</span>;
+    }
     return null;
   };
 
@@ -86,9 +89,9 @@ export default function StaffManagementPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center">
             Support Staff
-            <InfoTooltip text="Create accounts for your front desk and nursing staff. Support staff have restricted dashboards tailored to their specific daily tasks." />
+            <InfoTooltip text="Create accounts for your front desk, pharmacy, and nursing staff. Support staff have dedicated dashboards tailored to their specific daily tasks." />
           </h1>
-          <p className="text-slate-500">Manage non-doctor staff like Receptionists and Nurses.</p>
+          <p className="text-slate-500">Manage non-doctor staff like Receptionists, Pharmacists, and Nurses.</p>
         </div>
         <Button className="bg-clinic-blue hover:bg-clinic-blueDark" onClick={() => setIsModalOpen(true)}>
           <PlusCircle className="w-4 h-4 mr-2" /> Add Staff Member
@@ -128,7 +131,8 @@ export default function StaffManagementPage() {
                   value={formData.role} 
                   onChange={(e) => setFormData({...formData, role: e.target.value})}
                 >
-                  <option value="receptionist">Receptionist (Front Desk)</option>
+                  <option value="receptionist">Receptionist (Front Desk & Queue)</option>
+                  <option value="pharmacist">Pharmacist (Pharmacy Counter & Stock)</option>
                   <option value="nurse">Nurse / Medical Assistant</option>
                 </select>
               </div>

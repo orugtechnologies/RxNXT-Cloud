@@ -243,6 +243,6 @@ export async function extendClinicTrial(clinicId: string, additionalDays: number
   return {
     success: true,
     newExpiry,
-    status: updatedClinic.subscriptionStatus,
+    status: updatedClinic?.subscriptionStatus || (current.isTrial ? 'TRIAL' : 'ACTIVE'),
   };
 }

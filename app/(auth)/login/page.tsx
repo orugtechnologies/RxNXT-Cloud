@@ -77,36 +77,21 @@ export default function LoginPage() {
         <div className="mb-6 p-3 bg-emerald-50/80 border border-emerald-200/80 rounded-xl">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">
-              ⚡ Quick Demo Logins
+              👑 Master Clinic Account
             </span>
             <span className="text-[10px] text-emerald-600 font-mono">pass: password123</span>
           </div>
-          <div className="grid grid-cols-3 gap-1.5">
-            <button
-              type="button"
-              onClick={() => fillDemoAccount('doctor@rxnxt.com')}
-              className="flex items-center justify-center gap-1 py-1.5 px-2 bg-white hover:bg-emerald-100/70 border border-emerald-200 rounded-lg text-xs font-medium text-emerald-900 transition-colors shadow-sm"
-            >
-              <Stethoscope className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>Doctor</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemoAccount('receptionist@rxnxt.com')}
-              className="flex items-center justify-center gap-1 py-1.5 px-2 bg-white hover:bg-emerald-100/70 border border-emerald-200 rounded-lg text-xs font-medium text-emerald-900 transition-colors shadow-sm"
-            >
-              <UserCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-              <span>Reception</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemoAccount('pharmacist@rxnxt.com')}
-              className="flex items-center justify-center gap-1 py-1.5 px-2 bg-white hover:bg-emerald-100/70 border border-emerald-200 rounded-lg text-xs font-medium text-emerald-900 transition-colors shadow-sm"
-            >
-              <Pill className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-              <span>Pharmacy</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => fillDemoAccount('doctor@rxnxt.com')}
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-white hover:bg-emerald-100/70 border border-emerald-200 rounded-lg text-xs font-bold text-emerald-900 transition-colors shadow-sm"
+          >
+            <Stethoscope className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Doctor & Clinic Director (doctor@rxnxt.com)</span>
+          </button>
+          <p className="text-[11px] text-slate-500 text-center mt-2">
+            Login with this master account to add your Staff, Pharmacists & Doctors.
+          </p>
         </div>
 
         <form className="space-y-5" onSubmit={handleLogin}>
