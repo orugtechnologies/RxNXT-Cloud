@@ -104,6 +104,8 @@ export async function POST(request: Request) {
           where: { id: prescription.doctorId || user.id }
         });
         finalPdfBase64 = generatePrescriptionBase64({
+          rxId: prescription.id,
+          prescriptionId: prescription.id,
           patient: prescription.patient,
           medicines: (prescription.medicines || []).map(m => ({
             id: m.id,

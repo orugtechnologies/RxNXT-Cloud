@@ -125,14 +125,19 @@ export default function ReviewPrescriptionModal({
             <X size={20} />
           </button>
 
-          <div className="flex justify-center mb-6">
-            <div className="h-20 w-20 bg-emerald-100 text-clinic-emerald rounded-full flex items-center justify-center">
-              <CheckCircle size={40} />
+          <div className="flex justify-center mb-4">
+            <div className="h-16 w-16 bg-emerald-100 text-clinic-emerald rounded-full flex items-center justify-center">
+              <CheckCircle size={36} />
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-clinic-navy mb-2">Prescription Generated!</h2>
-          <p className="text-slate-500 mb-6">
-            The PDF has been created for <span className="font-bold">{patient.name}</span>. You can now send it securely via WhatsApp or download it directly.
+          <h2 className="text-2xl font-bold text-clinic-navy mb-1">Prescription Generated!</h2>
+          {prescriptionId && (
+            <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full text-xs font-mono font-bold mb-3 mx-auto">
+              <span>Rx ID: #{prescriptionId.slice(-6).toUpperCase()}</span>
+            </div>
+          )}
+          <p className="text-slate-500 mb-5 text-sm">
+            The official PDF has been created for <span className="font-bold text-slate-800">{patient.name}</span>. You can now send it securely via WhatsApp or download it directly.
           </p>
 
           {sendError && (

@@ -12,6 +12,8 @@ export interface PrescriptionMedicineItem {
 }
 
 export interface PrescriptionPDFData {
+  rxId?: string;
+  prescriptionId?: string;
   patient: {
     id?: string;
     name: string;
@@ -83,7 +85,10 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   const contentWidth = pageWidth - margin * 2; // 180mm
   const bottomThreshold = pageHeight - 35; // Space for footer
 
-  let y = margin;
+  const rawRxId = data.rxId || data.prescriptionId || '';
+  const displayRxId = rawRxId 
+    ? (rawRxId.startsWith('#') ? rawRxId : `#${rawRxId.slice(-6).toUpperCase()}`)
+    : '';
 
   const drawSubHeader = () => {
     doc.setFillColor(30, 41, 59); // Slate-800
@@ -92,7 +97,7 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
     doc.setFontSize(8.5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(100, 116, 139);
-    doc.text(`Prescription for ${data.patient.name || 'Patient'} (Contd.)`, margin, y);
+    doc.text(`Prescription for ${data.patient.name || 'Patient'} ${displayRxId ? `(${displayRxId})` : ''} (Contd.)`, margin, y);
     doc.text(new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }), pageWidth - margin, y, { align: 'right' });
     y += 6;
   };
@@ -119,7 +124,7 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
     doc.setFontSize(6.5);
     doc.setTextColor(148, 163, 184);
     doc.text(
-      'Digitally generated via RxNXT™ • Valid under NMC Regulations 2023 & IT Act, 2000 • e-Prescription valid for 2 weeks from issue or once dispensed.',
+      `Digitally generated via RxNXT™ ${displayRxId ? `• Rx ID: ${displayRxId} ` : ''}• Valid under NMC Regulations 2023 & IT Act, 2000 • Valid for 2 weeks from issue.`,
       margin,
       pageHeight - 10
     );
@@ -205,19 +210,30 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(15, 23, 42);
-  doc.text(data.patient?.name || 'Patient', margin + cardPadding + 16, pY);
+  const patientNameFormatted = doc.splitTextToSize(data.patient?.name || 'Patient', 45)[0];
+  doc.text(patientNameFormatted, margin + cardPadding + 15, pY);
 
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(71, 85, 105);
-  doc.text('AGE / SEX:', margin + 78, pY);
+  doc.text('AGE/SEX:', margin + 65, pY);
   
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(15, 23, 42);
-  doc.text(`${data.patient?.age || '—'} Y / ${data.patient?.gender || '—'}`, margin + 95, pY);
+  doc.text(`${data.patient?.age || '—'}Y / ${data.patient?.gender || '—'}`, margin + 81, pY);
+
+  if (displayRxId) {
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(71, 85, 105);
+    doc.text('Rx ID:', margin + 108, pY);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 118, 110); // Emerald/Teal
+    doc.text(displayRxId, margin + 118, pY);
+  }
 
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(71, 85, 105);
-  doc.text('DATE:', pageWidth - margin - 45, pY);
+  doc.text('DATE:', pageWidth - margin - 35, pY);
   
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(15, 23, 42);

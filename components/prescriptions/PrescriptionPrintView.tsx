@@ -5,6 +5,8 @@ import { PrescribedMedicine } from './PrescriptionCart';
 import { buildPrescriptionDoc, formatScheduleDescription } from '@/lib/prescriptionPdfGenerator';
 
 export interface PrintViewProps {
+  rxId?: string;
+  prescriptionId?: string;
   patient: Patient;
   medicines: PrescribedMedicine[];
   chiefComplaint?: string;

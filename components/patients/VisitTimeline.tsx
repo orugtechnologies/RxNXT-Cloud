@@ -58,11 +58,16 @@ export default function VisitTimeline({
                 onClick={() => toggleExpand(enc.id)}
               >
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
                     <span className="font-bold text-slate-900">{formatDate(enc.created_at)}</span>
                     <Badge variant="secondary" className="bg-slate-100 text-slate-600 font-medium">
                       {relativeTime(enc.created_at)}
                     </Badge>
+                    {enc.prescription_id && (
+                      <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                        Rx ID: #{enc.prescription_id.slice(-6).toUpperCase()}
+                      </span>
+                    )}
                   </div>
                   
                   {enc.chief_complaint ? (
@@ -140,14 +145,25 @@ export default function VisitTimeline({
                     )}
                     
                     {enc.prescription_id && (
-                      <Button 
-                        size="sm" 
-                        onClick={() => onClone(enc.prescription_id!)}
-                        className="w-full sm:w-auto shadow-sm"
-                      >
-                        <Copy className="h-4 w-4 mr-2" />
-                        Clone Prescription
-                      </Button>
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => window.open(`/api/prescriptions/${enc.prescription_id}/pdf`, '_blank')}
+                          className="w-full sm:w-auto text-slate-700 border-slate-300 hover:bg-white"
+                        >
+                          <FileText className="h-4 w-4 mr-1.5 text-slate-500" />
+                          View PDF
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          onClick={() => onClone(enc.prescription_id!)}
+                          className="w-full sm:w-auto shadow-sm"
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          Clone
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </div>

@@ -56,7 +56,12 @@ export default function RecentPrescriptions({ prescriptions, onClone }: RecentPr
                         {rx.patient_name?.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <div className="truncate text-slate-800 font-semibold">{capitalize(rx.patient_name)}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="truncate text-slate-800 font-semibold">{capitalize(rx.patient_name)}</span>
+                          <span className="text-[10px] font-mono font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                            #{rx.id.slice(-6).toUpperCase()}
+                          </span>
+                        </div>
                         <div className="text-xs text-slate-500">
                           {rx.patient_age ? `${rx.patient_age} yrs` : ''} 
                           {rx.patient_gender ? `, ${capitalize(rx.patient_gender)}` : ''}

@@ -40,6 +40,8 @@ export async function GET(
     }
 
     const pdfBuffer = generatePrescriptionBuffer({
+      rxId: prescription.id,
+      prescriptionId: prescription.id,
       patient: prescription.patient,
       medicines: (prescription.medicines || []).map((m) => ({
         id: m.id,

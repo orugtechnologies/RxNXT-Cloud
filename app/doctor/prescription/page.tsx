@@ -267,21 +267,21 @@ function PrescriptionWorkflowContent() {
       }
       
       const data = await res.json();
+      const createdRxId = data.prescriptionId;
+      setPrescriptionId(createdRxId);
       
       try {
         const base64 = generatePrescriptionPDF({
-          patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, ...doctorContext
+          patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, rxId: createdRxId, prescriptionId: createdRxId, ...doctorContext
         }, true) as string;
         setPdfBase64(base64);
 
         generatePrescriptionPDF({
-          patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, ...doctorContext
+          patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, rxId: createdRxId, prescriptionId: createdRxId, ...doctorContext
         }, false);
       } catch (pdfErr) {
         console.warn('PDF rendering warning on client:', pdfErr);
       }
-      
-      setPrescriptionId(data.prescriptionId);
       if (startTime) {
         setLastTimeTaken(Math.floor((Date.now() - startTime) / 1000));
       }
