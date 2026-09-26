@@ -29,6 +29,9 @@ import { useAuth } from '@/hooks/useAuth';
 
 interface PharmacyPrescription {
   id: string;
+  fullRxId?: string;
+  shortToken?: string;
+  displayRxId?: string;
   createdAt: string;
   dispenseStatus: 'PENDING' | 'DISPENSED';
   patient: {
@@ -354,15 +357,17 @@ export default function PharmacistDashboardPage() {
                         {rx.dispenseStatus === 'DISPENSED' ? 'Dispensed' : 'Ready for Dispensing'}
                       </Badge>
                     </div>
-                    <p className="text-xs text-slate-500 flex items-center gap-3 mt-0.5">
-                      <span className="flex items-center gap-1">
-                        <Phone className="h-3 w-3" />
-                        {rx.patient.phone}
+                    <p className="text-xs text-slate-500 flex items-center gap-2 mt-0.5 flex-wrap">
+                      <span className="flex items-center gap-1 font-medium">
+                        <Phone className="h-3 w-3 text-slate-400" />
+                        {rx.patient.phone || 'No Phone'}
                       </span>
                       <span>•</span>
-                      <span>Rx ID: #{rx.id.slice(-6).toUpperCase()}</span>
+                      <span className="font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        {rx.displayRxId || `Rx ID: #${rx.id.slice(-6).toUpperCase()}`}
+                      </span>
                       <span>•</span>
-                      <span>{new Date(rx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span>{new Date(rx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ({new Date(rx.createdAt).toLocaleDateString('en-IN')})</span>
                     </p>
                   </div>
                 </div>

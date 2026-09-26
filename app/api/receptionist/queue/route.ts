@@ -46,10 +46,12 @@ export async function GET() {
     }
 
     const formattedQueue = queueItems.map((q) => {
-      const dd = String(q.createdAt.getDate()).padStart(2, '0');
+      const seq = q.tokenNumber ? String(q.tokenNumber).padStart(3, '0') : '001';
+      const tokenNumberDisplay = `#RX-${seq}`;
+      const yy = String(q.createdAt.getFullYear()).slice(-2);
       const mm = String(q.createdAt.getMonth() + 1).padStart(2, '0');
-      const seq = q.tokenNumber ? String(q.tokenNumber).padStart(2, '0') : '';
-      const tokenNumberDisplay = seq ? `${dd}${mm}${seq}` : null;
+      const dd = String(q.createdAt.getDate()).padStart(2, '0');
+      const fullUnifiedId = `RX-${yy}${mm}${dd}-${seq}`;
 
       return {
         id: q.id,
@@ -64,6 +66,7 @@ export async function GET() {
         status: q.status,
         tokenNumber: q.tokenNumber,
         tokenNumberDisplay,
+        fullUnifiedId,
       };
     });
 

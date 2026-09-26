@@ -4,6 +4,7 @@ import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { isDrugNameRestricted } from '@/lib/restrictedDrugs';
 import { getClinicSubscription } from '@/lib/subscription';
+import { formatUnifiedRxId } from '@/lib/prescription-id';
 
 export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
@@ -79,8 +80,43 @@ export async function POST(request: Request) {
         },
       });
 
+      // ── Determine Daily Token & Unified Rx ID (RX-YYMMDD-###) ────────────
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+
+      const queueItem = tx.queueItem?.findFirst ? await tx.queueItem.findFirst({
+        where: {
+          clinicId: user.clinicId,
+          patientId,
+          createdAt: { gte: todayStart },
+        },
+        orderBy: { createdAt: 'desc' },
+      }) : null;
+
+      let tokenNumber = queueItem?.tokenNumber;
+      if (!tokenNumber) {
+        const todayCount = tx.prescription?.count ? await tx.prescription.count({
+          where: {
+            clinicId: user.clinicId,
+            createdAt: { gte: todayStart },
+          },
+        }) : 0;
+        tokenNumber = todayCount + 1;
+      }
+
+      const unifiedRxId = formatUnifiedRxId(new Date(), tokenNumber);
+
+      // Ensure unique ID in case of token overlap
+      let finalRxId = unifiedRxId;
+      const existing = tx.prescription?.findUnique ? await tx.prescription.findUnique({ where: { id: finalRxId } }) : null;
+      if (existing) {
+        const randomSuffix = Math.floor(100 + Math.random() * 900);
+        finalRxId = `${unifiedRxId}-${randomSuffix}`;
+      }
+
       const prescription = await tx.prescription.create({
         data: {
+          id: finalRxId,
           clinicId: user.clinicId,
           encounterId: encounter.id,
           doctorId: user.id,
@@ -89,6 +125,14 @@ export async function POST(request: Request) {
           creationMethod: creationMethod || 'MANUAL',
         },
       });
+
+      // Mark queue item as COMPLETED if patient was waiting in queue
+      if (queueItem && queueItem.status !== 'COMPLETED' && tx.queueItem?.update) {
+        await tx.queueItem.update({
+          where: { id: queueItem.id },
+          data: { status: 'COMPLETED' },
+        });
+      }
 
       // Create medicine line items
       await tx.prescriptionMedicine.createMany({

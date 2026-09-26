@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
+import { formatDisplayRxId } from '@/lib/prescription-id';
 
 export async function GET(request: Request) {
   const user = await getAuthenticatedUser();
@@ -12,16 +13,20 @@ export async function GET(request: Request) {
   const status = searchParams.get('status') || 'PENDING'; // 'PENDING' | 'DISPENSED' | 'ALL'
 
   try {
+    const cleanQ = q ? q.trim() : '';
+    const strippedQ = cleanQ ? cleanQ.replace(/^[#rx\-]+/i, '') : '';
+
     const prescriptions = await prisma.prescription.findMany({
       where: {
         clinicId: user.clinicId,
         ...(status !== 'ALL' && { dispenseStatus: status }),
-        ...(q && {
+        ...(cleanQ && {
           OR: [
-            { id: { contains: q, mode: 'insensitive' } },
-            { patient: { name: { contains: q, mode: 'insensitive' } } },
-            { patient: { phone: { contains: q } } },
-            { doctor: { fullName: { contains: q, mode: 'insensitive' } } },
+            { id: { contains: cleanQ, mode: 'insensitive' } },
+            ...(strippedQ ? [{ id: { contains: strippedQ, mode: 'insensitive' } }] : []),
+            { patient: { name: { contains: cleanQ, mode: 'insensitive' } } },
+            { patient: { phone: { contains: cleanQ } } },
+            { doctor: { fullName: { contains: cleanQ, mode: 'insensitive' } } },
           ],
         }),
       },
@@ -112,8 +117,13 @@ export async function GET(request: Request) {
         };
       });
 
+      const { fullId, shortId, badgeText } = formatDisplayRxId(p.id);
+
       return {
         id: p.id,
+        fullRxId: fullId,
+        shortToken: shortId,
+        displayRxId: badgeText,
         createdAt: p.createdAt,
         dispenseStatus: p.dispenseStatus,
         patient: {

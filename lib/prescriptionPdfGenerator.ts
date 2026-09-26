@@ -1,4 +1,5 @@
 import { jsPDF } from 'jspdf';
+import { formatDisplayRxId } from './prescription-id';
 
 export interface PrescriptionMedicineItem {
   id?: string;
@@ -86,9 +87,9 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   const bottomThreshold = pageHeight - 35; // Space for footer
 
   const rawRxId = data.rxId || data.prescriptionId || '';
-  const displayRxId = rawRxId 
-    ? (rawRxId.startsWith('#') ? rawRxId : `#${rawRxId.slice(-6).toUpperCase()}`)
-    : '';
+  const { fullId, shortId, badgeText } = formatDisplayRxId(rawRxId);
+  const displayRxId = rawRxId ? fullId : '';
+  const shortRxToken = rawRxId ? shortId : '';
 
   const drawSubHeader = () => {
     doc.setFillColor(30, 41, 59); // Slate-800

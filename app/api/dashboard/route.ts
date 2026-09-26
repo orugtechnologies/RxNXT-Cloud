@@ -149,10 +149,8 @@ export async function GET() {
 
     // Format Queue
     const formattedQueue = queueItems.map((q) => {
-      const dd = String(q.createdAt.getDate()).padStart(2, '0');
-      const mm = String(q.createdAt.getMonth() + 1).padStart(2, '0');
-      const seq = q.tokenNumber ? String(q.tokenNumber).padStart(2, '0') : '';
-      const tokenNumberDisplay = seq ? `${dd}${mm}${seq}` : null;
+      const seq = q.tokenNumber ? String(q.tokenNumber).padStart(3, '0') : '001';
+      const tokenNumberDisplay = `#RX-${seq}`;
 
       return {
         id: q.id,
