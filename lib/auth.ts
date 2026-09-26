@@ -173,6 +173,73 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
+        // Auto-provision a Doctor / Clinic Admin for quick testing
+        if (!user && (cleanEmail === 'doctor@rxnxt.com' || cleanEmail === 'dev@rxnxt.com')) {
+          try {
+            let clinic = await prisma.clinic.findFirst();
+            if (!clinic) {
+              clinic = await prisma.clinic.create({
+                data: {
+                  id: 'demo-clinic-001',
+                  name: 'RxNXT Demo Clinic',
+                  address: '123 Health Street, Bengaluru',
+                  phone: '+91 80 1234 5678',
+                  email: 'info@rxnxtdemo.com',
+                },
+              });
+            }
+            const hashedPassword = await bcrypt.hash('password123', 12);
+            user = await prisma.user.create({
+              data: {
+                email: cleanEmail,
+                password: hashedPassword,
+                fullName: 'Dr. Shanmukha Datta',
+                role: 'clinic_admin',
+                specialization: 'General Physician & Diabetologist',
+                medicalCouncil: 'NMC / Karnataka Medical Council',
+                registrationNumber: 'KMC-54912',
+                verificationStatus: 'VERIFIED',
+                clinicId: clinic.id,
+              },
+              include: { clinic: true },
+            });
+          } catch (createErr) {
+            console.error('Error auto-provisioning Doctor:', createErr);
+          }
+        }
+
+        // Auto-provision a Receptionist for front-desk queue testing
+        if (!user && cleanEmail === 'receptionist@rxnxt.com') {
+          try {
+            let clinic = await prisma.clinic.findFirst();
+            if (!clinic) {
+              clinic = await prisma.clinic.create({
+                data: {
+                  id: 'demo-clinic-001',
+                  name: 'RxNXT Demo Clinic',
+                  address: '123 Health Street, Bengaluru',
+                  phone: '+91 80 1234 5678',
+                  email: 'info@rxnxtdemo.com',
+                },
+              });
+            }
+            const hashedPassword = await bcrypt.hash('password123', 12);
+            user = await prisma.user.create({
+              data: {
+                email: cleanEmail,
+                password: hashedPassword,
+                fullName: 'Pooja Verma (Front Desk)',
+                role: 'receptionist',
+                specialization: 'OPD Reception & Patient Onboarding',
+                clinicId: clinic.id,
+              },
+              include: { clinic: true },
+            });
+          } catch (createErr) {
+            console.error('Error auto-provisioning Receptionist:', createErr);
+          }
+        }
+
         if (!user) return null;
 
         // Verify password with bcrypt
