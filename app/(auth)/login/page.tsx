@@ -7,19 +7,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Mail, Lock, Loader2, ArrowRight, Stethoscope, UserCheck, Pill, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const fillDemoAccount = (demoEmail: string, demoPass: string = 'password123') => {
-    setEmail(demoEmail);
-    setPassword(demoPass);
-    setError('');
-  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,27 +67,6 @@ export default function LoginPage() {
   return (
     <Card className="glass border border-white/80 shadow-2xl bg-white/90 backdrop-blur-md rounded-2xl max-w-md mx-auto">
       <CardContent className="pt-8 px-8 pb-8">
-        {/* Demo Quick Fill Switcher */}
-        <div className="mb-6 p-3 bg-emerald-50/80 border border-emerald-200/80 rounded-xl">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">
-              👑 Master Clinic Account
-            </span>
-            <span className="text-[10px] text-emerald-600 font-mono">pass: password123</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => fillDemoAccount('doctor@rxnxt.com')}
-            className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-white hover:bg-emerald-100/70 border border-emerald-200 rounded-lg text-xs font-bold text-emerald-900 transition-colors shadow-sm"
-          >
-            <Stethoscope className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>Doctor & Clinic Director (doctor@rxnxt.com)</span>
-          </button>
-          <p className="text-[11px] text-slate-500 text-center mt-2">
-            Login with this master account to add your Staff, Pharmacists & Doctors.
-          </p>
-        </div>
-
         <form className="space-y-5" onSubmit={handleLogin}>
           <div className="space-y-4">
             <div className="space-y-2">
