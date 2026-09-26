@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
+import { Mail, Lock, Loader2, ArrowRight, Stethoscope, UserCheck, Pill, ShieldCheck } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -15,44 +15,101 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const fillDemoAccount = (demoEmail: string, demoPass: string = 'password123') => {
+    setEmail(demoEmail);
+    setPassword(demoPass);
+    setError('');
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
+    const cleanEmail = email.trim().toLowerCase();
+
     const result = await signIn('credentials', {
-      email: email.trim().toLowerCase(),
+      email: cleanEmail,
       password,
       redirect: false,
     });
 
     if (result?.error) {
-      setError('Invalid email or password. Please try again.');
+      setError('Invalid email or password. Please check credentials and try again.');
       setLoading(false);
       return;
     }
 
-    // Check if authenticated user is a super admin
+    // Role-based routing after successful authentication
     try {
       const res = await fetch('/api/auth/session');
       const session = await res.json();
-      const role = session?.user?.role?.toLowerCase().replace('_', '');
+      const role = session?.user?.role?.toLowerCase().replace(/_/g, '');
+
       if (role === 'superadmin') {
-        window.location.href = '/superadmin/login?notice=super_admin_moved';
+        window.location.href = '/superadmin/dashboard?login=success';
+        return;
+      }
+      if (role === 'receptionist') {
+        window.location.href = '/receptionist/dashboard?login=success';
+        return;
+      }
+      if (role === 'pharmacist') {
+        window.location.href = '/pharmacist/dashboard?login=success';
+        return;
+      }
+      if (role === 'nurse') {
+        window.location.href = '/nurse/dashboard?login=success';
         return;
       }
     } catch (e) {
       // Fall through to default doctor dashboard redirect
     }
 
-    // Successful doctor login — hard redirect so middleware re-evaluates session
+    // Successful doctor/clinic_admin login — hard redirect so middleware re-evaluates session
     window.location.href = '/doctor/dashboard?login=success';
   };
 
   return (
     <Card className="glass border border-white/80 shadow-2xl bg-white/90 backdrop-blur-md rounded-2xl max-w-md mx-auto">
       <CardContent className="pt-8 px-8 pb-8">
-        <form className="space-y-6" onSubmit={handleLogin}>
+        {/* Demo Quick Fill Switcher */}
+        <div className="mb-6 p-3 bg-emerald-50/80 border border-emerald-200/80 rounded-xl">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">
+              ⚡ Quick Demo Logins
+            </span>
+            <span className="text-[10px] text-emerald-600 font-mono">pass: password123</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            <button
+              type="button"
+              onClick={() => fillDemoAccount('doctor@rxnxt.com')}
+              className="flex items-center justify-center gap-1 py-1.5 px-2 bg-white hover:bg-emerald-100/70 border border-emerald-200 rounded-lg text-xs font-medium text-emerald-900 transition-colors shadow-sm"
+            >
+              <Stethoscope className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>Doctor</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => fillDemoAccount('receptionist@rxnxt.com')}
+              className="flex items-center justify-center gap-1 py-1.5 px-2 bg-white hover:bg-emerald-100/70 border border-emerald-200 rounded-lg text-xs font-medium text-emerald-900 transition-colors shadow-sm"
+            >
+              <UserCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+              <span>Reception</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => fillDemoAccount('pharmacist@rxnxt.com')}
+              className="flex items-center justify-center gap-1 py-1.5 px-2 bg-white hover:bg-emerald-100/70 border border-emerald-200 rounded-lg text-xs font-medium text-emerald-900 transition-colors shadow-sm"
+            >
+              <Pill className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <span>Pharmacy</span>
+            </button>
+          </div>
+        </div>
+
+        <form className="space-y-5" onSubmit={handleLogin}>
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-slate-700">Doctor / Staff Email</Label>
@@ -64,7 +121,7 @@ export default function LoginPage() {
                   id="email"
                   type="email"
                   required
-                  className="pl-10 py-6 bg-slate-50/50 focus:bg-white transition-colors"
+                  className="pl-10 py-5 bg-slate-50/50 focus:bg-white transition-colors"
                   placeholder="user@domain.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -85,7 +142,7 @@ export default function LoginPage() {
                   id="password"
                   type="password"
                   required
-                  className="pl-10 py-6 bg-slate-50/50 focus:bg-white transition-colors"
+                  className="pl-10 py-5 bg-slate-50/50 focus:bg-white transition-colors"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -100,7 +157,6 @@ export default function LoginPage() {
               <span className="font-medium">{error}</span>
             </div>
           )}
-
 
           <Button
             type="submit"
@@ -118,10 +174,10 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <div className="mt-8 text-center text-sm text-slate-500">
+        <div className="mt-6 text-center text-sm text-slate-500">
           New to RxNXT?{' '}
           <Link href="/register" className="font-medium text-clinic-emerald hover:text-clinic-emeraldDark transition-colors">
-            Register your Clinic
+            Register your Clinic (14-day Free Trial)
           </Link>
         </div>
       </CardContent>
