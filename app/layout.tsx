@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import AuthProvider from '@/components/providers/AuthProvider';
+import PwaRegister from '@/components/pwa/PwaRegister';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -10,7 +11,7 @@ const inter = Inter({
 });
 
 export const viewport: Viewport = {
-  themeColor: '#2563eb',
+  themeColor: '#0284c7',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -45,6 +46,7 @@ export default function RootLayout({
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body className="font-sans antialiased">
         <AuthProvider>{children}</AuthProvider>
+        <PwaRegister />
       </body>
     </html>
   );
