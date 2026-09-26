@@ -21,17 +21,29 @@ model Clinic {
   email     String?
   logoUrl   String?
   inviteCode String? @unique
+  
+  // Subscription & 14-Day Free Trial
+  subscriptionStatus      String    @default("TRIAL") // TRIAL, ACTIVE, EXPIRED, CANCELLED
+  subscriptionPlan        String    @default("TRIAL_14_DAYS") // TRIAL_14_DAYS, STARTER_MONTHLY, PRO_ANNUAL, ENTERPRISE
+  subscriptionStartedAt   DateTime  @default(now())
+  trialEndsAt             DateTime?
+  subscriptionEndsAt      DateTime?
+  renewalReminderSentAt   DateTime?
+  lastPaymentAmount       Float?
+  lastPaymentRef          String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users           User[]
-  patients        Patient[]
-  encounters      Encounter[]
-  prescriptions   Prescription[]
-  treatmentGroups TreatmentGroup[]
+  users                 User[]
+  patients              Patient[]
+  encounters            Encounter[]
+  prescriptions         Prescription[]
+  treatmentGroups       TreatmentGroup[]
   clinicDrugPreferences ClinicDrugPreference[]
   customDrugs           Drug[]
   queueItems            QueueItem[]
+  subscriptionPayments  SubscriptionPayment[]
 }
 
 // ─────────────────────────────────────────────
@@ -293,4 +305,24 @@ model QueueItem {
   @@index([clinicId, doctorId, status, createdAt])
   @@index([patientId])
 }
+
+// ─────────────────────────────────────────────
+// SUBSCRIPTION PAYMENT (Audit Log & Billing)
+// ─────────────────────────────────────────────
+model SubscriptionPayment {
+  id           String   @id @default(cuid())
+  clinicId     String
+  clinic       Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  plan         String
+  amount       Float
+  billingCycle String   // MONTHLY, ANNUAL
+  status       String   @default("COMPLETED") // COMPLETED, PENDING, FAILED
+  paymentRef   String?
+  validFrom    DateTime
+  validUntil   DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([clinicId])
+}
+
 

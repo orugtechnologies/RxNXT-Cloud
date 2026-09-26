@@ -1,4 +1,4 @@
-﻿import { POST } from '../../app/api/prescriptions/save/route';
+import { POST } from '../../app/api/prescriptions/save/route';
 import { prisma } from '../../lib/prisma';
 import { getAuthenticatedUser } from '../../lib/auth-server';
 
@@ -22,6 +22,16 @@ jest.mock('../../lib/prisma', () => ({
 
 jest.mock('../../lib/auth-server', () => ({
   getAuthenticatedUser: jest.fn(),
+}));
+
+jest.mock('../../lib/subscription', () => ({
+  getClinicSubscription: jest.fn().mockResolvedValue({
+    allowed: true,
+    status: 'TRIAL',
+    plan: 'TRIAL_14_DAYS',
+    daysRemaining: 14,
+    isExpired: false,
+  }),
 }));
 
 jest.mock('next/server', () => ({

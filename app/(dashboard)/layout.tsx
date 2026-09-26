@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import AppSidebar from '@/components/layout/AppSidebar';
 import AppHeader from '@/components/layout/AppHeader';
+import SubscriptionBanner from '@/components/subscription/SubscriptionBanner';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -101,6 +102,7 @@ export default function DashboardLayout({
         />
         
         <main className="flex-1 p-4 sm:p-6 lg:p-8 mt-16 overflow-x-hidden animate-fade-in">
+          <SubscriptionBanner />
           {children}
         </main>
       </div>

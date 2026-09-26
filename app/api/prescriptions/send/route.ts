@@ -4,12 +4,22 @@ import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { sendPrescriptionPDF } from '@/services/whatsappService';
 import { generatePrescriptionBase64 } from '@/lib/prescriptionPdfGenerator';
+import { getClinicSubscription } from '@/lib/subscription';
 
 export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
+    const sub = await getClinicSubscription(user.clinicId);
+    if (!sub.allowed) {
+      return NextResponse.json({
+        error: 'SUBSCRIPTION_EXPIRED',
+        message: 'Your 14-day trial or subscription has expired. Please renew your subscription to continue sending WhatsApp prescriptions.',
+        subscription: sub,
+      }, { status: 403 });
+    }
+
     const { prescriptionId, pdfBase64, overridePhone } = await request.json();
 
     if (!prescriptionId) {

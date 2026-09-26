@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
+import { getClinicSubscription } from '@/lib/subscription';
 
 export async function GET(request: Request) {
   const user = await getAuthenticatedUser();
@@ -49,6 +50,15 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
+    const sub = await getClinicSubscription(user.clinicId);
+    if (!sub.allowed) {
+      return NextResponse.json({
+        error: 'SUBSCRIPTION_EXPIRED',
+        message: 'Your 14-day trial or subscription has expired. Please renew your subscription to continue adding patients.',
+        subscription: sub,
+      }, { status: 403 });
+    }
+
     const { name, phone, age, gender } = await request.json();
     if (!phone) return NextResponse.json({ error: 'Mobile number is required' }, { status: 400 });
     if (!name) return NextResponse.json({ error: 'Patient name is required' }, { status: 400 });

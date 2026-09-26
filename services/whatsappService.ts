@@ -591,3 +591,50 @@ export async function sendRefillReminder(
     },
   });
 }
+
+/**
+ * Sends a 7-day prior subscription / trial expiry warning notice to the clinic doctor / admin.
+ */
+export async function sendSubscriptionExpiryNotice(
+  doctorPhone: string,
+  doctorName: string,
+  clinicName: string,
+  planName: string,
+  expiryDateStr: string,
+  daysRemaining: number,
+  renewalUrl?: string
+) {
+  const docStr = doctorName.trim().toLowerCase().startsWith('dr') ? doctorName.trim() : `Dr. ${doctorName.trim()}`;
+  const appBaseUrl = cleanEnv(process.env.NEXT_PUBLIC_APP_URL) || 'https://app.rxnxt.in';
+  const renewLink = renewalUrl || `${appBaseUrl.replace(/\/$/, '')}/admin/subscription`;
+
+  const messageBody =
+    `⚠️ *RxNXT Subscription Expiry Notice*\n\n` +
+    `Hello ${docStr},\n\n` +
+    `Your RxNXT *${planName}* for *${clinicName}* will expire in *${daysRemaining} days* on *${expiryDateStr}*.\n\n` +
+    `To ensure uninterrupted clinical operations, patient token queues, and automated WhatsApp dose reminders, please renew your subscription before expiry.\n\n` +
+    `💳 *Renew Instantly Here:* ${renewLink}\n\n` +
+    `Thank you for choosing RxNXT for your digital clinic! 🩺`;
+
+  return await dispatchWhatsAppMessage({
+    phone: doctorPhone,
+    messageBody,
+    template: {
+      name: 'rxnxt_subscription_expiry',
+      language: { code: 'en_US' },
+      components: [
+        {
+          type: 'body',
+          parameters: [
+            { type: 'text', text: sanitizeTemplateParam(docStr) },
+            { type: 'text', text: sanitizeTemplateParam(clinicName) },
+            { type: 'text', text: sanitizeTemplateParam(String(daysRemaining)) },
+            { type: 'text', text: sanitizeTemplateParam(expiryDateStr) },
+            { type: 'text', text: sanitizeTemplateParam(renewLink) },
+          ],
+        },
+      ],
+    },
+  });
+}
+

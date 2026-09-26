@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, ShieldCheck, Building2 } from 'lucide-react';
+import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, ShieldCheck, Building2, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -67,14 +67,17 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
       }
     ];
 
-    if (userRole === 'clinic_admin') {
+    if (userRole === 'clinic_admin' || userRole === 'admin' || userRole === 'doctor') {
       navGroups.push({
         label: 'Administration',
         items: [
-          { name: 'Manage Doctors', href: '/admin/team', icon: Users },
-          { name: 'Support Staff', href: '/admin/staff', icon: Users },
-          { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
-          { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
+          ...(userRole === 'clinic_admin' || userRole === 'admin' ? [
+            { name: 'Manage Doctors', href: '/admin/team', icon: Users },
+            { name: 'Support Staff', href: '/admin/staff', icon: Users },
+            { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
+            { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
+          ] : []),
+          { name: 'Subscription & Plans', href: '/admin/subscription', icon: CreditCard },
         ]
       });
     }

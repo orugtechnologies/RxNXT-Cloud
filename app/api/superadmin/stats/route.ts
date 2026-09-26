@@ -88,20 +88,35 @@ export async function GET() {
       clinicSpeeds.map(c => [c.clinicId, Math.round(c._avg.timeTakenSeconds || 0)])
     );
 
-    const formattedClinics = clinics.map((c) => ({
-      id: c.id,
-      name: c.name,
-      address: c.address || 'N/A',
-      phone: c.phone || 'N/A',
-      email: c.email || 'N/A',
-      createdAt: c.createdAt,
-      doctorCount: c.users.filter((u) => u.role.toLowerCase() === 'doctor').length,
-      staffCount: c.users.length,
-      patientCount: c._count.patients,
-      prescriptionCount: c._count.prescriptions,
-      avgSpeedSeconds: clinicSpeedLookup.get(c.id) || 45, // Default/fallback estimate
-      doctors: c.users.filter((u) => u.role.toLowerCase() === 'doctor'),
-    }));
+    const now = new Date();
+
+    const formattedClinics = clinics.map((c) => {
+      const expiry = c.subscriptionEndsAt || c.trialEndsAt || new Date(c.createdAt.getTime() + 14 * 24 * 60 * 60 * 1000);
+      const diffMs = expiry.getTime() - now.getTime();
+      const daysRemaining = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+      const isExpired = now > expiry;
+      const status = isExpired ? 'EXPIRED' : (c.subscriptionStatus || 'TRIAL');
+
+      return {
+        id: c.id,
+        name: c.name,
+        address: c.address || 'N/A',
+        phone: c.phone || 'N/A',
+        email: c.email || 'N/A',
+        createdAt: c.createdAt,
+        subscriptionStatus: status,
+        subscriptionPlan: c.subscriptionPlan || 'TRIAL_14_DAYS',
+        subscriptionEndsAt: expiry,
+        daysRemaining,
+        isExpired,
+        doctorCount: c.users.filter((u) => u.role.toLowerCase() === 'doctor').length,
+        staffCount: c.users.length,
+        patientCount: c._count.patients,
+        prescriptionCount: c._count.prescriptions,
+        avgSpeedSeconds: clinicSpeedLookup.get(c.id) || 45, // Default/fallback estimate
+        doctors: c.users.filter((u) => u.role.toLowerCase() === 'doctor'),
+      };
+    });
 
     const avgOverallSeconds = Math.round(speedAgg._avg.timeTakenSeconds || 42);
 

@@ -53,6 +53,11 @@ interface SuperAdminData {
     patientCount: number;
     prescriptionCount: number;
     avgSpeedSeconds: number;
+    subscriptionStatus: string;
+    subscriptionPlan: string;
+    daysRemaining: number;
+    isExpired: boolean;
+    subscriptionEndsAt: string;
   }>;
   recentPrescriptions: Array<{
     id: string;
@@ -84,6 +89,24 @@ export default function SuperAdminDashboardPage() {
       console.error('Failed to fetch Super Admin stats:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const handleSuperAdminAction = async (clinicId: string, action: string, additionalDays = 14) => {
+    try {
+      setRefreshing(true);
+      const res = await fetch('/api/superadmin/subscription/manage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clinicId, action, additionalDays }),
+      });
+      if (res.ok) {
+        await fetchStats();
+      }
+    } catch (err) {
+      console.error('Superadmin action failed:', err);
+    } finally {
       setRefreshing(false);
     }
   };
@@ -232,14 +255,47 @@ export default function SuperAdminDashboardPage() {
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-4 text-xs">
+                      <div className="flex flex-wrap items-center gap-4 text-xs">
                         <div className="text-right">
-                          <p className="text-slate-300 font-medium">{clinic.doctorCount} Doctors</p>
-                          <p className="text-slate-500">{clinic.patientCount} Patients</p>
+                          <div className="flex items-center justify-end gap-1.5 mb-1">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded font-mono ${
+                              clinic.subscriptionStatus === 'ACTIVE'
+                                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                : clinic.subscriptionStatus === 'TRIAL'
+                                ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                                : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                            }`}>
+                              {clinic.subscriptionStatus === 'TRIAL' 
+                                ? `14D TRIAL (${clinic.daysRemaining}d left)`
+                                : clinic.subscriptionStatus === 'ACTIVE'
+                                ? `ACTIVE PRO (${clinic.daysRemaining}d left)`
+                                : 'EXPIRED'}
+                            </span>
+                          </div>
+                          <p className="text-slate-300 font-medium">{clinic.doctorCount} Doctors • {clinic.patientCount} Patients</p>
                         </div>
+
                         <span className="text-xs font-semibold text-indigo-400 bg-indigo-950/50 border border-indigo-800/50 px-2.5 py-1 rounded-md font-mono">
                           {clinic.prescriptionCount} Rx
                         </span>
+
+                        <div className="flex items-center gap-1.5">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleSuperAdminAction(clinic.id, 'EXTEND_TRIAL', 14)}
+                            className="h-7 text-[11px] bg-slate-900 border-slate-700 text-slate-300 hover:text-white px-2"
+                          >
+                            +14d Trial
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => handleSuperAdminAction(clinic.id, 'ACTIVATE_PRO')}
+                            className="h-7 text-[11px] bg-indigo-600 hover:bg-indigo-500 text-white px-2.5"
+                          >
+                            Activate Pro
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}

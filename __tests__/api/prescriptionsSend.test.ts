@@ -2,17 +2,26 @@ import { POST } from '../../app/api/prescriptions/send/route';
 import { prisma } from '../../lib/prisma';
 import { getAuthenticatedUser } from '../../lib/auth-server';
 import { sendPrescriptionPDF } from '../../services/whatsappService';
+import { getClinicSubscription } from '../../lib/subscription';
 
 jest.mock('../../lib/prisma', () => ({
   prisma: {
     prescription: {
       findUnique: jest.fn(),
     },
+    clinic: {
+      findUnique: jest.fn(),
+      update: jest.fn(),
+    },
   },
 }));
 
 jest.mock('../../lib/auth-server', () => ({
   getAuthenticatedUser: jest.fn(),
+}));
+
+jest.mock('../../lib/subscription', () => ({
+  getClinicSubscription: jest.fn(),
 }));
 
 jest.mock('../../services/whatsappService', () => ({
@@ -31,6 +40,13 @@ jest.mock('next/server', () => ({
 describe('POST /api/prescriptions/send (Multi-Tenant Authorization & WhatsApp Dispatch)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (getClinicSubscription as jest.Mock).mockResolvedValue({
+      allowed: true,
+      status: 'TRIAL',
+      plan: 'TRIAL_14_DAYS',
+      daysRemaining: 12,
+      isExpired: false,
+    });
   });
 
   const createMockRequest = (body: any) => ({
@@ -43,6 +59,28 @@ describe('POST /api/prescriptions/send (Multi-Tenant Authorization & WhatsApp Di
     const req = createMockRequest({ prescriptionId: 'rx_123' });
     const res = await POST(req);
     expect(res.status).toBe(401);
+  });
+
+  it('blocks request with 403 when subscription/trial has expired', async () => {
+    (getAuthenticatedUser as jest.Mock).mockResolvedValueOnce({
+      id: 'doctor_clinic_A',
+      clinicId: 'clinic_A',
+      role: 'doctor',
+    });
+
+    (getClinicSubscription as jest.Mock).mockResolvedValueOnce({
+      allowed: false,
+      status: 'EXPIRED',
+      plan: 'TRIAL_14_DAYS',
+      daysRemaining: 0,
+      isExpired: true,
+    });
+
+    const req = createMockRequest({ prescriptionId: 'rx_123' });
+    const res = await POST(req);
+    expect(res.status).toBe(403);
+    const data = await res.json();
+    expect(data.error).toBe('SUBSCRIPTION_EXPIRED');
   });
 
   it('returns 404 if prescription is not found', async () => {
