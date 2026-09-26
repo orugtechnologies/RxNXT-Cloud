@@ -60,6 +60,10 @@ export default function DashboardLayout({
       router.push('/receptionist/dashboard');
       return null;
     }
+    if (user.role === 'pharmacist' && !path.startsWith('/pharmacist')) {
+      router.push('/pharmacist/dashboard');
+      return null;
+    }
     if (user.role === 'nurse' && !path.startsWith('/nurse')) {
       router.push('/nurse/dashboard');
       return null;

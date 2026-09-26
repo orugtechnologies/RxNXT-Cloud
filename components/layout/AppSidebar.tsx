@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, ShieldCheck, Building2, CreditCard } from 'lucide-react';
+import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, ShieldCheck, Building2, CreditCard, Package, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -35,6 +35,16 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
         label: 'Overview',
         items: [
           { name: 'Dashboard', href: '/receptionist/dashboard', icon: LayoutDashboard },
+        ]
+      }
+    ];
+  } else if (userRole === 'pharmacist') {
+    navGroups = [
+      {
+        label: 'Pharmacy Counter',
+        items: [
+          { name: 'Dispense Counter', href: '/pharmacist/dashboard', icon: ClipboardList },
+          { name: 'Stock & Inventory', href: '/pharmacist/inventory', icon: Package },
         ]
       }
     ];
@@ -74,6 +84,7 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
           ...(userRole === 'clinic_admin' || userRole === 'admin' ? [
             { name: 'Manage Doctors', href: '/admin/team', icon: Users },
             { name: 'Support Staff', href: '/admin/staff', icon: Users },
+            { name: 'Pharmacy Stock', href: '/pharmacist/inventory', icon: Package },
             { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
             { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
           ] : []),

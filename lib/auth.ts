@@ -58,38 +58,118 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
-        // Auto-provision a Dev Doctor for quick testing without registration
-        if (!user && cleanEmail === 'dev@rxnxt.com') {
+        // Auto-provision a Pharmacist for pharmacy verification & testing
+        if (!user && (cleanEmail === 'pharmacist@rxnxt.com' || cleanEmail === 'pharmacy@rxnxt.com')) {
           try {
             let clinic = await prisma.clinic.findFirst();
             if (!clinic) {
               clinic = await prisma.clinic.create({
                 data: {
-                  id: 'demo-clinic-002',
-                  name: 'Development Clinic',
-                  address: '123 Test Street, Dev City',
-                  phone: '+91 99999 99999',
-                  email: 'devclinic@rxnxtdemo.com',
+                  id: 'demo-clinic-001',
+                  name: 'RxNXT Demo Clinic',
+                  address: '123 Health Street, Bengaluru',
+                  phone: '+91 80 1234 5678',
+                  email: 'info@rxnxtdemo.com',
                 },
               });
             }
             const hashedPassword = await bcrypt.hash('password123', 12);
             user = await prisma.user.create({
               data: {
-                email: 'dev@rxnxt.com',
+                email: cleanEmail,
                 password: hashedPassword,
-                fullName: 'Dr. Dev Tester',
-                role: 'clinic_admin',
-                specialization: 'General Physician',
-                medicalCouncil: 'NMC',
-                registrationNumber: 'DEV-12345',
-                verificationStatus: 'VERIFIED',
+                fullName: 'Suresh Sharma (Chief Pharmacist)',
+                role: 'pharmacist',
+                specialization: 'Dispensing & Inventory Specialist',
                 clinicId: clinic.id,
               },
               include: { clinic: true },
             });
+
+            // Seed initial sample inventory for the clinic if empty
+            const existingItems = await prisma.pharmacyItem.count({ where: { clinicId: clinic.id } });
+            if (existingItems === 0) {
+              const now = new Date();
+              const nextYear = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+              const nextMonth = new Date(now.getTime() + 45 * 24 * 60 * 60 * 1000);
+
+              await prisma.pharmacyItem.createMany({
+                data: [
+                  {
+                    clinicId: clinic.id,
+                    medicineName: 'Paracetamol 650mg (Dolo)',
+                    genericName: 'Paracetamol',
+                    dosageForm: 'Tablet',
+                    strength: '650mg',
+                    batchNumber: 'DL-2026-A1',
+                    expiryDate: nextYear,
+                    quantityInStock: 250,
+                    minReorderLevel: 50,
+                    unitPrice: 32.0,
+                    costPrice: 22.0,
+                    rackLocation: 'Rack A-1',
+                  },
+                  {
+                    clinicId: clinic.id,
+                    medicineName: 'Amoxicillin + Clavulanic Acid 625mg (Augmentin)',
+                    genericName: 'Amoxicillin + Clavulanic Acid',
+                    dosageForm: 'Tablet',
+                    strength: '625mg',
+                    batchNumber: 'AUG-8891',
+                    expiryDate: nextYear,
+                    quantityInStock: 80,
+                    minReorderLevel: 20,
+                    unitPrice: 195.0,
+                    costPrice: 150.0,
+                    rackLocation: 'Rack B-3',
+                  },
+                  {
+                    clinicId: clinic.id,
+                    medicineName: 'Pantoprazole 40mg (Pan-40)',
+                    genericName: 'Pantoprazole',
+                    dosageForm: 'Tablet',
+                    strength: '40mg',
+                    batchNumber: 'PAN-7721',
+                    expiryDate: nextYear,
+                    quantityInStock: 140,
+                    minReorderLevel: 30,
+                    unitPrice: 110.0,
+                    costPrice: 85.0,
+                    rackLocation: 'Rack A-4',
+                  },
+                  {
+                    clinicId: clinic.id,
+                    medicineName: 'Cetirizine 10mg (Cetzine)',
+                    genericName: 'Cetirizine',
+                    dosageForm: 'Tablet',
+                    strength: '10mg',
+                    batchNumber: 'CTZ-4410',
+                    expiryDate: nextMonth,
+                    quantityInStock: 15, // Low stock simulation
+                    minReorderLevel: 25,
+                    unitPrice: 45.0,
+                    costPrice: 30.0,
+                    rackLocation: 'Rack C-2',
+                  },
+                  {
+                    clinicId: clinic.id,
+                    medicineName: 'Azithromycin 500mg (Azithral)',
+                    genericName: 'Azithromycin',
+                    dosageForm: 'Tablet',
+                    strength: '500mg',
+                    batchNumber: 'AZT-9002',
+                    expiryDate: nextYear,
+                    quantityInStock: 60,
+                    minReorderLevel: 15,
+                    unitPrice: 125.0,
+                    costPrice: 95.0,
+                    rackLocation: 'Rack B-1',
+                  },
+                ],
+              });
+            }
           } catch (createErr) {
-            console.error('Error auto-provisioning Dev Doctor:', createErr);
+            console.error('Error auto-provisioning Pharmacist:', createErr);
           }
         }
 

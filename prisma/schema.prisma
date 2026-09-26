@@ -44,6 +44,8 @@ model Clinic {
   customDrugs           Drug[]
   queueItems            QueueItem[]
   subscriptionPayments  SubscriptionPayment[]
+  pharmacyItems         PharmacyItem[]
+  dispenseLogs          DispenseLog[]
 }
 
 // ─────────────────────────────────────────────
@@ -144,9 +146,11 @@ model Prescription {
   createdAt   DateTime @default(now())
   timeTakenSeconds Int?
   creationMethod   String?
+  dispenseStatus   String   @default("PENDING") // PENDING, DISPENSED, PARTIAL
 
-  medicines PrescriptionMedicine[]
-  reminders Reminder[]
+  medicines    PrescriptionMedicine[]
+  reminders    Reminder[]
+  dispenseLogs DispenseLog[]
 
   @@index([clinicId, doctorId])
   @@index([patientId])
@@ -194,6 +198,7 @@ model Drug {
   treatmentGroupItems   TreatmentGroupItem[]
   doctorDrugPreferences DoctorDrugPreference[]
   clinicDrugPreferences ClinicDrugPreference[]
+  pharmacyItems         PharmacyItem[]
 
   clinicId              String?
   clinic                Clinic?  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
@@ -324,5 +329,76 @@ model SubscriptionPayment {
 
   @@index([clinicId])
 }
+
+// ─────────────────────────────────────────────
+// PHARMACY INVENTORY (Stock & Batch Management)
+// ─────────────────────────────────────────────
+model PharmacyItem {
+  id              String   @id @default(cuid())
+  clinicId        String
+  clinic          Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  drugId          String?
+  drug            Drug?    @relation(fields: [drugId], references: [id])
+  medicineName    String
+  genericName     String?
+  dosageForm      String   @default("Tablet")
+  strength        String?
+  batchNumber     String?
+  expiryDate      DateTime?
+  quantityInStock Int      @default(0)
+  minReorderLevel Int      @default(10)
+  unitPrice       Float    @default(0.0) // Selling price (MRP)
+  costPrice       Float?
+  rackLocation    String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  dispensedItems  DispensedItem[]
+
+  @@index([clinicId, medicineName])
+  @@index([clinicId, expiryDate])
+}
+
+// ─────────────────────────────────────────────
+// DISPENSE LOG (Pharmacy Dispensing & Billing)
+// ─────────────────────────────────────────────
+model DispenseLog {
+  id              String       @id @default(cuid())
+  clinicId        String
+  clinic          Clinic       @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  prescriptionId  String
+  prescription    Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  pharmacistId    String?
+  pharmacistName  String?
+  patientId       String
+  patientName     String?
+  totalAmount     Float        @default(0.0)
+  paymentMode     String       @default("CASH") // CASH, UPI, CARD, CREDIT
+  notes           String?
+  createdAt       DateTime     @default(now())
+
+  items           DispensedItem[]
+
+  @@index([clinicId, createdAt])
+  @@index([prescriptionId])
+}
+
+model DispensedItem {
+  id             String        @id @default(cuid())
+  dispenseLogId  String
+  dispenseLog    DispenseLog   @relation(fields: [dispenseLogId], references: [id], onDelete: Cascade)
+  pharmacyItemId String?
+  pharmacyItem   PharmacyItem? @relation(fields: [pharmacyItemId], references: [id])
+  medicineName   String
+  quantity       Int           @default(1)
+  unitPrice      Float         @default(0.0)
+  totalPrice     Float         @default(0.0)
+  dosageForm     String?
+  batchNumber    String?
+
+  @@index([dispenseLogId])
+}
+
 
 

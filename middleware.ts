@@ -7,6 +7,7 @@ export function middleware(req: NextRequest) {
   if (
     pathname.startsWith('/doctor') ||
     pathname.startsWith('/receptionist') ||
+    pathname.startsWith('/pharmacist') ||
     pathname.startsWith('/nurse') ||
     pathname.startsWith('/admin') ||
     pathname.startsWith('/superadmin')
