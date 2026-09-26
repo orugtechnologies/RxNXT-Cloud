@@ -86,6 +86,8 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   const contentWidth = pageWidth - margin * 2; // 180mm
   const bottomThreshold = pageHeight - 35; // Space for footer
 
+  let y = 12;
+
   const rawRxId = data.rxId || data.prescriptionId || '';
   const { fullId, shortId, badgeText } = formatDisplayRxId(rawRxId);
   const displayRxId = rawRxId ? fullId : '';
