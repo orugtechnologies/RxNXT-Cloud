@@ -249,6 +249,8 @@ export const authOptions: NextAuthOptions = {
         // If credentials match standard demo passwords for known test emails, auto-sync and authenticate
         const demoCredentials: Record<string, string> = {
           'doctor@rxnxt.com': 'password123',
+          'd2@rxnxt.com': 'password123',
+          'd3@rxnxt.com': 'password123',
           'receptionist@rxnxt.com': 'password123',
           'pharmacist@rxnxt.com': 'password123',
           'pharmacy@rxnxt.com': 'password123',
