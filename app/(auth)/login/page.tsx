@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
+import QRCode from 'qrcode';
 import { 
   Mail, 
   Lock, 
@@ -26,7 +27,9 @@ import {
   Stethoscope,
   FlaskConical,
   MessageSquareQuote,
-  Pill
+  Pill,
+  Copy,
+  Check
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -43,6 +46,30 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string>('');
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const targetUrl = `${window.location.origin}/login`;
+      QRCode.toDataURL(targetUrl, {
+        width: 320,
+        margin: 2,
+        color: {
+          dark: '#0f172a',
+          light: '#ffffff',
+        },
+        errorCorrectionLevel: 'M',
+      })
+        .then((url) => {
+          setQrDataUrl(url);
+        })
+        .catch(() => {
+          // Fallback to high-reliability SVG QR API
+          setQrDataUrl(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(targetUrl)}`);
+        });
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -651,49 +678,50 @@ export default function LoginPage() {
               Open your phone/iPad camera and scan the QR code to install RxNXT PWA:
             </p>
 
-            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 inline-block mb-4">
-              {/* Clean Canvas / SVG representation of QR Code */}
-              <div className="w-40 h-40 bg-white border border-slate-300 rounded-xl flex items-center justify-center relative p-2 shadow-inner">
-                <svg className="w-full h-full text-slate-900" viewBox="0 0 100 100" fill="currentColor">
-                  {/* Outer corner markers */}
-                  <rect x="5" y="5" width="28" height="28" rx="4" fill="currentColor" />
-                  <rect x="9" y="9" width="20" height="20" rx="2" fill="white" />
-                  <rect x="13" y="13" width="12" height="12" rx="1" fill="currentColor" />
-
-                  <rect x="67" y="5" width="28" height="28" rx="4" fill="currentColor" />
-                  <rect x="71" y="9" width="20" height="20" rx="2" fill="white" />
-                  <rect x="75" y="13" width="12" height="12" rx="1" fill="currentColor" />
-
-                  <rect x="5" y="67" width="28" height="28" rx="4" fill="currentColor" />
-                  <rect x="9" y="71" width="20" height="20" rx="2" fill="white" />
-                  <rect x="13" y="75" width="12" height="12" rx="1" fill="currentColor" />
-
-                  {/* QR Matrix Dots */}
-                  <rect x="38" y="10" width="6" height="6" rx="1" fill="currentColor" />
-                  <rect x="48" y="10" width="12" height="6" rx="1" fill="currentColor" />
-                  <rect x="38" y="22" width="18" height="6" rx="1" fill="currentColor" />
-                  <rect x="10" y="38" width="6" height="18" rx="1" fill="currentColor" />
-                  <rect x="22" y="44" width="12" height="6" rx="1" fill="currentColor" />
-                  <rect x="38" y="38" width="24" height="24" rx="2" fill="#0284c7" />
-                  <rect x="44" y="44" width="12" height="12" rx="1" fill="white" />
-                  <rect x="68" y="38" width="18" height="6" rx="1" fill="currentColor" />
-                  <rect x="80" y="48" width="6" height="18" rx="1" fill="currentColor" />
-                  <rect x="38" y="68" width="6" height="18" rx="1" fill="currentColor" />
-                  <rect x="48" y="78" width="18" height="8" rx="1" fill="currentColor" />
-                  <rect x="72" y="68" width="16" height="6" rx="1" fill="currentColor" />
-                  <rect x="72" y="80" width="16" height="12" rx="1" fill="currentColor" />
-                </svg>
-              </div>
+            {/* High-Resolution Scannable QR Code */}
+            <div className="bg-white p-3 rounded-2xl border-2 border-slate-200 inline-block mb-3 shadow-md">
+              {qrDataUrl ? (
+                <img
+                  src={qrDataUrl}
+                  alt="Scan QR Code to open RxNXT on Mobile"
+                  className="w-48 h-48 rounded-xl object-contain mx-auto"
+                />
+              ) : (
+                <div className="w-48 h-48 flex items-center justify-center">
+                  <Loader2 className="w-6 h-6 animate-spin text-sky-600" />
+                </div>
+              )}
             </div>
 
-            <div className="text-[11px] text-slate-500 space-y-1 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
-              <p>📱 <strong>iOS / iPad:</strong> Tap <em>Share ➔ Add to Home Screen</em></p>
-              <p>🤖 <strong>Android:</strong> Tap <em>Install App / Add to Home Screen</em></p>
+            {/* Direct Link & Copy Action */}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <span className="text-xs font-mono text-sky-800 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-200 truncate max-w-[200px]">
+                app.rxnxt.in/login
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    navigator.clipboard.writeText(window.location.href);
+                    setCopiedLink(true);
+                    setTimeout(() => setCopiedLink(false), 2000);
+                  }
+                }}
+                className="flex items-center gap-1 text-xs font-bold text-sky-600 hover:text-sky-800 bg-sky-50 hover:bg-sky-100 px-2.5 py-1 rounded-lg border border-sky-200 transition"
+              >
+                {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedLink ? 'Copied!' : 'Copy'}</span>
+              </button>
+            </div>
+
+            <div className="text-[11px] text-slate-600 space-y-1 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <p>📱 <strong>iPhone / iPad:</strong> Open Camera & tap the link, then <em>Share ➔ Add to Home Screen</em></p>
+              <p>🤖 <strong>Android:</strong> Open Camera / Chrome & tap link, then <em>Install App</em></p>
             </div>
 
             <Button
               onClick={() => setShowQrModal(false)}
-              className="w-full mt-4 bg-slate-900 text-white text-xs font-bold py-2.5 rounded-xl"
+              className="w-full mt-4 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2.5 rounded-xl"
             >
               Close
             </Button>
