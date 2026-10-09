@@ -25,6 +25,41 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
     return { id: reminder.id, status: 'FAILED', reason: 'No phone number' };
   }
 
+  // Guard Rail: Skip WhatsApp dispatch if clinic subscription is expired or trial cap is reached
+  const clinic = prescription?.clinic;
+  if (clinic) {
+    const now = new Date();
+    const expiryDate = clinic.subscriptionEndsAt || clinic.trialEndsAt;
+    const isExpired = clinic.subscriptionStatus === 'EXPIRED' || (expiryDate && now > new Date(expiryDate) && clinic.subscriptionStatus !== 'ACTIVE');
+
+    if (isExpired) {
+      await prisma.reminder.update({
+        where: { id: reminder.id },
+        data: { status: 'SUPERSEDED' },
+      });
+      return { id: reminder.id, status: 'FAILED', reason: 'Clinic subscription expired' };
+    }
+
+    // Free Trial WhatsApp Message Cap Guard (Max 500 messages per trial)
+    if (clinic.subscriptionStatus === 'TRIAL' || clinic.subscriptionPlan === 'TRIAL_14_DAYS') {
+      const sentCount = await prisma.reminder.count({
+        where: {
+          prescription: { clinicId: clinic.id },
+          status: 'SENT',
+          createdAt: { gte: clinic.subscriptionStartedAt || clinic.createdAt },
+        },
+      });
+
+      if (sentCount >= 500) {
+        await prisma.reminder.update({
+          where: { id: reminder.id },
+          data: { status: 'SUPERSEDED' },
+        });
+        return { id: reminder.id, status: 'FAILED', reason: 'Trial WhatsApp quota (500) reached' };
+      }
+    }
+  }
+
   let sendResult: any = null;
 
   if (reminder.messageType === 'FOLLOW_UP') {

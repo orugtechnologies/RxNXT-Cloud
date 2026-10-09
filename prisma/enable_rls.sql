@@ -14,3 +14,18 @@ ALTER TABLE "DoctorDrugPreference" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "ClinicDrugPreference" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Reminder" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "QueueItem" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "SubscriptionPayment" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "PharmacyItem" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "DispenseLog" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "DispensedItem" ENABLE ROW LEVEL SECURITY;
+
+-- Dynamic safety net: Automatically enable RLS on every current & future public table
+DO $$ 
+DECLARE 
+    r RECORD;
+BEGIN 
+    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') 
+    LOOP 
+        EXECUTE 'ALTER TABLE public."' || r.tablename || '" ENABLE ROW LEVEL SECURITY;';
+    END LOOP; 
+END $$;

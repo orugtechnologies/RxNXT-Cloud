@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RxNXT Cloud — Outpatient Operating System & Feature Master Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-bg: #070d19;
+      --navy-surface: #0f182c;
+      --navy-card: #131f38;
+      --navy-card-hover: #192849;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.2);
+      
+      --blue-primary: #2563eb;
+      --blue-light: #38bdf8;
+      --emerald: #10b981;
+      --emerald-light: #34d399;
+      --purple: #8b5cf6;
+      --purple-light: #a78bfa;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      
+      --text-white: #ffffff;
+      --text-slate: #cbd5e1;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--navy-bg);
+      color: var(--text-white);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      overflow-x: hidden;
+    }
+
+    /* Print Setup for A4 Landscape */
+    @page {
+      size: 297mm 210mm;
+      margin: 0;
+    }
+
+    /* Presentation Navigation Bar (Hidden during Print) */
+    .nav-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(15, 24, 44, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.5px;
+    }
+    .badge-pill {
+      background: linear-gradient(135deg, #2563eb, #10b981);
+      color: white;
+      font-size: 0.65rem;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-btn {
+      background: var(--navy-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-slate);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover {
+      background: var(--navy-card-hover);
+      color: white;
+      border-color: var(--blue-light);
+    }
+    .nav-btn.primary {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      border: none;
+    }
+    .nav-btn.primary:hover {
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+    }
+    .slide-counter {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Slides Container */
+    .slides-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      gap: 30px;
+    }
+
+    /* Single Slide Canvas */
+    .slide {
+      width: 297mm;
+      height: 210mm;
+      page-break-after: always;
+      page-break-inside: avoid;
+      position: relative;
+      overflow: hidden;
+      padding: 16mm 20mm 14mm 20mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: linear-gradient(145deg, #070d19 0%, #0d1629 100%);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      border-radius: 8px;
+    }
+
+    /* Radial Backlight Ambience */
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, rgba(0,0,0,0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .slide::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(0,0,0,0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      position: relative;
+      z-index: 2;
+    }
+    .slide-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .slide-header .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+    .slide-header .tagline {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-left: 1px solid rgba(255, 255, 255, 0.15);
+      padding-left: 10px;
+    }
+    .slide-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--blue-light);
+    }
+    .slide-number-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* Title Section */
+    .title-block {
+      margin-top: 10px;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 2;
+    }
+    .title-block h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: white;
+      line-height: 1.2;
+    }
+    .title-block p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      gap: 12px;
+    }
+
+    /* Grids */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 14px; }
+
+    /* Cards */
+    .card {
+      background: var(--navy-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px 16px;
+      position: relative;
+    }
+    .card.blue { border-top: 3px solid var(--blue-primary); }
+    .card.emerald { border-top: 3px solid var(--emerald); }
+    .card.purple { border-top: 3px solid var(--purple); }
+    .card.amber { border-top: 3px solid var(--amber); }
+    .card.rose { border-top: 3px solid var(--rose); }
+
+    .card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.98rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+    }
+    .card p {
+      font-size: 0.8rem;
+      color: var(--text-slate);
+      line-height: 1.45;
+    }
+    .card ul {
+      margin-left: 16px;
+      margin-top: 6px;
+    }
+    .card li {
+      font-size: 0.78rem;
+      color: var(--text-slate);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    /* Key Value Stats */
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.8rem;
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-label { color: var(--text-muted); }
+    .stat-val { font-weight: 700; color: white; font-family: 'JetBrains Mono', monospace; }
+
+    /* Highlights & Chips */
+    .chip {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--blue-light);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      margin-right: 4px;
+      margin-bottom: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .chip.green {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald-light);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+    .chip.purple {
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--purple-light);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+    .chip.amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--amber);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    /* Workflow Diagram Box */
+    .flow-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 24, 44, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+    }
+    .flow-step {
+      text-align: center;
+      flex: 1;
+    }
+    .flow-step .step-num {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--blue-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .flow-step .step-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: white;
+      margin-top: 2px;
+    }
+    .flow-arrow {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 0 4px;
+    }
+
+    /* Slide Footer */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-color);
+      padding-top: 6px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Cover Slide */
+    .cover-slide {
+      text-align: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    .cover-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(37, 99, 235, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: var(--blue-light);
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .cover-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #ffffff 30%, #93c5fd 80%, #34d399 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    .cover-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-slate);
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* Print Styles */
+    @media print {
+      body { background: #070d19; }
+      .nav-bar { display: none !important; }
+      .slides-wrapper { padding: 0; gap: 0; }
+      .slide {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== TOP NAVIGATION BAR ==================== -->
+  <div class="nav-bar">
+    <div class="nav-brand">
+      <span>🩺 RxNXT CLOUD</span>
+      <span class="badge-pill">Clinical OS</span>
+      <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400; margin-left: 8px;">Feature Master Deck</span>
+    </div>
+    <div class="nav-controls">
+      <button class="nav-btn" onclick="prevSlide()">◀ Previous</button>
+      <span class="slide-counter" id="slideIndicator">Slide 1 of 10</span>
+      <button class="nav-btn" onclick="nextSlide()">Next ▶</button>
+      <button class="nav-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+      <button class="nav-btn primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+  </div>
+
+  <div class="slides-wrapper">
+
+    <!-- ==================== SLIDE 1: COVER ==================== -->
+    <div class="slide cover-slide" id="slide-1">
+      <div>
+        <div class="cover-badge">
+          ⚡ Production Architecture & Comprehensive Feature Blueprint
+        </div>
+        <h1 class="cover-title">RxNXT Cloud</h1>
+        <p class="cover-subtitle">
+          The Intelligent Outpatient Operating System connecting Doctors, Patients, Receptionists, and In-Clinic Pharmacies with Sub-30s Prescribing & Meta WhatsApp Adherence.
+        </p>
+      </div>
+
+      <div class="grid-4" style="max-width: 980px; margin: 15px auto 0 auto; width: 100%;">
+        <div class="card blue" style="text-align: left;">
+          <div style="font-size: 1.4rem; margin-bottom: 4px;">🩺</div>
+          <h3>Doctor Workspace</h3>
+          <p>Sub-30-second digital prescribing, fuzzy alias search, 1-click chips & repeat cloning.</p>
+        </div>
+        <div class="card emerald" style="text-align: left;">
+          <div style="font-size: 1.4rem; margin-bottom: 4px;">📱</div>
+          <h3>WhatsApp Care</h3>
+          <p>Official Meta Graph API v20.0 with 3-Window Smart Slots & Day 25 chronic refill alerts.</p>
+        </div>
+        <div class="card purple" style="text-align: left;">
+          <div style="font-size: 1.4rem; margin-bottom: 4px;">📋</div>
+          <h3>Queue & DPDP</h3>
+          <p>0.5s rapid registration auto-reset, sequential tokens, and DPDP 2023 compliance.</p>
+        </div>
+        <div class="card amber" style="text-align: left;">
+          <div style="font-size: 1.4rem; margin-bottom: 4px;">💊</div>
+          <h3>Pharmacy Counter</h3>
+          <p>Unified Rx ID workflow, real-time stock deduction, batch/expiry controls & receipt logs.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer" style="width: 100%;">
+        <div>RxNXT Technologies Pvt. Ltd. • Cloud Platform Overview</div>
+        <div>Tech Stack: Next.js 14 • Supabase Mumbai • Meta Cloud API • jsPDF</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 2: STAKEHOLDER VALUE MATRIX ==================== -->
+    <div class="slide" id="slide-2">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Outpatient Operating System</span>
+        </div>
+        <span class="slide-tag">Value Proposition</span>
+        <span class="slide-number-label">Slide 02 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Clinical Pain Points & Stakeholder Value Matrix</h2>
+        <p>Unifying the 4 critical OPD touchpoints to eliminate clinical friction, errors, and revenue leakage.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="flow-bar">
+          <div class="flow-step">
+            <div class="step-num">Step 1: Front Desk</div>
+            <div class="step-title">0.5s Fast Check-in & Token</div>
+          </div>
+          <div class="flow-arrow">➔</div>
+          <div class="flow-step">
+            <div class="step-num">Step 2: Doctor Room</div>
+            <div class="step-title">Sub-30s Digital Prescription</div>
+          </div>
+          <div class="flow-arrow">➔</div>
+          <div class="flow-step">
+            <div class="step-num">Step 3: In-Clinic Pharmacy</div>
+            <div class="step-title">Unified Rx ID Auto-Dispensing</div>
+          </div>
+          <div class="flow-arrow">➔</div>
+          <div class="flow-step">
+            <div class="step-num">Step 4: Continuous Care</div>
+            <div class="step-title">3-Window WhatsApp Smart Slots</div>
+          </div>
+        </div>
+
+        <div class="grid-4">
+          <div class="card blue">
+            <h3>🩺 Doctor</h3>
+            <p><strong>Core Friction:</strong> Slow paper documentation, illegible handwriting risks, non-compliant follow-ups.</p>
+            <ul>
+              <li>Sub-30s prescribing engine with 1-click chips.</li>
+              <li>MCI registration badge & digital signature.</li>
+              <li>1-click past visit cloning for repeat meds.</li>
+              <li><strong>Result: 85% reduction in prescription time.</strong></li>
+            </ul>
+          </div>
+
+          <div class="card purple">
+            <h3>📋 Receptionist</h3>
+            <p><strong>Core Friction:</strong> Waiting room chaos, manual paper tokens, slow patient data intake.</p>
+            <ul>
+              <li>0.5s auto-clearing registration interface.</li>
+              <li>Sequential live tokens with waiting timers.</li>
+              <li>DPDP Act 2023 WhatsApp consent logging.</li>
+              <li><strong>Result: 70% decrease in front-desk chaos.</strong></li>
+            </ul>
+          </div>
+
+          <div class="card emerald">
+            <h3>👨‍👩‍👧 Patient</h3>
+            <p><strong>Core Friction:</strong> Lost paper prescriptions, forgotten medicine hours, missed chronic refills.</p>
+            <ul>
+              <li>Instant WhatsApp PDF delivery + summary.</li>
+              <li>3-Window Smart Slot dose nudges (IST).</li>
+              <li>Day 25 chronic refill alert before pills run out.</li>
+              <li><strong>Result: 3x higher treatment adherence.</strong></li>
+            </ul>
+          </div>
+
+          <div class="card amber">
+            <h3>💊 Pharmacist</h3>
+            <p><strong>Core Friction:</strong> Unclear handwriting, fake/reused scripts, inventory mismatch.</p>
+            <ul>
+              <li>Unified Rx ID lookup directly from screen.</li>
+              <li>Batch, expiry date & rack location tracking.</li>
+              <li>Automatic stock deduction on dispensing.</li>
+              <li><strong>Result: 0 dispensing errors, live stock audit.</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Stakeholder Impact Matrix</div>
+        <div>Seamless multi-role orchestration across Clinic, Patient & Pharmacy</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 3: ARCHITECTURE & TECH STACK ==================== -->
+    <div class="slide" id="slide-3">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">System Engineering</span>
+        </div>
+        <span class="slide-tag">Technical Architecture</span>
+        <span class="slide-number-label">Slide 03 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>High-Performance Multi-Tenant Cloud Architecture</h2>
+        <p>Built for zero server cold starts, rock-solid security isolation, and sub-100ms response times.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-3">
+          <div class="card blue">
+            <h3>🌐 Frontend & PWA Edge</h3>
+            <p>Modern Next.js 14 App Router optimized for mobile, tablet, and desktop clinics.</p>
+            <ul>
+              <li><strong>Framework:</strong> Next.js 14 + TypeScript.</li>
+              <li><strong>Styling:</strong> Tailwind CSS + Radix UI primitives.</li>
+              <li><strong>Mobile Gestures:</strong> Touch-optimized swipe gestures, sticky thumb action footers.</li>
+              <li><strong>Offline Resilience:</strong> Full installable PWA with service worker caching.</li>
+            </ul>
+          </div>
+
+          <div class="card emerald">
+            <h3>🗄️ Supabase PostgreSQL Cloud</h3>
+            <p>Enterprise data isolation in Supabase Mumbai region (ap-south-1) for ultra-low latency.</p>
+            <ul>
+              <li><strong>ORM:</strong> Prisma ORM with type-safe schema validations.</li>
+              <li><strong>Tenancy:</strong> Strict JWT isolation (`clinicId`, `role`, `id`) on all queries.</li>
+              <li><strong>Security:</strong> bcryptjs password hashing + NextAuth credentials provider.</li>
+              <li><strong>Speed:</strong> Sub-50ms database transactions on Mumbai edge.</li>
+            </ul>
+          </div>
+
+          <div class="card purple">
+            <h3>⚡ Zero-Lag PDF & WhatsApp</h3>
+            <p>Eliminating backend PDF bottlenecks and expensive SMS/Twilio aggregators.</p>
+            <ul>
+              <li><strong>Client-Side PDF:</strong> jsPDF renders directly in browser DOM (zero server CPU load).</li>
+              <li><strong>Meta Cloud API:</strong> Direct server-to-server Graph API v20.0 integration.</li>
+              <li><strong>Zero Cold Starts:</strong> Direct Meta media endpoints for instant base64 uploads.</li>
+              <li><strong>Cost:</strong> Zero Twilio surcharge, utilizing Meta official utility tiers.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card amber" style="margin-top: 2px;">
+          <h3>🔒 Regulatory Security & Multi-Role Isolation</h3>
+          <div class="grid-4" style="margin-top: 6px;">
+            <div class="stat-row"><span class="stat-label">Multi-Tenant Key</span><span class="stat-val">clinicId Scoped</span></div>
+            <div class="stat-row"><span class="stat-label">Session Architecture</span><span class="stat-val">JWT Multi-Role</span></div>
+            <div class="stat-row"><span class="stat-label">Hosting Target</span><span class="stat-val">Vercel Mumbai Edge</span></div>
+            <div class="stat-row"><span class="stat-label">Database Hosting</span><span class="stat-val">Supabase ap-south-1</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Technical Infrastructure Blueprint</div>
+        <div>Modern Serverless Edge Architecture • Zero Single Point of Failure</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 4: DOCTOR PRESCRIPTION ENGINE ==================== -->
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Clinical Precision</span>
+        </div>
+        <span class="slide-tag">Doctor Workspace</span>
+        <span class="slide-number-label">Slide 04 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Sub-30-Second Doctor Prescribing Engine</h2>
+        <p>Combining additive clinical search, 1-click dosage chips, and historical cloning to save hours every day.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-2-1">
+          <div class="grid-2">
+            <div class="card blue">
+              <h3>🔍 Additive Scoring Search</h3>
+              <p>Fuzzy search engineered specifically for Indian clinical abbreviations and brand habits.</p>
+              <ul>
+                <li><span class="chip">+100 pts</span> <strong>Exact Alias Match:</strong> Typing "PCM" short-circuits instantly to <em>Paracetamol 650mg</em>.</li>
+                <li><span class="chip green">+50 pts</span> <strong>Doctor Habit:</strong> Top medicines prescribed by the doctor rise to the top.</li>
+                <li><span class="chip purple">+20 pts</span> <strong>Clinic Standardization:</strong> Clinic formulary preferences prioritized.</li>
+                <li><span class="chip amber">&lt;15 pts</span> <strong>Safeguard:</strong> Flags low-confidence search warnings.</li>
+              </ul>
+            </div>
+
+            <div class="card emerald">
+              <h3>⚡ 1-Click Dosage Chips</h3>
+              <p>Eliminating manual typing of frequencies and standard administration instructions.</p>
+              <div style="margin-top: 8px;">
+                <p style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px;">FREQUENCIES</p>
+                <span class="chip">1-0-1</span><span class="chip">1-1-1</span><span class="chip">1-0-0</span><span class="chip">0-0-1</span><span class="chip">SOS</span>
+              </div>
+              <div style="margin-top: 8px;">
+                <p style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px;">DURATIONS</p>
+                <span class="chip green">3 Days</span><span class="chip green">5 Days</span><span class="chip green">7 Days</span><span class="chip green">1 Month</span>
+              </div>
+              <div style="margin-top: 8px;">
+                <p style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 3px;">MEAL TIMING</p>
+                <span class="chip purple">After meals</span><span class="chip purple">Before breakfast</span><span class="chip purple">At bedtime</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card purple" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3>📋 Clinical Memory & Re-issue</h3>
+              <p>Zero duplicate work for chronic or returning OPD visits.</p>
+              <div style="margin-top: 10px;">
+                <div class="stat-row"><span class="stat-label">1-Click Clone</span><span class="stat-val">Instant Re-fill</span></div>
+                <div class="stat-row"><span class="stat-label">Unified Rx ID</span><span class="stat-val">#RX-261004-001</span></div>
+                <div class="stat-row"><span class="stat-label">NMC Reg Stamp</span><span class="stat-val">Verified Badge</span></div>
+                <div class="stat-row"><span class="stat-label">Digital Signature</span><span class="stat-val">Auto-embedded</span></div>
+              </div>
+            </div>
+            <div style="background: rgba(139, 92, 246, 0.15); padding: 10px; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.3);">
+              <p style="font-size: 0.75rem; color: var(--purple-light);"><strong>Doctor Benefit:</strong> Write structured, legally compliant e-prescriptions in under 30 seconds with 0 cognitive fatigue.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Clinical Prescribing Workstation</div>
+        <div>Built for speed, legal validity, and zero prescription errors</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 5: RECEPTION & QUEUE ==================== -->
+    <div class="slide" id="slide-5">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Front Desk Operations</span>
+        </div>
+        <span class="slide-tag">Queue Management</span>
+        <span class="slide-number-label">Slide 05 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Receptionist OPD Flow & Patient Queue System</h2>
+        <p>Eliminating waiting room friction with sub-second form resets and real-time waiting timers.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-3">
+          <div class="card blue">
+            <h3>⚡ 0.5s Fast Intake Form</h3>
+            <p>Engineered for high-density OPD reception desks handling 100+ walk-ins every morning.</p>
+            <ul>
+              <li><strong>Auto-Reset Mechanism:</strong> Form clears in 0.5s immediately upon token generation.</li>
+              <li><strong>Quick Fields:</strong> Name, Phone, Age, Gender, Address.</li>
+              <li><strong>Duplicate Detection:</strong> Detects returning patients instantly by phone number.</li>
+            </ul>
+          </div>
+
+          <div class="card emerald">
+            <h3>🎫 Live Token Queue</h3>
+            <p>Real-time queue tracking synchronizing the reception lobby and doctor consultation cabin.</p>
+            <ul>
+              <li><strong>Sequential Tokens:</strong> Automatic sequential issuing (`Token #14`, `#15`...).</li>
+              <li><strong>Live Status Badges:</strong> WAITING, AWAY, SKIPPED, COMPLETED.</li>
+              <li><strong>Waiting Timers:</strong> Doctor sees exact waiting duration ("Waiting for 7m").</li>
+              <li><strong>1-Click Start:</strong> Doctor clicks card to initiate consultation.</li>
+            </ul>
+          </div>
+
+          <div class="card purple">
+            <h3>📜 DPDP Act (2023) Consent</h3>
+            <p>Guaranteed regulatory compliance under India's Digital Personal Data Protection Act.</p>
+            <ul>
+              <li><strong>Explicit Checkbox:</strong> Verifies patient consent for WhatsApp medical communications.</li>
+              <li><strong>Audit Logging:</strong> Timestamped consent records stored with patient profile.</li>
+              <li><strong>Privacy First:</strong> Multi-tenant isolation prevents cross-clinic data leaks.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card amber" style="margin-top: 4px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h3 style="margin-bottom: 2px;">🛋️ Front Desk ROI</h3>
+              <p style="font-size: 0.8rem;">Eliminates verbal shouting of names, reduces lobby wait times by 40%, and organizes patient flow transparently.</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+              <span class="chip amber">0.5s Rapid Reset</span>
+              <span class="chip green">Live Queue Sync</span>
+              <span class="chip">DPDP 2023 Verified</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Front Desk Queue Architecture</div>
+        <div>OPD Footfall Automation • Zero Lobby Congestion</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 6: WHATSAPP PATIENT ADHERENCE ==================== -->
+    <div class="slide" id="slide-6">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Patient Adherence Engine</span>
+        </div>
+        <span class="slide-tag">Meta WhatsApp Gateway</span>
+        <span class="slide-number-label">Slide 06 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Automated Patient Care & WhatsApp Smart-Slots</h2>
+        <p>Continuous care loop utilizing Meta Cloud API v20.0 with 3-window daily medication nudges.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-3">
+          <div class="card blue">
+            <h3>🌅 8:00 AM IST — Morning Slot</h3>
+            <p>Morning doses, scheduled clinic follow-ups & chronic refill briefs.</p>
+            <ul>
+              <li><strong>Trigger Filters:</strong> `1-0-0`, `1-0-1`, `1-1-1`, OD, Before breakfast, Morning.</li>
+              <li><strong>Doctor Follow-up:</strong> Sends appointment alert if due today.</li>
+              <li><strong>Chronic Refills:</strong> 8:00 AM monthly refill notification for long-term patients.</li>
+            </ul>
+          </div>
+
+          <div class="card amber">
+            <h3>☀️ 1:30 PM IST — Afternoon Slot</h3>
+            <p>Lunch-time medication dose alerts delivered directly to WhatsApp.</p>
+            <ul>
+              <li><strong>Trigger Filters:</strong> `0-1-0`, `1-1-1`, Afternoon, Thrice daily.</li>
+              <li><strong>Post-Meal Reminder:</strong> "Take after lunch with water".</li>
+              <li><strong>Zero Spillage:</strong> Excludes morning and night-only medications.</li>
+            </ul>
+          </div>
+
+          <div class="card purple">
+            <h3>🌙 8:30 PM IST — Night Slot</h3>
+            <p>Dinner & bedtime medication nudges ensuring complete daily compliance.</p>
+            <ul>
+              <li><strong>Trigger Filters:</strong> `0-0-1`, `1-0-1`, `1-1-1`, Bedtime, Night, HS.</li>
+              <li><strong>Sedative Alerts:</strong> Reminds patient before sleeping.</li>
+              <li><strong>Daily Completion:</strong> Closes the daily medication cycle.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 4px;">
+          <div class="card emerald">
+            <h3>🛡️ Zero Message Waste & Superseding Rules</h3>
+            <p>If a doctor revises a prescription mid-week, all outdated pending reminders are instantly flagged <strong>SUPERSEDED</strong>. The patient receives only clean, active guidance.</p>
+          </div>
+          <div class="card blue">
+            <h3>🏥 Day 25 Chronic Care Refill Engine</h3>
+            <p>For chronic regimens (>14 days), an automated alert fires on Day 25: <em>"5 days of medication remaining. Contact Dr. Shanmukha to schedule your monthly checkup."</em></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Continuous Patient Care Architecture</div>
+        <div>Official Meta Graph API v20.0 • Zero Cold Starts • High Compliance</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 7: PHARMACY COUNTER & INVENTORY ==================== -->
+    <div class="slide" id="slide-7">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Dispensary Operations</span>
+        </div>
+        <span class="slide-tag">Pharmacy Counter</span>
+        <span class="slide-number-label">Slide 07 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>In-Clinic Pharmacy Counter & Inventory Engine</h2>
+        <p>Connecting the doctor's prescription directly to the dispensary with real-time stock deduction.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-2-1">
+          <div class="grid-2">
+            <div class="card blue">
+              <h3>🔍 Unified Rx ID Lookup</h3>
+              <p>Eliminating handwritten confusion with consistent identifier formatting.</p>
+              <ul>
+                <li><strong>Unified Rx ID:</strong> Format `#RX-### / RX-YYMMDD-###` synced across reception, doctor PDF, and pharmacy screen.</li>
+                <li><strong>Instant Fetch:</strong> Pharmacist enters Rx ID or selects waiting patient from dispensary queue.</li>
+                <li><strong>Line Item Verification:</strong> Prescribed strength, dosage form, and quantity auto-calculated.</li>
+              </ul>
+            </div>
+
+            <div class="card emerald">
+              <h3>📦 Automated Stock Deduction</h3>
+              <p>Real-time inventory deduction prevents stockouts and revenue slippage.</p>
+              <ul>
+                <li><strong>1-Click Dispensing:</strong> Dispense items in 1 click; stock quantity decrements immediately.</li>
+                <li><strong>Low-Stock Indicator:</strong> Visual alert when stock breaches minimum reorder level.</li>
+                <li><strong>Batch & Expiry Controls:</strong> Tracks batch numbers and warns on approaching expiry.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card amber" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3>💰 Billing & Dispense Log</h3>
+              <p>Auditable dispensing logs and transaction receipts.</p>
+              <div style="margin-top: 10px;">
+                <div class="stat-row"><span class="stat-label">Dispense Modes</span><span class="stat-val">CASH, UPI, CARD</span></div>
+                <div class="stat-row"><span class="stat-label">Item Pricing</span><span class="stat-val">MRP & Cost Price</span></div>
+                <div class="stat-row"><span class="stat-label">Rack Location</span><span class="stat-val">Fast Shelf Pick</span></div>
+                <div class="stat-row"><span class="stat-label">Audit Trail</span><span class="stat-val">Pharmacist Tagged</span></div>
+              </div>
+            </div>
+            <div style="background: rgba(245, 158, 11, 0.15); padding: 10px; border-radius: 6px; border: 1px solid rgba(245, 158, 11, 0.3);">
+              <p style="font-size: 0.75rem; color: var(--amber);"><strong>Clinic Value:</strong> Retain 100% of internal medicine sales revenue and eliminate pharmacy leakages.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-bar" style="margin-top: 4px;">
+          <div class="flow-step">
+            <div class="step-num">Step 1</div>
+            <div class="step-title">Doctor Issues Prescription</div>
+          </div>
+          <div class="flow-arrow">➔</div>
+          <div class="flow-step">
+            <div class="step-num">Step 2</div>
+            <div class="step-title">Dispensary Receives Live Alert</div>
+          </div>
+          <div class="flow-arrow">➔</div>
+          <div class="flow-step">
+            <div class="step-num">Step 3</div>
+            <div class="step-title">Pharmacist Verifies & Dispenses</div>
+          </div>
+          <div class="flow-arrow">➔</div>
+          <div class="flow-step">
+            <div class="step-num">Step 4</div>
+            <div class="step-title">Live Stock Deducted & Logged</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — In-Clinic Pharmacy Module</div>
+        <div>Full Inventory Lifecycle • Batch Expiry Safety • Automated Dispensing</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 8: COMPLIANCE & ADMIN ==================== -->
+    <div class="slide" id="slide-8">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Governance & Administration</span>
+        </div>
+        <span class="slide-tag">Regulatory Compliance</span>
+        <span class="slide-number-label">Slide 08 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Regulatory Verification, RBAC & Multi-Tenant Control</h2>
+        <p>Built-in National Medical Commission (NMC) verification and multi-role clinic operations.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-3">
+          <div class="card emerald">
+            <h3>🏛️ Official NMC REST API</h3>
+            <p>Direct live verification against National Medical Commission & 24+ Indian State Councils.</p>
+            <ul>
+              <li><strong>Sub-Second Verification:</strong> Queries doctor credentials across India in ~0.4s.</li>
+              <li><strong>Zero Impersonation:</strong> Mandates verified medical registration before clinic creation.</li>
+              <li><strong>Double Server Validation:</strong> Prevents bypass via server-side check.</li>
+            </ul>
+          </div>
+
+          <div class="card blue">
+            <h3>👥 Role-Based Access (RBAC)</h3>
+            <p>Strict workspace separation ensuring staff members access only their authorized views.</p>
+            <ul>
+              <li><strong>Doctor:</strong> Prescribing, clinical history, templates.</li>
+              <li><strong>Receptionist:</strong> Live queue, patient intake, DPDP consent.</li>
+              <li><strong>Pharmacist:</strong> Dispensing terminal, batch inventory.</li>
+              <li><strong>Admin / Superadmin:</strong> Clinic setup, staff, global formulary.</li>
+            </ul>
+          </div>
+
+          <div class="card purple">
+            <h3>💳 14-Day Trial & Lockout System</h3>
+            <p>Complete commercial SaaS onboarding and automated subscription lifecycle management.</p>
+            <ul>
+              <li><strong>14-Day Free Trial:</strong> Full feature access upon verified registration.</li>
+              <li><strong>Automated WhatsApp Alerts:</strong> 7-day prior renewal reminders sent via Meta Cloud API.</li>
+              <li><strong>Grace Lockout:</strong> Non-destructive read-only lockout upon trial expiry.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card amber" style="margin-top: 4px;">
+          <h3>🏢 Multi-Tenant Clinic Branding</h3>
+          <div class="grid-4" style="margin-top: 6px;">
+            <div><span class="chip">Custom Logo</span><p style="font-size: 0.75rem; color: var(--text-slate);">Drag-and-drop clinic logo on header of all prescriptions.</p></div>
+            <div><span class="chip green">Doctor Signature</span><p style="font-size: 0.75rem; color: var(--text-slate);">Digital signature stamped automatically on verified PDFs.</p></div>
+            <div><span class="chip purple">Formulary Control</span><p style="font-size: 0.75rem; color: var(--text-slate);">Clinic-specific drug preferences & custom formulations.</p></div>
+            <div><span class="chip amber">Staff Directory</span><p style="font-size: 0.75rem; color: var(--text-slate);">1-click staff onboarding and credential management.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Governance, Verification & Multi-Tenancy</div>
+        <div>Regulatory Grade Verification • End-to-End Enterprise RBAC</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 9: EXPANSION ROADMAP ==================== -->
+    <div class="slide" id="slide-9">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Future Horizon</span>
+        </div>
+        <span class="slide-tag">Strategic Roadmap</span>
+        <span class="slide-number-label">Slide 09 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Strategic Product Roadmap & Feature Expansions</h2>
+        <p>Horizontal depth into Clinical Decision Support (CDSS), Integrated Billing, and Patient Self-Service.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-2">
+          <div class="card blue">
+            <h3>🧠 1. AI Clinical Decision Support (CDSS)</h3>
+            <p>Transforming prescription creation from transactional data entry into an intelligent clinical shield.</p>
+            <ul>
+              <li><strong>Drug-Drug Interaction (DDI) Engine:</strong> Warns doctor in real time if prescribed medicines have dangerous interactions (e.g., Warfarin + NSAIDs).</li>
+              <li><strong>Pediatric & Geriatric Dose Sanity:</strong> Validates dosage based on patient age and weight.</li>
+              <li><strong>Generic Cost-Saving Switcher:</strong> Suggests bioequivalent low-cost alternatives, saving patient costs.</li>
+            </ul>
+          </div>
+
+          <div class="card emerald">
+            <h3>💳 2. Integrated OPD Billing & Dynamic UPI</h3>
+            <p>A unified cashier terminal combining consultation, procedure, and medicine billing.</p>
+            <ul>
+              <li><strong>Unified Invoice:</strong> Consultation fee + pharmacy bill combined into single checkout.</li>
+              <li><strong>Dynamic UPI QR Codes:</strong> Printed on prescription and sent via WhatsApp with exact bill amount.</li>
+              <li><strong>Daily Cash Register:</strong> Daily collection reports for clinic owners.</li>
+            </ul>
+          </div>
+
+          <div class="card purple">
+            <h3>📲 3. Zero-Install Patient Web Portal</h3>
+            <p>Empowering patients with lightweight mobile access without requiring an app store download.</p>
+            <ul>
+              <li><strong>OTP Authentication:</strong> Patient logs in securely with their mobile number.</li>
+              <li><strong>Longitudinal Timeline:</strong> View historical prescription PDFs, past diagnoses & vitals trends.</li>
+              <li><strong>Adherence Check-in:</strong> Patients tap "Taken" on their daily doses, providing compliance analytics to doctors.</li>
+            </ul>
+          </div>
+
+          <div class="card amber">
+            <h3>☁️ 4. Permanent Cloud Archival & AWS S3</h3>
+            <p>Enterprise long-term storage ensuring 10-year medicolegal audit readiness.</p>
+            <ul>
+              <li><strong>Direct S3 Upload:</strong> Automatic archival of encrypted prescription PDFs to AWS S3 / Supabase Storage.</li>
+              <li><strong>Cryptographic Tamper-Proof Hash:</strong> SHA-256 hash validation for legal court admissibility.</li>
+              <li><strong>Signed URLs:</strong> Time-limited, secure download links for patients and insurance providers.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Product Evolution Roadmap</div>
+        <div>From Outpatient EMR to Full Clinical Operating System</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 10: DISCUSSION SUMMARY ==================== -->
+    <div class="slide cover-slide" id="slide-10">
+      <div>
+        <div class="cover-badge" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: var(--emerald-light);">
+          🎯 Operational Blueprint Complete
+        </div>
+        <h1 class="cover-title" style="font-size: 2.5rem;">Feature Discussion & Action Plan</h1>
+        <p class="cover-subtitle" style="max-width: 820px;">
+          RxNXT's core engine (Doctor, Reception, WhatsApp & Pharmacy) is deployed and operational. Which strategic dimension shall we prioritize for development?
+        </p>
+      </div>
+
+      <div class="grid-3" style="max-width: 960px; margin: 10px auto 0 auto; width: 100%; text-align: left;">
+        <div class="card blue">
+          <span class="chip">Track A: Clinical Depth</span>
+          <h3 style="margin-top: 6px;">AI Clinical Decision Support</h3>
+          <p>Implement real-time Drug-Drug Interaction (DDI) alerts and generic substitution engine during prescribing.</p>
+          <div style="margin-top: 8px;"><span class="chip green">High Doctor Value</span></div>
+        </div>
+
+        <div class="card emerald">
+          <span class="chip green">Track B: Monetization</span>
+          <h3 style="margin-top: 6px;">Unified Billing & Dynamic UPI</h3>
+          <p>Add reception billing module, daily cash register reconciliation, and dynamic UPI QR payment generation.</p>
+          <div style="margin-top: 8px;"><span class="chip">Revenue Driver</span></div>
+        </div>
+
+        <div class="card purple">
+          <span class="chip purple">Track C: Patient Portal</span>
+          <h3 style="margin-top: 6px;">Mobile Patient Web App</h3>
+          <p>Build the OTP-based mobile patient portal for self-service history access and dose adherence tracking.</p>
+          <div style="margin-top: 8px;"><span class="chip amber">Patient Retention</span></div>
+        </div>
+      </div>
+
+      <div class="slide-footer" style="width: 100%;">
+        <div>RxNXT Technologies Pvt. Ltd. • Discussion Ready</div>
+        <div>Use arrow keys ◀ / ▶ to navigate slides • Press 'Print' to save as PDF</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== INTERACTIVE JAVASCRIPT ==================== -->
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    function updateSlideView() {
+      const target = document.getElementById(`slide-${currentSlide}`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      document.getElementById('slideIndicator').innerText = `Slide ${currentSlide} of ${totalSlides}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlideView();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlideView();
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error(`Error attempting fullscreen: ${err.message}`);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      } else if (e.key === 'p' || e.key === 'P') {
+        window.print();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -246,3 +246,62 @@ export async function extendClinicTrial(clinicId: string, additionalDays: number
     status: updatedClinic?.subscriptionStatus || (current.isTrial ? 'TRIAL' : 'ACTIVE'),
   };
 }
+
+/**
+ * Free Trial WhatsApp Guard Rail: Caps free trials at 500 WhatsApp messages (~200 consultations).
+ */
+export const TRIAL_WHATSAPP_CAP = 500;
+
+export async function getClinicWhatsAppUsage(clinicId: string): Promise<{
+  used: number;
+  cap: number | null;
+  allowed: boolean;
+  isTrial: boolean;
+  isExpired: boolean;
+}> {
+  const sub = await getClinicSubscription(clinicId);
+
+  if (!sub.allowed) {
+    return {
+      used: 0,
+      cap: sub.isTrial ? TRIAL_WHATSAPP_CAP : null,
+      allowed: false,
+      isTrial: sub.isTrial,
+      isExpired: sub.isExpired,
+    };
+  }
+
+  // Count WhatsApp messages sent during current cycle
+  const startDate = sub.isTrial
+    ? (sub.subscriptionStartedAt || sub.trialEndsAt ? new Date(sub.trialEndsAt!.getTime() - 14 * 24 * 60 * 60 * 1000) : new Date(0))
+    : (sub.subscriptionStartedAt || new Date(0));
+
+  const sentCount = await prisma.reminder.count({
+    where: {
+      prescription: { clinicId },
+      status: 'SENT',
+      createdAt: { gte: startDate },
+    },
+  });
+
+  if (sub.isTrial) {
+    const allowed = sentCount < TRIAL_WHATSAPP_CAP;
+    return {
+      used: sentCount,
+      cap: TRIAL_WHATSAPP_CAP,
+      allowed,
+      isTrial: true,
+      isExpired: false,
+    };
+  }
+
+  // Paid active subscription
+  return {
+    used: sentCount,
+    cap: null,
+    allowed: true,
+    isTrial: false,
+    isExpired: false,
+  };
+}
+

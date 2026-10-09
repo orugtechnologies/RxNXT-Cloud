@@ -51,6 +51,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'An account with this email already exists.' }, { status: 409 });
     }
 
+    // Guard Rail 1: Prevent duplicate free trial creation with the same doctor medical registration number
+    const verifiedRegNo = (verificationResult.registrationNumber || registrationNumber || '').trim();
+    if (!inviteCode && verifiedRegNo) {
+      const existingLicenseDoctor = await prisma.user.findFirst({
+        where: {
+          registrationNumber: {
+            equals: verifiedRegNo,
+            mode: 'insensitive',
+          },
+        },
+        include: { clinic: true },
+      });
+
+      if (existingLicenseDoctor) {
+        return NextResponse.json({
+          error: `Medical Registration Number "${verifiedRegNo}" has already redeemed a 14-day free trial on clinic "${existingLicenseDoctor.clinic?.name || 'RxNXT Clinic'}". Each doctor license is permitted one free trial. Please log into your existing account (${existingLicenseDoctor.email}) or contact support.`,
+        }, { status: 409 });
+      }
+    }
+
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create clinic (or use existing) + doctor in a transaction

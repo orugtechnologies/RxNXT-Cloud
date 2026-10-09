@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RxNXT Cloud — Market Fit, Competitive Moats & Scalability Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-bg: #070d19;
+      --navy-surface: #0f182c;
+      --navy-card: #131f38;
+      --navy-card-hover: #192849;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.2);
+      
+      --blue-primary: #2563eb;
+      --blue-light: #38bdf8;
+      --emerald: #10b981;
+      --emerald-light: #34d399;
+      --purple: #8b5cf6;
+      --purple-light: #a78bfa;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      
+      --text-white: #ffffff;
+      --text-slate: #cbd5e1;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--navy-bg);
+      color: var(--text-white);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      overflow-x: hidden;
+    }
+
+    @page {
+      size: 297mm 210mm;
+      margin: 0;
+    }
+
+    /* Top Navigation Toolbar */
+    .nav-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(15, 24, 44, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.5px;
+    }
+    .badge-pill {
+      background: linear-gradient(135deg, #10b981, #2563eb);
+      color: white;
+      font-size: 0.65rem;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-btn {
+      background: var(--navy-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-slate);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover {
+      background: var(--navy-card-hover);
+      color: white;
+      border-color: var(--blue-light);
+    }
+    .nav-btn.primary {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+    }
+    .nav-btn.primary:hover {
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    }
+    .slide-counter {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Slides Container */
+    .slides-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      gap: 30px;
+    }
+
+    /* Single Slide Canvas */
+    .slide {
+      width: 297mm;
+      height: 210mm;
+      page-break-after: always;
+      page-break-inside: avoid;
+      position: relative;
+      overflow: hidden;
+      padding: 16mm 20mm 14mm 20mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: linear-gradient(145deg, #070d19 0%, #0d1629 100%);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      border-radius: 8px;
+    }
+
+    /* Glow Backlights */
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(0,0,0,0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .slide::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      width: 320px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(0,0,0,0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      position: relative;
+      z-index: 2;
+    }
+    .slide-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .slide-header .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+    .slide-header .tagline {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-left: 1px solid rgba(255, 255, 255, 0.15);
+      padding-left: 10px;
+    }
+    .slide-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--emerald-light);
+    }
+    .slide-number-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* Title Block */
+    .title-block {
+      margin-top: 10px;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 2;
+    }
+    .title-block h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: white;
+      line-height: 1.2;
+    }
+    .title-block p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      gap: 12px;
+    }
+
+    /* Grids */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 14px; }
+
+    /* Cards */
+    .card {
+      background: var(--navy-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px 16px;
+      position: relative;
+    }
+    .card.emerald { border-top: 3px solid var(--emerald); }
+    .card.blue { border-top: 3px solid var(--blue-primary); }
+    .card.purple { border-top: 3px solid var(--purple); }
+    .card.amber { border-top: 3px solid var(--amber); }
+    .card.rose { border-top: 3px solid var(--rose); }
+
+    .card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.98rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+    }
+    .card p {
+      font-size: 0.8rem;
+      color: var(--text-slate);
+      line-height: 1.45;
+    }
+    .card ul {
+      margin-left: 16px;
+      margin-top: 6px;
+    }
+    .card li {
+      font-size: 0.78rem;
+      color: var(--text-slate);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    /* Comparison Table Styling */
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .matrix-table th {
+      background: #0f1a30;
+      color: white;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .matrix-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-slate);
+    }
+    .matrix-table tr:last-child td { border-bottom: none; }
+    .matrix-table tr.highlight-row {
+      background: rgba(16, 185, 129, 0.08);
+    }
+    .badge-win {
+      color: var(--emerald-light);
+      font-weight: 700;
+    }
+    .badge-warn {
+      color: var(--amber);
+      font-weight: 600;
+    }
+    .badge-fail {
+      color: var(--rose);
+      font-weight: 600;
+    }
+
+    /* Highlights & Chips */
+    .chip {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald-light);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      margin-right: 4px;
+      margin-bottom: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .chip.blue {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--blue-light);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+    .chip.purple {
+      background: rgba(139, 92, 246, 0.15);
+      color: var(--purple-light);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+    .chip.amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--amber);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    /* Flow Bar */
+    .flow-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 24, 44, 0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+    }
+    .flow-step {
+      text-align: center;
+      flex: 1;
+    }
+    .flow-step .step-num {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--emerald-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .flow-step .step-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: white;
+      margin-top: 2px;
+    }
+    .flow-arrow {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 0 4px;
+    }
+
+    /* Slide Footer */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-color);
+      padding-top: 6px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Cover Slide */
+    .cover-slide {
+      text-align: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    .cover-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: var(--emerald-light);
+      padding: 5px 14px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .cover-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #ffffff 30%, #34d399 75%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+      margin-bottom: 10px;
+    }
+    .cover-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-slate);
+      max-width: 820px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    @media print {
+      body { background: #070d19; }
+      .nav-bar { display: none !important; }
+      .slides-wrapper { padding: 0; gap: 0; }
+      .slide {
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Toolbar -->
+  <div class="nav-bar">
+    <div class="nav-brand">
+      <span>🚀 RxNXT CLOUD</span>
+      <span class="badge-pill">Strategy & Moats</span>
+      <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400; margin-left: 8px;">Market Fit & Scalability Deck</span>
+    </div>
+    <div class="nav-controls">
+      <button class="nav-btn" onclick="prevSlide()">◀ Previous</button>
+      <span class="slide-counter" id="slideIndicator">Slide 1 of 10</span>
+      <button class="nav-btn" onclick="nextSlide()">Next ▶</button>
+      <button class="nav-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+      <button class="nav-btn primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+  </div>
+
+  <div class="slides-wrapper">
+
+    <!-- ==================== SLIDE 1: COVER ==================== -->
+    <div class="slide cover-slide" id="slide-1">
+      <div>
+        <div class="cover-badge">
+          🏆 Strategic Positioning • Revenue Engine • Regional Scale
+        </div>
+        <h1 class="cover-title">RxNXT Cloud</h1>
+        <p class="cover-subtitle">
+          Market Fit, Revenue Generation, Client ROI, and Pan-India Regional Scalability: Outperforming Legacy Competitors in Outpatient Healthcare.
+        </p>
+      </div>
+
+      <div class="grid-4" style="max-width: 980px; margin: 15px auto 0 auto; width: 100%;">
+        <div class="card emerald" style="text-align: left;">
+          <div style="font-size: 1.3rem; margin-bottom: 4px;">⚡</div>
+          <h3>Sub-30s Speed</h3>
+          <p>Conquers the #1 reason doctors abandon EMRs: writing digital prescriptions under 30 seconds.</p>
+        </div>
+        <div class="card blue" style="text-align: left;">
+          <div style="font-size: 1.3rem; margin-bottom: 4px;">🔄</div>
+          <h3>4-Node Loop</h3>
+          <p>Connects Reception Queue → Doctor Workstation → Pharmacy Dispensary → Patient WhatsApp.</p>
+        </div>
+        <div class="card purple" style="text-align: left;">
+          <div style="font-size: 1.3rem; margin-bottom: 4px;">💰</div>
+          <h3>Direct Clinic ROI</h3>
+          <p>Day 25 chronic refill alerts drive +20% repeat visits and internal medicine sales retention.</p>
+        </div>
+        <div class="card amber" style="text-align: left;">
+          <div style="font-size: 1.3rem; margin-bottom: 4px;">🇮🇳</div>
+          <h3>Pan-India Scale</h3>
+          <p>Universal WhatsApp transport + NMC API integration across all 24+ Indian State Councils.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer" style="width: 100%;">
+        <div>RxNXT Technologies Pvt. Ltd. • Market Fit & Competitive Master Deck</div>
+        <div>Comparison Benchmark: Practo Ray • HealthPlix • Eka Care • Traditional Paper</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 2: WHY COMPETITORS FAILED ==================== -->
+    <div class="slide" id="slide-2">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Market Dynamics</span>
+        </div>
+        <span class="slide-tag">The 80% Paper Reality</span>
+        <span class="slide-number-label">Slide 02 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Why 80% of Indian Clinics Still Prescribe on Paper</h2>
+        <p>Analyzing the fatal product flaws of legacy incumbents and how RxNXT was engineered to win.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-3">
+          <div class="card rose">
+            <h3>Trap 1: The Prescribing Speed Bottleneck</h3>
+            <p><strong>Competitor Failure (Practo, HealthPlix):</strong></p>
+            <ul>
+              <li>Takes 2 to 3 minutes to fill complex forms and dropdowns.</li>
+              <li>When 40+ patients are waiting outside, doctors immediately abandon the software and return to pen & paper.</li>
+              <li><strong>The RxNXT Fix:</strong> Sub-30-second prescription engine with additive scoring and 1-click dosage chips.</li>
+            </ul>
+          </div>
+
+          <div class="card amber">
+            <h3>Trap 2: The Doctor-Siloed Island</h3>
+            <p><strong>Competitor Failure (Eka Care):</strong></p>
+            <ul>
+              <li>Software focuses strictly on the doctor's phone/screen.</li>
+              <li>Completely ignores front-desk receptionist chaos, waiting room congestion, and internal pharmacy dispensary leakage.</li>
+              <li><strong>The RxNXT Fix:</strong> Complete 4-node ecosystem synchronizing Reception, Doctor, Pharmacy & Patient.</li>
+            </ul>
+          </div>
+
+          <div class="card purple">
+            <h3>Trap 3: The Pharma Data Monetization Trap</h3>
+            <p><strong>Competitor Failure (HealthPlix):</strong></p>
+            <ul>
+              <li>Monetizes by scraping and selling aggregate doctor prescription data to pharmaceutical companies.</li>
+              <li>Doctors feel uncomfortable with commercial data extraction and invasive pop-ups during consultation.</li>
+              <li><strong>The RxNXT Fix:</strong> 100% Doctor-centric, DPDP Act 2023 compliant, sovereign multi-tenant database.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card emerald" style="margin-top: 4px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h3 style="margin-bottom: 2px;">🎯 The Fundamental Market Insight</h3>
+              <p style="font-size: 0.8rem;">Indian doctors don't want an administrative EHR burden. They want a <strong>lightning-fast prescription typewriter</strong> that eliminates handwriting liability and brings patients back every month.</p>
+            </div>
+            <span class="chip">Speed = Adoption</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Market Dynamics & Doctor Psychology</div>
+        <div>Eliminating the Friction Points of First-Generation Healthcare SaaS</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 3: COMPETITIVE MATRIX ==================== -->
+    <div class="slide" id="slide-3">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Benchmarking</span>
+        </div>
+        <span class="slide-tag">Competitive Matrix</span>
+        <span class="slide-number-label">Slide 03 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Head-to-Head Competitive Scorecard</h2>
+        <p>Direct comparison against major Indian healthcare incumbents across the 6 critical operational dimensions.</p>
+      </div>
+
+      <div class="content-area">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>Practo Ray 🌐</th>
+              <th>HealthPlix 🏥</th>
+              <th>Eka Care 📱</th>
+              <th>RxNXT Cloud 🚀 (Ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>Prescribing Speed</strong></td>
+              <td class="badge-fail">Slow (2–3 mins)</td>
+              <td class="badge-warn">Medium (~45s)</td>
+              <td class="badge-warn">Medium (~1 min)</td>
+              <td class="badge-win">⚡ Sub-30 Seconds (<28s avg)</td>
+            </tr>
+            <tr>
+              <td><strong>Medicine Search</strong></td>
+              <td class="badge-fail">Exact spelling only</td>
+              <td class="badge-warn">Standard brand search</td>
+              <td class="badge-warn">Standard brand search</td>
+              <td class="badge-win">Additive Scoring ("PCM" → Paracetamol 650mg)</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>WhatsApp Adherence</strong></td>
+              <td class="badge-fail">SMS link to web portal</td>
+              <td class="badge-warn">SMS / 3rd-party aggregator</td>
+              <td class="badge-warn">Basic PDF delivery</td>
+              <td class="badge-win">Official Meta API + 3-Window Smart Slots</td>
+            </tr>
+            <tr>
+              <td><strong>In-Clinic Pharmacy Sync</strong></td>
+              <td class="badge-fail">❌ None</td>
+              <td class="badge-fail">❌ None</td>
+              <td class="badge-fail">❌ None</td>
+              <td class="badge-win">✅ Built-in Dispensing Terminal & Stock Sync</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>Doctor Data Trust</strong></td>
+              <td class="badge-fail">Competes (marketplace)</td>
+              <td class="badge-warn">Sells aggregate pharma data</td>
+              <td class="badge-warn">ABDM health locker focus</td>
+              <td class="badge-win">100% Doctor-Sovereign (DPDP Act 2023)</td>
+            </tr>
+            <tr>
+              <td><strong>Pricing & Accessibility</strong></td>
+              <td class="badge-fail">₹18,000–₹30,000/yr</td>
+              <td class="badge-warn">Freemium (Pharma ads)</td>
+              <td class="badge-warn">Freemium</td>
+              <td class="badge-win">Affordable SaaS (₹7,999–₹11,999/yr)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="grid-3" style="margin-top: 4px;">
+          <div class="card blue">
+            <h3>⚡ Faster Prescribing</h3>
+            <p>Saves 1.5 to 2 hours of clinical time every day during high-density OPD rush hours.</p>
+          </div>
+          <div class="card emerald">
+            <h3>📱 Native Meta WhatsApp</h3>
+            <p>Direct official Graph API v20.0 eliminates SMS link drop-off and third-party aggregator latency.</p>
+          </div>
+          <div class="card amber">
+            <h3>💊 In-Clinic Dispensary</h3>
+            <p>Unlocks immediate in-clinic medicine sales revenue that competitors leave on the table.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Industry Competitive Matrix</div>
+        <div>Strategic Dominance in Core Prescribing & Patient Retention Workflows</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 4: PRODUCT-MARKET FIT ==================== -->
+    <div class="slide" id="slide-4">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Clinical Precision</span>
+        </div>
+        <span class="slide-tag">Product-Market Fit</span>
+        <span class="slide-number-label">Slide 04 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Product-Market Fit: Engineered for Indian Outpatient OPDs</h2>
+        <p>Every single UI interaction is tailored around the speed, vernaculars, and habits of Indian practitioners.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-2-1">
+          <div class="grid-2">
+            <div class="card emerald">
+              <h3>🔍 Additive Clinical Search Engine</h3>
+              <p>Designed around the clinical shorthand Indian doctors actually use.</p>
+              <ul>
+                <li><span class="chip">+100 pts</span> <strong>Exact Alias Match:</strong> Typing "PCM" yields <em>Paracetamol 650mg</em> in 20ms.</li>
+                <li><span class="chip blue">+50 pts</span> <strong>Doctor Habit Rank:</strong> Doctor's frequently prescribed brands appear at the top.</li>
+                <li><span class="chip purple">+20 pts</span> <strong>Clinic Formulary:</strong> In-stock pharmacy inventory highlighted first.</li>
+              </ul>
+            </div>
+
+            <div class="card blue">
+              <h3>⚡ 1-Click Dosage Chips</h3>
+              <p>Eliminates typing frequencies and standard administration instructions.</p>
+              <ul>
+                <li><strong>Frequency:</strong> <code>[1-0-1]</code> <code>[1-1-1]</code> <code>[1-0-0]</code> <code>[0-0-1]</code> <code>[SOS]</code></li>
+                <li><strong>Duration:</strong> <code>[3 Days]</code> <code>[5 Days]</code> <code>[7 Days]</code> <code>[1 Month]</code></li>
+                <li><strong>Timing:</strong> <code>[After meals]</code> <code>[Before breakfast]</code> <code>[At bedtime]</code></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card purple" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3>📋 1-Click History Cloning</h3>
+              <p>For chronic returning patients, doctor clicks "Clone Prescription" $\rightarrow$ repeat medications, instructions & dosages populate in 0.2s.</p>
+              <div style="margin-top: 10px;">
+                <div class="chip amber">0.5s Reception Reset</div>
+                <div class="chip">DPDP 2023 Consent</div>
+                <div class="chip blue">MCI Verified Stamp</div>
+              </div>
+            </div>
+            <div style="background: rgba(16, 185, 129, 0.15); padding: 10px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.3);">
+              <p style="font-size: 0.75rem; color: var(--emerald-light);"><strong>The PMF Formula:</strong> Fast as paper, but legally structured, branded, and connected to the patient's phone.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Product-Market Fit Architecture</div>
+        <div>Built for Speed, Zero Cognitive Overhead & High Daily Clinical Adoption</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 5: MONEY GENERATOR & ROI ==================== -->
+    <div class="slide" id="slide-5">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Financial Engine</span>
+        </div>
+        <span class="slide-tag">Revenue & ROI</span>
+        <span class="slide-number-label">Slide 05 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>The Money Generator: Dual ROI for Doctor & RxNXT</h2>
+        <p>A B2B healthcare SaaS must generate multiples of its subscription cost to achieve zero customer churn.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-2">
+          <div class="card emerald">
+            <h3>💰 How RxNXT Generates Money for the Clinic</h3>
+            <p>Tangible revenue growth that makes subscription renewal a complete no-brainer:</p>
+            <ul>
+              <li><strong>Day 25 Chronic Refill Retention (+20% OPD Revenue):</strong> Automated refill alerts prompt chronic patients (BP, Diabetes) to book their monthly checkup. In a 300-patient clinic, this generates <strong>₹15,000 to ₹30,000 extra monthly consultation fees</strong>.</li>
+              <li><strong>Plugging In-Clinic Pharmacy Leakage:</strong> Unifies the doctor with the in-clinic dispensary counter. Retains medicine sales that would otherwise walk away to street chemists.</li>
+              <li><strong>The "2-Patient" Psychological Barrier:</strong> At ₹799/month, seeing <strong>just 2 patients a month pays for the entire platform</strong>. The other 400+ patients are 100% pure profit.</li>
+            </ul>
+          </div>
+
+          <div class="card blue">
+            <h3>📈 How RxNXT Generates High-Margin SaaS Revenue</h3>
+            <p>Predictable recurring software revenue with extreme unit profitability:</p>
+            <ul>
+              <li><strong>70% to 75% Gross Profit Margin:</strong> Lean serverless hosting (Vercel + Supabase Mumbai) + client-side PDF rendering keeps cost per clinic under ₹200–₹350/mo.</li>
+              <li><strong>Unshakeable Data Gravity:</strong> Once a clinic has 1,500 patient records, custom drug templates, and inventory batches inside RxNXT, churn drops to near zero.</li>
+              <li><strong>Negative Working Capital:</strong> Annual upfront subscription collections (₹7,999 to ₹11,999) fund ongoing server operations from Day 1 without debt.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card amber" style="margin-top: 4px;">
+          <div class="grid-3">
+            <div class="stat-row"><span class="stat-label">Doctor ROI Multiple</span><span class="stat-val">15x to 25x Annual Return</span></div>
+            <div class="stat-row"><span class="stat-label">RxNXT Gross Margin</span><span class="stat-val">74.0% (Starter Tier)</span></div>
+            <div class="stat-row"><span class="stat-label">Payback Period</span><span class="stat-val">Day 1 of Annual Payment</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Financial Model & Clinic Unit Economics</div>
+        <div>High-Yield Value Creation for Both Clinic Owners & Platform Investors</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 6: POSITIVE CLIENT FEEDBACK ==================== -->
+    <div class="slide" id="slide-6">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">User Delight</span>
+        </div>
+        <span class="slide-tag">Stakeholder Feedback</span>
+        <span class="slide-number-label">Slide 06 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Multi-Stakeholder Delight & Positive Client Feedback</h2>
+        <p>Why Doctors, Receptionists, Patients, and Pharmacists actively champion RxNXT within the clinic.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-4">
+          <div class="card blue">
+            <div style="font-size: 1.3rem; margin-bottom: 4px;">🩺</div>
+            <h3>Doctor</h3>
+            <p style="font-style: italic; color: var(--blue-light); margin-bottom: 6px;">"No handwriting fatigue after 60 patients."</p>
+            <ul>
+              <li>Professional prescription with digital signature & NMC verification seal.</li>
+              <li>Prescribes faster than typing on any previous software.</li>
+              <li>Clones repeat prescriptions in 1 click.</li>
+            </ul>
+          </div>
+
+          <div class="card purple">
+            <div style="font-size: 1.3rem; margin-bottom: 4px;">📋</div>
+            <h3>Receptionist</h3>
+            <p style="font-style: italic; color: var(--purple-light); margin-bottom: 6px;">"The waiting room is finally calm."</p>
+            <ul>
+              <li>0.5s auto-clearing registration form keeps check-in lines moving.</li>
+              <li>Tokens stop patients from banging on the doctor's cabin door.</li>
+              <li>70% fewer phone calls asking "When is my turn?"</li>
+            </ul>
+          </div>
+
+          <div class="card emerald">
+            <div style="font-size: 1.3rem; margin-bottom: 4px;">👨‍👩‍👧</div>
+            <h3>Patient</h3>
+            <p style="font-style: italic; color: var(--emerald-light); margin-bottom: 6px;">"Prescription is safe on WhatsApp."</p>
+            <ul>
+              <li>Instant WhatsApp PDF delivery + clean treatment summary.</li>
+              <li>3-Window Smart Slot alerts tell them which pill to take at night.</li>
+              <li>Zero lost prescriptions or unreadable handwriting.</li>
+            </ul>
+          </div>
+
+          <div class="card amber">
+            <div style="font-size: 1.3rem; margin-bottom: 4px;">💊</div>
+            <h3>Pharmacist</h3>
+            <p style="font-style: italic; color: var(--amber); margin-bottom: 6px;">"Zero dispensing guesswork."</p>
+            <ul>
+              <li>Unified Rx ID pulls up exact line items immediately.</li>
+              <li>Highlights batch number, expiry date, and shelf rack location.</li>
+              <li>Automatic stock deduction on 1-click dispensing.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="flow-bar" style="margin-top: 4px;">
+          <div class="flow-step">
+            <div class="step-num">Receptionist Delight</div>
+            <div class="step-title">No Waiting Lobby Chaos</div>
+          </div>
+          <div class="flow-arrow">➔</div>
+          <div class="flow-step">
+            <div class="step-num">Doctor Delight</div>
+            <div class="step-title">Sub-30s Prescribing Ease</div>
+          </div>
+          <div class="flow-arrow">➔</div>
+          <div class="flow-step">
+            <div class="step-num">Pharmacist Delight</div>
+            <div class="step-title">Zero Dispensing Errors</div>
+          </div>
+          <div class="flow-arrow">➔</div>
+          <div class="flow-step">
+            <div class="step-num">Patient Delight</div>
+            <div class="step-title">WhatsApp Continuous Care</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Stakeholder Experience Blueprint</div>
+        <div>Every Clinic Participant Becomes an Internal Product Advocate</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 7: REGIONAL SCALABILITY ==================== -->
+    <div class="slide" id="slide-7">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Pan-India Expansion</span>
+        </div>
+        <span class="slide-tag">Regional Scalability</span>
+        <span class="slide-number-label">Slide 07 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Regional Scalability: Conquering Tier 1, 2 & 3 India</h2>
+        <p>Architected from day one to eliminate regional IT overhead and linguistic friction across India.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-2">
+          <div class="card emerald">
+            <h3>📱 1. Universal WhatsApp Transport (500M+ Indians)</h3>
+            <p>Why traditional patient apps fail in Tier 2 and Tier 3 cities:</p>
+            <ul>
+              <li><strong>Zero App Store Friction:</strong> Tier 2/3 patients will not install, configure, or remember passwords for a new healthcare app.</li>
+              <li><strong>Zero Literacy Barrier:</strong> Everyone in India knows how to open WhatsApp, view an attached PDF, and read automated voice/text alerts.</li>
+              <li><strong>Official Meta Cloud API v20.0:</strong> Direct enterprise integration delivers instant message delivery across all Indian telecom networks.</li>
+            </ul>
+          </div>
+
+          <div class="card blue">
+            <h3>🏛️ 2. Live NMC Verification Across ALL 24+ State Councils</h3>
+            <p>Regulatory verification that scales instantly to every Indian state:</p>
+            <ul>
+              <li><strong>Pan-India Council Integration:</strong> Connects to Telangana (TSMC), Andhra Pradesh (APMC), Maharashtra (MMC), Karnataka (KMC), Delhi (DMC), UP, Bihar, etc.</li>
+              <li><strong>Instant Automated Verification:</strong> Queries government registry in ~0.4s during doctor onboarding without manual physical document collection.</li>
+              <li><strong>Rapid Regional Onboarding:</strong> A doctor in Warangal, Nagpur, or Hubli can register and go live in 60 seconds.</li>
+            </ul>
+          </div>
+
+          <div class="card purple">
+            <h3>💻 3. Hardware-Agnostic BYOD Architecture</h3>
+            <p>Deployable immediately on the clinic's existing hardware:</p>
+            <ul>
+              <li><strong>Runs Everywhere:</strong> Operates on iPads, Android tablets, or cheap ₹15,000 Windows laptops via Chrome/Edge.</li>
+              <li><strong>PWA with Offline Service Worker:</strong> Remains functional even during spotty Indian clinic internet fluctuations.</li>
+              <li><strong>Zero On-Premise Servers:</strong> No local database installations, no server maintenance, no engineer site visits.</li>
+            </ul>
+          </div>
+
+          <div class="card amber">
+            <h3>⚡ 4. Client-Side Rendering (Infinite Concurrency)</h3>
+            <p>Eliminating backend processing bottlenecks during pan-India growth:</p>
+            <ul>
+              <li><strong>Zero Server Load:</strong> Prescription PDFs render in the doctor's browser DOM via <code>jsPDF</code>.</li>
+              <li><strong>Unbreakable Peak Capacity:</strong> 50,000 doctors prescribing simultaneously at 10:00 AM on Monday morning consumes zero server CPU load.</li>
+              <li><strong>Supabase Mumbai Edge:</strong> Sub-40ms database transaction latency across the Indian subcontinent.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Geographic Expansion Blueprint</div>
+        <div>Zero Regional IT Overhead • Universal WhatsApp Channel • Sovereign NMC Verification</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 8: UNIT ECONOMICS ==================== -->
+    <div class="slide" id="slide-8">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Financial Projections</span>
+        </div>
+        <span class="slide-tag">Scale Economics</span>
+        <span class="slide-number-label">Slide 08 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>100-Clinic Cohort Financial Model & Cash Generation</h2>
+        <p>Demonstrating rapid path to cash flow positivity and massive Year 2 renewal margins.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-3">
+          <div class="card blue">
+            <h3>Starter (Solo Doctor)</h3>
+            <div style="font-size: 1.4rem; font-weight: 800; color: white; margin: 4px 0;">₹7,999 / yr</div>
+            <p style="font-size: 0.75rem; color: var(--blue-light); margin-bottom: 8px;">For single practitioners (BYOD)</p>
+            <ul>
+              <li>Total Incurred Cost: <strong>₹2,079 / yr</strong></li>
+              <li>Annual Net Profit: <strong>₹5,920 / clinic</strong></li>
+              <li>Gross Profit Margin: <strong>74.0%</strong></li>
+              <li>Max WhatsApp Quota: 750 msgs/mo</li>
+            </ul>
+          </div>
+
+          <div class="card emerald">
+            <h3>Pro (Clinic + Pharmacy) ⭐</h3>
+            <div style="font-size: 1.4rem; font-weight: 800; color: white; margin: 4px 0;">₹11,999 / yr</div>
+            <p style="font-size: 0.75rem; color: var(--emerald-light); margin-bottom: 8px;">Hero Tier: Doctor + Desk + Dispensary</p>
+            <ul>
+              <li>Total Incurred Cost: <strong>₹4,303 / yr</strong></li>
+              <li>Annual Net Profit: <strong>₹7,696 / clinic</strong></li>
+              <li>Gross Profit Margin: <strong>64.1%</strong></li>
+              <li>Max WhatsApp Quota: 2,000 msgs/mo</li>
+            </ul>
+          </div>
+
+          <div class="card purple">
+            <h3>Polyclinic / Group</h3>
+            <div style="font-size: 1.4rem; font-weight: 800; color: white; margin: 4px 0;">₹19,999 / yr</div>
+            <p style="font-size: 0.75rem; color: var(--purple-light); margin-bottom: 8px;">Multi-Doctor Group Practice</p>
+            <ul>
+              <li>Total Incurred Cost: <strong>₹8,932 / yr</strong></li>
+              <li>Annual Net Profit: <strong>₹11,067 / clinic</strong></li>
+              <li>Gross Profit Margin: <strong>55.3%</strong></li>
+              <li>Max WhatsApp Quota: 4,500 msgs/mo</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card amber" style="margin-top: 4px;">
+          <h3>📊 100-Clinic Cohort Annual Profit Simulation (Year 1)</h3>
+          <div class="grid-4" style="margin-top: 6px;">
+            <div class="stat-row"><span class="stat-label">Gross Revenue (100 Clinics)</span><span class="stat-val">₹14,49,900</span></div>
+            <div class="stat-row"><span class="stat-label">Total Infra & WhatsApp Cost</span><span class="stat-val">-₹5,10,000</span></div>
+            <div class="stat-row"><span class="stat-label">Year 1 Net Operating Profit</span><span class="stat-val">₹9,39,900 (64.8%)</span></div>
+            <div class="stat-row"><span class="stat-label">Year 2 Recurring Run-Rate</span><span class="stat-val">₹9,99,900 (~95% Net)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Scale Unit Economics</div>
+        <div>Serverless Architecture Ensures Compounding Net Margins as Volume Expands</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 9: STRATEGIC ROADMAP ==================== -->
+    <div class="slide" id="slide-9">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-title">RxNXT CLOUD</span>
+          <span class="tagline">Future Horizon</span>
+        </div>
+        <span class="slide-tag">Expansion Vectors</span>
+        <span class="slide-number-label">Slide 09 / 10</span>
+      </div>
+
+      <div class="title-block">
+        <h2>Strategic Roadmap: Deepening Moats & Revenue Expansion</h2>
+        <p>Horizontal and vertical expansion modules to transform from an OPD EMR to an end-to-end Clinical OS.</p>
+      </div>
+
+      <div class="content-area">
+        <div class="grid-2">
+          <div class="card blue">
+            <h3>🧠 1. AI Clinical Decision Support (CDSS)</h3>
+            <p>Elevating prescription generation into an intelligent clinical shield:</p>
+            <ul>
+              <li><strong>Drug-Drug Interaction (DDI) Engine:</strong> Warns doctor in real time of severe contraindications (e.g. Warfarin + NSAID warnings).</li>
+              <li><strong>Pediatric & Geriatric Dose Sanity:</strong> Validates dosages based on patient age and body weight.</li>
+              <li><strong>Generic Cost-Saving Switcher:</strong> Suggests bioequivalent low-cost alternatives, saving patient costs and building clinic trust.</li>
+            </ul>
+          </div>
+
+          <div class="card emerald">
+            <h3>💳 2. Integrated OPD Billing & Dynamic UPI</h3>
+            <p>Unlocking direct clinic financial processing:</p>
+            <ul>
+              <li><strong>Unified Invoice:</strong> Consultation fee + pharmacy bill combined into single checkout at reception.</li>
+              <li><strong>Dynamic UPI QR Codes:</strong> Printed directly on prescription and dispatched via WhatsApp with exact bill amount.</li>
+              <li><strong>Daily Cash Register:</strong> Daily collection reports and audit logs for clinic administrators.</li>
+            </ul>
+          </div>
+
+          <div class="card purple">
+            <h3>📲 3. Zero-Install Patient Web Portal</h3>
+            <p>Extending patient engagement without mobile app store barriers:</p>
+            <ul>
+              <li><strong>Lightweight OTP Authentication:</strong> Patient logs in securely with their mobile number.</li>
+              <li><strong>Longitudinal Timeline:</strong> View past prescription PDFs, diagnosis trends, and vitals history.</li>
+              <li><strong>Interactive Dose Adherence:</strong> Patients tap "Dose Taken", giving doctors real adherence data.</li>
+            </ul>
+          </div>
+
+          <div class="card amber">
+            <h3>☁️ 4. Permanent Cloud Archival & AWS S3</h3>
+            <p>Medicolegal compliance and enterprise audit readiness:</p>
+            <ul>
+              <li><strong>Encrypted S3 Storage:</strong> Permanent archival of generated prescription PDFs.</li>
+              <li><strong>SHA-256 Cryptographic Hash:</strong> Tamper-proof validation for court admissibility.</li>
+              <li><strong>Time-Limited Signed URLs:</strong> Secure links for patient insurance claims.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>RxNXT — Product Expansion Vectors</div>
+        <div>Continuous High-Margin Feature Upgrades Deepening Clinical Lock-in</div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 10: CONCLUSION & ACTION PLAN ==================== -->
+    <div class="slide cover-slide" id="slide-10">
+      <div>
+        <div class="cover-badge" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: var(--emerald-light);">
+          🎯 Ready for Pan-India Adoption
+        </div>
+        <h1 class="cover-title" style="font-size: 2.5rem;">Why RxNXT Wins the Market</h1>
+        <p class="cover-subtitle" style="max-width: 820px;">
+          By pairing sub-30-second prescribing speed with the universal reach of WhatsApp, in-clinic pharmacy synchronization, and zero local IT overhead, RxNXT represents the definitive operating system for Indian outpatient healthcare.
+        </p>
+      </div>
+
+      <div class="grid-3" style="max-width: 960px; margin: 10px auto 0 auto; width: 100%; text-align: left;">
+        <div class="card emerald">
+          <span class="chip">The Core Moat</span>
+          <h3 style="margin-top: 6px;">Doctor Speed & Trust</h3>
+          <p>Prescribes in &lt;30s without selling pharma data. Builds unshakeable doctor loyalty from Day 1.</p>
+        </div>
+
+        <div class="card blue">
+          <span class="chip blue">The Retention Loop</span>
+          <h3 style="margin-top: 6px;">WhatsApp Patient Care</h3>
+          <p>3-Window Smart Slots & Day 25 chronic refill alerts drive +20% predictable repeat OPD footfall.</p>
+        </div>
+
+        <div class="card purple">
+          <span class="chip purple">The Business Model</span>
+          <h3 style="margin-top: 6px;">70%+ Software Margins</h3>
+          <p>High-margin serverless infrastructure delivers strong cash flow and rapid payback per clinic cohort.</p>
+        </div>
+      </div>
+
+      <div class="slide-footer" style="width: 100%;">
+        <div>RxNXT Technologies Pvt. Ltd. • Hyderabad & Warangal • Supported by SRiX Incubator (DST)</div>
+        <div>Use arrow keys ◀ / ▶ to navigate slides • Press 'Print' to save as PDF</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Interactive JavaScript Controls -->
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    function updateSlideView() {
+      const target = document.getElementById(`slide-${currentSlide}`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      document.getElementById('slideIndicator').innerText = `Slide ${currentSlide} of ${totalSlides}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateSlideView();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateSlideView();
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error(`Error attempting fullscreen: ${err.message}`);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      } else if (e.key === 'p' || e.key === 'P') {
+        window.print();
+      }
+    });
+  </script>
+</body>
+</html>

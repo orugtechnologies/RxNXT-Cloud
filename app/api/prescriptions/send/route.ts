@@ -4,7 +4,7 @@ import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { sendPrescriptionPDF } from '@/services/whatsappService';
 import { generatePrescriptionBase64 } from '@/lib/prescriptionPdfGenerator';
-import { getClinicSubscription } from '@/lib/subscription';
+import { getClinicSubscription, getClinicWhatsAppUsage } from '@/lib/subscription';
 
 export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
@@ -17,6 +17,16 @@ export async function POST(request: Request) {
         error: 'SUBSCRIPTION_EXPIRED',
         message: 'Your 14-day trial or subscription has expired. Please renew your subscription to continue sending WhatsApp prescriptions.',
         subscription: sub,
+      }, { status: 403 });
+    }
+
+    // Guard Rail 2: Free Trial WhatsApp Cap (500 messages max per trial)
+    const usage = await getClinicWhatsAppUsage(user.clinicId);
+    if (!usage.allowed) {
+      return NextResponse.json({
+        error: 'TRIAL_WHATSAPP_CAP_EXCEEDED',
+        message: `Your 14-day free trial has reached the limit of ${usage.cap} WhatsApp messages (${usage.used} sent). Please upgrade to an annual plan to continue automated WhatsApp delivery.`,
+        usage,
       }, { status: 403 });
     }
 

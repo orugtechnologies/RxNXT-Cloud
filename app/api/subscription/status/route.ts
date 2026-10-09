@@ -1,17 +1,22 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
-import { getClinicSubscription, PLAN_PRICING } from '@/lib/subscription';
+import { getClinicSubscription, getClinicWhatsAppUsage, PLAN_PRICING } from '@/lib/subscription';
 
 export async function GET() {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const subscription = await getClinicSubscription(user.clinicId);
+    const [subscription, whatsAppQuota] = await Promise.all([
+      getClinicSubscription(user.clinicId),
+      getClinicWhatsAppUsage(user.clinicId),
+    ]);
+
     return NextResponse.json({
       success: true,
       subscription,
+      whatsAppQuota,
       plans: PLAN_PRICING,
     });
   } catch (error: any) {

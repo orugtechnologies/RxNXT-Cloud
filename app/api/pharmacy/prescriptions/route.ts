@@ -16,20 +16,23 @@ export async function GET(request: Request) {
     const cleanQ = q ? q.trim() : '';
     const strippedQ = cleanQ ? cleanQ.replace(/^[#rx\-]+/i, '') : '';
 
+    const whereClause: any = {
+      clinicId: user.clinicId,
+      ...(status !== 'ALL' && { dispenseStatus: status }),
+    };
+
+    if (cleanQ) {
+      whereClause.OR = [
+        { id: { contains: cleanQ, mode: 'insensitive' } },
+        ...(strippedQ ? [{ id: { contains: strippedQ, mode: 'insensitive' } }] : []),
+        { patient: { name: { contains: cleanQ, mode: 'insensitive' } } },
+        { patient: { phone: { contains: cleanQ } } },
+        { doctor: { fullName: { contains: cleanQ, mode: 'insensitive' } } },
+      ];
+    }
+
     const prescriptions = await prisma.prescription.findMany({
-      where: {
-        clinicId: user.clinicId,
-        ...(status !== 'ALL' && { dispenseStatus: status }),
-        ...(cleanQ && {
-          OR: [
-            { id: { contains: cleanQ, mode: 'insensitive' } },
-            ...(strippedQ ? [{ id: { contains: strippedQ, mode: 'insensitive' } }] : []),
-            { patient: { name: { contains: cleanQ, mode: 'insensitive' } } },
-            { patient: { phone: { contains: cleanQ } } },
-            { doctor: { fullName: { contains: cleanQ, mode: 'insensitive' } } },
-          ],
-        }),
-      },
+      where: whereClause,
       include: {
         patient: true,
         doctor: {
