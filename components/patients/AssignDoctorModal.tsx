@@ -52,13 +52,13 @@ export default function AssignDoctorModal({
         body: JSON.stringify({ patientId: patient.id, doctorId: selectedDoctorId })
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to assign patient');
+      if (!res.ok) throw new Error(json.message || json.error || 'Failed to assign patient');
       
       const doctor = doctors.find(d => d.id === selectedDoctorId);
       onSuccess(`Successfully assigned ${patient.name} to ${doctor?.fullName || 'Doctor'}`);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to assign patient");
+      alert(err.message || "Failed to assign patient");
     } finally {
       setAssigning(false);
     }

@@ -10,6 +10,7 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('Male');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialQuery) {
@@ -23,8 +24,9 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     if (phone.replace(/\D/g, '').length < 10) {
-      alert('Please enter a valid 10-digit mobile number');
+      setError('Please enter a valid 10-digit mobile number');
       return;
     }
     setLoading(true);
@@ -35,16 +37,20 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
         body: JSON.stringify({ name, phone, age, gender })
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to create patient');
+      if (!res.ok) {
+        throw new Error(json.message || json.error || 'Failed to create patient');
+      }
       const { data } = json;
       setName('');
       setPhone('');
       setAge('');
       setGender('Male');
       onSuccess(data);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to save patient");
+      const msg = err.message || "Failed to save patient";
+      setError(msg);
+      alert(msg);
     } finally {
       setLoading(false);
     }
@@ -65,6 +71,12 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg font-semibold flex items-center gap-2 animate-in fade-in">
+              <span>⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
           
           <div>
             <label className="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Mobile Number (Mandatory)</label>

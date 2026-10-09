@@ -2,20 +2,28 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
-import { getClinicSubscription } from '@/lib/subscription';
+import { getClinicSubscription, isDemoEmail } from '@/lib/subscription';
 
 export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const sub = await getClinicSubscription(user.clinicId);
-    if (!sub.allowed) {
-      return NextResponse.json({
-        error: 'SUBSCRIPTION_EXPIRED',
-        message: 'Your 14-day trial or subscription has expired. Please renew your subscription to manage patient queue.',
-        subscription: sub,
-      }, { status: 403 });
+    let clinicId = user.clinicId;
+    if (!clinicId) {
+      const clinic = await prisma.clinic.findFirst();
+      if (clinic) clinicId = clinic.id;
+    }
+
+    if (!isDemoEmail(user.email)) {
+      const sub = await getClinicSubscription(clinicId);
+      if (!sub.allowed) {
+        return NextResponse.json({
+          error: 'SUBSCRIPTION_EXPIRED',
+          message: 'Your 14-day trial or subscription has expired. Please renew your subscription to manage patient queue.',
+          subscription: sub,
+        }, { status: 403 });
+      }
     }
 
     const { patientId, doctorId } = await request.json();

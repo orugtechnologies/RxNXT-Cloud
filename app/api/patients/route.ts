@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
-import { getClinicSubscription } from '@/lib/subscription';
+import { getClinicSubscription, isDemoEmail } from '@/lib/subscription';
 
 export async function GET(request: Request) {
   const user = await getAuthenticatedUser();
@@ -50,16 +50,30 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const sub = await getClinicSubscription(user.clinicId);
-    if (!sub.allowed) {
-      return NextResponse.json({
-        error: 'SUBSCRIPTION_EXPIRED',
-        message: 'Your 14-day trial or subscription has expired. Please renew your subscription to continue adding patients.',
-        subscription: sub,
-      }, { status: 403 });
+    let clinicId = user.clinicId;
+    if (!clinicId) {
+      const clinic = await prisma.clinic.findFirst();
+      if (clinic) clinicId = clinic.id;
     }
 
-    const { name, phone, age, gender } = await request.json();
+    if (!clinicId) {
+      return NextResponse.json({ error: 'Clinic context not found' }, { status: 400 });
+    }
+
+    // Demo accounts have lifetime access and are never blocked by subscription
+    if (!isDemoEmail(user.email)) {
+      const sub = await getClinicSubscription(clinicId);
+      if (!sub.allowed) {
+        return NextResponse.json({
+          error: 'SUBSCRIPTION_EXPIRED',
+          message: 'Your 14-day trial or subscription has expired. Please renew your subscription to continue adding patients.',
+          subscription: sub,
+        }, { status: 403 });
+      }
+    }
+
+    const body = await request.json();
+    const { name, phone, age, gender, address } = body;
     if (!phone) return NextResponse.json({ error: 'Mobile number is required' }, { status: 400 });
     if (!name) return NextResponse.json({ error: 'Patient name is required' }, { status: 400 });
 
@@ -68,15 +82,36 @@ export async function POST(request: Request) {
       cleanPhone = `+91${cleanPhone}`;
     }
 
-    const patient = await prisma.patient.create({
-      data: {
-        clinicId: user.clinicId,
-        name,
+    // Check if patient already exists in this clinic by phone
+    let patient = await prisma.patient.findFirst({
+      where: {
+        clinicId,
         phone: cleanPhone,
-        age: age ? parseInt(age) : null,
-        gender: gender || null,
       },
     });
+
+    if (patient) {
+      // Gracefully update patient details with any newly provided info
+      patient = await prisma.patient.update({
+        where: { id: patient.id },
+        data: {
+          name: name.trim() || patient.name,
+          age: age ? parseInt(age) : patient.age,
+          gender: gender || patient.gender,
+        },
+      });
+    } else {
+      patient = await prisma.patient.create({
+        data: {
+          clinicId,
+          name: name.trim(),
+          phone: cleanPhone,
+          age: age ? parseInt(age) : null,
+          gender: gender || null,
+          address: address || null,
+        },
+      });
+    }
 
     return NextResponse.json({ data: {
       id: patient.id,
@@ -86,7 +121,8 @@ export async function POST(request: Request) {
       gender: patient.gender ?? '',
     }}, { status: 201 });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('Error saving patient:', err);
+    return NextResponse.json({ error: err.message || 'Failed to save patient' }, { status: 500 });
   }
 }
 

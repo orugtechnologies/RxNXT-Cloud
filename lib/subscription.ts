@@ -58,8 +58,25 @@ export const PLAN_PRICING: Record<string, { name: string; monthly: number; annua
 
 export const DEMO_CLINIC_ID = 'demo-clinic-001';
 
+export const DEMO_EMAILS = [
+  'doctor@rxnxt.com',
+  'receptionist@rxnxt.com',
+  'pharmacist@rxnxt.com',
+  'pharmacy@rxnxt.com',
+  'superadmin@rxnxt.com',
+  'dev@rxnxt.com',
+  'admin@rxnxt.com',
+  'd2@rxnxt.com',
+  'd3@rxnxt.com',
+];
+
+export function isDemoEmail(email?: string | null): boolean {
+  if (!email) return false;
+  return DEMO_EMAILS.includes(email.toLowerCase().trim());
+}
+
 export function isDemoClinic(clinicId?: string | null, clinicName?: string | null): boolean {
-  if (!clinicId) return false;
+  if (!clinicId) return true; // Safe fallback for demo sessions
   if (clinicId === DEMO_CLINIC_ID) return true;
   if (clinicName && clinicName.toLowerCase().includes('demo')) return true;
   return false;
@@ -81,15 +98,35 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
       subscriptionEndsAt: true,
       renewalReminderSentAt: true,
       createdAt: true,
+      users: {
+        select: { email: true },
+      },
     },
   });
 
   if (!clinic) {
-    throw new Error('Clinic not found');
+    // If clinic is not found, treat as lifetime active demo clinic rather than crashing
+    return {
+      allowed: true,
+      status: 'ACTIVE',
+      plan: 'DEMO_LIFETIME',
+      trialEndsAt: null,
+      subscriptionEndsAt: null,
+      subscriptionStartedAt: new Date(),
+      daysRemaining: 99999,
+      isExpired: false,
+      isExpiringSoon: false,
+      isTrial: false,
+      renewalReminderSentAt: null,
+      clinicId: clinicId || DEMO_CLINIC_ID,
+      clinicName: 'RxNXT Demo Clinic',
+    };
   }
 
+  const hasDemoUser = clinic.users?.some(u => isDemoEmail(u.email));
+
   // Demo Clinics / Demo Accounts: Permanent Lifetime Unrestricted Access (No subscription banners or expiries)
-  if (isDemoClinic(clinic.id, clinic.name)) {
+  if (isDemoClinic(clinic.id, clinic.name) || hasDemoUser) {
     if (clinic.subscriptionStatus !== 'ACTIVE' || clinic.subscriptionPlan !== 'DEMO_LIFETIME') {
       try {
         await prisma.clinic.update({
@@ -125,18 +162,20 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
 
   const now = new Date();
 
+  let activeClinic = clinic;
+
   // If clinic does not have trial dates initialized (e.g. legacy/seed records), initialize 14-day trial
-  if (!clinic.trialEndsAt && !clinic.subscriptionEndsAt) {
-    const trialEnd = new Date(clinic.createdAt.getTime() + 14 * 24 * 60 * 60 * 1000);
+  if (!activeClinic.trialEndsAt && !activeClinic.subscriptionEndsAt) {
+    const trialEnd = new Date(activeClinic.createdAt.getTime() + 14 * 24 * 60 * 60 * 1000);
     const isPast = now > trialEnd;
     const initialStatus = isPast ? 'EXPIRED' : 'TRIAL';
 
-    clinic = await prisma.clinic.update({
+    activeClinic = await prisma.clinic.update({
       where: { id: clinicId },
       data: {
         subscriptionStatus: initialStatus,
         subscriptionPlan: 'TRIAL_14_DAYS',
-        subscriptionStartedAt: clinic.createdAt,
+        subscriptionStartedAt: activeClinic.createdAt,
         trialEndsAt: trialEnd,
         subscriptionEndsAt: trialEnd,
       },
@@ -150,19 +189,22 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
         subscriptionEndsAt: true,
         renewalReminderSentAt: true,
         createdAt: true,
+        users: {
+          select: { email: true },
+        },
       },
     });
   }
 
-  const expiryDate = clinic.subscriptionEndsAt || clinic.trialEndsAt || new Date(clinic.createdAt.getTime() + 14 * 24 * 60 * 60 * 1000);
+  const expiryDate = activeClinic.subscriptionEndsAt || activeClinic.trialEndsAt || new Date(activeClinic.createdAt.getTime() + 14 * 24 * 60 * 60 * 1000);
   const diffMs = expiryDate.getTime() - now.getTime();
   const daysRemaining = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
 
   const isExpired = now > expiryDate;
   const isExpiringSoon = !isExpired && daysRemaining <= 7;
-  const isTrial = clinic.subscriptionPlan === 'TRIAL_14_DAYS' || clinic.subscriptionStatus === 'TRIAL';
+  const isTrial = activeClinic.subscriptionPlan === 'TRIAL_14_DAYS' || activeClinic.subscriptionStatus === 'TRIAL';
 
-  let currentStatus = clinic.subscriptionStatus as 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
+  let currentStatus = activeClinic.subscriptionStatus as 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
 
   // Automatically update status to EXPIRED if past validity
   if (isExpired && currentStatus !== 'EXPIRED' && currentStatus !== 'CANCELLED') {
@@ -178,17 +220,17 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
   return {
     allowed,
     status: currentStatus,
-    plan: clinic.subscriptionPlan || (isTrial ? 'TRIAL_14_DAYS' : 'PRO_ANNUAL'),
-    trialEndsAt: clinic.trialEndsAt,
-    subscriptionEndsAt: clinic.subscriptionEndsAt,
-    subscriptionStartedAt: clinic.subscriptionStartedAt,
+    plan: activeClinic.subscriptionPlan || (isTrial ? 'TRIAL_14_DAYS' : 'PRO_ANNUAL'),
+    trialEndsAt: activeClinic.trialEndsAt,
+    subscriptionEndsAt: activeClinic.subscriptionEndsAt,
+    subscriptionStartedAt: activeClinic.subscriptionStartedAt,
     daysRemaining,
     isExpired,
     isExpiringSoon,
     isTrial,
-    renewalReminderSentAt: clinic.renewalReminderSentAt,
-    clinicId: clinic.id,
-    clinicName: clinic.name,
+    renewalReminderSentAt: activeClinic.renewalReminderSentAt,
+    clinicId: activeClinic.id,
+    clinicName: activeClinic.name,
   };
 }
 
