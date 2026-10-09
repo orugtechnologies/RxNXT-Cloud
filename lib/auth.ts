@@ -305,8 +305,11 @@ export const authOptions: NextAuthOptions = {
             // Ignore if already active
           }
 
-          // Ensure Dr. Shanmukha Datta is provisioned and linked to this demo clinic for Reception queue assignment
+          // Ensure all 3 core demo roles (Doctor, Receptionist, Pharmacist) are linked to this clinic
           try {
+            const hashedPassword = await bcrypt.hash('password123', 12);
+
+            // 1. Doctor: Dr. Shanmukha Datta
             const doc = await prisma.user.findFirst({
               where: {
                 OR: [
@@ -328,7 +331,6 @@ export const authOptions: NextAuthOptions = {
                 });
               }
             } else {
-              const hashedPassword = await bcrypt.hash('password123', 12);
               await prisma.user.create({
                 data: {
                   email: 'doctor@rxnxt.com',
@@ -344,8 +346,73 @@ export const authOptions: NextAuthOptions = {
                 },
               });
             }
-          } catch (docErr) {
-            console.error('Error linking demo doctor to clinic:', docErr);
+
+            // 2. Receptionist: Pooja Verma
+            const rec = await prisma.user.findFirst({
+              where: { email: 'receptionist@rxnxt.com' },
+            });
+
+            if (rec) {
+              if (rec.clinicId !== user.clinicId || rec.status !== 'ACTIVE') {
+                await prisma.user.update({
+                  where: { id: rec.id },
+                  data: {
+                    clinicId: user.clinicId,
+                    status: 'ACTIVE',
+                    role: 'receptionist',
+                  },
+                });
+              }
+            } else {
+              await prisma.user.create({
+                data: {
+                  email: 'receptionist@rxnxt.com',
+                  password: hashedPassword,
+                  fullName: 'Pooja Verma (Front Desk)',
+                  role: 'receptionist',
+                  specialization: 'OPD Reception & Patient Onboarding',
+                  status: 'ACTIVE',
+                  clinicId: user.clinicId,
+                },
+              });
+            }
+
+            // 3. Pharmacist: Suresh Sharma
+            const pharm = await prisma.user.findFirst({
+              where: {
+                OR: [
+                  { email: 'pharmacist@rxnxt.com' },
+                  { email: 'pharmacy@rxnxt.com' },
+                ],
+              },
+            });
+
+            if (pharm) {
+              if (pharm.clinicId !== user.clinicId || pharm.status !== 'ACTIVE') {
+                await prisma.user.update({
+                  where: { id: pharm.id },
+                  data: {
+                    clinicId: user.clinicId,
+                    status: 'ACTIVE',
+                    role: 'pharmacist',
+                  },
+                });
+              }
+            } else {
+              await prisma.user.create({
+                data: {
+                  email: 'pharmacist@rxnxt.com',
+                  password: hashedPassword,
+                  fullName: 'Suresh Sharma (Chief Pharmacist)',
+                  role: 'pharmacist',
+                  specialization: 'Dispensing & Inventory Specialist',
+                  status: 'ACTIVE',
+                  clinicId: user.clinicId,
+                },
+              });
+            }
+          } catch (staffErr) {
+            console.error('Error linking demo roles to clinic:', staffErr);
           }
         }
 
