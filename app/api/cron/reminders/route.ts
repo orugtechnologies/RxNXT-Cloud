@@ -7,6 +7,7 @@ import {
   sendRefillReminder,
   isMetaConfigured,
 } from '@/services/whatsappService';
+import { isDemoClinic } from '@/lib/subscription';
 
 const CONCURRENCY_LIMIT = parseInt(process.env.META_CONCURRENCY || '10', 10);
 const MESSAGES_PER_SECOND = parseInt(process.env.META_MESSAGES_PER_SECOND || '20', 10);
@@ -27,7 +28,7 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
 
   // Guard Rail: Skip WhatsApp dispatch if clinic subscription is expired or trial cap is reached
   const clinic = prescription?.clinic;
-  if (clinic) {
+  if (clinic && !isDemoClinic(clinic.id, clinic.name)) {
     const now = new Date();
     const expiryDate = clinic.subscriptionEndsAt || clinic.trialEndsAt;
     const isExpired = clinic.subscriptionStatus === 'EXPIRED' || (expiryDate && now > new Date(expiryDate) && clinic.subscriptionStatus !== 'ACTIVE');

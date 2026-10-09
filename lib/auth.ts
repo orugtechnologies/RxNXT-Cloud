@@ -279,6 +279,33 @@ export const authOptions: NextAuthOptions = {
 
         if (!isValid) return null;
 
+        // Auto-heal demo clinic subscription to ACTIVE with permanent lifetime access
+        const demoEmails = [
+          'doctor@rxnxt.com',
+          'receptionist@rxnxt.com',
+          'pharmacist@rxnxt.com',
+          'pharmacy@rxnxt.com',
+          'superadmin@rxnxt.com',
+          'dev@rxnxt.com',
+          'admin@rxnxt.com',
+        ];
+
+        if (user.clinicId && (demoEmails.includes(cleanEmail) || user.clinicId === 'demo-clinic-001' || user.clinic?.name?.toLowerCase().includes('demo'))) {
+          try {
+            await prisma.clinic.update({
+              where: { id: user.clinicId },
+              data: {
+                subscriptionStatus: 'ACTIVE',
+                subscriptionPlan: 'DEMO_LIFETIME',
+                trialEndsAt: null,
+                subscriptionEndsAt: null,
+              },
+            });
+          } catch (e) {
+            // Ignore if already active
+          }
+        }
+
         return {
           id: user.id,
           email: user.email,

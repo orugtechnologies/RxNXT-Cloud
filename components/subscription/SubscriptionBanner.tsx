@@ -43,6 +43,16 @@ export default function SubscriptionBanner() {
 
   if (loading || !sub) return null;
 
+  // Demo accounts have lifetime unrestricted access - never show subscription/trial banners
+  if (
+    sub.plan === 'DEMO_LIFETIME' ||
+    (sub as any).isDemo ||
+    (sub as any).clinicId === 'demo-clinic-001' ||
+    (sub as any).clinicName?.toLowerCase().includes('demo')
+  ) {
+    return null;
+  }
+
   // Case 1: EXPIRED
   if (sub.isExpired) {
     return (

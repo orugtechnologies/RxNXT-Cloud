@@ -56,6 +56,15 @@ export const PLAN_PRICING: Record<string, { name: string; monthly: number; annua
   },
 };
 
+export const DEMO_CLINIC_ID = 'demo-clinic-001';
+
+export function isDemoClinic(clinicId?: string | null, clinicName?: string | null): boolean {
+  if (!clinicId) return false;
+  if (clinicId === DEMO_CLINIC_ID) return true;
+  if (clinicName && clinicName.toLowerCase().includes('demo')) return true;
+  return false;
+}
+
 /**
  * Retrieves the current subscription state of a clinic and ensures expiry status is accurately reflected.
  */
@@ -77,6 +86,41 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
 
   if (!clinic) {
     throw new Error('Clinic not found');
+  }
+
+  // Demo Clinics / Demo Accounts: Permanent Lifetime Unrestricted Access (No subscription banners or expiries)
+  if (isDemoClinic(clinic.id, clinic.name)) {
+    if (clinic.subscriptionStatus !== 'ACTIVE' || clinic.subscriptionPlan !== 'DEMO_LIFETIME') {
+      try {
+        await prisma.clinic.update({
+          where: { id: clinicId },
+          data: {
+            subscriptionStatus: 'ACTIVE',
+            subscriptionPlan: 'DEMO_LIFETIME',
+            trialEndsAt: null,
+            subscriptionEndsAt: null,
+          },
+        });
+      } catch (e) {
+        // Ignore update error in read-only setups
+      }
+    }
+
+    return {
+      allowed: true,
+      status: 'ACTIVE',
+      plan: 'DEMO_LIFETIME',
+      trialEndsAt: null,
+      subscriptionEndsAt: null,
+      subscriptionStartedAt: clinic.createdAt,
+      daysRemaining: 99999,
+      isExpired: false,
+      isExpiringSoon: false,
+      isTrial: false,
+      renewalReminderSentAt: null,
+      clinicId: clinic.id,
+      clinicName: clinic.name,
+    };
   }
 
   const now = new Date();
@@ -260,6 +304,17 @@ export async function getClinicWhatsAppUsage(clinicId: string): Promise<{
   isExpired: boolean;
 }> {
   const sub = await getClinicSubscription(clinicId);
+
+  // Demo accounts have lifetime unrestricted WhatsApp messaging
+  if (isDemoClinic(clinicId, sub.clinicName) || sub.plan === 'DEMO_LIFETIME') {
+    return {
+      used: 0,
+      cap: null,
+      allowed: true,
+      isTrial: false,
+      isExpired: false,
+    };
+  }
 
   if (!sub.allowed) {
     return {

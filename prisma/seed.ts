@@ -22,13 +22,20 @@ async function main() {
   // ── 1. Demo Clinic ──────────────────────────────────────────────
   const clinic = await prisma.clinic.upsert({
     where: { id: 'demo-clinic-001' },
-    update: {},
+    update: {
+      subscriptionStatus: 'ACTIVE',
+      subscriptionPlan: 'DEMO_LIFETIME',
+      trialEndsAt: null,
+      subscriptionEndsAt: null,
+    },
     create: {
       id: 'demo-clinic-001',
       name: 'RxNXT Demo Clinic',
       address: '123 Health Street, Bengaluru, Karnataka',
       phone: '+91 80 1234 5678',
       email: 'info@rxnxtdemo.com',
+      subscriptionStatus: 'ACTIVE',
+      subscriptionPlan: 'DEMO_LIFETIME',
     },
   });
   console.log(`✅ Clinic: ${clinic.name}`);
