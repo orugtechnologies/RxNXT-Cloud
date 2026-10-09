@@ -304,6 +304,49 @@ export const authOptions: NextAuthOptions = {
           } catch (e) {
             // Ignore if already active
           }
+
+          // Ensure Dr. Shanmukha Datta is provisioned and linked to this demo clinic for Reception queue assignment
+          try {
+            const doc = await prisma.user.findFirst({
+              where: {
+                OR: [
+                  { email: 'doctor@rxnxt.com' },
+                  { fullName: { contains: 'Shanmukha' } },
+                ],
+              },
+            });
+
+            if (doc) {
+              if (doc.clinicId !== user.clinicId || doc.status !== 'ACTIVE') {
+                await prisma.user.update({
+                  where: { id: doc.id },
+                  data: {
+                    clinicId: user.clinicId,
+                    status: 'ACTIVE',
+                    role: 'clinic_admin',
+                  },
+                });
+              }
+            } else {
+              const hashedPassword = await bcrypt.hash('password123', 12);
+              await prisma.user.create({
+                data: {
+                  email: 'doctor@rxnxt.com',
+                  password: hashedPassword,
+                  fullName: 'Dr. Shanmukha Datta',
+                  role: 'clinic_admin',
+                  specialization: 'General Physician & Diabetologist',
+                  medicalCouncil: 'NMC / Karnataka Medical Council',
+                  registrationNumber: 'KMC-54912',
+                  verificationStatus: 'VERIFIED',
+                  status: 'ACTIVE',
+                  clinicId: user.clinicId,
+                },
+              });
+            }
+          } catch (docErr) {
+            console.error('Error linking demo doctor to clinic:', docErr);
+          }
         }
 
         return {
