@@ -24,7 +24,9 @@ import {
   Copy, 
   Check, 
   ChevronRight, 
-  Shield 
+  Shield,
+  Stethoscope,
+  Pill 
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -169,11 +171,17 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Generate mobile PWA QR code on mount
+  // Check URL query parameters and generate mobile PWA QR code on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('demo') === 'true') {
+        setIsDemoMode(true);
+      }
+
       const targetUrl = `${window.location.origin}/login`;
       QRCode.toDataURL(targetUrl, {
         width: 320,
@@ -205,6 +213,21 @@ export default function LoginPage() {
   const handleKeyUp = (e: React.KeyboardEvent) => {
     if (e.getModifierState) {
       setCapsLockActive(e.getModifierState('CapsLock'));
+    }
+  };
+
+  const handleSelectDemoRole = (role: 'doctor' | 'receptionist' | 'pharmacist') => {
+    setError('');
+    setAuthMode('password');
+    if (role === 'doctor') {
+      setEmailOrPhone('doctor@rxnxt.com');
+      setPassword('password123');
+    } else if (role === 'receptionist') {
+      setEmailOrPhone('receptionist@rxnxt.com');
+      setPassword('password123');
+    } else if (role === 'pharmacist') {
+      setEmailOrPhone('pharmacist@rxnxt.com');
+      setPassword('password123');
     }
   };
 
@@ -498,6 +521,47 @@ export default function LoginPage() {
               <h2 className="text-2xl font-black text-slate-900 tracking-tight">Sign In to RxNXT</h2>
               <p className="text-xs text-slate-500 mt-1 font-medium">Access your outpatient clinical workspace</p>
             </div>
+
+            {/* Hidden Sales Demo Switcher (Only visible via ?demo=true) */}
+            {isDemoMode && (
+              <div className="bg-emerald-50 border border-emerald-200/90 p-2.5 rounded-2xl animate-fade-in">
+                <div className="flex items-center justify-between mb-1.5 px-1">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-900 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    ⚡ Sales Demo Switcher
+                  </span>
+                  <span className="text-[9px] text-emerald-700 bg-white border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
+                    Secret Mode
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectDemoRole('doctor')}
+                    className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white hover:bg-emerald-100/70 border border-emerald-200 text-slate-800 font-bold transition shadow-2xs group"
+                  >
+                    <Stethoscope className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+                    <span className="text-[10px] mt-1">Doctor</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectDemoRole('receptionist')}
+                    className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white hover:bg-teal-100/70 border border-teal-200 text-slate-800 font-bold transition shadow-2xs group"
+                  >
+                    <Building2 className="w-3.5 h-3.5 text-teal-600 group-hover:scale-110 transition-transform" />
+                    <span className="text-[10px] mt-1">Front Desk</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectDemoRole('pharmacist')}
+                    className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white hover:bg-rose-100/70 border border-rose-200 text-slate-800 font-bold transition shadow-2xs group"
+                  >
+                    <Pill className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition-transform" />
+                    <span className="text-[10px] mt-1">Pharmacy</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Mode Switcher Tabs */}
             <div className="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-xl">
