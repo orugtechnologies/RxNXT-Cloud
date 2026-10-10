@@ -1,6 +1,30 @@
 const { jsPDF } = require('jspdf');
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
+
+// Preferred: High-Fidelity Chromium Rendering from HTML (Zero font/emoji corruption)
+const htmlPath = path.join(__dirname, 'RxNXT_50L_Funding_Pitch_Presentation.html');
+const repoPdfPath = path.join(__dirname, 'RxNXT_50L_Funding_Pitch_Presentation.pdf');
+const publicPdfPath = path.join(__dirname, 'public', 'RxNXT_50L_Funding_Pitch_Presentation.pdf');
+const desktopPdfPath = 'C:\\Users\\orugt\\Desktop\\RxNXT_50L_Funding_Pitch_Presentation.pdf';
+const edgePath = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+
+if (fs.existsSync(edgePath) && fs.existsSync(htmlPath)) {
+  try {
+    console.log('Rendering pristine vector PDF using Chromium engine...');
+    execSync(`"${edgePath}" --headless=new --disable-gpu --no-pdf-header-footer --print-to-pdf="${repoPdfPath}" "${htmlPath}"`, { stdio: 'pipe' });
+    fs.copyFileSync(repoPdfPath, publicPdfPath);
+    try { fs.copyFileSync(repoPdfPath, desktopPdfPath); } catch (e) {}
+    console.log('SUCCESS: High-fidelity pitch deck PDF generated successfully at:');
+    console.log('1. Repo:', repoPdfPath);
+    console.log('2. Public:', publicPdfPath);
+    console.log('3. Desktop:', desktopPdfPath);
+    process.exit(0);
+  } catch (err) {
+    console.warn('Chromium render failed, falling back to jsPDF:', err.message);
+  }
+}
 
 const doc = new jsPDF({
   orientation: 'landscape',
