@@ -2,12 +2,13 @@ const pptxgen = require('pptxgenjs');
 const path = require('path');
 const fs = require('fs');
 
-console.log('Generating high-fidelity PowerPoint Presentation (.pptx)...');
+console.log('Generating pixel-perfect PowerPoint Presentation (.pptx)...');
 
 const pptx = new pptxgen();
 
-// Configure 16:9 Widescreen
-pptx.layout = 'LAYOUT_16x9'; // 10 x 5.625 inches (or 13.33 x 7.5)
+// Configure 16:9 Modern Widescreen (13.333 x 7.5 inches)
+pptx.defineLayout({ name: 'WIDE_13_33', width: 13.333, height: 7.5 });
+pptx.layout = 'WIDE_13_33';
 pptx.author = 'ORUG Technologies Pvt. Ltd.';
 pptx.company = 'ORUG Technologies Pvt. Ltd.';
 pptx.subject = 'RxNXT Cloud — ₹50 Lakhs Seed Expansion Pitch Deck';
@@ -26,22 +27,23 @@ const EMERALD = '10B981';
 const MINT = '34D399';
 const PURPLE = '8B5CF6';
 const AMBER = 'F59E0B';
+const FONT = 'Calibri';
 
 function addHeader(slide, category, slideNum, title, subtitle) {
   // Top header line
   slide.addText('RxNXT CLOUD', {
-    x: 0.8, y: 0.4, w: 2.5, h: 0.3,
-    fontSize: 12, bold: true, color: SKY, fontFace: 'Arial'
+    x: 0.8, y: 0.4, w: 2.2, h: 0.3,
+    fontSize: 12, bold: true, color: SKY, fontFace: FONT
   });
 
   slide.addText(`•  ${category}`, {
-    x: 2.6, y: 0.4, w: 5.5, h: 0.3,
-    fontSize: 10, bold: true, color: TEXT_MUTED, fontFace: 'Arial'
+    x: 2.7, y: 0.4, w: 6.5, h: 0.3,
+    fontSize: 10, bold: true, color: TEXT_MUTED, fontFace: FONT
   });
 
   slide.addText(`Slide ${slideNum} of 09`, {
     x: 10.5, y: 0.4, w: 2.0, h: 0.3,
-    fontSize: 10, align: 'right', color: TEXT_MUTED, fontFace: 'Arial'
+    fontSize: 10, align: 'right', color: TEXT_MUTED, fontFace: FONT
   });
 
   // Divider
@@ -53,13 +55,13 @@ function addHeader(slide, category, slideNum, title, subtitle) {
   // Title
   slide.addText(title, {
     x: 0.8, y: 0.9, w: 11.7, h: 0.45,
-    fontSize: 20, bold: true, color: TEXT_WHITE, fontFace: 'Arial'
+    fontSize: 20, bold: true, color: TEXT_WHITE, fontFace: FONT
   });
 
   // Subtitle
   slide.addText(subtitle, {
     x: 0.8, y: 1.35, w: 11.7, h: 0.35,
-    fontSize: 11, color: TEXT_MUTED, fontFace: 'Arial'
+    fontSize: 11, color: TEXT_MUTED, fontFace: FONT
   });
 }
 
@@ -71,12 +73,12 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
 
   slide.addText(text, {
     x: 0.8, y: 7.08, w: 7.0, h: 0.3,
-    fontSize: 9, color: TEXT_MUTED, fontFace: 'Arial'
+    fontSize: 9, color: TEXT_MUTED, fontFace: FONT
   });
 
   slide.addText('Confidential • September 2026', {
     x: 8.5, y: 7.08, w: 4.0, h: 0.3,
-    fontSize: 9, align: 'right', color: TEXT_MUTED, fontFace: 'Arial'
+    fontSize: 9, align: 'right', color: TEXT_MUTED, fontFace: FONT
   });
 }
 
@@ -94,19 +96,19 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
   });
   slide.addText('SEED STAGE EXPANSION PITCH • 2026', {
     x: 4.4, y: 1.2, w: 4.5, h: 0.45,
-    fontSize: 10, bold: true, color: SKY, align: 'center', fontFace: 'Arial'
+    fontSize: 10, bold: true, color: SKY, align: 'center', fontFace: FONT
   });
 
   // Main Title
   slide.addText('RxNXT CLOUD', {
     x: 1.0, y: 1.9, w: 11.3, h: 1.1,
-    fontSize: 48, bold: true, color: TEXT_WHITE, align: 'center', fontFace: 'Arial'
+    fontSize: 48, bold: true, color: TEXT_WHITE, align: 'center', fontFace: FONT
   });
 
   // Subtitle
   slide.addText('Accelerating Indian Outpatient Clinics with Fast Under 30-Second Prescriptions,\nDirect Meta WhatsApp Care & Live NMC Medical License Verification.', {
     x: 1.5, y: 3.1, w: 10.3, h: 0.7,
-    fontSize: 14, color: TEXT_LIGHT, align: 'center', fontFace: 'Arial'
+    fontSize: 14, color: TEXT_LIGHT, align: 'center', fontFace: FONT
   });
 
   // 3 Metric Cards
@@ -122,20 +124,19 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
       x: x, y: 4.1, w: 3.0, h: 1.2, r: 0.15,
       fill: { color: CARD_BG }, line: { color: CARD_BORDER, width: 1 }
     });
-    slide.addText(c.title.toUpperCase(), {
-      x: x, y: 4.25, w: 3.0, h: 0.3,
-      fontSize: 9, bold: true, color: TEXT_MUTED, align: 'center', fontFace: 'Arial'
-    });
-    slide.addText(c.val, {
-      x: x, y: 4.6, w: 3.0, h: 0.5,
-      fontSize: 14, bold: true, color: c.color, align: 'center', fontFace: 'Arial'
+    slide.addText([
+      { text: `${c.title.toUpperCase()}\n`, options: { fontSize: 9, bold: true, color: TEXT_MUTED } },
+      { text: c.val, options: { fontSize: 14, bold: true, color: c.color } }
+    ], {
+      x: x, y: 4.25, w: 3.0, h: 0.9,
+      align: 'center', valign: 'middle', fontFace: FONT
     });
   });
 
   // Entity Details
   slide.addText('ORUG Technologies Private Limited  •  founders@rxnxt.com  •  https://app.rxnxt.in', {
     x: 1.0, y: 5.7, w: 11.3, h: 0.4,
-    fontSize: 11, bold: true, color: SKY, align: 'center', fontFace: 'Arial'
+    fontSize: 11, bold: true, color: SKY, align: 'center', fontFace: FONT
   });
 
   addFooter(slide, 'ORUG Technologies Pvt. Ltd. • Pitch Presentation');
@@ -198,29 +199,31 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
       fill: { color: CARD_BG }, line: { color: p.color, width: 1.5 }
     });
 
-    slide.addText(p.title, {
-      x: x + 0.25, y: 2.05, w: 3.2, h: 0.35,
-      fontSize: 14, bold: true, color: p.color, fontFace: 'Arial'
-    });
-    slide.addText(p.stat, {
-      x: x + 0.25, y: 2.4, w: 3.2, h: 0.3,
-      fontSize: 11, bold: true, color: TEXT_WHITE, fontFace: 'Arial'
-    });
-    slide.addText(p.desc, {
-      x: x + 0.25, y: 2.75, w: 3.2, h: 0.7,
-      fontSize: 9.5, color: TEXT_LIGHT, fontFace: 'Arial'
+    slide.addText([
+      { text: `${p.title}\n`, options: { fontSize: 13.5, bold: true, color: p.color } },
+      { text: `${p.stat}\n\n`, options: { fontSize: 10.5, bold: true, color: TEXT_WHITE } },
+      { text: p.desc, options: { fontSize: 9.5, color: TEXT_LIGHT } }
+    ], {
+      x: x + 0.25, y: 2.05, w: 3.2, h: 1.3,
+      valign: 'top', align: 'left', fontFace: FONT
     });
 
     slide.addShape(pptx.shapes.LINE, {
-      x: x + 0.25, y: 3.5, w: 3.2, h: 0,
+      x: x + 0.25, y: 3.45, w: 3.2, h: 0,
       line: { color: '2A3B5C', width: 0.75 }
     });
 
-    p.bullets.forEach((b, bIdx) => {
-      slide.addText(`•  ${b}`, {
-        x: x + 0.25, y: 3.65 + bIdx * 0.75, w: 3.2, h: 0.65,
-        fontSize: 8.5, color: TEXT_LIGHT, fontFace: 'Arial'
+    let curY = 3.65;
+    p.bullets.forEach(b => {
+      slide.addShape(pptx.shapes.OVAL, {
+        x: x + 0.28, y: curY + 0.05, w: 0.055, h: 0.055,
+        fill: { color: p.color }, line: { color: p.color, width: 0 }
       });
+      slide.addText(b, {
+        x: x + 0.42, y: curY, w: 3.03, h: 0.55,
+        fontSize: 9, color: TEXT_LIGHT, fontFace: FONT, valign: 'top'
+      });
+      curY += 0.65;
     });
   });
 
@@ -294,14 +297,20 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
 
     slide.addText(p.title, {
       x: x + 0.3, y: y + 0.15, w: 5.1, h: 0.35,
-      fontSize: 12.5, bold: true, color: p.color, fontFace: 'Arial'
+      fontSize: 12.5, bold: true, color: p.color, fontFace: FONT
     });
 
-    p.points.forEach((pt, ptIdx) => {
-      slide.addText(`•  ${pt}`, {
-        x: x + 0.3, y: y + 0.55 + ptIdx * 0.42, w: 5.1, h: 0.38,
-        fontSize: 8.5, color: TEXT_LIGHT, fontFace: 'Arial'
+    let curY = y + 0.55;
+    p.points.forEach(pt => {
+      slide.addShape(pptx.shapes.OVAL, {
+        x: x + 0.35, y: curY + 0.05, w: 0.05, h: 0.05,
+        fill: { color: p.color }, line: { color: p.color, width: 0 }
       });
+      slide.addText(pt, {
+        x: x + 0.48, y: curY, w: 4.9, h: 0.36,
+        fontSize: 8.5, color: TEXT_LIGHT, fontFace: FONT, valign: 'top'
+      });
+      curY += 0.42;
     });
   });
 
@@ -333,13 +342,12 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
       x: x, y: 1.85, w: 2.7, h: 0.95, r: 0.15,
       fill: { color: CARD_BG }, line: { color: CARD_BORDER, width: 1 }
     });
-    slide.addText(s.val, {
-      x: x, y: 1.95, w: 2.7, h: 0.45,
-      fontSize: 18, bold: true, color: MINT, align: 'center', fontFace: 'Arial'
-    });
-    slide.addText(s.label, {
-      x: x, y: 2.4, w: 2.7, h: 0.3,
-      fontSize: 9, color: TEXT_MUTED, align: 'center', fontFace: 'Arial'
+    slide.addText([
+      { text: `${s.val}\n`, options: { fontSize: 18, bold: true, color: MINT } },
+      { text: s.label, options: { fontSize: 9, color: TEXT_MUTED } }
+    ], {
+      x: x, y: 1.9, w: 2.7, h: 0.85,
+      align: 'center', valign: 'middle', fontFace: FONT
     });
   });
 
@@ -379,7 +387,7 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
 
   slide.addTable(tableRows, {
     x: 0.8, y: 3.0, w: 11.7, h: 3.7,
-    fontSize: 9, fontFace: 'Arial', color: TEXT_LIGHT,
+    fontSize: 9, fontFace: FONT, color: TEXT_LIGHT,
     fill: CARD_BG, border: { color: '2A3B5C', pt: 0.5 },
     colW: [2.5, 1.5, 7.7], margin: [4, 6, 4, 6]
   });
@@ -405,7 +413,7 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
   });
   slide.addText('Strategic 3-Tier Pricing Model', {
     x: 1.1, y: 2.05, w: 5.1, h: 0.35,
-    fontSize: 14, bold: true, color: SKY, fontFace: 'Arial'
+    fontSize: 14, bold: true, color: SKY, fontFace: FONT
   });
   const tiers = [
     { name: 'Tier 1 (SaaS BYOD)', price: '₹9,999 / year (~₹833/mo)', desc: 'For solo clinic practitioners using laptop, tablet, or phone.' },
@@ -414,9 +422,9 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
   ];
   tiers.forEach((t, tIdx) => {
     const ty = 2.5 + tIdx * 1.0;
-    slide.addText(t.name, { x: 1.1, y: ty, w: 2.8, h: 0.3, fontSize: 10, bold: true, color: TEXT_WHITE, fontFace: 'Arial' });
-    slide.addText(t.price, { x: 3.9, y: ty, w: 2.3, h: 0.3, fontSize: 10, bold: true, color: MINT, align: 'right', fontFace: 'Arial' });
-    slide.addText(t.desc, { x: 1.1, y: ty + 0.3, w: 5.1, h: 0.45, fontSize: 8.5, color: TEXT_LIGHT, fontFace: 'Arial' });
+    slide.addText(t.name, { x: 1.1, y: ty, w: 2.8, h: 0.3, fontSize: 10, bold: true, color: TEXT_WHITE, fontFace: FONT });
+    slide.addText(t.price, { x: 3.9, y: ty, w: 2.3, h: 0.3, fontSize: 10, bold: true, color: MINT, align: 'right', fontFace: FONT });
+    slide.addText(t.desc, { x: 1.1, y: ty + 0.3, w: 5.1, h: 0.45, fontSize: 8.5, color: TEXT_LIGHT, fontFace: FONT });
   });
 
   slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
@@ -425,7 +433,7 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
   });
   slide.addText('💡 The "2-Patient" Psychological Pitch:\nAt ₹9,999/year (~₹833/month), writing just 2 to 3 consultations a month pays for the software. The remaining 500+ consultations are 100% pure profit.', {
     x: 1.25, y: 5.55, w: 4.8, h: 0.9,
-    fontSize: 8.5, color: SKY, fontFace: 'Arial'
+    fontSize: 8.5, color: SKY, fontFace: FONT
   });
 
   // Right Card: Cost Breakdown Table
@@ -435,7 +443,7 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
   });
   slide.addText('Single-Clinic Monthly Cost Breakdown', {
     x: 7.1, y: 2.05, w: 5.1, h: 0.35,
-    fontSize: 14, bold: true, color: MINT, fontFace: 'Arial'
+    fontSize: 14, bold: true, color: MINT, fontFace: FONT
   });
 
   const costRows = [
@@ -460,7 +468,7 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
 
   slide.addTable(costRows, {
     x: 7.1, y: 2.5, w: 5.1, h: 3.9,
-    fontSize: 9, fontFace: 'Arial', color: TEXT_LIGHT,
+    fontSize: 9, fontFace: FONT, color: TEXT_LIGHT,
     fill: CARD_BG, border: { color: '2A3B5C', pt: 0.5 },
     colW: [3.4, 1.7], margin: [4, 6, 4, 6]
   });
@@ -533,13 +541,12 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
       fill: { color: CARD_BG }, line: { color: a.color, width: 1.5 }
     });
 
-    slide.addText(a.amount, {
-      x: x + 0.15, y: 2.05, w: 2.4, h: 0.35,
-      fontSize: 13, bold: true, color: a.color, fontFace: 'Arial'
-    });
-    slide.addText(a.title, {
-      x: x + 0.15, y: 2.4, w: 2.4, h: 0.45,
-      fontSize: 10, bold: true, color: TEXT_WHITE, fontFace: 'Arial'
+    slide.addText([
+      { text: `${a.amount}\n`, options: { fontSize: 13, bold: true, color: a.color } },
+      { text: a.title, options: { fontSize: 10, bold: true, color: TEXT_WHITE } }
+    ], {
+      x: x + 0.15, y: 2.05, w: 2.4, h: 0.8,
+      valign: 'top', align: 'left', fontFace: FONT
     });
 
     slide.addShape(pptx.shapes.LINE, {
@@ -547,11 +554,18 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
       line: { color: '2A3B5C', width: 0.75 }
     });
 
-    a.points.forEach((pt, pIdx) => {
-      slide.addText(`✔  ${pt}`, {
-        x: x + 0.15, y: 3.05 + pIdx * 0.65, w: 2.4, h: 0.58,
-        fontSize: 8.5, color: TEXT_LIGHT, fontFace: 'Arial'
+    let curY = 3.05;
+    a.points.forEach(pt => {
+      // Use clean colored checkbox/dot
+      slide.addShape(pptx.shapes.OVAL, {
+        x: x + 0.18, y: curY + 0.05, w: 0.05, h: 0.05,
+        fill: { color: a.color }, line: { color: a.color, width: 0 }
       });
+      slide.addText(pt, {
+        x: x + 0.30, y: curY, w: 2.25, h: 0.55,
+        fontSize: 8.5, color: TEXT_LIGHT, fontFace: FONT, valign: 'top'
+      });
+      curY += 0.62;
     });
   });
 
@@ -562,7 +576,7 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
   });
   slide.addText('🎯 TARGET RUNWAY MILESTONE: Reach 200 Paying Clinics by Month 12 → Generating ₹20,00,000 Annual Recurring Revenue (ARR). Cashflow breakeven expected at 120 clinics (Month 14).', {
     x: 1.0, y: 6.1, w: 11.3, h: 0.6,
-    fontSize: 10, bold: true, color: SKY, fontFace: 'Arial'
+    fontSize: 10, bold: true, color: SKY, align: 'center', fontFace: FONT
   });
 
   addFooter(slide, 'Strict capital efficiency: 70% of capital directly drives clinic acquisition and product monetization');
@@ -637,17 +651,13 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
       fill: { color: CARD_BG }, line: { color: q.color, width: 1.5 }
     });
 
-    slide.addText(q.quarter, {
-      x: x + 0.15, y: 2.05, w: 2.4, h: 0.25,
-      fontSize: 9, bold: true, color: q.color, fontFace: 'Arial'
-    });
-    slide.addText(q.name, {
-      x: x + 0.15, y: 2.3, w: 2.4, h: 0.35,
-      fontSize: 12, bold: true, color: TEXT_WHITE, fontFace: 'Arial'
-    });
-    slide.addText(q.clinics, {
-      x: x + 0.15, y: 2.65, w: 2.4, h: 0.3,
-      fontSize: 10, bold: true, color: q.color, fontFace: 'Arial'
+    slide.addText([
+      { text: `${q.quarter}\n`, options: { fontSize: 9, bold: true, color: q.color } },
+      { text: `${q.name}\n`, options: { fontSize: 12, bold: true, color: TEXT_WHITE } },
+      { text: q.clinics, options: { fontSize: 10, bold: true, color: q.color } }
+    ], {
+      x: x + 0.15, y: 2.05, w: 2.4, h: 0.95,
+      valign: 'top', align: 'left', fontFace: FONT
     });
 
     slide.addShape(pptx.shapes.LINE, {
@@ -655,11 +665,17 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
       line: { color: '2A3B5C', width: 0.75 }
     });
 
-    q.points.forEach((pt, pIdx) => {
-      slide.addText(`•  ${pt}`, {
-        x: x + 0.15, y: 3.2 + pIdx * 0.8, w: 2.4, h: 0.72,
-        fontSize: 8.5, color: TEXT_LIGHT, fontFace: 'Arial'
+    let curY = 3.25;
+    q.points.forEach(pt => {
+      slide.addShape(pptx.shapes.OVAL, {
+        x: x + 0.18, y: curY + 0.05, w: 0.05, h: 0.05,
+        fill: { color: q.color }, line: { color: q.color, width: 0 }
       });
+      slide.addText(pt, {
+        x: x + 0.30, y: curY, w: 2.25, h: 0.65,
+        fontSize: 8.5, color: TEXT_LIGHT, fontFace: FONT, valign: 'top'
+      });
+      curY += 0.78;
     });
   });
 
@@ -720,13 +736,12 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
       fill: { color: CARD_BG }, line: { color: s.color, width: 1.5 }
     });
 
-    slide.addText(s.step, {
-      x: x + 0.25, y: 2.05, w: 3.2, h: 0.25,
-      fontSize: 9, bold: true, color: s.color, fontFace: 'Arial'
-    });
-    slide.addText(s.title, {
-      x: x + 0.25, y: 2.3, w: 3.2, h: 0.4,
-      fontSize: 14, bold: true, color: TEXT_WHITE, fontFace: 'Arial'
+    slide.addText([
+      { text: `${s.step}\n`, options: { fontSize: 9, bold: true, color: s.color } },
+      { text: s.title, options: { fontSize: 14, bold: true, color: TEXT_WHITE } }
+    ], {
+      x: x + 0.25, y: 2.05, w: 3.2, h: 0.7,
+      valign: 'top', align: 'left', fontFace: FONT
     });
 
     slide.addShape(pptx.shapes.LINE, {
@@ -734,11 +749,17 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
       line: { color: '2A3B5C', width: 0.75 }
     });
 
-    s.points.forEach((pt, pIdx) => {
-      slide.addText(`✔  ${pt}`, {
-        x: x + 0.25, y: 2.95 + pIdx * 0.9, w: 3.2, h: 0.8,
-        fontSize: 9, color: TEXT_LIGHT, fontFace: 'Arial'
+    let curY = 3.0;
+    s.points.forEach(pt => {
+      slide.addShape(pptx.shapes.OVAL, {
+        x: x + 0.28, y: curY + 0.05, w: 0.055, h: 0.055,
+        fill: { color: s.color }, line: { color: s.color, width: 0 }
       });
+      slide.addText(pt, {
+        x: x + 0.42, y: curY, w: 3.03, h: 0.75,
+        fontSize: 9, color: TEXT_LIGHT, fontFace: FONT, valign: 'top'
+      });
+      curY += 0.88;
     });
   });
 
@@ -754,17 +775,17 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
 
   slide.addText('RxNXT CLOUD  •  TRANSFORMING INDIAN OUTPATIENT CARE', {
     x: 1.0, y: 1.0, w: 11.3, h: 0.4,
-    fontSize: 11, bold: true, color: SKY, align: 'center', fontFace: 'Arial'
+    fontSize: 11, bold: true, color: SKY, align: 'center', fontFace: FONT
   });
 
   slide.addText('Let\'s Digitize Every Prescription Pad in India', {
     x: 1.0, y: 1.4, w: 11.3, h: 0.8,
-    fontSize: 32, bold: true, color: TEXT_WHITE, align: 'center', fontFace: 'Arial'
+    fontSize: 32, bold: true, color: TEXT_WHITE, align: 'center', fontFace: FONT
   });
 
   slide.addText('Paper prescriptions are lost, unreadable, and disconnect patients from care.\nRxNXT makes prescribing faster than pen & paper while automating post-consultation WhatsApp adherence.', {
     x: 1.5, y: 2.3, w: 10.3, h: 0.7,
-    fontSize: 13, color: TEXT_LIGHT, align: 'center', fontFace: 'Arial'
+    fontSize: 13, color: TEXT_LIGHT, align: 'center', fontFace: FONT
   });
 
   // Center Callout Card
@@ -773,24 +794,14 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
     fill: { color: CARD_BG }, line: { color: BLUE, width: 2 }
   });
 
-  slide.addText('🤝 The Investment Ask: ₹50.0 Lakhs Seed Expansion', {
-    x: 2.5, y: 3.55, w: 8.3, h: 0.45,
-    fontSize: 16, bold: true, color: MINT, align: 'center', fontFace: 'Arial'
-  });
-
-  slide.addText('Seeking ₹50 Lakhs via SISFS Component 2 (Convertible Debenture / Debt) or DST NIDHI-SSS\nthrough SR Innovation Exchange (SRiX) Incubator.', {
-    x: 2.5, y: 4.1, w: 8.3, h: 0.55,
-    fontSize: 11, color: TEXT_WHITE, align: 'center', fontFace: 'Arial'
-  });
-
-  slide.addText('We have completed Phase 1, proved the architecture, eliminated serverless costs, and locked in regulatory moats. We are ready to scale.', {
-    x: 2.5, y: 4.7, w: 8.3, h: 0.5,
-    fontSize: 10, color: TEXT_LIGHT, align: 'center', fontFace: 'Arial'
-  });
-
-  slide.addText('ORUG Technologies Pvt. Ltd.  •  founders@rxnxt.com  •  Warangal / Hyderabad  •  SRiX Incubator Cohort', {
-    x: 2.5, y: 5.3, w: 8.3, h: 0.4,
-    fontSize: 11, bold: true, color: SKY, align: 'center', fontFace: 'Arial'
+  slide.addText([
+    { text: '🤝 The Investment Ask: ₹50.0 Lakhs Seed Expansion\n\n', options: { fontSize: 16, bold: true, color: MINT } },
+    { text: 'Seeking ₹50 Lakhs via SISFS Component 2 (Convertible Debenture / Debt) or DST NIDHI-SSS through SR Innovation Exchange (SRiX) Incubator.\n\n', options: { fontSize: 11, color: TEXT_WHITE } },
+    { text: 'We have completed Phase 1, proved the architecture, eliminated serverless costs, and locked in regulatory moats. We are ready to scale.\n\n', options: { fontSize: 10, color: TEXT_LIGHT } },
+    { text: 'ORUG Technologies Pvt. Ltd.  •  founders@rxnxt.com  •  Warangal / Hyderabad  •  SRiX Incubator Cohort', options: { fontSize: 11, bold: true, color: SKY } }
+  ], {
+    x: 2.5, y: 3.5, w: 8.3, h: 2.3,
+    align: 'center', valign: 'middle', fontFace: FONT
   });
 
   addFooter(slide, 'ORUG Technologies Pvt. Ltd. • Accelerating Healthcare Across India');
