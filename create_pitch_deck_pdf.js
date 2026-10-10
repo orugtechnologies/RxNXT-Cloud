@@ -129,7 +129,7 @@ doc.text('Scaling Outpatient Clinical Care Across India', W / 2, 70, { align: 'c
 doc.setFontSize(10);
 doc.setTextColor(C.grayLight[0], C.grayLight[1], C.grayLight[2]);
 doc.text(
-  'Sub-30s Digital Prescribing • Official Meta WhatsApp Patient Care • Live Government NMC License Verification',
+  'Fast Under 30-Second Prescriptions • Official Meta WhatsApp Patient Care • Live Government NMC License Verification',
   W / 2,
   78,
   { align: 'center' }
@@ -309,7 +309,7 @@ drawCard(18, sY, colW2, 66, C.emerald);
 doc.setFont('helvetica', 'bold');
 doc.setFontSize(10.5);
 doc.setTextColor(C.mint[0], C.mint[1], C.mint[2]);
-doc.text('⚡ Sub-30s Prescribing Workflow', 25, sY + 10);
+doc.text('⚡ Fast Under 30-Second Prescribing', 25, sY + 10);
 doc.setFont('helvetica', 'normal');
 doc.setFontSize(8);
 doc.setTextColor(C.grayLight[0], C.grayLight[1], C.grayLight[2]);
@@ -397,7 +397,7 @@ function drawStat(x, y, val, label, color) {
 
 drawStat(18, stY, '100% Cloud', 'Supabase Mumbai PostgreSQL', C.sky);
 drawStat(18 + sW + 8, stY, '~0.4s', 'Live NMC Verification Speed', C.emerald);
-drawStat(18 + (sW + 8) * 2, stY, '< 30s', 'Average Prescribing Time', C.emerald);
+drawStat(18 + (sW + 8) * 2, stY, '< 30 Sec', 'Average Prescribing Time', C.emerald);
 drawStat(18 + (sW + 8) * 3, stY, 'v20.0', 'Official Meta WhatsApp API', C.sky);
 
 // Milestone Table
@@ -816,7 +816,7 @@ drawQCard(
   'Pilot Lock-In',
   [
     'Onboard 30 active clinics across Warangal & Hyderabad.',
-    'Doctor satisfaction NPS > 70 with verified 30s prescription speed.',
+    'Doctor satisfaction NPS > 70 with verified < 30-second prescription speed.',
     'Meta Tier 2 verification (10,000 messages/day capacity).',
     'Publish Clinical Adherence Whitepaper with SRiX.'
   ],
