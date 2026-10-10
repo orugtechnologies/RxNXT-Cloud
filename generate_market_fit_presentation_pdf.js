@@ -91,7 +91,7 @@ function drawHeader(category, slideNum, title, subtitle) {
   doc.text(sanitize(subtitle), 18, 33);
 }
 
-function drawFooter(text = 'RxNXT Technologies - Market Fit & Competitive Positioning Master Deck') {
+function drawFooter(text = 'ORUG Technologies - Market Fit & Competitive Positioning Master Deck') {
   doc.setDrawColor(C.border[0], C.border[1], C.border[2]);
   doc.setLineWidth(0.4);
   doc.line(18, H - 12, W - 18, H - 12);
@@ -926,7 +926,7 @@ y10C = drawWrappedLines('- Lean serverless architecture keeps infra under Rs 350
 y10C = drawWrappedLines('- Upfront annual subscription cash creates negative working capital.', 18 + (cpW + cpGap) * 2 + 6, y10C, cpW - 12, 4);
 drawWrappedLines('- Immediate Day 1 payback with compounding renewal profit.', 18 + (cpW + cpGap) * 2 + 6, y10C, cpW - 12, 4);
 
-drawFooter('RxNXT Technologies Pvt. Ltd. - Hyderabad & Warangal - Supported by SRiX Incubator (DST)');
+drawFooter('ORUG Technologies Pvt. Ltd. - Hyderabad & Warangal - Supported by SRiX Incubator (DST)');
 
 // Save PDF
 const outputPath = path.join(__dirname, 'RxNXT_Market_Fit_and_Competitive_Deck.pdf');

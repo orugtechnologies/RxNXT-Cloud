@@ -76,7 +76,7 @@ function drawHeader(category, slideNum, title, subtitle) {
   doc.text(subtitle, 18, 34);
 }
 
-function drawFooter(text = 'RxNXT Technologies • Confidential Pitch Deck for SISFS Phase 2 Seed Funding') {
+function drawFooter(text = 'ORUG Technologies • Confidential Pitch Deck for SISFS Phase 2 Seed Funding') {
   doc.setDrawColor(C.border[0], C.border[1], C.border[2]);
   doc.setLineWidth(0.4);
   doc.line(18, H - 12, W - 18, H - 12);
@@ -187,7 +187,7 @@ drawCard(50, 146, W - 100, 32);
 doc.setFont('helvetica', 'bold');
 doc.setFontSize(9.5);
 doc.setTextColor(C.white[0], C.white[1], C.white[2]);
-doc.text('RxNXT Technologies Private Limited • Investment Memorandum', W / 2, 155, { align: 'center' });
+doc.text('ORUG Technologies Private Limited • Investment Memorandum', W / 2, 155, { align: 'center' });
 doc.setFont('helvetica', 'normal');
 doc.setFontSize(8.5);
 doc.setTextColor(C.grayLight[0], C.grayLight[1], C.grayLight[2]);
@@ -953,7 +953,7 @@ doc.setFont('helvetica', 'bold');
 doc.setTextColor(C.sky[0], C.sky[1], C.sky[2]);
 doc.text('Contact: founders@rxnxt.com  •  Warangal / Hyderabad  •  SRiX Incubator Cohort', 25, cBoxY + 33);
 
-drawFooter('RxNXT Technologies Pvt. Ltd. • Accelerating Healthcare Across India');
+drawFooter('ORUG Technologies Pvt. Ltd. • Accelerating Healthcare Across India');
 
 // ==========================================
 // SAVE TO DESKTOP AND REPO

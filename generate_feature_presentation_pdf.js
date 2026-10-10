@@ -100,7 +100,7 @@ function drawHeader(category, slideNum, title, subtitle) {
   doc.text(sanitize(subtitle), 18, 33);
 }
 
-function drawFooter(text = 'RxNXT Technologies - Outpatient Clinical Architecture & Feature Deck') {
+function drawFooter(text = 'ORUG Technologies - Outpatient Clinical Architecture & Feature Deck') {
   doc.setDrawColor(C.border[0], C.border[1], C.border[2]);
   doc.setLineWidth(0.4);
   doc.line(18, H - 12, W - 18, H - 12);
@@ -805,7 +805,7 @@ doc.text([
   'Impact: Maximizes patient compliance & returns.'
 ], 196 + 6, 110);
 
-drawFooter('RxNXT Technologies Pvt. Ltd. • Hyderabad & Warangal • Ready for Clinical Pilots');
+drawFooter('ORUG Technologies Pvt. Ltd. • Hyderabad & Warangal • Ready for Clinical Pilots');
 
 // Output file
 const outputPath = path.join(__dirname, 'RxNXT_Platform_Feature_Presentation.pdf');
