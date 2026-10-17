@@ -19,6 +19,20 @@ export async function GET(
             items: true
           }
         },
+        queueItems: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          select: {
+            id: true,
+            bp: true,
+            pulse: true,
+            temperature: true,
+            weight: true,
+            height: true,
+            spo2: true,
+            createdAt: true,
+          }
+        },
         encounters: {
           orderBy: { createdAt: 'desc' },
           include: {
@@ -38,6 +52,8 @@ export async function GET(
 
     if (!patient) return NextResponse.json({ error: 'Patient not found' }, { status: 404 });
 
+    const latestVitals = patient.queueItems[0] || null;
+
     // Format to match what the frontend hook expects
     const formattedPatient = {
       id: patient.id,
@@ -45,6 +61,15 @@ export async function GET(
       phone: patient.phone ?? '',
       age: patient.age ?? 0,
       gender: patient.gender ?? '',
+      allergies: patient.allergies ?? null,
+      vitals: latestVitals ? {
+        bp: latestVitals.bp,
+        pulse: latestVitals.pulse,
+        temperature: latestVitals.temperature,
+        weight: latestVitals.weight,
+        height: latestVitals.height,
+        spo2: latestVitals.spo2,
+      } : null,
       clinic_id: patient.clinicId,
       created_at: patient.createdAt.toISOString(),
     };

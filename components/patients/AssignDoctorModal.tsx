@@ -17,6 +17,14 @@ export default function AssignDoctorModal({
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState(false);
   const [selectedDoctorId, setSelectedDoctorId] = useState('');
+  
+  // Vitals State
+  const [showVitals, setShowVitals] = useState(true);
+  const [bp, setBp] = useState('');
+  const [pulse, setPulse] = useState('');
+  const [temperature, setTemperature] = useState('');
+  const [weight, setWeight] = useState('');
+  const [spo2, setSpo2] = useState('');
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -49,7 +57,15 @@ export default function AssignDoctorModal({
       const res = await fetch('/api/queue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ patientId: patient.id, doctorId: selectedDoctorId })
+        body: JSON.stringify({ 
+          patientId: patient.id, 
+          doctorId: selectedDoctorId,
+          bp: bp.trim() || undefined,
+          pulse: pulse.trim() || undefined,
+          temperature: temperature.trim() || undefined,
+          weight: weight.trim() || undefined,
+          spo2: spo2.trim() || undefined,
+        })
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.message || json.error || 'Failed to assign patient');
@@ -134,15 +150,78 @@ export default function AssignDoctorModal({
             )}
           </div>
 
-          <div className="pt-4">
+          {/* Quick Vitals Section (Optional) */}
+          <div className="border border-slate-200 rounded-xl p-3.5 bg-slate-50/70">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Activity size={14} className="text-rose-500" />
+                Record Vitals (Optional)
+              </span>
+              <span className="text-[10px] text-slate-400">Enter now or later</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="text-[10px] font-semibold text-slate-500 uppercase block mb-1">BP (mmHg)</label>
+                <input
+                  type="text"
+                  placeholder="120/80"
+                  value={bp}
+                  onChange={e => setBp(e.target.value)}
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-bold focus:ring-1 focus:ring-clinic-emerald outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold text-slate-500 uppercase block mb-1">Pulse (bpm)</label>
+                <input
+                  type="text"
+                  placeholder="76"
+                  value={pulse}
+                  onChange={e => setPulse(e.target.value)}
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-bold focus:ring-1 focus:ring-clinic-emerald outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold text-slate-500 uppercase block mb-1">Temp (°F)</label>
+                <input
+                  type="text"
+                  placeholder="98.6"
+                  value={temperature}
+                  onChange={e => setTemperature(e.target.value)}
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-bold focus:ring-1 focus:ring-clinic-emerald outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold text-slate-500 uppercase block mb-1">Weight (kg)</label>
+                <input
+                  type="text"
+                  placeholder="65"
+                  value={weight}
+                  onChange={e => setWeight(e.target.value)}
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-bold focus:ring-1 focus:ring-clinic-emerald outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold text-slate-500 uppercase block mb-1">SpO2 (%)</label>
+                <input
+                  type="text"
+                  placeholder="98"
+                  value={spo2}
+                  onChange={e => setSpo2(e.target.value)}
+                  className="w-full bg-white border border-slate-200 rounded-lg p-2 text-xs font-bold focus:ring-1 focus:ring-clinic-emerald outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-2">
             <button 
               disabled={assigning || doctors.length === 0 || !selectedDoctorId} 
               type="submit" 
               className="w-full bg-clinic-emerald hover:bg-clinic-emeraldDark text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {assigning ? (
-                <><Activity className="animate-pulse mr-2" size={20}/> Assigning...</>
-              ) : 'Confirm Assignment'}
+                <><Activity className="animate-pulse mr-2" size={20}/> Assigning & Queuing...</>
+              ) : 'Confirm & Add to Queue'}
             </button>
           </div>
         </form>

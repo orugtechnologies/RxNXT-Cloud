@@ -205,6 +205,12 @@ export async function GET() {
         pendingAmount,
         latestPaymentMode: latestPaidBill?.paymentMode || null,
         latestBillNumber: patientBills[0]?.billNumber || null,
+        bp: q.bp,
+        pulse: q.pulse,
+        temperature: q.temperature,
+        weight: q.weight,
+        height: q.height,
+        spo2: q.spo2,
       };
     });
 

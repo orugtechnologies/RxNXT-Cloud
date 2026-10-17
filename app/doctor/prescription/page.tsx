@@ -169,11 +169,14 @@ function PrescriptionWorkflowContent() {
         }
       }
 
-      // Fetch full patient history for AI Clinical Summary
+      // Fetch full patient history for AI Clinical Summary & Vitals
       const histRes = await fetch(`/api/patients/${selectedPatient.id}`);
       if (histRes.ok) {
         const histJson = await histRes.json();
         setPatientEncounters(histJson.encounters || []);
+        if (histJson.patient) {
+          setPatient(histJson.patient);
+        }
       }
     } catch (err) {
       console.error('Error fetching past rx:', err);
@@ -422,8 +425,8 @@ function PrescriptionWorkflowContent() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8">
           
-          {/* Left Column: Patient & Clinical Details */}
-          <div className="lg:col-span-4 xl:col-span-3 space-y-6">
+          {/* Left Column: Patient & Clinical Details (Sticky docked) */}
+          <div className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto no-scrollbar">
             
             {/* Step 1: Patient Selection */}
             <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 hover:shadow-md relative z-20">
@@ -450,6 +453,65 @@ function PrescriptionWorkflowContent() {
                           <span className="bg-white px-2 py-0.5 rounded border border-gray-200">{patient.gender}</span>
                         </p>
                         <p className="text-sm text-gray-500 mt-1">{patient.phone}</p>
+
+                        {/* Drug Allergy Warning */}
+                        {patient.allergies && (
+                          <div className="mt-2.5 flex items-center gap-1.5 p-2 bg-rose-50 border border-rose-300 rounded-lg text-rose-800 text-xs font-bold animate-pulse">
+                            <AlertCircle size={14} className="text-rose-600 shrink-0" />
+                            <span>Allergy Alert: {patient.allergies}</span>
+                          </div>
+                        )}
+
+                        {/* Patient Vitals Strip */}
+                        {patient.vitals && (patient.vitals.bp || patient.vitals.pulse || patient.vitals.temperature || patient.vitals.weight || patient.vitals.spo2) && (
+                          <div className="mt-3 pt-3 border-t border-blue-100/80">
+                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                              <span className="flex items-center gap-1">
+                                <Activity size={12} className="text-rose-500" />
+                                Recorded Vitals
+                              </span>
+                              <span className="text-emerald-600 font-semibold lowercase">Today</span>
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
+                              {patient.vitals.bp && (
+                                <div className="bg-white border border-slate-200 rounded p-1.5 text-center shadow-2xs">
+                                  <span className="text-[9px] text-slate-400 block font-semibold">BP</span>
+                                  <span className={`font-black ${patient.vitals.bp.includes('/') && parseInt(patient.vitals.bp.split('/')[0]) >= 140 ? 'text-amber-600' : 'text-slate-800'}`}>
+                                    {patient.vitals.bp}
+                                  </span>
+                                </div>
+                              )}
+                              {patient.vitals.temperature && (
+                                <div className="bg-white border border-slate-200 rounded p-1.5 text-center shadow-2xs">
+                                  <span className="text-[9px] text-slate-400 block font-semibold">TEMP</span>
+                                  <span className={`font-black ${parseFloat(patient.vitals.temperature) >= 100.4 ? 'text-rose-600' : 'text-slate-800'}`}>
+                                    {patient.vitals.temperature}°F
+                                  </span>
+                                </div>
+                              )}
+                              {patient.vitals.pulse && (
+                                <div className="bg-white border border-slate-200 rounded p-1.5 text-center shadow-2xs">
+                                  <span className="text-[9px] text-slate-400 block font-semibold">PULSE</span>
+                                  <span className="font-black text-slate-800">{patient.vitals.pulse} bpm</span>
+                                </div>
+                              )}
+                              {patient.vitals.weight && (
+                                <div className="bg-white border border-slate-200 rounded p-1.5 text-center shadow-2xs">
+                                  <span className="text-[9px] text-slate-400 block font-semibold">WEIGHT</span>
+                                  <span className="font-black text-slate-800">{patient.vitals.weight} kg</span>
+                                </div>
+                              )}
+                              {patient.vitals.spo2 && (
+                                <div className="bg-white border border-slate-200 rounded p-1.5 text-center shadow-2xs">
+                                  <span className="text-[9px] text-slate-400 block font-semibold">SpO2</span>
+                                  <span className={`font-black ${parseFloat(patient.vitals.spo2) < 95 ? 'text-rose-600' : 'text-slate-800'}`}>
+                                    {patient.vitals.spo2}%
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <button 

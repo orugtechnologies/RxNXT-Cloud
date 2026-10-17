@@ -9,6 +9,15 @@ export interface Patient {
   phone: string;
   age: number;
   gender: string;
+  allergies?: string | null;
+  vitals?: {
+    bp?: string | null;
+    pulse?: string | null;
+    temperature?: string | null;
+    weight?: string | null;
+    height?: string | null;
+    spo2?: string | null;
+  } | null;
 }
 
 export default function PatientSearchUI({ onSelect, onAddNew, clearTrigger }: { onSelect: (p: Patient) => void, onAddNew: (query: string) => void, clearTrigger?: any }) {

@@ -67,6 +67,12 @@ export async function GET() {
         tokenNumber: q.tokenNumber,
         tokenNumberDisplay,
         fullUnifiedId,
+        bp: q.bp,
+        pulse: q.pulse,
+        temperature: q.temperature,
+        weight: q.weight,
+        height: q.height,
+        spo2: q.spo2,
       };
     });
 

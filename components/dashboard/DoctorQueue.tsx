@@ -20,6 +20,12 @@ interface QueueItem {
   pendingAmount?: number;
   latestPaymentMode?: string | null;
   latestBillNumber?: string | null;
+  bp?: string | null;
+  pulse?: string | null;
+  temperature?: string | null;
+  weight?: string | null;
+  height?: string | null;
+  spo2?: string | null;
 }
 
 export default function DoctorQueue({
@@ -184,6 +190,45 @@ export default function DoctorQueue({
                     <span className={`px-2 py-0.5 rounded-md ${waitingTime > 15 ? 'bg-orange-50 text-orange-700' : 'text-slate-400'}`}>
                       • Waiting {waitingTime} mins
                     </span>
+
+                    {/* Vitals Badges */}
+                    {(item.bp || item.temperature || item.pulse || item.weight || item.spo2) && (
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {item.bp && (
+                          <span className={`px-2 py-0.5 rounded text-[11px] font-bold border ${
+                            item.bp.includes('/') && parseInt(item.bp.split('/')[0]) >= 140
+                              ? 'bg-amber-100 text-amber-900 border-amber-300'
+                              : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                          }`}>
+                            BP {item.bp}
+                          </span>
+                        )}
+                        {item.temperature && (
+                          <span className={`px-2 py-0.5 rounded text-[11px] font-bold border ${
+                            parseFloat(item.temperature) >= 100.4
+                              ? 'bg-rose-100 text-rose-900 border-rose-300'
+                              : 'bg-amber-50 text-amber-700 border-amber-200'
+                          }`}>
+                            {item.temperature}°F
+                          </span>
+                        )}
+                        {item.pulse && (
+                          <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded text-[11px] font-bold">
+                            {item.pulse} bpm
+                          </span>
+                        )}
+                        {item.weight && (
+                          <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[11px] font-bold">
+                            {item.weight} kg
+                          </span>
+                        )}
+                        {item.spo2 && (
+                          <span className="bg-cyan-50 text-cyan-700 border border-cyan-200 px-2 py-0.5 rounded text-[11px] font-bold">
+                            SpO2 {item.spo2}%
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                   
                   {/* AI Clinical Summary for Returning Patients */}

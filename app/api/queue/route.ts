@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const { patientId, doctorId } = await request.json();
+    const { patientId, doctorId, bp, pulse, temperature, weight, height, spo2 } = await request.json();
 
     if (!patientId || !doctorId) {
       return NextResponse.json({ error: 'Patient ID and Doctor ID are required' }, { status: 400 });
@@ -54,10 +54,19 @@ export async function POST(request: Request) {
         currentToken = todayCount + 1;
       }
 
-      // Update it to the new doctor and assign token if missing
+      // Update it to the new doctor and assign token if missing, plus save vitals
       const updatedItem = await prisma.queueItem.update({
         where: { id: existingQueueItem.id },
-        data: { doctorId, tokenNumber: currentToken },
+        data: {
+          doctorId,
+          tokenNumber: currentToken,
+          ...(bp !== undefined && { bp }),
+          ...(pulse !== undefined && { pulse }),
+          ...(temperature !== undefined && { temperature }),
+          ...(weight !== undefined && { weight }),
+          ...(height !== undefined && { height }),
+          ...(spo2 !== undefined && { spo2 }),
+        },
       });
       return NextResponse.json({ success: true, data: updatedItem });
     }
@@ -77,6 +86,12 @@ export async function POST(request: Request) {
         patientId,
         status: 'WAITING',
         tokenNumber,
+        bp: bp || null,
+        pulse: pulse || null,
+        temperature: temperature || null,
+        weight: weight || null,
+        height: height || null,
+        spo2: spo2 || null,
       },
     });
 

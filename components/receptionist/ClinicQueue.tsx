@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { RefreshCw, Clock, CheckCircle2, User, Stethoscope, Phone, LogOut, ArrowLeftRight, XCircle } from 'lucide-react';
+import { RefreshCw, Clock, CheckCircle2, User, Stethoscope, Phone, LogOut, ArrowLeftRight, XCircle, Activity, Heart } from 'lucide-react';
+import RecordVitalsModal from './RecordVitalsModal';
 
 interface QueueItem {
   id: string;
@@ -16,6 +17,12 @@ interface QueueItem {
   status: string;
   tokenNumber: number | null;
   tokenNumberDisplay?: string | null;
+  bp?: string | null;
+  pulse?: string | null;
+  temperature?: string | null;
+  weight?: string | null;
+  height?: string | null;
+  spo2?: string | null;
 }
 
 interface ClinicQueueProps {
@@ -26,6 +33,7 @@ export default function ClinicQueue({ refreshTrigger = 0 }: ClinicQueueProps) {
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [vitalsModalItem, setVitalsModalItem] = useState<QueueItem | null>(null);
 
   const fetchQueue = async () => {
     setLoading(true);
@@ -118,6 +126,7 @@ export default function ClinicQueue({ refreshTrigger = 0 }: ClinicQueueProps) {
             <thead className="bg-slate-50/80 text-slate-500 uppercase text-[11px] font-bold tracking-wider">
               <tr>
                 <th className="px-5 py-3">Patient</th>
+                <th className="px-5 py-3">Vitals</th>
                 <th className="px-5 py-3">Contact</th>
                 <th className="px-5 py-3">Assigned Doctor</th>
                 <th className="px-5 py-3">Status</th>
@@ -152,6 +161,51 @@ export default function ClinicQueue({ refreshTrigger = 0 }: ClinicQueueProps) {
                           </div>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-5 py-4">
+                      {item.bp || item.pulse || item.temperature || item.weight || item.spo2 ? (
+                        <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                          {item.bp && (
+                            <span className="bg-indigo-50 text-indigo-700 border border-indigo-200/80 px-2 py-0.5 rounded font-bold">
+                              BP {item.bp}
+                            </span>
+                          )}
+                          {item.pulse && (
+                            <span className="bg-rose-50 text-rose-700 border border-rose-200/80 px-2 py-0.5 rounded font-bold">
+                              {item.pulse} bpm
+                            </span>
+                          )}
+                          {item.temperature && (
+                            <span className={`px-2 py-0.5 rounded font-bold border ${parseFloat(item.temperature) >= 100.4 ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-amber-50 text-amber-700 border-amber-200/80'}`}>
+                              {item.temperature}°F
+                            </span>
+                          )}
+                          {item.weight && (
+                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200/80 px-2 py-0.5 rounded font-bold">
+                              {item.weight} kg
+                            </span>
+                          )}
+                          {item.spo2 && (
+                            <span className="bg-cyan-50 text-cyan-700 border border-cyan-200/80 px-2 py-0.5 rounded font-bold">
+                              SpO2 {item.spo2}%
+                            </span>
+                          )}
+                          <button
+                            onClick={() => setVitalsModalItem(item)}
+                            className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 hover:underline ml-1"
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setVitalsModalItem(item)}
+                          className="text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200/70 px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1"
+                        >
+                          <Activity size={12} />
+                          + Add Vitals
+                        </button>
+                      )}
                     </td>
                     <td className="px-5 py-4 text-slate-600">
                       <div className="flex items-center gap-1.5 text-sm">
@@ -257,6 +311,25 @@ export default function ClinicQueue({ refreshTrigger = 0 }: ClinicQueueProps) {
             </tbody>
           </table>
         </div>
+      )}
+
+      {vitalsModalItem && (
+        <RecordVitalsModal
+          queueId={vitalsModalItem.id}
+          patientName={vitalsModalItem.patient_name}
+          initialVitals={{
+            bp: vitalsModalItem.bp,
+            pulse: vitalsModalItem.pulse,
+            temperature: vitalsModalItem.temperature,
+            weight: vitalsModalItem.weight,
+            height: vitalsModalItem.height,
+            spo2: vitalsModalItem.spo2,
+          }}
+          onClose={() => setVitalsModalItem(null)}
+          onSuccess={(updated) => {
+            setQueue(prev => prev.map(q => q.id === vitalsModalItem.id ? { ...q, ...updated } : q));
+          }}
+        />
       )}
     </div>
   );

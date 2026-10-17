@@ -269,7 +269,7 @@ export default function QuickSymptomsDiagnosis({
           />
 
           {/* Quick Symptoms Chips */}
-          <div className="flex flex-wrap gap-1.5">
+          <div className={`flex flex-wrap gap-1.5 ${showAllSymptoms ? 'max-h-36 overflow-y-auto pr-1' : ''}`}>
             {displayedSymptoms.map(symptom => {
               const active = isSymptomActive(symptom);
               return (
@@ -368,7 +368,7 @@ export default function QuickSymptomsDiagnosis({
                 Other Common Diagnoses
               </span>
             )}
-            <div className="flex flex-wrap gap-1.5">
+            <div className={`flex flex-wrap gap-1.5 ${showAllDiagnoses ? 'max-h-36 overflow-y-auto pr-1' : ''}`}>
               {displayedOtherDiagnoses.map(diag => {
                 const active = isDiagnosisActive(diag);
                 return (
