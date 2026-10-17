@@ -17,6 +17,7 @@ import { InfoTooltip } from '@/components/ui/info-tooltip';
 import AIPatientSummaryCard from '@/components/patients/AIPatientSummaryCard';
 import ProtocolPacksBar from '@/components/prescriptions/ProtocolPacksBar';
 import QuickTestAndDripPanel, { InvestigationItem, DayCareProcedureItem } from '@/components/prescriptions/QuickTestAndDripPanel';
+import QuickSymptomsDiagnosis from '@/components/prescriptions/QuickSymptomsDiagnosis';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
@@ -465,36 +466,14 @@ function PrescriptionWorkflowContent() {
               </div>
             </div>
 
-            {/* Step 2: Clinical Details */}
+            {/* Step 2: Clinical Details with 1-Click Chips */}
             {patient && (
-              <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 relative z-10">
-                <div className="bg-clinic-navy px-5 py-3 border-b border-clinic-border flex items-center rounded-t-xl">
-                  <Stethoscope size={18} className="text-clinic-emerald mr-2" />
-                  <h2 className="text-sm font-bold text-white uppercase tracking-wider">Diagnosis</h2>
-                </div>
-                <div className="p-5 space-y-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Chief Complaint</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Fever for 3 days" 
-                      value={chiefComplaint} 
-                      onChange={e=>setChiefComplaint(e.target.value)} 
-                      className="w-full border border-gray-300 rounded-md p-2.5 text-sm focus:ring-2 focus:ring-clinic-emerald focus:border-clinic-emerald outline-none transition-shadow" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Diagnosis</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Viral Pyrexia" 
-                      value={diagnosis} 
-                      onChange={e=>setDiagnosis(e.target.value)} 
-                      className="w-full border border-gray-300 rounded-md p-2.5 text-sm focus:ring-2 focus:ring-clinic-emerald focus:border-clinic-emerald outline-none transition-shadow" 
-                    />
-                  </div>
-                </div>
-              </div>
+              <QuickSymptomsDiagnosis
+                chiefComplaint={chiefComplaint}
+                setChiefComplaint={setChiefComplaint}
+                diagnosis={diagnosis}
+                setDiagnosis={setDiagnosis}
+              />
             )}
           </div>
 
