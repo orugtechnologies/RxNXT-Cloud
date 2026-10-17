@@ -13,6 +13,12 @@ export async function GET(
     const patient = await prisma.patient.findFirst({
       where: { id: params.id },
       include: {
+        bills: {
+          orderBy: { createdAt: 'desc' },
+          include: {
+            items: true
+          }
+        },
         encounters: {
           orderBy: { createdAt: 'desc' },
           include: {
@@ -66,7 +72,8 @@ export async function GET(
 
     return NextResponse.json({ 
       patient: formattedPatient,
-      encounters: formattedEncounters
+      encounters: formattedEncounters,
+      bills: patient.bills || []
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

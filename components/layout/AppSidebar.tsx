@@ -82,6 +82,7 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
       navGroups.push({
         label: 'Administration',
         items: [
+          { name: 'Billing & Invoices', href: '/admin/billing', icon: ReceiptText },
           ...(userRole === 'clinic_admin' || userRole === 'admin' ? [
             { name: 'Manage Doctors', href: '/admin/team', icon: Users },
             { name: 'Support Staff', href: '/admin/staff', icon: Users },

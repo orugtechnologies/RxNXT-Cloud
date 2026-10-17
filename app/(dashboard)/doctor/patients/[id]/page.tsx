@@ -5,16 +5,17 @@ import { usePatientHistory } from '@/hooks/usePatientHistory';
 import PatientProfile from '@/components/patients/PatientProfile';
 import VisitTimeline from '@/components/patients/VisitTimeline';
 import PrescriptionHistoryTable from '@/components/patients/PrescriptionHistoryTable';
+import PatientBillingHistory from '@/components/patients/PatientBillingHistory';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertCircle, ReceiptText } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 export default function PatientDetailPage({ params }: { params: { id: string } }) {
   const patientId = params.id;
-  const { patient, encounters, isLoading, error } = usePatientHistory(patientId);
-  const [activeTab, setActiveTab] = useState<'visits' | 'medicines'>('visits');
+  const { patient, encounters, bills, isLoading, error } = usePatientHistory(patientId);
+  const [activeTab, setActiveTab] = useState<'visits' | 'medicines' | 'billing'>('visits');
   const router = useRouter();
 
   const handleClone = (prescriptionId: string) => {
@@ -74,7 +75,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
           </button>
           <button
             className={cn(
-              "px-6 py-4 text-sm font-semibold transition-colors relative",
+              "px-6 py-4 text-sm font-semibold transition-colors relative flex items-center gap-2",
               activeTab === 'medicines' ? "text-clinic-blue" : "text-slate-500 hover:text-slate-700 bg-slate-50/50"
             )}
             onClick={() => setActiveTab('medicines')}
@@ -84,14 +85,44 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-clinic-blue" />
             )}
           </button>
+          <button
+            className={cn(
+              "px-6 py-4 text-sm font-semibold transition-colors relative flex items-center gap-2",
+              activeTab === 'billing' ? "text-clinic-blue" : "text-slate-500 hover:text-slate-700 bg-slate-50/50"
+            )}
+            onClick={() => setActiveTab('billing')}
+          >
+            <ReceiptText className="h-4 w-4" />
+            <span>Billing & Invoices</span>
+            {bills && bills.length > 0 && (
+              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                bills.some((b: any) => b.paymentStatus === 'PENDING')
+                  ? 'bg-amber-100 text-amber-800'
+                  : 'bg-emerald-100 text-emerald-800'
+              }`}>
+                {bills.some((b: any) => b.paymentStatus === 'PENDING') ? 'Pending Dues' : `${bills.length}`}
+              </span>
+            )}
+            {activeTab === 'billing' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-clinic-blue" />
+            )}
+          </button>
         </div>
 
         {/* Content */}
         <div className="p-6">
           {activeTab === 'visits' ? (
             <VisitTimeline encounters={encounters} onClone={handleClone} />
-          ) : (
+          ) : activeTab === 'medicines' ? (
             <PrescriptionHistoryTable encounters={encounters} />
+          ) : (
+            <PatientBillingHistory
+              bills={bills || []}
+              patientName={patient.name}
+              patientPhone={patient.phone}
+              patientAge={patient.age}
+              patientGender={patient.gender}
+            />
           )}
         </div>
       </div>

@@ -47,6 +47,7 @@ export function usePatientHistory(patientId: string) {
   return { 
     patient: data?.patient, 
     encounters: data?.encounters || [], 
+    bills: (data as any)?.bills || [],
     isLoading, 
     error 
   };

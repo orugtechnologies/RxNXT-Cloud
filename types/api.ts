@@ -43,6 +43,7 @@ export interface DashboardResponse {
 export interface PatientHistoryResponse {
   patient: Patient;
   encounters: EncounterWithMedicines[];
+  bills?: any[];
 }
 
 // ==========================================
