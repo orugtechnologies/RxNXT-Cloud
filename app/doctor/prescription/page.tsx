@@ -18,6 +18,8 @@ import AIPatientSummaryCard from '@/components/patients/AIPatientSummaryCard';
 import ProtocolPacksBar from '@/components/prescriptions/ProtocolPacksBar';
 import QuickTestAndDripPanel, { InvestigationItem, DayCareProcedureItem } from '@/components/prescriptions/QuickTestAndDripPanel';
 import QuickSymptomsDiagnosis from '@/components/prescriptions/QuickSymptomsDiagnosis';
+import FrequentDrugsBar from '@/components/drugs/FrequentDrugsBar';
+import QuickAdviceChips from '@/components/prescriptions/QuickAdviceChips';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
@@ -574,6 +576,15 @@ function PrescriptionWorkflowContent() {
 
                   <DrugSearchUI onSelect={handleDrugSelect} />
                   
+                  {/* 1-Click Frequent Drugs Bar */}
+                  <FrequentDrugsBar 
+                    onAddDrug={(newMed) => {
+                      setMedicines(prev => [...prev, newMed]);
+                      if (!startTime) setStartTime(Date.now());
+                    }}
+                    alreadyPrescribedIds={medicines.map(m => m.generic_id || m.brand_id || m.name)}
+                  />
+                  
                   <div className="mt-6">
                     <PrescriptionCart medicines={medicines} onUpdate={updateMedicine} onRemove={removeMedicine} />
                   </div>
@@ -581,6 +592,7 @@ function PrescriptionWorkflowContent() {
                   <div className="mt-8 pt-6 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Advice & Notes</label>
+                      <QuickAdviceChips notes={notes} setNotes={setNotes} />
                       <textarea 
                         placeholder="Additional instructions for the patient..." 
                         value={notes} 
