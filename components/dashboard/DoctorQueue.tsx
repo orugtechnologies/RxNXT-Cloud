@@ -138,7 +138,19 @@ export default function DoctorQueue({
                     <h4 className="font-bold text-slate-900 text-base group-hover:text-clinic-blue transition-colors">
                       {item.patient_name}
                     </h4>
-                    {index === 0 && (
+                    {item.status === 'RETURNED_READY' && (
+                      <span className="bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider shadow-sm flex items-center gap-1 animate-pulse">
+                        <CheckCircle2 size={12} />
+                        Reports Ready (Return)
+                      </span>
+                    )}
+                    {item.status === 'IN_PROCEDURE' && (
+                      <span className="bg-purple-100 text-purple-800 border border-purple-200 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-xs flex items-center gap-1">
+                        <span className="h-1.5 w-1.5 rounded-full bg-purple-600 animate-ping" />
+                        At Lab / Drip
+                      </span>
+                    )}
+                    {index === 0 && item.status !== 'RETURNED_READY' && item.status !== 'IN_PROCEDURE' && (
                       <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm border border-amber-200">
                         Next Up
                       </span>
@@ -204,9 +216,14 @@ export default function DoctorQueue({
                 {/* 1-Click Consult Now Action -> Immediately loads Clinical Workspace */}
                 <button
                   onClick={() => handleStartConsultation(item.patient_id, item.id)}
-                  className="bg-clinic-blue hover:bg-clinic-blueDark text-white font-bold px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all text-xs flex items-center"
+                  className={`font-bold px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all text-xs flex items-center ${
+                    item.status === 'RETURNED_READY'
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-500/20'
+                      : 'bg-clinic-blue hover:bg-clinic-blueDark text-white'
+                  }`}
                 >
-                  <Stethoscope size={16} className="mr-1.5" /> Consult Now
+                  <Stethoscope size={16} className="mr-1.5" />
+                  {item.status === 'RETURNED_READY' ? 'Resume & Finalize' : 'Consult Now'}
                 </button>
               </div>
             </div>

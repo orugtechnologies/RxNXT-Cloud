@@ -9,13 +9,14 @@ import TreatmentGroupsUI from '@/components/prescriptions/TreatmentGroupsUI';
 import SaveTemplateModal from '@/components/prescriptions/SaveTemplateModal';
 import ReviewPrescriptionModal from '@/components/prescriptions/ReviewPrescriptionModal';
 import { generatePrescriptionPDF } from '@/components/prescriptions/PrescriptionPrintView';
-import { Activity, User, Pill, Stethoscope, Save, Layers, Eye, AlertCircle } from 'lucide-react';
+import { Activity, User, Pill, Stethoscope, Save, Layers, Eye, AlertCircle, FlaskConical, Droplet, ArrowRightCircle } from 'lucide-react';
 import TemplateManagementUI from '@/components/prescriptions/TemplateManagementUI';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 import AIPatientSummaryCard from '@/components/patients/AIPatientSummaryCard';
 import ProtocolPacksBar from '@/components/prescriptions/ProtocolPacksBar';
+import QuickTestAndDripPanel, { InvestigationItem, DayCareProcedureItem } from '@/components/prescriptions/QuickTestAndDripPanel';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
@@ -32,6 +33,12 @@ function PrescriptionWorkflowContent() {
   const [diagnosis, setDiagnosis] = useState('');
   const [notes, setNotes] = useState('');
   const [followUpDate, setFollowUpDate] = useState('');
+
+  // Diagnostic tests & Day-care drips
+  const [selectedTests, setSelectedTests] = useState<InvestigationItem[]>([]);
+  const [selectedDrips, setSelectedDrips] = useState<DayCareProcedureItem[]>([]);
+  const [queueId, setQueueId] = useState<string | null>(null);
+  const [sendingForTests, setSendingForTests] = useState(false);
   
   const setQuickFollowUp = (days: number) => {
     const d = new Date();
@@ -67,6 +74,8 @@ function PrescriptionWorkflowContent() {
   useEffect(() => {
     const cloneId = searchParams.get('clone');
     const paramPatientId = searchParams.get('patient') || searchParams.get('patientId');
+    const paramQueueId = searchParams.get('queueId');
+    if (paramQueueId) setQueueId(paramQueueId);
 
     if (cloneId) {
       setFetchingPastRx(true);
@@ -226,6 +235,86 @@ function PrescriptionWorkflowContent() {
     }
 
     return { isValid: true, message: '' };
+  };
+
+  const handleToggleTest = (test: InvestigationItem) => {
+    setSelectedTests(prev =>
+      prev.some(t => t.id === test.id)
+        ? prev.filter(t => t.id !== test.id)
+        : [...prev, test]
+    );
+  };
+
+  const handleToggleDrip = (drip: DayCareProcedureItem) => {
+    setSelectedDrips(prev =>
+      prev.some(d => d.id === drip.id)
+        ? prev.filter(d => d.id !== drip.id)
+        : [...prev, drip]
+    );
+  };
+
+  const handleSendForTests = async () => {
+    if (!patient) return alert('Patient is required');
+    if (selectedTests.length === 0 && selectedDrips.length === 0) {
+      return alert('Please select at least one Test or Drip/Procedure to order.');
+    }
+
+    setSendingForTests(true);
+    try {
+      // 1. Create automatic bill item(s) for the ordered tests and drips
+      const testDripItems = [
+        ...selectedTests.map(t => ({
+          description: t.name,
+          quantity: 1,
+          unitPrice: t.price,
+          totalPrice: t.price,
+          itemType: 'OTHER'
+        })),
+        ...selectedDrips.map(d => ({
+          description: d.name,
+          quantity: 1,
+          unitPrice: d.price,
+          totalPrice: d.price,
+          itemType: 'OTHER'
+        }))
+      ];
+
+      const otherFeeTotal = testDripItems.reduce((sum, i) => sum + i.totalPrice, 0);
+
+      // Create or update billing for this patient
+      await fetch('/api/billing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patientId: patient.id,
+          consultationFee: 0,
+          otherFee: otherFeeTotal,
+          discount: 0,
+          paymentStatus: 'PENDING',
+          notes: `Ordered: ${[...selectedTests.map(t => t.name), ...selectedDrips.map(d => d.name)].join(', ')}`,
+          items: testDripItems
+        })
+      });
+
+      // 2. Update Queue status to IN_PROCEDURE so doctor's queue moves to next patient
+      if (queueId) {
+        await fetch(`/api/queue/${queueId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'IN_PROCEDURE' })
+        });
+      }
+
+      alert(`✅ Patient sent for Tests & Day-Care Procedures.\n\n• Ordered: ${[...selectedTests.map(t => t.name), ...selectedDrips.map(d => d.name)].join(', ')}\n• Added to Front Desk Billing (₹${otherFeeTotal})\n• Queue updated to "At Lab / Drip"`);
+      
+      // Return to doctor dashboard to take next patient in queue
+      router.push('/doctor/dashboard');
+    } catch (err: any) {
+      console.error('Error sending for tests:', err);
+      alert('Failed to send for tests: ' + (err.message || 'Network error'));
+    } finally {
+      setSendingForTests(false);
+    }
   };
 
   const handleProceedToReview = () => {
@@ -411,6 +500,18 @@ function PrescriptionWorkflowContent() {
 
           {/* Right Column: Medications & Actions */}
           <div className="lg:col-span-8 xl:col-span-9 space-y-6">
+            {/* Quick Diagnostics & Day-Care Procedures (Auto-Billed) */}
+            {patient && (
+              <QuickTestAndDripPanel
+                selectedTests={selectedTests}
+                selectedDrips={selectedDrips}
+                onToggleTest={handleToggleTest}
+                onToggleDrip={handleToggleDrip}
+                onSendForTests={handleSendForTests}
+                isSending={sendingForTests}
+              />
+            )}
+
             {/* Step 3: Medication */}
             {patient && (
               <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 animate-in fade-in slide-in-from-bottom-8 relative z-20">
@@ -487,6 +588,17 @@ function PrescriptionWorkflowContent() {
                   )}
 
                   <div className="sticky bottom-0 z-40 bg-white/95 backdrop-blur-md p-4 border-t border-slate-200 shadow-2xl md:static md:bg-transparent md:p-0 md:border-0 md:shadow-none flex flex-wrap justify-end gap-3 rounded-b-2xl md:rounded-none -mx-4 sm:mx-0 px-4 sm:px-0">
+                    {(selectedTests.length > 0 || selectedDrips.length > 0) && (
+                      <button 
+                        type="button"
+                        onClick={handleSendForTests}
+                        disabled={sendingForTests}
+                        className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 px-5 rounded-xl shadow-lg transition-all duration-200 flex items-center text-sm sm:text-base disabled:opacity-50"
+                      >
+                        <FlaskConical className="mr-2" size={18} />
+                        {sendingForTests ? 'Sending...' : 'Send for Tests / Drip & Next Patient'}
+                      </button>
+                    )}
                     <button 
                       onClick={() => {
                         const validation = validatePrescriptionMedicines();

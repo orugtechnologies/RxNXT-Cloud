@@ -182,6 +182,23 @@ export default function ClinicQueue({ refreshTrigger = 0 }: ClinicQueueProps) {
                           </span>
                         </div>
                       )}
+                      {item.status === 'IN_PROCEDURE' && (
+                        <div className="flex flex-col gap-1">
+                          <span className="inline-flex items-center gap-1.5 bg-purple-50 text-purple-700 border border-purple-200/70 px-2.5 py-1 rounded-md text-xs font-bold w-max shadow-2xs">
+                            <span className="h-1.5 w-1.5 rounded-full bg-purple-500 animate-ping"></span>
+                            At Lab / Drip
+                          </span>
+                          <span className="text-[10px] text-purple-600 font-medium ml-1">
+                            Tests / Drip in progress
+                          </span>
+                        </div>
+                      )}
+                      {item.status === 'RETURNED_READY' && (
+                        <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-md text-xs font-bold shadow-2xs">
+                          <CheckCircle2 size={12} className="text-blue-600" />
+                          Reports Ready
+                        </span>
+                      )}
                       {isAway && (
                         <span className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 border border-slate-200 px-2.5 py-1 rounded-md text-xs font-semibold">
                           <LogOut size={12} />
@@ -204,6 +221,16 @@ export default function ClinicQueue({ refreshTrigger = 0 }: ClinicQueueProps) {
                     <td className="px-5 py-4 text-right">
                       {!isCompleted && (
                         <div className="flex items-center justify-end gap-2">
+                          {item.status === 'IN_PROCEDURE' && (
+                            <button
+                              onClick={() => updateStatus(item.id, 'RETURNED_READY')}
+                              className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5"
+                              title="Mark reports ready to see doctor"
+                            >
+                              <CheckCircle2 size={12} />
+                              Mark Reports Ready
+                            </button>
+                          )}
                           {isWaiting && (
                             <button
                               onClick={() => updateStatus(item.id, 'AWAY')}
@@ -212,13 +239,13 @@ export default function ClinicQueue({ refreshTrigger = 0 }: ClinicQueueProps) {
                               Mark Away
                             </button>
                           )}
-                          {(isAway || isSkipped) && (
+                          {(isAway || isSkipped || item.status === 'RETURNED_READY') && (
                             <button
                               onClick={() => updateStatus(item.id, 'WAITING')}
                               className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 hover:bg-blue-50 border border-blue-200 bg-white px-2 py-1 rounded transition-colors flex items-center gap-1"
                             >
                               <ArrowLeftRight size={10} />
-                              Mark Returned
+                              {item.status === 'RETURNED_READY' ? 'Move to Regular Queue' : 'Mark Returned'}
                             </button>
                           )}
                         </div>

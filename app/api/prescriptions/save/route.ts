@@ -319,13 +319,13 @@ export async function POST(request: Request) {
         });
       }
 
-      // Mark any WAITING queue items for this patient and doctor as COMPLETED
+      // Mark any active queue items (WAITING, RETURNED_READY, IN_PROCEDURE) for this patient and doctor as COMPLETED
       await tx.queueItem.updateMany({
         where: {
           clinicId: user.clinicId,
           doctorId: user.id,
           patientId,
-          status: 'WAITING',
+          status: { in: ['WAITING', 'RETURNED_READY', 'IN_PROCEDURE'] },
         },
         data: { status: 'COMPLETED' },
       });

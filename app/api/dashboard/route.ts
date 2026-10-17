@@ -69,15 +69,18 @@ export async function GET() {
         include: { drug: true }
       }),
 
-      // Today's Queue (WAITING status for this doctor)
+      // Today's Queue (WAITING, RETURNED_READY, or IN_PROCEDURE for this doctor)
       prisma.queueItem.findMany({
         where: {
           clinicId,
           doctorId: user.id,
-          status: 'WAITING',
+          status: { in: ['WAITING', 'RETURNED_READY', 'IN_PROCEDURE'] },
           createdAt: { gte: today },
         },
-        orderBy: { createdAt: 'asc' },
+        orderBy: [
+          { status: 'desc' }, // RETURNED_READY sorts higher than WAITING, placing returning patients at the top
+          { createdAt: 'asc' },
+        ],
         include: {
           patient: {
             select: {

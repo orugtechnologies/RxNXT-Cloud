@@ -10,7 +10,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   try {
     const { status } = await request.json();
 
-    if (!['WAITING', 'AWAY', 'SKIPPED', 'COMPLETED'].includes(status)) {
+    if (!['WAITING', 'AWAY', 'SKIPPED', 'COMPLETED', 'IN_PROCEDURE', 'RETURNED_READY'].includes(status)) {
       return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     }
 
