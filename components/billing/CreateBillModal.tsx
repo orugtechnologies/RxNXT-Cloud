@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import {
   X, Plus, Trash2, IndianRupee, Banknote, Smartphone, CreditCard,
-  Hash, User, FileText, Loader2, CheckCircle2, AlertCircle, ChevronDown, ChevronUp,
+  Hash, User, FileText, Loader2, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, Percent,
 } from 'lucide-react';
 
 interface Patient {
@@ -49,7 +49,8 @@ export default function CreateBillModal({
   const [consultationFee, setConsultationFee] = useState(0);
   const [medicineFee, setMedicineFee] = useState(0);
   const [otherFee, setOtherFee] = useState(0);
-  const [discount, setDiscount] = useState(0);
+  const [discountType, setDiscountType] = useState<'FIXED' | 'PERCENT'>('FIXED');
+  const [discountValue, setDiscountValue] = useState<number>(0);
 
   // Payment
   const [paymentMode, setPaymentMode] = useState<PaymentMode>('CASH');
@@ -63,6 +64,10 @@ export default function CreateBillModal({
   const [error, setError] = useState('');
 
   const subtotal = consultationFee + medicineFee + otherFee;
+  const calculatedDiscount = discountType === 'PERCENT'
+    ? Math.round(((subtotal * (discountValue || 0)) / 100) * 100) / 100
+    : (discountValue || 0);
+  const discount = Math.min(subtotal, Math.max(0, calculatedDiscount));
   const totalAmount = Math.max(0, subtotal - discount);
 
   const addItem = () => {
@@ -217,17 +222,72 @@ export default function CreateBillModal({
 
               {/* Discount */}
               <div className="flex items-center gap-3">
-                <label className="w-36 text-sm text-slate-600 font-medium shrink-0 text-emerald-700">Discount (–)</label>
+                <div className="w-36 shrink-0 flex items-center justify-between">
+                  <label className="text-sm text-slate-600 font-medium text-emerald-700">Discount (–)</label>
+                  <div className="inline-flex rounded-md p-0.5 bg-slate-100 border border-slate-200">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (discountType !== 'FIXED') {
+                          setDiscountType('FIXED');
+                          setDiscountValue(discount);
+                        }
+                      }}
+                      className={`px-1.5 py-0.5 text-[11px] font-bold rounded transition-all ${
+                        discountType === 'FIXED'
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                      title="Flat amount discount in Rupees"
+                    >
+                      ₹
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (discountType !== 'PERCENT') {
+                          setDiscountType('PERCENT');
+                          const pct = subtotal > 0 ? Math.round(((discountValue / subtotal) * 100) * 10) / 10 : 0;
+                          setDiscountValue(pct);
+                        }
+                      }}
+                      className={`px-1.5 py-0.5 text-[11px] font-bold rounded transition-all ${
+                        discountType === 'PERCENT'
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : 'text-slate-500 hover:text-slate-800'
+                      }`}
+                      title="Percentage discount"
+                    >
+                      %
+                    </button>
+                  </div>
+                </div>
                 <div className="flex-1 relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 text-sm">₹</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 text-sm font-semibold">
+                    {discountType === 'FIXED' ? '₹' : '%'}
+                  </span>
                   <input
                     type="number"
                     min="0"
-                    value={discount || ''}
-                    onChange={e => setDiscount(parseFloat(e.target.value) || 0)}
+                    max={discountType === 'PERCENT' ? 100 : undefined}
+                    step={discountType === 'PERCENT' ? '0.1' : '1'}
+                    value={discountValue || ''}
+                    onChange={e => {
+                      const val = parseFloat(e.target.value) || 0;
+                      if (discountType === 'PERCENT') {
+                        setDiscountValue(Math.min(100, Math.max(0, val)));
+                      } else {
+                        setDiscountValue(Math.max(0, val));
+                      }
+                    }}
                     placeholder="0"
-                    className="w-full pl-7 pr-3 py-2 border border-emerald-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-400"
+                    className="w-full pl-7 pr-16 py-2 border border-emerald-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-400"
                   />
+                  {discountType === 'PERCENT' && discount > 0 && (
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60">
+                      = ₹{discount.toLocaleString('en-IN')}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -241,7 +301,9 @@ export default function CreateBillModal({
             </div>
             {discount > 0 && (
               <div className="flex justify-between text-sm text-emerald-600 mb-1">
-                <span>Discount</span>
+                <span>
+                  Discount {discountType === 'PERCENT' ? `(${discountValue}%)` : ''}
+                </span>
                 <span>– ₹{discount.toLocaleString('en-IN')}</span>
               </div>
             )}
