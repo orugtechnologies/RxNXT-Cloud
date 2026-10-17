@@ -38,6 +38,10 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
       });
       const json = await res.json();
       if (!res.ok) {
+        if (res.status === 409 && json.patient) {
+          setError(json.message);
+          return;
+        }
         throw new Error(json.message || json.error || 'Failed to create patient');
       }
       const { data } = json;
@@ -50,7 +54,6 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
       console.error(err);
       const msg = err.message || "Failed to save patient";
       setError(msg);
-      alert(msg);
     } finally {
       setLoading(false);
     }

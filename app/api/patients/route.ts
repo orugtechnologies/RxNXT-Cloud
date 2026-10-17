@@ -82,43 +82,48 @@ export async function POST(request: Request) {
       cleanPhone = `+91${cleanPhone}`;
     }
 
-    // Check if patient already exists in this clinic by phone
-    let patient = await prisma.patient.findFirst({
+    // Check if a patient with the exact same name and phone already exists in this clinic
+    const trimmedName = name.trim();
+    let existingPatient = await prisma.patient.findFirst({
       where: {
         clinicId,
         phone: cleanPhone,
+        name: { equals: trimmedName, mode: 'insensitive' },
       },
     });
 
-    if (patient) {
-      // Gracefully update patient details with any newly provided info
-      patient = await prisma.patient.update({
-        where: { id: patient.id },
-        data: {
-          name: name.trim() || patient.name,
-          age: age ? parseInt(age) : patient.age,
-          gender: gender || patient.gender,
-        },
-      });
-    } else {
-      patient = await prisma.patient.create({
-        data: {
-          clinicId,
-          name: name.trim(),
-          phone: cleanPhone,
-          age: age ? parseInt(age) : null,
-          gender: gender || null,
-          address: address || null,
-        },
-      });
+    if (existingPatient) {
+      return NextResponse.json({
+        error: 'DUPLICATE_PATIENT',
+        message: `A patient named "${existingPatient.name}" is already registered with mobile number ${cleanPhone}. Please select them from the search directory.`,
+        patient: {
+          id: existingPatient.id,
+          name: existingPatient.name,
+          phone: existingPatient.phone ?? '',
+          age: existingPatient.age ?? 0,
+          gender: existingPatient.gender ?? '',
+        }
+      }, { status: 409 });
     }
 
+    // Family member sharing phone number or new number: create separate patient record
+    const newPatient = await prisma.patient.create({
+      data: {
+        clinicId,
+        name: trimmedName,
+        phone: cleanPhone,
+        age: age ? parseInt(age) : null,
+        gender: gender || null,
+        address: address || null,
+      },
+    });
+
     return NextResponse.json({ data: {
-      id: patient.id,
-      name: patient.name,
-      phone: patient.phone ?? '',
-      age: patient.age ?? 0,
-      gender: patient.gender ?? '',
+      id: newPatient.id,
+      name: newPatient.name,
+      phone: newPatient.phone ?? '',
+      age: newPatient.age ?? 0,
+      gender: newPatient.gender ?? '',
     }}, { status: 201 });
   } catch (err: any) {
     console.error('Error saving patient:', err);
