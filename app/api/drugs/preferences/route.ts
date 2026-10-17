@@ -36,7 +36,42 @@ export async function GET() {
       drugs.push(...clinicPrefs.map(cp => cp.drug).filter(Boolean));
     }
 
-    // 3. If still fewer than 8, supplement with overall top prescribed active drugs
+    // 3. If still fewer than 8, supplement with curated everyday OPD essentials
+    // (Prevents random seeded cardiac/specialty drugs from dominating fresh accounts)
+    if (drugs.length < 8) {
+      const CURATED_OPD_KEYWORDS = [
+        'dolo',
+        'pan',
+        'azithral',
+        'augmentin',
+        'montair',
+        'levocet',
+        'emeset',
+        'combiflam',
+        'calpol',
+        'voveran'
+      ];
+
+      for (const keyword of CURATED_OPD_KEYWORDS) {
+        if (drugs.length >= 8) break;
+        const existingIds = drugs.map(d => d.id);
+        const match = await prisma.drug.findFirst({
+          where: {
+            isActive: true,
+            id: { notIn: existingIds },
+            OR: [
+              { brandName: { contains: keyword, mode: 'insensitive' } },
+              { genericName: { contains: keyword, mode: 'insensitive' } }
+            ]
+          }
+        });
+        if (match) {
+          drugs.push(match);
+        }
+      }
+    }
+
+    // 4. Final safety fallback: supplement with top prescribed drugs if still under 8
     if (drugs.length < 8) {
       const existingIds = drugs.map(d => d.id);
       const topDrugs = await prisma.drug.findMany({
@@ -67,26 +102,38 @@ export async function GET() {
       let defaultDuration = '3 days';
       let defaultInstructions = 'After Food';
 
-      if (lower.includes('pan') || lower.includes('rab') || lower.includes('ome') || lower.includes('pantoprazole')) {
+      if (lower.includes('azith')) {
+        defaultFreq = '1-0-0';
+        defaultDuration = '3 days';
+        defaultInstructions = 'After Food';
+      } else if (lower.includes('pan') || lower.includes('rab') || lower.includes('ome') || lower.includes('pantoprazole')) {
         defaultFreq = '1-0-0';
         defaultDuration = '5 days';
-        defaultInstructions = 'Before Food';
-      } else if (lower.includes('azith') || lower.includes('augmentin') || lower.includes('mox') || lower.includes('cefix')) {
+        defaultInstructions = 'Before Food (Empty Stomach)';
+      } else if (lower.includes('augmentin') || lower.includes('mox') || lower.includes('cefix') || lower.includes('taxim')) {
         defaultFreq = '1-0-1';
         defaultDuration = '5 days';
         defaultInstructions = 'After Food';
-      } else if (lower.includes('dolo') || lower.includes('crocin') || lower.includes('paracetamol')) {
+      } else if (lower.includes('dolo') || lower.includes('crocin') || lower.includes('calpol') || lower.includes('paracetamol')) {
+        defaultFreq = '1-0-1';
+        defaultDuration = '3 days';
+        defaultInstructions = 'After Food / SOS';
+      } else if (lower.includes('combiflam') || lower.includes('voveran') || lower.includes('ibuprofen') || lower.includes('diclofenac')) {
         defaultFreq = '1-0-1';
         defaultDuration = '3 days';
         defaultInstructions = 'After Food';
+      } else if (lower.includes('emeset') || lower.includes('ondan') || lower.includes('domstal') || lower.includes('domperidone')) {
+        defaultFreq = '1-0-1';
+        defaultDuration = '3 days';
+        defaultInstructions = 'Before Food (SOS for nausea)';
       } else if (lower.includes('montair') || lower.includes('cetz') || lower.includes('cetirizine') || lower.includes('levocet')) {
         defaultFreq = '0-0-1';
         defaultDuration = '5 days';
         defaultInstructions = 'At bedtime';
-      } else if (lower.includes('ors')) {
+      } else if (lower.includes('ors') || lower.includes('electral')) {
         defaultFreq = '1-1-1';
         defaultDuration = '2 days';
-        defaultInstructions = 'Sip slowly with water';
+        defaultInstructions = 'Dissolve in clean water & sip slowly';
       }
 
       return {
