@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, User, Stethoscope, History, Search, FastForward, Loader2 } from 'lucide-react';
+import { Clock, User, Stethoscope, History, Search, FastForward, Loader2, CheckCircle2, AlertCircle, Banknote, Smartphone, CreditCard } from 'lucide-react';
 import AIPatientSummaryCard from '@/components/patients/AIPatientSummaryCard';
 
 interface QueueItem {
@@ -16,6 +16,10 @@ interface QueueItem {
   status: string;
   tokenNumber: number | null;
   tokenNumberDisplay?: string | null;
+  billingStatus?: 'PAID' | 'UNPAID' | 'NONE';
+  pendingAmount?: number;
+  latestPaymentMode?: string | null;
+  latestBillNumber?: string | null;
 }
 
 export default function DoctorQueue({
@@ -130,13 +134,31 @@ export default function DoctorQueue({
                   </div>
                 )}
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="font-bold text-slate-900 text-base group-hover:text-clinic-blue transition-colors">
                       {item.patient_name}
                     </h4>
                     {index === 0 && (
                       <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm border border-amber-200">
                         Next Up
+                      </span>
+                    )}
+                    {item.billingStatus === 'PAID' && (
+                      <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold px-2 py-0.5 rounded-md shadow-2xs">
+                        <CheckCircle2 size={12} className="text-emerald-600" />
+                        <span>Paid</span>
+                        {item.latestPaymentMode && (
+                          <span className="text-[10px] text-emerald-600/80 font-semibold">({item.latestPaymentMode})</span>
+                        )}
+                      </span>
+                    )}
+                    {item.billingStatus === 'UNPAID' && (
+                      <span className="inline-flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 text-[11px] font-bold px-2 py-0.5 rounded-md shadow-2xs animate-pulse">
+                        <AlertCircle size={12} className="text-rose-600" />
+                        <span>Unpaid</span>
+                        {item.pendingAmount !== undefined && item.pendingAmount > 0 && (
+                          <span className="text-[10px] font-extrabold text-rose-800">• ₹{item.pendingAmount}</span>
+                        )}
                       </span>
                     )}
                   </div>

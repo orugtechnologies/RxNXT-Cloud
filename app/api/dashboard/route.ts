@@ -79,7 +79,26 @@ export async function GET() {
         },
         orderBy: { createdAt: 'asc' },
         include: {
-          patient: { select: { name: true, phone: true, age: true, gender: true } },
+          patient: {
+            select: {
+              name: true,
+              phone: true,
+              age: true,
+              gender: true,
+              bills: {
+                orderBy: { createdAt: 'desc' },
+                take: 5,
+                select: {
+                  id: true,
+                  billNumber: true,
+                  totalAmount: true,
+                  paymentStatus: true,
+                  paymentMode: true,
+                  createdAt: true,
+                }
+              }
+            }
+          },
         },
       }),
     ]);
@@ -152,6 +171,22 @@ export async function GET() {
       const seq = q.tokenNumber ? String(q.tokenNumber).padStart(3, '0') : '001';
       const tokenNumberDisplay = `#RX-${seq}`;
 
+      const patientBills = q.patient.bills || [];
+      const hasPending = patientBills.some(b => b.paymentStatus === 'PENDING');
+      const pendingAmount = patientBills
+        .filter(b => b.paymentStatus === 'PENDING')
+        .reduce((sum, b) => sum + (b.totalAmount || 0), 0);
+      const latestPaidBill = patientBills.find(b => b.paymentStatus === 'PAID');
+      const hasPaid = !!latestPaidBill;
+
+      // Determine billing status
+      let billingStatus: 'PAID' | 'UNPAID' | 'NONE' = 'NONE';
+      if (hasPending) {
+        billingStatus = 'UNPAID';
+      } else if (hasPaid) {
+        billingStatus = 'PAID';
+      }
+
       return {
         id: q.id,
         patient_id: q.patientId,
@@ -163,6 +198,10 @@ export async function GET() {
         status: q.status,
         tokenNumber: q.tokenNumber,
         tokenNumberDisplay,
+        billingStatus,
+        pendingAmount,
+        latestPaymentMode: latestPaidBill?.paymentMode || null,
+        latestBillNumber: patientBills[0]?.billNumber || null,
       };
     });
 
