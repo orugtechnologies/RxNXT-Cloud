@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, ShieldCheck, Building2, CreditCard, Package, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, ShieldCheck, Building2, CreditCard, Package, ClipboardList, ReceiptText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -35,6 +35,7 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
         label: 'Overview',
         items: [
           { name: 'Dashboard', href: '/receptionist/dashboard', icon: LayoutDashboard },
+          { name: 'Billing & Invoices', href: '/receptionist/dashboard?tab=billing', icon: ReceiptText },
         ]
       }
     ];

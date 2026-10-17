@@ -46,6 +46,7 @@ model Clinic {
   subscriptionPayments  SubscriptionPayment[]
   pharmacyItems         PharmacyItem[]
   dispenseLogs          DispenseLog[]
+  bills                 Bill[]
 }
 
 // ─────────────────────────────────────────────
@@ -102,6 +103,7 @@ model Patient {
   prescriptions Prescription[]
   reminders     Reminder[]
   queueItems    QueueItem[]
+  bills         Bill[]
 
   @@index([clinicId, phone])
   @@index([clinicId, name])
@@ -402,3 +404,55 @@ model DispensedItem {
 
 
 
+// ─────────────────────────────────────────────
+// BILL (Patient Consultation Invoice)
+// ─────────────────────────────────────────────
+model Bill {
+  id              String    @id @default(cuid())
+  billNumber      String    // e.g. RX-BILL-0001
+  clinicId        String
+  clinic          Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId       String
+  patient         Patient   @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  encounterId     String?   @unique
+  prescriptionId  String?
+
+  // Billing amounts
+  consultationFee Float     @default(0)
+  medicineFee     Float     @default(0)
+  otherFee        Float     @default(0)
+  discount        Float     @default(0)
+  totalAmount     Float     @default(0)
+
+  // Payment
+  paymentStatus   String    @default("PENDING") // PENDING, PAID, PARTIAL, CANCELLED
+  paymentMode     String?   // CASH, UPI, CARD
+  paymentRef      String?   // UPI txn ID, card ref, receipt no, etc.
+  paidAt          DateTime?
+
+  // Meta
+  createdById     String?   // receptionist user ID
+  createdByName   String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  items           BillItem[]
+
+  @@index([clinicId, createdAt])
+  @@index([patientId])
+  @@index([clinicId, paymentStatus])
+}
+
+model BillItem {
+  id          String   @id @default(cuid())
+  billId      String
+  bill        Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Float    @default(0)
+  totalPrice  Float    @default(0)
+  itemType    String   @default("CONSULTATION") // CONSULTATION, MEDICINE, OTHER
+
+  @@index([billId])
+}
