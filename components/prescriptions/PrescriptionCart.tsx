@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Trash2, PlusCircle, AlertCircle, Check } from 'lucide-react';
+import { Trash2, AlertCircle, Check } from 'lucide-react';
 
 export interface PrescribedMedicine {
   id: string;
@@ -94,26 +94,29 @@ const QUICK_DURATIONS = ['3 days', '5 days', '7 days', '10 days', '15 days', '1 
 const QUICK_INSTRUCTIONS = ['After Food', 'Before Food', 'At bedtime', 'SOS'];
 
 export default function PrescriptionCart({ medicines, onUpdate, onRemove }: CartProps) {
-  if (medicines.length === 0) return (
-    <div className="mt-8 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center bg-gray-50/50">
-      <PlusCircle className="mx-auto text-gray-300 mb-3" size={32} />
-      <p className="text-gray-500 font-medium text-sm">Search and add medicines above to build the prescription.</p>
-    </div>
-  );
-
   return (
     <div className="mt-6 border border-clinic-border rounded-xl overflow-hidden bg-white shadow-sm animate-in fade-in">
-      <div className="bg-gray-50/80 px-5 py-3.5 border-b border-clinic-border flex justify-between items-center">
+      <div className="bg-gray-50/80 px-5 py-3 border-b border-clinic-border flex justify-between items-center">
         <span className="font-bold text-clinic-navy text-sm uppercase tracking-wide">
           Prescribed Medicines
         </span>
-        <span className="bg-clinic-navy text-white text-xs font-bold px-2 py-0.5 rounded-full">
+        <span className={`${medicines.length > 0 ? 'bg-clinic-navy text-white' : 'bg-slate-200 text-slate-600'} text-xs font-bold px-2 py-0.5 rounded-full`}>
           {medicines.length} item{medicines.length !== 1 && 's'}
         </span>
       </div>
       
-      <div className="divide-y divide-gray-100">
-        {medicines.map((med, index) => (
+      {medicines.length === 0 ? (
+        <div className="py-8 px-4 text-center bg-white flex flex-col items-center justify-center">
+          <p className="text-sm font-semibold text-slate-500">
+            — No medicines prescribed yet —
+          </p>
+          <p className="text-xs text-slate-400 mt-1">
+            Pick from My Frequent Drugs chips or search above to add medicines.
+          </p>
+        </div>
+      ) : (
+        <div className="divide-y divide-gray-100">
+          {medicines.map((med, index) => (
           <div key={med.id} className="p-5 hover:bg-gray-50/50 transition-colors group">
             {/* Medicine Name & Details */}
             <div className="flex justify-between items-start mb-4">
@@ -306,7 +309,8 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
             </div>
           </div>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
