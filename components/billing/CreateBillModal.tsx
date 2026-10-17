@@ -47,7 +47,6 @@ export default function CreateBillModal({
 
   // Fees (derived from items for convenience)
   const [consultationFee, setConsultationFee] = useState(0);
-  const [medicineFee, setMedicineFee] = useState(0);
   const [otherFee, setOtherFee] = useState(0);
   const [discountType, setDiscountType] = useState<'FIXED' | 'PERCENT'>('FIXED');
   const [discountValue, setDiscountValue] = useState<number>(0);
@@ -63,7 +62,7 @@ export default function CreateBillModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const subtotal = consultationFee + medicineFee + otherFee;
+  const subtotal = consultationFee + otherFee;
   const calculatedDiscount = discountType === 'PERCENT'
     ? Math.round(((subtotal * (discountValue || 0)) / 100) * 100) / 100
     : (discountValue || 0);
@@ -107,7 +106,7 @@ export default function CreateBillModal({
           encounterId: encounterId || null,
           prescriptionId: prescriptionId || null,
           consultationFee,
-          medicineFee,
+          medicineFee: 0,
           otherFee,
           discount,
           paymentStatus: markAsPaid ? 'PAID' : 'PENDING',
@@ -188,21 +187,6 @@ export default function CreateBillModal({
                 </div>
               </div>
 
-              {/* Medicine */}
-              <div className="flex items-center gap-3">
-                <label className="w-36 text-sm text-slate-600 font-medium shrink-0">Medicine Fee</label>
-                <div className="flex-1 relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">₹</span>
-                  <input
-                    type="number"
-                    min="0"
-                    value={medicineFee || ''}
-                    onChange={e => setMedicineFee(parseFloat(e.target.value) || 0)}
-                    placeholder="0"
-                    className="w-full pl-7 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
-                  />
-                </div>
-              </div>
 
               {/* Other */}
               <div className="flex items-center gap-3">
