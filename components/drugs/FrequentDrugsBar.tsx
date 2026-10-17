@@ -52,9 +52,9 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
       dosage_form: drug.dosage_form,
       strength: drug.strength,
       route: drug.route,
-      frequency: drug.frequency || '1-0-1',
-      duration: drug.duration || '3 days',
-      instructions: drug.instructions || 'After Food',
+      frequency: '',
+      duration: '',
+      instructions: '',
     };
     onAddDrug(newMed);
   };
@@ -66,7 +66,6 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
           <Zap size={13} className="text-amber-500 fill-amber-400" />
           My Frequent Drugs (1-Click Add)
         </span>
-        <span className="text-[10px] text-slate-400">Pre-fills standard dose</span>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -84,7 +83,7 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
                   ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
                   : 'bg-white text-slate-800 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 hover:text-emerald-900 ring-1 ring-slate-100 hover:ring-emerald-200'
               }`}
-              title={`${drug.name} (${drug.strength || ''}) - ${drug.frequency} for ${drug.duration}`}
+              title={`${drug.name} ${drug.strength || ''}`.trim()}
             >
               <Pill size={13} className={isAdded ? 'text-slate-400' : 'text-emerald-600'} />
               <span>{drug.name}</span>
