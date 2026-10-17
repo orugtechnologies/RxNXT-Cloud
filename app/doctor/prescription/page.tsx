@@ -426,7 +426,7 @@ function PrescriptionWorkflowContent() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8">
           
           {/* Left Column: Patient & Clinical Details (Sticky docked) */}
-          <div className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto no-scrollbar">
+          <div className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-6 lg:self-start">
             
             {/* Step 1: Patient Selection */}
             <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 hover:shadow-md relative z-20">
