@@ -116,7 +116,11 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
     doc.setFontSize(8.5);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 41, 59);
-    doc.text(`Dr. ${data.doctorName || 'Doctor'}`, pageWidth - margin - 27.5, footerY - 1, { align: 'center' });
+    const rawSignDocName = (data.doctorName || 'Doctor').trim();
+    const cleanSignDocName = rawSignDocName.toLowerCase().startsWith('dr.') || rawSignDocName.toLowerCase().startsWith('dr ')
+      ? rawSignDocName
+      : `Dr. ${rawSignDocName}`;
+    doc.text(cleanSignDocName, pageWidth - margin - 27.5, footerY - 1, { align: 'center' });
     
     doc.setFontSize(7.5);
     doc.setFont('helvetica', 'normal');
@@ -164,7 +168,11 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(15, 118, 110);
-  doc.text(`Dr. ${data.doctorName || 'Attending Physician'}`, pageWidth - margin, y + 2, { align: 'right' });
+  const rawHeaderDocName = (data.doctorName || 'Attending Physician').trim();
+  const cleanHeaderDocName = rawHeaderDocName.toLowerCase().startsWith('dr.') || rawHeaderDocName.toLowerCase().startsWith('dr ')
+    ? rawHeaderDocName
+    : `Dr. ${rawHeaderDocName}`;
+  doc.text(cleanHeaderDocName, pageWidth - margin, y + 2, { align: 'right' });
 
   y += 7;
   doc.setFontSize(8.5);
@@ -177,12 +185,6 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   if (data.doctorSpecialization || data.doctorRegNo) {
     const specText = [data.doctorSpecialization, data.doctorRegNo ? `Reg: ${data.doctorRegNo}` : ''].filter(Boolean).join(' • ');
     doc.text(specText, pageWidth - margin, y + 2, { align: 'right' });
-  }
-
-  if (data.verificationStatus === 'VERIFIED') {
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(22, 101, 52);
-    doc.text(`[✓ Verified by ${data.medicalCouncil || 'Medical Council'}]`, pageWidth - margin, y + 6, { align: 'right' });
   }
 
   y += 4;
