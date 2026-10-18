@@ -26,6 +26,15 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
     return { id: reminder.id, status: 'FAILED', reason: 'No phone number' };
   }
 
+  // DPDP Consent Check: Skip dispatch if patient has opted out of WhatsApp communication
+  if (patient.whatsappConsent === false) {
+    await prisma.reminder.update({
+      where: { id: reminder.id },
+      data: { status: 'SUPERSEDED' },
+    });
+    return { id: reminder.id, status: 'FAILED', reason: 'Patient opted out of WhatsApp communication' };
+  }
+
   // Guard Rail: Skip WhatsApp dispatch if clinic subscription is expired or trial cap is reached
   const clinic = prescription?.clinic;
   if (clinic && !isDemoClinic(clinic.id, clinic.name)) {

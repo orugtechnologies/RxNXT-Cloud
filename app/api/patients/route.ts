@@ -42,6 +42,7 @@ export async function GET(request: Request) {
     phone: p.phone ?? '',
     age: p.age ?? 0,
     gender: p.gender ?? '',
+    whatsappConsent: p.whatsappConsent ?? true,
   })) });
 }
 
@@ -73,7 +74,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, phone, age, gender, address } = body;
+    const { name, phone, age, gender, address, whatsappConsent } = body;
     if (!phone) return NextResponse.json({ error: 'Mobile number is required' }, { status: 400 });
     if (!name) return NextResponse.json({ error: 'Patient name is required' }, { status: 400 });
 
@@ -102,6 +103,7 @@ export async function POST(request: Request) {
           phone: existingPatient.phone ?? '',
           age: existingPatient.age ?? 0,
           gender: existingPatient.gender ?? '',
+          whatsappConsent: existingPatient.whatsappConsent ?? true,
         }
       }, { status: 409 });
     }
@@ -115,6 +117,7 @@ export async function POST(request: Request) {
         age: age ? parseInt(age) : null,
         gender: gender || null,
         address: address || null,
+        whatsappConsent: whatsappConsent !== undefined ? Boolean(whatsappConsent) : true,
       },
     });
 
@@ -124,6 +127,7 @@ export async function POST(request: Request) {
       phone: newPatient.phone ?? '',
       age: newPatient.age ?? 0,
       gender: newPatient.gender ?? '',
+      whatsappConsent: newPatient.whatsappConsent ?? true,
     }}, { status: 201 });
   } catch (err: any) {
     console.error('Error saving patient:', err);

@@ -493,7 +493,8 @@ export async function sendMedicineReminder(
     `${headerIcon} *${slotTitle}*\n\n` +
     `Hello ${patientName}, health reminder from ${docStr} at ${clinicStr} to take your prescribed doses:\n\n` +
     `${medicineDetails}\n\n` +
-    `${foodNote}`;
+    `${foodNote}\n\n` +
+    `_To pause reminders, reply STOP_`;
 
   const slotLabel = `${slotType.charAt(0) + slotType.slice(1).toLowerCase()} Dose`;
 
@@ -569,7 +570,8 @@ export async function sendRefillReminder(
     `🏥 *Monthly Care & Refill Reminder*\n\n` +
     `Hello ${patientName}, you have approximately 5 days of your regular prescribed medications remaining.\n\n` +
     `Please schedule your monthly health checkup and prescription refill with ${docStr} at ${clinicStr}.\n\n` +
-    `📞 *Please call or visit the clinic to reserve your consultation slot!* 🩺`;
+    `📞 *Please call or visit the clinic to reserve your consultation slot!* 🩺\n\n` +
+    `_To pause reminders, reply STOP_`;
 
   return await dispatchWhatsAppMessage({
     phone: patientPhone,

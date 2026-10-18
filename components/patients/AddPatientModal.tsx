@@ -9,6 +9,7 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
   const [phone, setPhone] = useState('');
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('Male');
+  const [whatsappConsent, setWhatsappConsent] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,7 +35,7 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
       const res = await fetch('/api/patients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, age, gender })
+        body: JSON.stringify({ name, phone, age, gender, whatsappConsent })
       });
       const json = await res.json();
       if (!res.ok) {
@@ -49,6 +50,7 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
       setPhone('');
       setAge('');
       setGender('Male');
+      setWhatsappConsent(true);
       onSuccess(data);
     } catch (err: any) {
       console.error(err);
@@ -129,7 +131,8 @@ export default function AddPatientModal({ onClose, onSuccess, initialQuery = '' 
             <input 
               type="checkbox" 
               id="whatsappConsent" 
-              defaultChecked 
+              checked={whatsappConsent}
+              onChange={e => setWhatsappConsent(e.target.checked)}
               className="mt-0.5 rounded border-gray-300 text-clinic-emerald focus:ring-clinic-emerald cursor-pointer" 
             />
             <label htmlFor="whatsappConsent" className="text-xs text-gray-600 leading-tight cursor-pointer">
