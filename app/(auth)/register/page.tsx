@@ -352,11 +352,22 @@ function RegisterForm() {
         </form>
 
         {/* Footer */}
-        <div className="mt-8 text-center text-sm text-slate-500 border-t border-slate-100 pt-6">
-          Already have an account?{' '}
-          <Link href="/login" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
-            Sign In to Clinic Workspace
-          </Link>
+        <div className="mt-8 text-center text-sm text-slate-500 border-t border-slate-100 pt-6 space-y-2">
+          <div>
+            Already have an account?{' '}
+            <Link href="/login" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+              Sign In to Clinic Workspace
+            </Link>
+          </div>
+          <div className="flex items-center justify-center gap-3 text-[11px] text-slate-400 font-medium">
+            <Link href="/privacy-policy" className="hover:text-emerald-700 underline transition-colors">
+              Privacy Policy & DPDP Notice
+            </Link>
+            <span>•</span>
+            <Link href="/terms" className="hover:text-emerald-700 underline transition-colors">
+              Terms of Service
+            </Link>
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -761,6 +761,15 @@ export default function LoginPage() {
                 <span>•</span>
                 <span>⚡ Sub-20s Rx</span>
               </div>
+              <div className="flex items-center justify-center gap-3 text-[11px] text-slate-400 font-medium pt-0.5">
+                <Link href="/privacy-policy" className="hover:text-emerald-700 underline transition-colors">
+                  Privacy Policy & DPDP
+                </Link>
+                <span>•</span>
+                <Link href="/terms" className="hover:text-emerald-700 underline transition-colors">
+                  Terms of Service
+                </Link>
+              </div>
             </div>
 
           </div>
