@@ -2,17 +2,23 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
-import { verifyDoctorCredentials } from '@/services/doctorVerificationService';
 
 export async function POST(request: Request) {
   try {
     const { 
-      fullName, email, password, clinicName, specialization, phone, inviteCode,
-      medicalCouncil, registrationNumber, registrationYear, qualification,
+      fullName, 
+      email, 
+      password, 
+      clinicName, 
+      clinicAddress, 
+      clinicPhone, 
+      specialization, 
+      phone, 
+      inviteCode 
     } = await request.json();
 
     if (!fullName || !email || !password) {
-      return NextResponse.json({ error: 'Name, email, and password are required.' }, { status: 400 });
+      return NextResponse.json({ error: 'Full name, email/User ID, and password are required.' }, { status: 400 });
     }
     
     if (!inviteCode && !clinicName) {
@@ -23,57 +29,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Password must be at least 6 characters.' }, { status: 400 });
     }
 
-    // Strict Doctor Medical License & Council Verification
-    if (!registrationNumber || !medicalCouncil) {
-      return NextResponse.json({ 
-        error: 'Medical Council and Doctor Registration Number are required for registration.' 
-      }, { status: 400 });
-    }
-
-    const verificationResult = await verifyDoctorCredentials({
-      fullName,
-      medicalCouncil,
-      registrationNumber,
-      registrationYear,
-      qualification,
-    });
-
-    if (!verificationResult.success) {
-      return NextResponse.json({
-        error: verificationResult.message || 'Doctor license verification failed. Please verify with valid credentials.',
-        verificationResult
-      }, { status: 400 });
-    }
+    const cleanEmail = email.toLowerCase().trim();
 
     // Check if email already in use
-    const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+    const existing = await prisma.user.findUnique({ where: { email: cleanEmail } });
     if (existing) {
-      return NextResponse.json({ error: 'An account with this email already exists.' }, { status: 409 });
-    }
-
-    // Guard Rail 1: Prevent duplicate free trial creation with the same doctor medical registration number
-    const verifiedRegNo = (verificationResult.registrationNumber || registrationNumber || '').trim();
-    if (!inviteCode && verifiedRegNo) {
-      const existingLicenseDoctor = await prisma.user.findFirst({
-        where: {
-          registrationNumber: {
-            equals: verifiedRegNo,
-            mode: 'insensitive',
-          },
-        },
-        include: { clinic: true },
-      });
-
-      if (existingLicenseDoctor) {
-        return NextResponse.json({
-          error: `Medical Registration Number "${verifiedRegNo}" has already redeemed a 14-day free trial on clinic "${existingLicenseDoctor.clinic?.name || 'RxNXT Clinic'}". Each doctor license is permitted one free trial. Please log into your existing account (${existingLicenseDoctor.email}) or contact support.`,
-        }, { status: 409 });
-      }
+      return NextResponse.json({ error: 'An account with this email/User ID already exists.' }, { status: 409 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create clinic (or use existing) + doctor in a transaction
+    // Create clinic (or link to existing) + user account in a transaction
     const result = await prisma.$transaction(async (tx) => {
       let activeClinicId = '';
       let assignedRole = 'clinic_admin';
@@ -82,17 +48,20 @@ export async function POST(request: Request) {
       if (inviteCode) {
         const existingClinic = await tx.clinic.findUnique({ where: { inviteCode } });
         if (!existingClinic) {
-          throw new Error("Invalid or expired invite link. Please ask your admin for a new link.");
+          throw new Error("Invalid or expired invite link. Please ask your clinic administrator for a new link.");
         }
         activeClinicId = existingClinic.id;
         assignedRole = 'doctor';
-        assignedStatus = 'PENDING';
+        assignedStatus = 'ACTIVE';
       } else {
         const now = new Date();
         const trialEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
         const newClinic = await tx.clinic.create({
           data: {
-            name: clinicName,
+            name: clinicName.trim(),
+            address: clinicAddress?.trim() || null,
+            phone: clinicPhone?.trim() || phone?.trim() || null,
+            email: cleanEmail,
             subscriptionStatus: 'TRIAL',
             subscriptionPlan: 'TRIAL_14_DAYS',
             subscriptionStartedAt: now,
@@ -103,24 +72,20 @@ export async function POST(request: Request) {
         activeClinicId = newClinic.id;
       }
 
+      // Format doctor/user display name cleanly
+      let formattedName = fullName.trim();
+
       const user = await tx.user.create({
         data: {
-          fullName,
-          email: email.toLowerCase().trim(),
+          fullName: formattedName,
+          email: cleanEmail,
           password: hashedPassword,
           role: assignedRole,
           status: assignedStatus,
           clinicId: activeClinicId,
-          specialization: specialization || verificationResult.qualification || qualification || null,
-          phone: phone || null,
-          medicalCouncil: verificationResult.medicalCouncil || medicalCouncil || null,
-          registrationNumber: verificationResult.registrationNumber || registrationNumber || null,
-          registrationYear: verificationResult.registrationYear || (registrationYear ? Number(registrationYear) : null),
-          qualification: verificationResult.qualification || qualification || null,
+          specialization: specialization?.trim() || 'General Physician',
+          phone: phone?.trim() || clinicPhone?.trim() || null,
           verificationStatus: 'VERIFIED',
-          verifiedAt: new Date(verificationResult.verifiedAt || Date.now()),
-          verificationSource: verificationResult.source,
-          verificationDetails: verificationResult.rawDetails ? JSON.stringify(verificationResult.rawDetails) : null,
         },
       });
 
@@ -128,11 +93,10 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({
-      message: 'Account created successfully with verified credentials.',
+      message: 'Clinic workspace and account created successfully.',
       clinicId: result.clinicId,
       userId: result.user.id,
       status: result.user.status,
-      verificationResult
     }, { status: 201 });
 
   } catch (err: any) {
@@ -140,5 +104,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
   }
 }
-
-

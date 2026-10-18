@@ -50,19 +50,19 @@ const FOUR_PILLARS = [
     description: 'Eliminate paper pads, messy copies, and clinic chaos with a fully digitized clinical identity.',
     points: [
       {
-        title: 'NMC Direct Verification',
-        detail: 'Instant server-side verification with the National Medical Commission & 24+ Indian State Councils.',
+        title: 'Instant Clinic Setup',
+        detail: 'Set up your clinic workspace with instant login, staff roles, and zero paperwork in seconds.',
       },
       {
         title: 'Official Branded A4 PDFs',
-        detail: 'Auto-embeds your clinic logo, NMC registration number, and digital signature with zero lag.',
+        detail: 'Auto-embeds your clinic logo, doctor credentials, and digital signature with zero lag.',
       },
       {
         title: 'Live Waiting Room Queue',
         detail: 'Receptionist issues tokens in 0.5s; doctor monitors live waiting timers right on their desk.',
       },
     ],
-    metric: '100% Paperless & NMC Gazette 2023 Compliant',
+    metric: '100% Paperless & Digital Prescriptions',
   },
   {
     id: 2,

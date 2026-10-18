@@ -13,111 +13,68 @@ import {
   Lock, 
   User, 
   Building2, 
+  MapPin,
+  Phone,
   Loader2, 
   ArrowRight, 
-  ShieldCheck, 
   CheckCircle2, 
   AlertCircle,
   Stethoscope,
-  Award,
-  Calendar,
-  Hash
+  Eye,
+  EyeOff,
+  Sparkles
 } from 'lucide-react';
-import { MEDICAL_COUNCILS } from '@/services/doctorVerificationService';
 
 function RegisterForm() {
   const searchParams = useSearchParams();
   const inviteCodeParam = searchParams?.get('invite') || '';
 
   const [form, setForm] = useState({
+    clinicName: '',
+    clinicAddress: '',
+    clinicPhone: '',
     fullName: '',
     email: '',
     password: '',
-    clinicName: '',
-    specialization: '',
     phone: '',
+    specialization: '',
     inviteCode: inviteCodeParam,
-    medicalCouncil: 'NMC',
-    registrationNumber: '',
-    registrationYear: new Date().getFullYear().toString(),
   });
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  
-  // Verification states
-  const [verifying, setVerifying] = useState(false);
-  const [verificationResult, setVerificationResult] = useState<any>(null);
-  const [verificationError, setVerificationError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    if (verificationResult && (e.target.name === 'fullName' || e.target.name === 'registrationNumber' || e.target.name === 'medicalCouncil')) {
-      setVerificationResult(null); // Reset verified state if core details change
-      setVerificationError('');
-    }
-  };
-
-  const handleVerify = async () => {
-    if (!form.fullName.trim() || !form.registrationNumber.trim()) {
-      setVerificationError('Please enter your Full Name and Medical Registration Number first.');
-      return;
-    }
-
-    setVerifying(true);
-    setVerificationError('');
-    try {
-      const res = await fetch('/api/doctor/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: form.fullName,
-          medicalCouncil: form.medicalCouncil,
-          registrationNumber: form.registrationNumber,
-          registrationYear: form.registrationYear,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        setVerificationError(data.message || data.error || 'Verification failed. Please check your credentials.');
-        setVerificationResult(null);
-      } else {
-        setVerificationResult(data);
-        if (data.qualification && !form.specialization) {
-          setForm(prev => ({ ...prev, specialization: data.qualification }));
-        }
-      }
-    } catch (err) {
-      setVerificationError('Error connecting to verification service. Please try again.');
-    } finally {
-      setVerifying(false);
-    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!verificationResult?.success) {
-      setError('Medical Council License Verification is required. Please verify your credentials in Step 2 before creating your workspace.');
+    if (!form.fullName.trim() || !form.email.trim() || !form.password.trim()) {
+      setError('Please fill in your name, email/User ID, and password.');
+      return;
+    }
+
+    if (!inviteCodeParam && !form.clinicName.trim()) {
+      setError('Please enter your clinic name.');
+      return;
+    }
+
+    if (form.password.length < 6) {
+      setError('Password must be at least 6 characters.');
       return;
     }
 
     setLoading(true);
 
     try {
-      const payload = {
-        ...form,
-        qualification: verificationResult?.qualification,
-        verificationStatus: 'VERIFIED',
-        verifiedAt: verificationResult?.verifiedAt,
-        verificationSource: verificationResult?.source,
-        verificationDetails: verificationResult?.rawDetails,
-      };
-
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(form),
       });
 
       const data = await res.json();
@@ -127,24 +84,20 @@ function RegisterForm() {
         return;
       }
 
-      // Auto-login after successful registration
+      // Automatically sign in with credentials
       const result = await signIn('credentials', {
-        email: form.email.toLowerCase(),
+        email: form.email.toLowerCase().trim(),
         password: form.password,
         redirect: false,
       });
 
       if (result?.error) {
-        setError('Account created! Please navigate to login page to sign in.');
+        setError('Workspace created! Please proceed to login to sign in.');
         setLoading(false);
         return;
       }
 
-      if (data.status === 'PENDING') {
-        window.location.href = '/pending';
-      } else {
-        window.location.href = '/doctor/dashboard';
-      }
+      window.location.href = '/doctor/dashboard';
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
       setLoading(false);
@@ -159,39 +112,112 @@ function RegisterForm() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                {inviteCodeParam ? 'Join Your Team' : 'Create Your Clinic Workspace'}
+                {inviteCodeParam ? 'Join Your Clinic Team' : 'Create Your Clinic Workspace'}
               </h2>
-              <p className="text-slate-500 text-sm sm:text-base mt-1">
+              <p className="text-slate-500 text-sm sm:text-base mt-1 font-medium">
                 {inviteCodeParam 
-                  ? 'Complete registration to join the clinic team' 
-                  : 'Start writing high-speed, legally compliant digital prescriptions in seconds'}
+                  ? 'Complete your profile to join your clinic team' 
+                  : 'Get started in seconds with high-speed digital prescriptions and patient queue'}
               </p>
             </div>
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200/60 rounded-full text-emerald-700 text-xs font-semibold self-start">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              NMC / DPDP Compliant
-            </div>
+            {!inviteCodeParam && (
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200/60 rounded-full text-emerald-700 text-xs font-semibold self-start">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                14-Day Free Trial
+              </div>
+            )}
           </div>
         </div>
 
         {inviteCodeParam && (
           <div className="bg-emerald-50 text-emerald-800 text-sm p-4 rounded-xl border border-emerald-200 mb-6 flex items-center gap-3">
             <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
-            <span>You have been invited to join an existing clinic. Your doctor profile will be automatically linked.</span>
+            <span>You have been invited to join an existing clinic. Your profile will be automatically linked.</span>
           </div>
         )}
 
-        <form className="space-y-8" onSubmit={handleRegister}>
-          {/* SECTION 1: Doctor Profile */}
+        <form className="space-y-7" onSubmit={handleRegister}>
+          {/* SECTION 1: Clinic Details (Only for new clinic creation) */}
+          {!inviteCodeParam && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-slate-800 font-semibold text-sm">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">1</span>
+                Clinic Information
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5 md:col-span-2">
+                  <Label htmlFor="clinicName" className="text-xs font-semibold text-slate-700">
+                    Clinic Name <span className="text-rose-500">*</span>
+                  </Label>
+                  <div className="relative">
+                    <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input 
+                      id="clinicName" 
+                      name="clinicName" 
+                      placeholder="e.g. City Health Care Clinic" 
+                      className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
+                      value={form.clinicName} 
+                      onChange={handleChange} 
+                      required 
+                      disabled={loading} 
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="clinicAddress" className="text-xs font-semibold text-slate-700">
+                    Clinic Address / Location
+                  </Label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input 
+                      id="clinicAddress" 
+                      name="clinicAddress" 
+                      placeholder="e.g. 12th Main, Indiranagar, Bengaluru" 
+                      className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
+                      value={form.clinicAddress} 
+                      onChange={handleChange} 
+                      disabled={loading} 
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="clinicPhone" className="text-xs font-semibold text-slate-700">
+                    Clinic Contact Number
+                  </Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input 
+                      id="clinicPhone" 
+                      name="clinicPhone" 
+                      placeholder="e.g. +91 98765 43210" 
+                      className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
+                      value={form.clinicPhone} 
+                      onChange={handleChange} 
+                      disabled={loading} 
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 2: User Account Credentials */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-slate-800 font-semibold text-sm">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">1</span>
-              Doctor Profile Information
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+                {inviteCodeParam ? '1' : '2'}
+              </span>
+              User Account & Login Credentials
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="fullName" className="text-xs font-semibold text-slate-700">Doctor Full Name <span className="text-rose-500">*</span></Label>
+                <Label htmlFor="fullName" className="text-xs font-semibold text-slate-700">
+                  Full Name <span className="text-rose-500">*</span>
+                </Label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input 
@@ -202,19 +228,21 @@ function RegisterForm() {
                     value={form.fullName} 
                     onChange={handleChange} 
                     required 
-                    disabled={loading || verificationResult?.success} 
+                    disabled={loading} 
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="specialization" className="text-xs font-semibold text-slate-700">Specialization / Degrees</Label>
+                <Label htmlFor="specialization" className="text-xs font-semibold text-slate-700">
+                  Specialization / Role
+                </Label>
                 <div className="relative">
                   <Stethoscope className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input 
                     id="specialization" 
                     name="specialization" 
-                    placeholder="e.g. General Physician, MBBS, MD" 
+                    placeholder="e.g. General Physician, MD" 
                     className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
                     value={form.specialization} 
                     onChange={handleChange} 
@@ -222,189 +250,11 @@ function RegisterForm() {
                   />
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* SECTION 2: Medical Council Verification */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-800 font-semibold text-sm">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">2</span>
-                Medical Council Verification <span className="text-rose-500">*</span>
-              </div>
-              {verificationResult?.success && (
-                <span className="text-xs font-semibold text-emerald-800 bg-emerald-100/80 border border-emerald-300 px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  Verified Credentials
-                </span>
-              )}
-            </div>
-
-            <div className={`p-5 sm:p-6 rounded-2xl space-y-4 border transition-all ${
-              verificationResult?.success 
-                ? 'bg-emerald-50/40 border-emerald-200 shadow-sm' 
-                : 'bg-slate-50/80 border-slate-200/80 shadow-inner'
-            }`}>
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                {/* Medical Council Select */}
-                <div className="lg:col-span-6 space-y-1.5">
-                  <Label htmlFor="medicalCouncil" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                    <Award className="w-3.5 h-3.5 text-slate-400" />
-                    Medical Council / State Registry
-                  </Label>
-                  <select 
-                    id="medicalCouncil" 
-                    name="medicalCouncil" 
-                    className="flex h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all disabled:opacity-75"
-                    value={form.medicalCouncil} 
-                    onChange={handleChange} 
-                    disabled={loading || verificationResult?.success}
-                  >
-                    {MEDICAL_COUNCILS.map((council) => (
-                      <option key={council.id} value={council.id}>
-                        {council.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Registration Number */}
-                <div className="lg:col-span-4 space-y-1.5">
-                  <Label htmlFor="registrationNumber" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                    <Hash className="w-3.5 h-3.5 text-slate-400" />
-                    Registration Number <span className="text-rose-500">*</span>
-                  </Label>
-                  <Input 
-                    id="registrationNumber" 
-                    name="registrationNumber" 
-                    placeholder="e.g. KMC-12345 / 45678" 
-                    className="h-11 text-sm bg-white border-slate-200 focus:bg-white transition-all rounded-xl font-mono uppercase" 
-                    value={form.registrationNumber} 
-                    onChange={handleChange} 
-                    required 
-                    disabled={loading || verificationResult?.success} 
-                  />
-                </div>
-
-                {/* Registration Year */}
-                <div className="lg:col-span-2 space-y-1.5">
-                  <Label htmlFor="registrationYear" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                    Year
-                  </Label>
-                  <Input 
-                    id="registrationYear" 
-                    name="registrationYear" 
-                    type="number" 
-                    min="1950" 
-                    max={new Date().getFullYear()} 
-                    value={form.registrationYear} 
-                    onChange={handleChange} 
-                    required 
-                    className="h-11 text-sm bg-white border-slate-200 rounded-xl"
-                    disabled={loading || verificationResult?.success} 
-                  />
-                </div>
-              </div>
-
-              {/* Action Button & Status Banners */}
-              {!verificationResult?.success ? (
-                <div className="pt-1">
-                  <Button 
-                    type="button" 
-                    className="w-full h-11 text-sm font-semibold bg-clinic-emerald hover:bg-clinic-emeraldDark text-white shadow-md hover:shadow-lg transition-all rounded-xl flex items-center justify-center gap-2" 
-                    onClick={handleVerify} 
-                    disabled={verifying || loading || !form.registrationNumber || !form.fullName}
-                  >
-                    {verifying ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Verifying with Medical Registry...
-                      </>
-                    ) : (
-                      <>
-                        <ShieldCheck className="h-4 w-4" />
-                        Verify License Credentials (Required)
-                      </>
-                    )}
-                  </Button>
-                </div>
-              ) : (
-                <div className="pt-1 flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={() => setVerificationResult(null)}
-                    className="text-xs text-slate-500 hover:text-slate-800 underline font-medium"
-                  >
-                    Edit Registration Details
-                  </button>
-                  <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    Ready for workspace creation
-                  </span>
-                </div>
-              )}
-
-              {/* Error Message */}
-              {verificationError && (
-                <div className="text-xs sm:text-sm text-rose-700 bg-rose-50/90 p-3.5 rounded-xl border border-rose-200 flex items-start gap-2.5 animate-fade-in">
-                  <AlertCircle className="w-4 h-4 text-rose-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold">{verificationError}</p>
-                    <p className="text-xs text-rose-600 mt-0.5">
-                      Check your registration number or medical council. (In Sandbox mode, test credentials like <strong>KMC-12345</strong>, <strong>TEST-MCI-001</strong>, <strong>MMC-45678</strong>, <strong>TSMC-67890</strong> are pre-configured).
-                    </p>
-                  </div>
-                </div>
-              )}
-              
-              {/* Success Banner */}
-              {verificationResult?.success && (
-                <div className="text-xs sm:text-sm text-emerald-800 bg-emerald-50/90 p-3.5 rounded-xl border border-emerald-200 flex items-center justify-between animate-fade-in">
-                  <div className="flex items-center gap-2.5">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                    <div>
-                      <span className="font-bold text-slate-900">{verificationResult.registeredName}</span>
-                      <span className="text-emerald-700 ml-2 font-medium">• {verificationResult.qualification}</span>
-                    </div>
-                  </div>
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-md">
-                    Active License
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* SECTION 3: Clinic & Account Security */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-slate-800 font-semibold text-sm">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">3</span>
-              Clinic & Account Details
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {!inviteCodeParam && (
-                <div className="space-y-1.5">
-                  <Label htmlFor="clinicName" className="text-xs font-semibold text-slate-700">Clinic Name <span className="text-rose-500">*</span></Label>
-                  <div className="relative">
-                    <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                    <Input 
-                      id="clinicName" 
-                      name="clinicName" 
-                      placeholder="e.g. City Health Clinic" 
-                      className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
-                      value={form.clinicName} 
-                      onChange={handleChange} 
-                      required 
-                      disabled={loading} 
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div className={`space-y-1.5 ${inviteCodeParam ? 'md:col-span-2' : ''}`}>
-                <Label htmlFor="email" className="text-xs font-semibold text-slate-700">Email Address <span className="text-rose-500">*</span></Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-xs font-semibold text-slate-700">
+                  Email Address / User ID <span className="text-rose-500">*</span>
+                </Label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input 
@@ -421,22 +271,49 @@ function RegisterForm() {
                 </div>
               </div>
 
+              <div className="space-y-1.5">
+                <Label htmlFor="phone" className="text-xs font-semibold text-slate-700">
+                  Doctor / Personal Phone
+                </Label>
+                <div className="relative">
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input 
+                    id="phone" 
+                    name="phone" 
+                    placeholder="e.g. 9876543210" 
+                    className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
+                    value={form.phone} 
+                    onChange={handleChange} 
+                    disabled={loading} 
+                  />
+                </div>
+              </div>
+
               <div className="space-y-1.5 md:col-span-2">
-                <Label htmlFor="password" className="text-xs font-semibold text-slate-700">Password <span className="text-rose-500">*</span></Label>
+                <Label htmlFor="password" className="text-xs font-semibold text-slate-700">
+                  Password <span className="text-rose-500">*</span>
+                </Label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input 
                     id="password" 
                     name="password" 
-                    type="password" 
+                    type={showPassword ? 'text' : 'password'} 
                     placeholder="Minimum 6 characters" 
-                    className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
+                    className="pl-10 pr-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
                     value={form.password} 
                     onChange={handleChange} 
                     required 
                     minLength={6} 
                     disabled={loading} 
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
             </div>
@@ -453,37 +330,31 @@ function RegisterForm() {
           <div className="pt-2">
             <Button 
               type="submit" 
-              className={`w-full h-13 py-4 text-base font-bold transition-all duration-200 rounded-2xl flex items-center justify-center gap-2 ${
-                verificationResult?.success 
-                  ? 'bg-clinic-blue hover:bg-clinic-blueDark text-white shadow-xl hover:shadow-2xl'
-                  : 'bg-slate-300 text-slate-500 cursor-not-allowed'
-              }`}
-              disabled={loading || !verificationResult?.success}
+              className="w-full h-12 py-3 text-base font-bold transition-all duration-200 rounded-2xl flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              disabled={loading}
             >
               {loading ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  Creating Workspace...
+                  Creating Clinic Workspace...
                 </>
               ) : (
                 <>
-                  {verificationResult?.success ? 'Create Clinic Workspace' : 'Verify License to Create Workspace'}
+                  {inviteCodeParam ? 'Complete Registration' : 'Create Clinic Workspace'}
                   <ArrowRight className="h-5 w-5" />
                 </>
               )}
             </Button>
-            {!verificationResult?.success && (
-              <p className="text-center text-xs text-slate-400 mt-2 font-medium">
-                Step 2 (Medical Council Verification) must be completed to register.
-              </p>
-            )}
+            <p className="text-center text-xs text-slate-400 mt-2 font-medium">
+              By creating an account, you get instant access with a 14-day free trial.
+            </p>
           </div>
         </form>
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-slate-500 border-t border-slate-100 pt-6">
           Already have an account?{' '}
-          <Link href="/login" className="font-semibold text-clinic-emerald hover:text-clinic-emeraldDark transition-colors">
+          <Link href="/login" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
             Sign In to Clinic Workspace
           </Link>
         </div>
@@ -494,9 +365,8 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="animate-spin text-clinic-blue h-10 w-10" /></div>}>
+    <Suspense fallback={<div className="flex justify-center p-12"><Loader2 className="animate-spin text-emerald-600 h-10 w-10" /></div>}>
       <RegisterForm />
     </Suspense>
   );
 }
-
