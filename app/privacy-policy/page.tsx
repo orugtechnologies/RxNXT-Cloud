@@ -65,7 +65,7 @@ export default function PrivacyPolicyPage() {
             <span>•</span>
             <span><strong>Version:</strong> 2.0 (DPDP Aligned)</span>
             <span>•</span>
-            <span><strong>Governing Jurisdiction:</strong> Bengaluru, India</span>
+            <span><strong>Governing Jurisdiction:</strong> Warangal, Telangana, India</span>
           </div>
         </div>
       </div>
@@ -259,8 +259,9 @@ export default function PrivacyPolicyPage() {
           <div className="bg-white p-5 rounded-2xl border border-emerald-200 text-xs text-slate-800 space-y-2 shadow-sm">
             <div><strong>Designation:</strong> Data Protection & Grievance Redressal Officer</div>
             <div><strong>Platform:</strong> RxNXT™ Cloud (Orug Technologies)</div>
+            <div><strong>Registered Entity:</strong> Orug Technologies, Warangal, Telangana, India</div>
             <div><strong>Official Email:</strong> <a href="mailto:privacy@rxnxt.com" className="text-emerald-700 font-bold underline">privacy@rxnxt.com</a> / <a href="mailto:support@rxnxt.com" className="text-emerald-700 font-bold underline">support@rxnxt.com</a></div>
-            <div><strong>Location:</strong> Bengaluru, Karnataka, India</div>
+            <div><strong>Location:</strong> Warangal, Telangana, India</div>
             <div><strong>Statutory Response Timeline:</strong> Acknowledgment within 24 hours; resolution within 7 business days.</div>
           </div>
         </section>

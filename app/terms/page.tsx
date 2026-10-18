@@ -61,7 +61,7 @@ export default function TermsOfServicePage() {
             <span>•</span>
             <span><strong>Version:</strong> 2.0 (B2B SaaS)</span>
             <span>•</span>
-            <span><strong>Jurisdiction:</strong> Bengaluru, Karnataka, India</span>
+            <span><strong>Jurisdiction:</strong> Warangal, Telangana, India</span>
           </div>
         </div>
       </div>
@@ -208,7 +208,7 @@ export default function TermsOfServicePage() {
             7. Governing Law & Dispute Resolution
           </h2>
           <p className="text-sm text-slate-600 leading-relaxed">
-            These Terms of Service and any dispute arising from or related to the platform shall be governed by and construed in accordance with the laws of the Republic of India. The courts of competent jurisdiction in <strong>Bengaluru, Karnataka, India</strong> shall have exclusive jurisdiction over all disputes.
+            These Terms of Service and any dispute arising from or related to the platform shall be governed by and construed in accordance with the laws of the Republic of India. The courts of competent jurisdiction in <strong>Warangal, Telangana, India</strong> shall have exclusive jurisdiction over all disputes.
           </p>
         </section>
 
@@ -221,7 +221,7 @@ export default function TermsOfServicePage() {
           <div className="text-xs text-slate-800 space-y-1 pt-1">
             <div><strong>Email:</strong> <a href="mailto:support@rxnxt.com" className="text-emerald-700 font-bold underline">support@rxnxt.com</a> / <a href="mailto:privacy@rxnxt.com" className="text-emerald-700 font-bold underline">privacy@rxnxt.com</a></div>
             <div><strong>Platform:</strong> RxNXT™ Cloud — Orug Technologies</div>
-            <div><strong>Office:</strong> Bengaluru, Karnataka, India</div>
+            <div><strong>Registered Office:</strong> Orug Technologies, Warangal, Telangana, India</div>
           </div>
         </section>
 
