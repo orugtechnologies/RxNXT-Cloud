@@ -180,7 +180,14 @@ export function formatPrescriptionSchedule(params: {
   richSchedule += '──────────────────────────\n';
   if (durationStr) richSchedule += `${durationStr}\n`;
   if (followUpStr) richSchedule += `${followUpStr}\n`;
-  if (doctorNotes) richSchedule += `📝 *Doctor Note:* ${doctorNotes}\n`;
+  if (doctorNotes) {
+    const cleanNotes = doctorNotes
+      .split('\n')
+      .map((l) => l.trim().replace(/^[•\-\*]\s*/, ''))
+      .filter(Boolean)
+      .join(', ');
+    richSchedule += `📝 *Doctor Note:* ${cleanNotes}\n`;
+  }
 
   // 3. Full WhatsApp Message Body
   const pdfLine = pdfDirectUrl ? `\n📄 *Download Official PDF:* ${pdfDirectUrl}\n` : '';

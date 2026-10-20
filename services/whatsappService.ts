@@ -378,67 +378,50 @@ export async function sendPrescriptionPDF(
     }
   }
 
+  const cleanPhone = sanitizePhone(patientPhone);
+  const safePatientName = sanitizeTemplateParam(patientName).replace(/[^a-zA-Z0-9]/g, '_') || 'Patient';
+  const docFilename = `RxNXT_Prescription_${safePatientName}.pdf`;
+
+  // 1. PRIMARY DISPATCH: Single Super-Prescription Message
+  // Delivers the attached PDF document with the complete clean formatted medication schedule
+  // as the document caption in ONE SINGLE message bubble.
+  const caption = messageBody.length <= 1024 ? messageBody : messageBody.slice(0, 1020) + '...';
+  const docPayload: any = {
+    to: cleanPhone,
+    type: 'document',
+    document: {
+      filename: docFilename,
+      caption: caption,
+    },
+  };
+
+  if (documentMediaId) {
+    docPayload.document.id = documentMediaId;
+  } else if (directPdfUrl) {
+    docPayload.document.link = directPdfUrl;
+  }
+
+  try {
+    const docResult = await sendViaMetaCloudAPI(docPayload);
+    if (docResult?.success || docResult?.messages?.[0]?.id) {
+      console.log(`[Meta WhatsApp] Successfully delivered Super-Prescription Document with schedule caption to ${cleanPhone}`);
+      return {
+        success: true,
+        provider: 'meta',
+        messageId: docResult?.messages?.[0]?.id || docResult?.messageId,
+        method: 'document_caption',
+      };
+    }
+  } catch (docErr: any) {
+    console.warn(`[Meta WhatsApp] Direct document delivery failed, falling back to template:`, docErr.message);
+  }
+
+  // 2. FALLBACK DISPATCH: Approved Meta Utility Template (rxnxt_prescription_ready)
   const effectiveSummary = options?.templateSummary || aiTreatmentSummary;
   const templateSummaryWithPdf = effectiveSummary
     ? `${effectiveSummary} • PDF: ${directPdfUrl}`
     : `Download Prescription PDF: ${directPdfUrl}`;
 
-  const cleanPhone = sanitizePhone(patientPhone);
-
-  // 1. If newly created Document Header template is approved, deliver the actual attached PDF file directly in the chat bubble!
-  const docTemplateCandidates = [
-    { name: 'rxnxt_prescription_doc', lang: 'en' },
-    { name: 'rxnxt_prescription_doc', lang: 'en_US' },
-    { name: 'rxnxt_prescription_document', lang: 'en' },
-    { name: 'rxnxt_prescription_document', lang: 'en_US' },
-    { name: 'rxnxt_prescription_do', lang: 'en' },
-    { name: 'rxnxt_prescription_do', lang: 'en_US' },
-  ];
-
-  for (const candidate of docTemplateCandidates) {
-    try {
-      const docResult = await sendViaMetaCloudAPI({
-        to: cleanPhone,
-        type: 'template',
-        template: {
-          name: candidate.name,
-          language: { code: candidate.lang },
-          components: [
-            {
-              type: 'header',
-              parameters: [
-                {
-                  type: 'document',
-                  document: {
-                    link: directPdfUrl,
-                    filename: `Prescription_${sanitizeTemplateParam(patientName).replace(/\s+/g, '_') || 'Patient'}.pdf`,
-                  },
-                },
-              ],
-            },
-            {
-              type: 'body',
-              parameters: [
-                { type: 'text', text: sanitizeTemplateParam(patientName) || 'Patient' },
-                { type: 'text', text: sanitizeTemplateParam(clinicName) || 'Clinic' },
-                { type: 'text', text: sanitizeTemplateParam(aiTreatmentSummary) || 'Prescription ready.' },
-              ],
-            },
-          ],
-        },
-      });
-      if (docResult?.success) {
-        console.log(`[Meta WhatsApp] Successfully delivered attached PDF via template '${candidate.name}' (${candidate.lang})`);
-        return docResult;
-      }
-    } catch (docErr: any) {
-      if (docErr.isTemplateError || docErr.message?.includes('132001') || docErr.message?.includes('template')) {
-        continue;
-      }
-    }
-  }
-
-  // 2. Active Fallback: Use approved rxnxt_prescription_ready with live 1-tap PDF link in parameter 3
   return await dispatchWhatsAppMessage({
     phone: patientPhone,
     messageBody,
@@ -457,6 +440,16 @@ export async function sendPrescriptionPDF(
             { type: 'text', text: sanitizeTemplateParam(templateSummaryWithPdf) || 'Prescription ready.' },
           ],
         },
+        ...(prescriptionId
+          ? [
+              {
+                type: 'button',
+                sub_type: 'url',
+                index: '0',
+                parameters: [{ type: 'text', text: prescriptionId }],
+              },
+            ]
+          : []),
       ],
     },
   });
