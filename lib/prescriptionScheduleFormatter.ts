@@ -199,9 +199,43 @@ export function formatPrescriptionSchedule(params: {
     `${pdfLine}\n` +
     `🥛 _Please take medicines on time as instructed. Have a healthy day!_`;
 
+  let formattedFollowUp = '';
+  if (followUpDate) {
+    try {
+      formattedFollowUp = new Date(followUpDate).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+    } catch {
+      // ignore
+    }
+  }
+
+  const cleanAdvice = doctorNotes
+    ? doctorNotes
+        .split('\n')
+        .map((l) => l.trim().replace(/^[•\-\*]\s*/, ''))
+        .filter(Boolean)
+        .join(', ')
+    : 'Take medicines as directed';
+
+  const slotDetails = {
+    patientName,
+    clinicName,
+    diagnosis: diagnosis || 'General Consultation',
+    morningMeds: morningMeds.length > 0 ? morningMeds.map((m) => `• ${m}`).join(', ') : 'None prescribed',
+    afternoonMeds: afternoonMeds.length > 0 ? afternoonMeds.map((m) => `• ${m}`).join(', ') : 'None prescribed',
+    nightMeds: nightMeds.length > 0 ? nightMeds.map((m) => `• ${m}`).join(', ') : 'None prescribed',
+    duration: detectedDuration || 'As directed',
+    nextVisit: formattedFollowUp || 'As advised by doctor',
+    doctorAdvice: cleanAdvice,
+  };
+
   return {
     templateSummary,
     richSchedule,
     fullMessageBody,
+    slotDetails,
   };
 }

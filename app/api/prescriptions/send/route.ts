@@ -136,6 +136,7 @@ export async function POST(request: Request) {
       {
         templateSummary: formatted.templateSummary,
         fullMessageBody: formatted.fullMessageBody,
+        slotDetails: formatted.slotDetails,
       }
     );
 

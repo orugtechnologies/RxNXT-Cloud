@@ -389,7 +389,107 @@ export async function sendPrescriptionPDF(
   // Meta strictly requires an APPROVED Message Template.
   const effectiveSummary = options?.templateSummary || aiTreatmentSummary || 'Prescription ready.';
 
-  // Attempt delivery via approved Meta utility template
+  // 1. Try Candidate 1: rxnxt_super_prescription (Language: 'en') - Dedicated 9-slot multi-line template with attached PDF
+  if (options?.slotDetails) {
+    try {
+      const superResult = await sendViaMetaCloudAPI({
+        to: cleanPhone,
+        type: 'template',
+        template: {
+          name: 'rxnxt_super_prescription',
+          language: { code: 'en' },
+          components: [
+            {
+              type: 'header',
+              parameters: [
+                {
+                  type: 'document',
+                  document: {
+                    link: directPdfUrl,
+                    filename: docFilename,
+                  },
+                },
+              ],
+            },
+            {
+              type: 'body',
+              parameters: [
+                { type: 'text', text: sanitizeTemplateParam(options.slotDetails.patientName) || 'Patient' },
+                { type: 'text', text: sanitizeTemplateParam(options.slotDetails.clinicName) || 'Clinic' },
+                { type: 'text', text: sanitizeTemplateParam(options.slotDetails.diagnosis) || 'General Consultation' },
+                { type: 'text', text: sanitizeTemplateParam(options.slotDetails.morningMeds) || 'None prescribed' },
+                { type: 'text', text: sanitizeTemplateParam(options.slotDetails.afternoonMeds) || 'None prescribed' },
+                { type: 'text', text: sanitizeTemplateParam(options.slotDetails.nightMeds) || 'None prescribed' },
+                { type: 'text', text: sanitizeTemplateParam(options.slotDetails.duration) || 'As directed' },
+                { type: 'text', text: sanitizeTemplateParam(options.slotDetails.nextVisit) || 'As advised' },
+                { type: 'text', text: sanitizeTemplateParam(options.slotDetails.doctorAdvice) || 'Take medicines as directed' },
+              ],
+            },
+          ],
+        },
+      });
+
+      if (superResult?.success || superResult?.messages?.[0]?.id) {
+        console.log(`[Meta WhatsApp] Successfully delivered Multi-Line rxnxt_super_prescription to ${cleanPhone}`);
+        return {
+          success: true,
+          provider: 'meta',
+          messageId: superResult?.messages?.[0]?.id || superResult?.messageId,
+          template: 'rxnxt_super_prescription',
+        };
+      }
+    } catch (superErr: any) {
+      console.warn('[Meta WhatsApp] rxnxt_super_prescription unavailable/in-review, falling back to rxnxt_prescription_doc:', superErr.message);
+    }
+  }
+
+  // 2. Try Candidate 2: rxnxt_prescription_doc (Language: 'en') - Approved active template with attached PDF
+  try {
+    const docResult = await sendViaMetaCloudAPI({
+      to: cleanPhone,
+      type: 'template',
+      template: {
+        name: 'rxnxt_prescription_doc',
+        language: { code: 'en' },
+        components: [
+          {
+            type: 'header',
+            parameters: [
+              {
+                type: 'document',
+                document: {
+                  link: directPdfUrl,
+                  filename: docFilename,
+                },
+              },
+            ],
+          },
+          {
+            type: 'body',
+            parameters: [
+              { type: 'text', text: sanitizeTemplateParam(patientName) || 'Patient' },
+              { type: 'text', text: sanitizeTemplateParam(clinicName) || 'Clinic' },
+              { type: 'text', text: sanitizeTemplateParam(effectiveSummary) || 'Prescription ready.' },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (docResult?.success || docResult?.messages?.[0]?.id) {
+      console.log(`[Meta WhatsApp] Successfully delivered attached PDF via rxnxt_prescription_doc to ${cleanPhone}`);
+      return {
+        success: true,
+        provider: 'meta',
+        messageId: docResult?.messages?.[0]?.id || docResult?.messageId,
+        template: 'rxnxt_prescription_doc',
+      };
+    }
+  } catch (docErr: any) {
+    console.warn('[Meta WhatsApp] rxnxt_prescription_doc failed, falling back to rxnxt_prescription_ready:', docErr.message);
+  }
+
+  // 3. Fallback: rxnxt_prescription_ready (Language: 'en_US')
   return await dispatchWhatsAppMessage({
     phone: patientPhone,
     messageBody,
