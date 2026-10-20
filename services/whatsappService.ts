@@ -269,6 +269,9 @@ async function dispatchWhatsAppMessage(options: {
         type: 'template',
         template: options.template,
       });
+      if (templateResult?.success) {
+        return templateResult;
+      }
     } catch (tmplErr: any) {
       if (tmplErr.isTemplateError) {
         console.warn(`[Meta WhatsApp] Template '${options.template.name}' pending/unavailable, falling back to direct delivery:`, tmplErr.message);
@@ -382,46 +385,11 @@ export async function sendPrescriptionPDF(
   const safePatientName = sanitizeTemplateParam(patientName).replace(/[^a-zA-Z0-9]/g, '_') || 'Patient';
   const docFilename = `RxNXT_Prescription_${safePatientName}.pdf`;
 
-  // 1. PRIMARY DISPATCH: Single Super-Prescription Message
-  // Delivers the attached PDF document with the complete clean formatted medication schedule
-  // as the document caption in ONE SINGLE message bubble.
-  const caption = messageBody.length <= 1024 ? messageBody : messageBody.slice(0, 1020) + '...';
-  const docPayload: any = {
-    to: cleanPhone,
-    type: 'document',
-    document: {
-      filename: docFilename,
-      caption: caption,
-    },
-  };
+  // Meta Cloud API Policy: For business-initiated messages outside the 24-hour customer window,
+  // Meta strictly requires an APPROVED Message Template.
+  const effectiveSummary = options?.templateSummary || aiTreatmentSummary || 'Prescription ready.';
 
-  if (documentMediaId) {
-    docPayload.document.id = documentMediaId;
-  } else if (directPdfUrl) {
-    docPayload.document.link = directPdfUrl;
-  }
-
-  try {
-    const docResult = await sendViaMetaCloudAPI(docPayload);
-    if (docResult?.success || docResult?.messages?.[0]?.id) {
-      console.log(`[Meta WhatsApp] Successfully delivered Super-Prescription Document with schedule caption to ${cleanPhone}`);
-      return {
-        success: true,
-        provider: 'meta',
-        messageId: docResult?.messages?.[0]?.id || docResult?.messageId,
-        method: 'document_caption',
-      };
-    }
-  } catch (docErr: any) {
-    console.warn(`[Meta WhatsApp] Direct document delivery failed, falling back to template:`, docErr.message);
-  }
-
-  // 2. FALLBACK DISPATCH: Approved Meta Utility Template (rxnxt_prescription_ready)
-  const effectiveSummary = options?.templateSummary || aiTreatmentSummary;
-  const templateSummaryWithPdf = effectiveSummary
-    ? `${effectiveSummary} • PDF: ${directPdfUrl}`
-    : `Download Prescription PDF: ${directPdfUrl}`;
-
+  // Attempt delivery via approved Meta utility template
   return await dispatchWhatsAppMessage({
     phone: patientPhone,
     messageBody,
@@ -437,19 +405,9 @@ export async function sendPrescriptionPDF(
           parameters: [
             { type: 'text', text: sanitizeTemplateParam(patientName) || 'Patient' },
             { type: 'text', text: sanitizeTemplateParam(clinicName) || 'Clinic' },
-            { type: 'text', text: sanitizeTemplateParam(templateSummaryWithPdf) || 'Prescription ready.' },
+            { type: 'text', text: sanitizeTemplateParam(effectiveSummary) || 'Prescription ready.' },
           ],
         },
-        ...(prescriptionId
-          ? [
-              {
-                type: 'button',
-                sub_type: 'url',
-                index: '0',
-                parameters: [{ type: 'text', text: prescriptionId }],
-              },
-            ]
-          : []),
       ],
     },
   });
