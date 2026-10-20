@@ -61,7 +61,7 @@ describe('ReceptionistDashboard Page', () => {
     render(<ReceptionistDashboard />);
     
     expect(screen.getByText('Front Desk Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Register new walk-in patients or search the existing directory.')).toBeInTheDocument();
+    expect(screen.getByText(/Register new walk-in patients/i)).toBeInTheDocument();
     expect(screen.getByTestId('patient-search-ui')).toBeInTheDocument();
   });
 

@@ -18,7 +18,7 @@ interface ReviewModalProps {
   pdfBase64?: string | null;
   timeTakenSeconds?: number | null;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (enableReminders?: boolean) => void;
   onNewPrescription?: () => void;
   onGoToDashboard?: () => void;
 }
@@ -44,6 +44,7 @@ export default function ReviewPrescriptionModal({
   const [sendError, setSendError] = useState<string | null>(null);
   const [targetPhone, setTargetPhone] = useState(patient.phone || '');
   const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [enableDailyReminders, setEnableDailyReminders] = useState(false);
 
   const handleDownloadPDF = () => {
     if (pdfBase64) {
@@ -288,6 +289,26 @@ export default function ReviewPrescriptionModal({
                 <p className="mt-1 pt-1 border-t border-indigo-100/60"><span className="font-bold text-indigo-900">📝 Doctor Advice:</span> {notes}</p>
               )}
             </div>
+
+            {/* Optional Daily Reminders Toggle */}
+            <div className="mt-3 p-2.5 bg-white border border-indigo-100 rounded-lg flex items-center justify-between shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="text-base">🔔</span>
+                <div>
+                  <p className="text-xs font-bold text-slate-800">Automated Daily Morning Dose Reminders (8:00 AM)</p>
+                  <p className="text-[11px] text-slate-500">Send patient daily morning WhatsApp dose alerts for course duration</p>
+                </div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={enableDailyReminders}
+                  onChange={(e) => setEnableDailyReminders(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-clinic-emerald"></div>
+              </label>
+            </div>
           </div>
 
           {/* Clinical Info */}
@@ -382,7 +403,7 @@ export default function ReviewPrescriptionModal({
                 alert('All medicines must have Frequency, Duration, and Instructions specified before generating the prescription.');
                 return;
               }
-              onConfirm();
+              onConfirm(enableDailyReminders);
             }}
             disabled={saving || medicines.length === 0}
             className="bg-clinic-emerald hover:bg-clinic-emeraldDark text-white font-bold px-8 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center disabled:bg-emerald-300"

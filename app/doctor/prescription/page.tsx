@@ -332,7 +332,7 @@ function PrescriptionWorkflowContent() {
     setShowReview(true);
   };
 
-  const savePrescription = async () => {
+  const savePrescription = async (enableDailyReminders?: boolean) => {
     if (!patient || medicines.length === 0) return alert('Patient and Medicines are required');
     const validation = validatePrescriptionMedicines();
     if (!validation.isValid) return alert(validation.message);

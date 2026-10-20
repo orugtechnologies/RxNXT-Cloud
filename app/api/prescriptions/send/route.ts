@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { sendPrescriptionPDF } from '@/services/whatsappService';
+import { formatPrescriptionSchedule } from '@/lib/prescriptionScheduleFormatter';
 import { generatePrescriptionBase64 } from '@/lib/prescriptionPdfGenerator';
 import { getClinicSubscription, getClinicWhatsAppUsage } from '@/lib/subscription';
 
@@ -69,42 +70,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No phone number provided for prescription delivery' }, { status: 400 });
     }
 
-    // Synthesize AI Present-Day Treatment Summary
-    let aiTreatmentSummary = '';
-    const encounter = prescription.encounter;
-    const medicines = prescription.medicines || [];
-
-    if (encounter?.diagnosis) {
-      aiTreatmentSummary += `🩺 *Diagnosis:* ${encounter.diagnosis}\n\n`;
-    }
-
-    if (medicines.length > 0) {
-      aiTreatmentSummary += `💊 *Treatment Schedule:*\n`;
-      medicines.forEach((m, idx) => {
-        const medName = m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine';
-        const strength = m.strength ? ` ${m.strength}` : '';
-        const form = m.dosageForm ? ` (${m.dosageForm})` : '';
-        const freq = m.frequency ? ` • *Dose:* ${m.frequency}` : '';
-        const duration = m.duration ? ` for ${m.duration}` : '';
-        const instr = m.instructions ? ` [${m.instructions}]` : '';
-
-        aiTreatmentSummary += `${idx + 1}. *${medName}${strength}*${form}${freq}${duration}${instr}\n`;
-      });
-    }
-
-    if (encounter?.notes) {
-      aiTreatmentSummary += `\n📝 *Doctor Advice:* ${encounter.notes}\n`;
-    }
-
-    if (encounter?.followUpDate) {
-      const formattedFollowUp = new Date(encounter.followUpDate).toLocaleDateString('en-IN', {
-        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
-      });
-      aiTreatmentSummary += `\n📅 *Next Follow-up Visit:* ${formattedFollowUp}\n`;
-    }
-
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.rxnxt.in';
     const pdfDirectUrl = `${baseUrl.replace(/\/$/, '')}/api/prescriptions/${prescription.id}/pdf`;
+
+    // Synthesize structured time-of-day Medication Schedule
+    const formatted = formatPrescriptionSchedule({
+      patientName: prescription.patient.name,
+      clinicName: prescription.clinic.name,
+      medicines: prescription.medicines || [],
+      diagnosis: prescription.encounter?.diagnosis,
+      doctorNotes: prescription.encounter?.notes,
+      followUpDate: prescription.encounter?.followUpDate,
+      pdfDirectUrl,
+    });
 
     // Ensure PDF Base64 is generated if not sent by client (guaranteed fallback)
     let finalPdfBase64 = pdfBase64;
@@ -145,7 +123,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // Dispatch WhatsApp Message with AI Treatment Summary and Official PDF
+    // Dispatch WhatsApp Super-Prescription Message with Medication Schedule and Official PDF
     const result = await sendPrescriptionPDF(
       destinationPhone,
       prescription.patient.name,
@@ -153,8 +131,12 @@ export async function POST(request: Request) {
       pdfDirectUrl,
       finalPdfBase64,
       prescription.clinicId,
-      aiTreatmentSummary,
-      prescription.id
+      formatted.templateSummary,
+      prescription.id,
+      {
+        templateSummary: formatted.templateSummary,
+        fullMessageBody: formatted.fullMessageBody,
+      }
     );
 
     return NextResponse.json({ success: true, result });

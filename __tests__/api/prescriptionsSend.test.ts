@@ -6,6 +6,9 @@ import { getClinicSubscription } from '../../lib/subscription';
 
 jest.mock('../../lib/prisma', () => ({
   prisma: {
+    user: {
+      findUnique: jest.fn().mockResolvedValue({ fullName: 'Dr. Test', id: 'doctor_clinic_A' }),
+    },
     prescription: {
       findUnique: jest.fn(),
     },
@@ -22,10 +25,20 @@ jest.mock('../../lib/auth-server', () => ({
 
 jest.mock('../../lib/subscription', () => ({
   getClinicSubscription: jest.fn(),
+  getClinicWhatsAppUsage: jest.fn().mockResolvedValue({
+    allowed: true,
+    cap: 500,
+    used: 10,
+    isTrial: true,
+  }),
 }));
 
 jest.mock('../../services/whatsappService', () => ({
   sendPrescriptionPDF: jest.fn(),
+}));
+
+jest.mock('../../lib/prescriptionPdfGenerator', () => ({
+  generatePrescriptionBase64: jest.fn().mockReturnValue('mock_base64_pdf_data'),
 }));
 
 jest.mock('next/server', () => ({
@@ -149,10 +162,14 @@ describe('POST /api/prescriptions/send (Multi-Tenant Authorization & WhatsApp Di
       'Jane Doe',
       'Clinic A',
       expect.stringContaining('rx_clinic_A'),
-      undefined,
+      expect.any(String),
       'clinic_A',
       expect.any(String),
-      'rx_clinic_A'
+      'rx_clinic_A',
+      expect.objectContaining({
+        templateSummary: expect.any(String),
+        fullMessageBody: expect.any(String),
+      })
     );
   });
 });

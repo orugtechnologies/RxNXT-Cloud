@@ -10,3 +10,5 @@ test-report.html
 scratch/
 *.tsbuildinfo
 test_download.pdf
+*.pptx
+export_test*.ps1

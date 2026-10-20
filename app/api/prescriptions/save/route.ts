@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       }, { status: 403 });
     }
 
-    const { patientId, chiefComplaint, diagnosis, notes, followUpDate, medicines, timeTakenSeconds, creationMethod } = await request.json();
+    const { patientId, chiefComplaint, diagnosis, notes, followUpDate, medicines, timeTakenSeconds, creationMethod, enableDailyReminders } = await request.json();
 
     if (!patientId || !medicines || medicines.length === 0) {
       return NextResponse.json({ error: 'Patient and at least 1 medicine are required' }, { status: 400 });
@@ -223,90 +223,53 @@ export async function POST(request: Request) {
 
       const now = new Date();
 
-      if (isChronic) {
-        // CHRONIC CARE: Daily morning briefings for 14 days + Refill Reminder on Day 25
-        for (let day = 1; day <= 14; day++) {
-          const reminderDate = new Date();
-          reminderDate.setDate(now.getDate() + day);
-          reminderDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
-
-          remindersToCreate.push({
-            prescriptionId: prescription.id,
-            patientId: patientId,
-            scheduledFor: reminderDate,
-            status: 'PENDING',
-            messageType: 'MEDICINE',
-          });
-        }
-
-        // Schedule Monthly Refill Alert on Day 25
-        const refillDate = new Date();
-        refillDate.setDate(now.getDate() + 25);
-        refillDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
-
-        remindersToCreate.push({
-          prescriptionId: prescription.id,
-          patientId: patientId,
-          scheduledFor: refillDate,
-          status: 'PENDING',
-          messageType: 'REFILL',
-        });
-      } else {
-        // ACUTE CARE: Smart Slot Nudges (Morning 8:00 AM, Afternoon 1:00 PM, Night 8:30 PM)
-        let needsAfternoon = false;
-        let needsNight = true; // default true for standard acute courses
-
-        medicines.forEach((m: any) => {
-          const freq = (m.frequency || '').toLowerCase();
-          if (freq.includes('1-1-1') || freq.includes('0-1-0') || freq.includes('thrice') || freq.includes('3 times')) {
-            needsAfternoon = true;
-          }
-          if (freq.includes('1-0-1') || freq.includes('1-1-1') || freq.includes('0-0-1') || freq.includes('bedtime') || freq.includes('twice') || freq.includes('night')) {
-            needsNight = true;
-          }
-        });
-
-        for (let day = 1; day <= maxDurationDays; day++) {
-          // 1. Morning Slot (8:00 AM IST / 2:30 AM UTC)
-          const morningDate = new Date();
-          morningDate.setDate(now.getDate() + day);
-          morningDate.setUTCHours(2, 30, 0, 0);
-
-          remindersToCreate.push({
-            prescriptionId: prescription.id,
-            patientId: patientId,
-            scheduledFor: morningDate,
-            status: 'PENDING',
-            messageType: 'MEDICINE_MORNING',
-          });
-
-          // 2. Afternoon Slot (1:00 PM IST / 7:30 AM UTC)
-          if (needsAfternoon) {
-            const afternoonDate = new Date();
-            afternoonDate.setDate(now.getDate() + day);
-            afternoonDate.setUTCHours(7, 30, 0, 0);
+      // NEW RULE:
+      // The Single Super-Prescription Message automatically delivers the complete schedule and PDF upon consultation.
+      // Ongoing automated daily morning reminders are only scheduled if explicitly opted-in (enableDailyReminders === true).
+      // Grandfathered prescriptions (like Swamiji's) already in the DB continue running their scheduled reminders normally.
+      if (enableDailyReminders) {
+        if (isChronic) {
+          // CHRONIC CARE: Daily morning briefings for 14 days + Refill Reminder on Day 25
+          for (let day = 1; day <= 14; day++) {
+            const reminderDate = new Date();
+            reminderDate.setDate(now.getDate() + day);
+            reminderDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
 
             remindersToCreate.push({
               prescriptionId: prescription.id,
               patientId: patientId,
-              scheduledFor: afternoonDate,
+              scheduledFor: reminderDate,
               status: 'PENDING',
-              messageType: 'MEDICINE_AFTERNOON',
+              messageType: 'MEDICINE',
             });
           }
 
-          // 3. Night Slot (8:30 PM IST / 3:00 PM UTC)
-          if (needsNight) {
-            const nightDate = new Date();
-            nightDate.setDate(now.getDate() + day);
-            nightDate.setUTCHours(15, 0, 0, 0);
+          // Schedule Monthly Refill Alert on Day 25
+          const refillDate = new Date();
+          refillDate.setDate(now.getDate() + 25);
+          refillDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
+
+          remindersToCreate.push({
+            prescriptionId: prescription.id,
+            patientId: patientId,
+            scheduledFor: refillDate,
+            status: 'PENDING',
+            messageType: 'REFILL',
+          });
+        } else {
+          // ACUTE ILLNESS: Streamlined 1-Morning Daily Briefing (8:00 AM IST) for the prescribed course
+          const durationDays = Math.min(maxDurationDays, 14);
+          for (let day = 1; day <= durationDays; day++) {
+            const morningDate = new Date();
+            morningDate.setDate(now.getDate() + day);
+            morningDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
 
             remindersToCreate.push({
               prescriptionId: prescription.id,
               patientId: patientId,
-              scheduledFor: nightDate,
+              scheduledFor: morningDate,
               status: 'PENDING',
-              messageType: 'MEDICINE_NIGHT',
+              messageType: 'MEDICINE_MORNING',
             });
           }
         }

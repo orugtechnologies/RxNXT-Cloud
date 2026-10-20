@@ -347,7 +347,11 @@ export async function sendPrescriptionPDF(
   pdfBase64?: string,
   clinicId?: string,
   aiTreatmentSummary?: string,
-  prescriptionId?: string
+  prescriptionId?: string,
+  options?: {
+    templateSummary?: string;
+    fullMessageBody?: string;
+  }
 ) {
   // Construct official direct downloadable PDF link (e.g. https://app.rxnxt.in/api/prescriptions/{id}/pdf)
   const appBaseUrl = cleanEnv(process.env.NEXT_PUBLIC_APP_URL) || 'https://app.rxnxt.in';
@@ -355,7 +359,9 @@ export async function sendPrescriptionPDF(
     ? `${appBaseUrl.replace(/\/$/, '')}/api/prescriptions/${prescriptionId}/pdf`
     : pdfUrl;
 
-  const messageBody = aiTreatmentSummary
+  const messageBody = options?.fullMessageBody
+    ? options.fullMessageBody
+    : aiTreatmentSummary
     ? `Hello ${patientName}, your prescription from *${clinicName}* is ready!\n\n` +
       `${aiTreatmentSummary}\n\n` +
       `📄 *Official Prescription PDF:* ${directPdfUrl}\n\n` +
@@ -372,8 +378,9 @@ export async function sendPrescriptionPDF(
     }
   }
 
-  const templateSummaryWithPdf = aiTreatmentSummary
-    ? `${aiTreatmentSummary} • PDF: ${directPdfUrl}`
+  const effectiveSummary = options?.templateSummary || aiTreatmentSummary;
+  const templateSummaryWithPdf = effectiveSummary
+    ? `${effectiveSummary} • PDF: ${directPdfUrl}`
     : `Download Prescription PDF: ${directPdfUrl}`;
 
   const cleanPhone = sanitizePhone(patientPhone);

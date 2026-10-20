@@ -125,6 +125,18 @@ After setting env vars: `npx prisma db push` to initialize PostgreSQL tables.
 
 ---
 
+## 🔮 Planned / Upcoming Feature: Meta WhatsApp Delivery Webhooks & Inbound Unsubscribe
+- **Objective:** Track true delivery status on patient handsets (Sent -> Delivered -> Read -> Failed) and handle inbound "STOP" replies automatically.
+- **Components to Implement:**
+  1. `GET /api/webhooks/whatsapp`: Meta webhook verification handshake (`hub.challenge`, `hub.verify_token`).
+  2. `POST /api/webhooks/whatsapp`: Asynchronous webhook event consumer with `X-Hub-Signature-256` HMAC validation.
+  3. **Safe State Tracking:** Use a dedicated `deliveryStatus` field (`delivered`, `read`, `failed`) and `deliveryError` on `Reminder` rather than modifying `status = 'SENT'` to preserve free trial quota queries (`lib/subscription.ts`) and analytics (`app/api/superadmin/stats/route.ts`).
+  4. **Strict Monotonic Progression:** Prevent out-of-order events (`PENDING` -> `SENT` -> `DELIVERED` -> `READ`).
+  5. **DPDP Compliance (STOP handling):** Inbound message consumer that sets `patient.whatsappConsent = false` when patient replies "STOP" / "UNSUBSCRIBE".
+  6. **UI Enhancements:** Update doctor & receptionist prescription/reminder views to show WhatsApp ticks (Single tick = Sent, Double gray = Delivered, Double blue = Read, Red warning = Failed).
+
+---
+
 ## 💬 How to Use This File
 **At the start of a new session, provide this file and say:**
 > *"I'm working on the RxNXT clinic application. Here is my project memory: [paste this file]. Please continue from where we left off. Next, I want to build [your task]."*
