@@ -26,68 +26,114 @@ interface VoiceRxResult {
   followUpDate?: string;
 }
 
-// Common phonetic speech-to-text misrecognitions for Indian pharmaceutical brands
+const GEMINI_SYSTEM_PROMPT = `You are an expert Indian Clinical OPD Assistant for the RxNXT platform.
+You will receive an unstructured, out-of-order, or dialect-mixed (English, Hindi, Telugu, Tamil, Hinglish) doctor voice dictation.
+Extract and return STRICT JSON matching this schema:
+{
+  "chiefComplaint": string or null (e.g. "Viral fever with headache"),
+  "diagnosis": string or null (e.g. "Acute Febrile Illness / URTI"),
+  "medicines": [
+    {
+      "name": string (canonical Indian brand or generic name e.g. "Dolo 650", "Pantocid 40", "Augmentin 625"),
+      "dosage_form": string ("Tablet", "Syrup", "Capsule", "Injection", "Drops", "Gel/Ointment"),
+      "strength": string or null (e.g. "650mg", "40mg"),
+      "frequency": string (standard medical notation like "1-0-1", "1-0-0", "0-0-1", "1-1-1", "SOS", "0-1-0", "1-1-1-1"),
+      "duration": string (e.g. "3 days", "5 days", "1 month"),
+      "instructions": string ("After Food", "Before Food", "At bedtime", "With warm water", "With food")
+    }
+  ],
+  "notes": string or null (clinical advice like "Warm saline gargle", "Avoid oily spicy food"),
+  "followUpDays": number or null (e.g. 3, 5, 7)
+}
+
+Clinical Rules:
+1. Indian Regional Dialects:
+   - "khali pet" or "parigadupuna" -> "Before Food"
+   - "subah sham" or "rendu sarlu" -> "1-0-1"
+   - "rat ko" or "padukonetappudu" -> "0-0-1"
+   - "teen bar" or "moodu sarlu" -> "1-1-1"
+   - "3 din" or "moodu rojulu" -> "3 days"
+   - "5 din" or "aidu rojulu" -> "5 days"
+2. Fix Speech-to-Text Phonetic Misrecognitions:
+   - "tholo" / "dollo" -> "Dolo 650"
+   - "pantalos it" / "pantacide" -> "Pantocid 40"
+   - "agumentin" / "ogmentin" -> "Augmentin 625"
+   - "pcm" / "parasitamol" -> "Paracetamol"
+   - "ascoril" -> "Ascoril-D"
+   - "setrizin" / "cetricin" -> "Cetirizine 10"
+3. Semantic Disentanglement:
+   - Match duration and instructions with the correct drug even if the doctor states them out of order or separates them with symptoms/diagnosis sentences.
+4. Return pure JSON only without markdown fences.`;
+
+/**
+ * Call Google Gemini 3.8 Flash for semantic extraction
+ */
+async function parseWithGemini(transcript: string, apiKey: string): Promise<any> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: GEMINI_SYSTEM_PROMPT }] },
+      contents: [{ parts: [{ text: transcript }] }],
+      generationConfig: { responseMimeType: 'application/json' },
+    }),
+    signal: AbortSignal.timeout(8000),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Gemini API error (${res.status}): ${errText}`);
+  }
+
+  const data = await res.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) {
+    throw new Error('Gemini returned empty content');
+  }
+
+  return JSON.parse(text);
+}
+
+// Fallback regex / phonetic patterns for offline or fallback mode
 const PHONETIC_CORRECTIONS = [
   { pattern: /\b(?:tholo|dollo|tolo)\b/gi, replacement: 'Dolo' },
   { pattern: /\b(?:pantalos\s+it|pantalos|pantocide|pantacide|pantocid)\b/gi, replacement: 'Pantocid' },
   { pattern: /\b(?:pantop\s+40|pantop|panto)\b/gi, replacement: 'Pantop' },
-  { pattern: /\b(?:agumentin|augumentin|ogmentin|augmentin)\b/gi, replacement: 'Augmentin' },
+  { pattern: /\b(?:agumentin|augumentin|ogmentin)\b/gi, replacement: 'Augmentin' },
   { pattern: /\b(?:ascoril|askoril|ascoril-d)\b/gi, replacement: 'Ascoril-D' },
-  { pattern: /\b(?:azithro|azithral|asithral|ezithral)\b/gi, replacement: 'Azithral' },
+  { pattern: /\b(?:azithro|azithral|asithral)\b/gi, replacement: 'Azithral' },
   { pattern: /\b(?:parasitamol|paracitamol|pcm)\b/gi, replacement: 'Paracetamol' },
-  { pattern: /\b(?:setrizin|cetrizin|cetricin|cetirizine)\b/gi, replacement: 'Cetirizine' },
+  { pattern: /\b(?:setrizin|cetrizin|cetricin)\b/gi, replacement: 'Cetirizine' },
   { pattern: /\b(?:calpol|kalpol)\b/gi, replacement: 'Calpol' },
-  { pattern: /\b(?:meftal\s+space|meftal\s+spas|meftal)\b/gi, replacement: 'Meftal-Spas' },
-  { pattern: /\b(?:montair\s+lc|montek\s+lc)\b/gi, replacement: 'Montair-LC' },
-  { pattern: /\b(?:pan\s+40)\b/gi, replacement: 'Pan 40' },
-  { pattern: /\b(?:pan\s+d)\b/gi, replacement: 'Pan-D' },
-  { pattern: /\b(?:glycomet|glycomit)\b/gi, replacement: 'Glycomet' },
-  { pattern: /\b(?:telma|telmikind)\b/gi, replacement: 'Telma' },
 ];
 
-/**
- * Pre-cleans transcript with Indian medical phonetics
- */
-function applyPhoneticCorrections(raw: string): string {
-  let cleaned = raw;
-  for (const item of PHONETIC_CORRECTIONS) {
-    cleaned = cleaned.replace(item.pattern, item.replacement);
-  }
-  return cleaned;
-}
-
-const FREQUENCY_PATTERNS = [
-  { regex: /\b(1-0-1|twice daily|twice a day|two times a day|two times|bd|bid|subah sham)\b/i, val: '1-0-1' },
-  { regex: /\b(1-1-1|thrice daily|thrice a day|three times a day|three times|tds|tid|teen bar)\b/i, val: '1-1-1' },
-  { regex: /\b(1-0-0|once daily|once a day|one time a day|one time|od|morning only|morning|subah)\b/i, val: '1-0-0' },
-  { regex: /\b(0-0-1|night only|at bedtime|bedtime only|bedtime|hs|rat ko)\b/i, val: '0-0-1' },
-  { regex: /\b(0-1-0|afternoon only|afternoon|dophar)\b/i, val: '0-1-0' },
-  { regex: /\b(1-1-1-1|qid|four times a day|four times)\b/i, val: '1-1-1-1' },
-  { regex: /\b(sos|as needed|if needed|jab jarurat)\b/i, val: 'SOS' },
+const FREQ_PATTERNS = [
+  { regex: /\b(1-0-1|twice daily|twice a day|two times|bd|bid|subah sham)\b/i, val: '1-0-1' },
+  { regex: /\b(1-1-1|thrice daily|thrice a day|three times|tds|tid|teen bar)\b/i, val: '1-1-1' },
+  { regex: /\b(1-0-0|once daily|once a day|one time|od|morning|subah)\b/i, val: '1-0-0' },
+  { regex: /\b(0-0-1|night only|at bedtime|bedtime|hs|rat ko)\b/i, val: '0-0-1' },
+  { regex: /\b(0-1-0|afternoon|dophar)\b/i, val: '0-1-0' },
+  { regex: /\b(1-1-1-1|qid|four times)\b/i, val: '1-1-1-1' },
+  { regex: /\b(sos|as needed|jab jarurat)\b/i, val: 'SOS' },
 ];
 
-const INSTRUCTION_PATTERNS = [
+const INST_PATTERNS = [
   { regex: /\b(before (?:food|meals?|breakfast|lunch|dinner)|empty stomach|khali pet|ac)\b/i, val: 'Before Food' },
   { regex: /\b(after (?:food|meals?|breakfast|lunch|dinner)|khana khane ke baad|pc)\b/i, val: 'After Food' },
   { regex: /\b(with (?:food|meals?))\b/i, val: 'With Food' },
   { regex: /\b(at bedtime|sone se pehle)\b/i, val: 'At bedtime' },
-  { regex: /\b(with warm water|garm pani ke sath)\b/i, val: 'With warm water' },
-  { regex: /\b(with milk|doodh ke sath)\b/i, val: 'With milk' },
+  { regex: /\b(with warm water|garm pani)\b/i, val: 'With warm water' },
 ];
 
-/**
- * Robust Clinical Prescription Parser
- */
-async function parseClinicalTranscript(rawTranscript: string, clinicId: string): Promise<VoiceRxResult> {
-  let text = applyPhoneticCorrections(rawTranscript.trim());
+function parseHeuristicFallback(rawTranscript: string): any {
+  let text = rawTranscript;
+  for (const item of PHONETIC_CORRECTIONS) {
+    text = text.replace(item.pattern, item.replacement);
+  }
 
-  let chiefComplaint = '';
-  let diagnosis = '';
-  let notes = '';
   let followUpDays: number | undefined;
-
-  // 1. Extract Follow-up and remove from working text
-  const fuMatch = text.match(/\b(?:review|follow[- ]?up|come back|revisit)\s+(?:in|after)?\s*(\d+)\s*(days?|din|weeks?|months?)?\b/i);
+  const fuMatch = text.match(/\b(?:review|follow[- ]?up|come back|revisit)\s+(?:in|after)?\s*(\d+)\s*(days?|din|weeks?)?\b/i);
   if (fuMatch) {
     const qty = parseInt(fuMatch[1], 10);
     const unit = fuMatch[2] || 'day';
@@ -95,59 +141,18 @@ async function parseClinicalTranscript(rawTranscript: string, clinicId: string):
     text = text.replace(fuMatch[0], ' ');
   }
 
-  // 2. Extract Clinical Advice / Notes and remove from working text
-  const adviceMatch = text.match(/\b(?:advise|advice|instructions?|notes?|precautions?)\s*:?\s*([^.]+?)(?=\.|$)/i);
-  if (adviceMatch && adviceMatch[1]) {
-    notes = adviceMatch[1].trim();
-    text = text.replace(adviceMatch[0], ' ');
-  } else {
-    const foundAdvice: string[] = [];
-    if (/warm (?:saline )?water gargle/i.test(text)) {
-      foundAdvice.push('Warm saline gargles thrice daily');
-      text = text.replace(/warm (?:saline )?water gargle/gi, ' ');
-    }
-    if (/steam inhalation/i.test(text)) {
-      foundAdvice.push('Steam inhalation twice daily');
-      text = text.replace(/steam inhalation/gi, ' ');
-    }
-    if (/drink (?:plenty of )?water|hydration|fluids/i.test(text)) {
-      foundAdvice.push('Drink plenty of boiled water and stay hydrated');
-      text = text.replace(/drink (?:plenty of )?water|hydration|fluids/gi, ' ');
-    }
-    if (/avoid (?:oily|spicy|cold)/i.test(text)) {
-      foundAdvice.push('Avoid oily, spicy and refrigerated cold food');
-      text = text.replace(/avoid (?:oily|spicy|cold)[^,.]*/gi, ' ');
-    }
-    if (foundAdvice.length > 0) {
-      notes = foundAdvice.join('. ');
-    }
-  }
-
-  // 3. Extract Chief Complaint and remove from working text
-  // Looks for patterns like "Patient has viral fever", "complaining of dry cough", "c/o sore throat"
-  const ccMatch = text.match(/\b(?:patient\s+has|patient\s+is\s+having|complaining of|c\/o|complaints? of|suffering from|presents with|having)\s+([^.,;]+?)(?=\bgive\b|\bprescribe\b|\brx\b|\btab\b|\bcap\b|\bsyp\b|\b[A-Z][a-z]+\s+\d+|\.|$)/i);
+  let chiefComplaint = '';
+  let diagnosis = '';
+  const ccMatch = text.match(/\b(?:patient\s+has|complaining of|c\/o|complaints? of|suffering from|having)\s+([^.,;]+?)(?=\bgive\b|\bprescribe\b|\brx\b|\.|$)/i);
   if (ccMatch && ccMatch[1]) {
     chiefComplaint = ccMatch[1].trim();
     text = text.replace(ccMatch[0], ' ');
+    if (/fever|pyrexia/i.test(chiefComplaint)) diagnosis = 'Acute Febrile Illness';
+    else if (/cough|cold|throat/i.test(chiefComplaint)) diagnosis = 'Upper Respiratory Tract Infection (URTI)';
   }
 
-  // Infer Diagnosis from complaint or explicit diagnosis statement
-  const diagMatch = text.match(/\b(?:diagnos(?:is|ed with)|impression|case of)\s*:?\s*([^.,;]+?)(?=\bgive\b|\bprescribe\b|\brx\b|\.|$)/i);
-  if (diagMatch && diagMatch[1]) {
-    diagnosis = diagMatch[1].trim();
-    text = text.replace(diagMatch[0], ' ');
-  } else if (!diagnosis && chiefComplaint) {
-    if (/viral fever|fever|pyrexia/i.test(chiefComplaint)) diagnosis = 'Acute Febrile Illness';
-    else if (/cough|cold|throat|tonsil|pharyngitis/i.test(chiefComplaint)) diagnosis = 'Upper Respiratory Tract Infection (URTI)';
-    else if (/gastric|acidity|heartburn|gas|indigestion/i.test(chiefComplaint)) diagnosis = 'Acute Gastritis / Dyspepsia';
-    else if (/diarrhea|loose motion|vomit/i.test(chiefComplaint)) diagnosis = 'Acute Gastroenteritis';
-    else if (/body pain|headache|back pain|myalgia/i.test(chiefComplaint)) diagnosis = 'Myalgia / Tension Headache';
-  }
-
-  // 4. Split remaining text into distinct medicine clauses
-  // Delimited by periods, commas, semicolons, 'and', 'also', 'plus'
   const clauses = text
-    .split(/(?:[.,;]|\band\b|\balso\b|\bplus\b)+/i)
+    .split(/(?:[.,;]|\band\b|\balso\b)+/i)
     .map((c) => c.trim())
     .filter((c) => c.length > 2);
 
@@ -155,19 +160,14 @@ async function parseClinicalTranscript(rawTranscript: string, clinicId: string):
 
   for (const clause of clauses) {
     let cText = clause;
-
-    // Check if this clause contains frequency, duration, or a known medicine
-    const hasFreq = FREQUENCY_PATTERNS.some((fp) => fp.regex.test(cText));
+    const hasFreq = FREQ_PATTERNS.some((fp) => fp.regex.test(cText));
     const hasDur = /\b(?:for\s+)?(\d+)\s*(days?|din|weeks?|months?)\b/i.test(cText);
-    const hasDrug = /\b(Dolo|Pantocid|Augmentin|Paracetamol|Pantop|Ascoril|Azithral|Cetirizine|Calpol|Meftal|Telma|Glycomet|Pan|Gelusil|Amox|Cifran)\b/i.test(cText);
+    const hasDrug = /\b(Dolo|Pantocid|Augmentin|Paracetamol|Pantop|Ascoril|Azithral|Cetirizine|Calpol|Meftal|Telma|Glycomet|Pan)\b/i.test(cText);
 
-    if (!hasFreq && !hasDur && !hasDrug) {
-      continue; // Skip noise clauses
-    }
+    if (!hasFreq && !hasDur && !hasDrug) continue;
 
-    // A. Extract Frequency (in ANY position)
     let frequency = '1-0-1';
-    for (const fp of FREQUENCY_PATTERNS) {
+    for (const fp of FREQ_PATTERNS) {
       if (fp.regex.test(cText)) {
         frequency = fp.val;
         cText = cText.replace(fp.regex, ' ');
@@ -175,25 +175,17 @@ async function parseClinicalTranscript(rawTranscript: string, clinicId: string):
       }
     }
 
-    // B. Extract Duration (in ANY position)
     let duration = '5 days';
     const durMatch = cText.match(/\b(?:for\s+)?(\d+)\s*(days?|din|weeks?|hafta|months?|mahina)\b/i);
     if (durMatch) {
       const num = durMatch[1];
       const unit = durMatch[2].toLowerCase();
-      if (unit.startsWith('week') || unit.startsWith('haft')) {
-        duration = `${parseInt(num, 10) * 7} days`;
-      } else if (unit.startsWith('month') || unit.startsWith('mahin')) {
-        duration = num === '1' ? '1 month' : `${num} months`;
-      } else {
-        duration = `${num} days`;
-      }
+      duration = unit.startsWith('week') ? `${parseInt(num, 10) * 7} days` : `${num} days`;
       cText = cText.replace(durMatch[0], ' ');
     }
 
-    // C. Extract Instructions (in ANY position)
     let instructions = 'After Food';
-    for (const ip of INSTRUCTION_PATTERNS) {
+    for (const ip of INST_PATTERNS) {
       if (ip.regex.test(cText)) {
         instructions = ip.val;
         cText = cText.replace(ip.regex, ' ');
@@ -201,83 +193,25 @@ async function parseClinicalTranscript(rawTranscript: string, clinicId: string):
       }
     }
 
-    // D. Clean remaining words to isolate pure Drug Name + Strength
     let cleanName = cText
-      .replace(/\b(patient|has|complaining|viral|fever|diagnosis|give|prescribe|take|and|also|please|tab|tablet|cap|capsule|syp|syrup|inj|injection|for|after|before)\b/gi, ' ')
+      .replace(/\b(patient|has|complaining|viral|fever|give|prescribe|take|and|also|tab|tablet|cap|capsule|syp|syrup|inj|injection)\b/gi, ' ')
       .replace(/\s+/g, ' ')
       .trim();
 
-    // Standardize artifacts like "40m" -> "40mg", "650 m" -> "650mg"
     cleanName = cleanName.replace(/(\d+)\s*m\b/gi, '$1mg');
 
-    if (cleanName.length < 2) continue;
-
-    // Capitalize first letter
-    cleanName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-
-    // Infer dosage form
-    let dosageForm = 'Tablet';
-    if (/syrup|syp|gelusil|ascoril/i.test(clause) || /syrup|syp/i.test(cleanName)) dosageForm = 'Syrup';
-    else if (/cap(?:sule)?/i.test(clause) || /cap\b/i.test(cleanName)) dosageForm = 'Capsule';
-    else if (/inj(?:ection)?/i.test(clause)) dosageForm = 'Injection';
-    else if (/drop/i.test(clause)) dosageForm = 'Drops';
-    else if (/gel|ointment/i.test(clause)) dosageForm = 'Gel/Ointment';
-
-    // Extract strength if present (e.g. "650", "650mg", "40", "40mg")
-    const strMatch = cleanName.match(/\b(\d+(?:\.\d+)?\s*(?:mg|ml|gm)?)\b/i);
-    const strength = strMatch ? strMatch[1] : undefined;
-
-    medicines.push({
-      name: cleanName,
-      dosage_form: dosageForm,
-      strength: strength,
-      frequency,
-      duration,
-      instructions,
-    });
-  }
-
-  // Cross-reference with PostgreSQL database to attach canonical drugId where possible
-  for (const med of medicines) {
-    try {
-      const dbDrug = await prisma.drug.findFirst({
-        where: {
-          OR: [
-            { brandName: { contains: med.name.split(' ')[0], mode: 'insensitive' } },
-            { genericName: { contains: med.name.split(' ')[0], mode: 'insensitive' } },
-          ],
-        },
-        select: { id: true, brandName: true, genericName: true, dosageForm: true, strength: true },
+    if (cleanName.length >= 2) {
+      medicines.push({
+        name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
+        dosage_form: 'Tablet',
+        frequency,
+        duration,
+        instructions,
       });
-
-      if (dbDrug) {
-        med.drugId = dbDrug.id;
-        med.generic_id = dbDrug.id;
-        if (dbDrug.dosageForm) med.dosage_form = dbDrug.dosageForm;
-        if (dbDrug.strength && !med.strength) med.strength = dbDrug.strength;
-      }
-    } catch {
-      // Continue safely if DB lookup is offline
     }
   }
 
-  // Calculate follow-up ISO string if followUpDays was found
-  let followUpDate: string | undefined;
-  if (followUpDays) {
-    const d = new Date();
-    d.setDate(d.getDate() + followUpDays);
-    followUpDate = d.toISOString().split('T')[0];
-  }
-
-  return {
-    transcript: rawTranscript,
-    chiefComplaint: chiefComplaint || undefined,
-    diagnosis: diagnosis || undefined,
-    medicines,
-    notes: notes || undefined,
-    followUpDays,
-    followUpDate,
-  };
+  return { chiefComplaint, diagnosis, medicines, followUpDays };
 }
 
 export async function POST(request: Request) {
@@ -297,16 +231,81 @@ export async function POST(request: Request) {
       );
     }
 
-    // Process transcript through clinical parser
-    const result = await parseClinicalTranscript(transcript, user.clinicId);
+    let parsedResult: any;
+    let engineSource = 'heuristic_fallback';
+    const apiKey = process.env.GEMINI_API_KEY;
 
-    // Filter out any restricted Schedule X / narcotic drugs
-    result.medicines = result.medicines.filter((m) => !isDrugNameRestricted(m.name));
+    if (apiKey && apiKey.length > 10) {
+      try {
+        parsedResult = await parseWithGemini(transcript, apiKey);
+        engineSource = 'gemini_3.8_flash';
+      } catch (geminiErr: any) {
+        console.warn('Gemini 3.8 Flash parsing failed, falling back to heuristic:', geminiErr.message);
+        parsedResult = parseHeuristicFallback(transcript);
+      }
+    } else {
+      parsedResult = parseHeuristicFallback(transcript);
+    }
+
+    const medicines: ParsedMedicine[] = (parsedResult.medicines || []).map((m: any) => ({
+      name: m.name || 'Medicine',
+      dosage_form: m.dosage_form || 'Tablet',
+      strength: m.strength || undefined,
+      frequency: m.frequency || '1-0-1',
+      duration: m.duration || '5 days',
+      instructions: m.instructions || 'After Food',
+    }));
+
+    // Cross-reference canonical drugId against PostgreSQL database where available
+    for (const med of medicines) {
+      try {
+        const dbDrug = await prisma.drug.findFirst({
+          where: {
+            OR: [
+              { brandName: { contains: med.name.split(' ')[0], mode: 'insensitive' } },
+              { genericName: { contains: med.name.split(' ')[0], mode: 'insensitive' } },
+            ],
+          },
+          select: { id: true, brandName: true, genericName: true, dosageForm: true, strength: true },
+        });
+
+        if (dbDrug) {
+          med.drugId = dbDrug.id;
+          med.generic_id = dbDrug.id;
+          if (dbDrug.dosageForm) med.dosage_form = dbDrug.dosageForm;
+          if (dbDrug.strength && !med.strength) med.strength = dbDrug.strength;
+        }
+      } catch {
+        // Safe if DB query fails in disconnected test environment
+      }
+    }
+
+    // Filter restricted/narcotic drugs
+    const safeMedicines = medicines.filter((m) => !isDrugNameRestricted(m.name));
+
+    // Calculate follow-up ISO string if followUpDays was found
+    let followUpDate: string | undefined;
+    const followUpDays = parsedResult.followUpDays;
+    if (followUpDays && typeof followUpDays === 'number') {
+      const d = new Date();
+      d.setDate(d.getDate() + followUpDays);
+      followUpDate = d.toISOString().split('T')[0];
+    }
+
+    const finalResult: VoiceRxResult = {
+      transcript,
+      chiefComplaint: parsedResult.chiefComplaint || undefined,
+      diagnosis: parsedResult.diagnosis || undefined,
+      medicines: safeMedicines,
+      notes: parsedResult.notes || undefined,
+      followUpDays: followUpDays || undefined,
+      followUpDate,
+    };
 
     return NextResponse.json({
       success: true,
-      data: result,
-      source: 'voice_rx_engine',
+      data: finalResult,
+      source: engineSource,
     });
   } catch (err: any) {
     console.error('Voice Rx parsing error:', err);
