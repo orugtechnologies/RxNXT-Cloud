@@ -105,7 +105,7 @@ export default function DashboardLayout({
           onMenuToggle={toggleMobileMenu} 
         />
         
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 mt-16 overflow-x-hidden animate-fade-in">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 mt-16 overflow-x-clip animate-fade-in">
           <SubscriptionBanner />
           {children}
         </main>

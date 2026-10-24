@@ -477,7 +477,7 @@ function PrescriptionWorkflowContent() {
         <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 gap-6 items-start">
           
           {/* Left Column: Patient & Clinical Details (Sticky docked) */}
-          <div className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-6 lg:self-start">
+          <div className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-20 lg:self-start">
             
             {/* Step 1: Patient Selection */}
             <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 hover:shadow-md relative z-20">
@@ -754,7 +754,7 @@ function PrescriptionWorkflowContent() {
 
 
           {/* Right Rail: Real-time Live A4 Prescription Sheet & Fitts's Law Action Dock */}
-          <div className="hidden xl:block xl:col-span-4 sticky top-6 self-start space-y-4">
+          <div className="hidden xl:block xl:col-span-4 sticky top-20 self-start space-y-4 max-h-[calc(100vh-6rem)] overflow-y-auto pr-1">
             <LivePrescriptionSheet
               patient={patient}
               medicines={medicines}
