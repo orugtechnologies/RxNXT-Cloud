@@ -89,14 +89,14 @@ export default function LivePrescriptionSheet({
       <div className="bg-white rounded-xl shadow-xl border border-slate-300/80 overflow-hidden text-slate-800 transition-all duration-300">
         
         {/* Top Sheet Status Ribbon */}
-        <div className="bg-gradient-to-r from-[#000865] via-[#001099] to-[#0080ff] text-white px-4 py-2.5 flex items-center justify-between text-xs font-semibold shadow-inner">
+        <div className="bg-slate-50/80 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between text-xs font-semibold">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="tracking-wide uppercase text-[11px] font-black text-white flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="tracking-wide uppercase text-[11px] font-black text-[#000865] flex items-center gap-2">
               Live Prescription Preview (A4 Sheet)
             </span>
           </div>
-          <span className="text-[10px] text-emerald-300 font-semibold bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+          <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
             • Syncs Real-Time
           </span>
         </div>
@@ -306,20 +306,20 @@ export default function LivePrescriptionSheet({
       </div>
 
       {/* Fitts's Law Primary Action Dock (Directly Anchored Under the Preview) */}
-      <div className="bg-[#000c66] text-white rounded-xl p-4 shadow-xl border border-[#1a237e] space-y-3">
-        <div className="flex items-center justify-between text-xs text-blue-200">
-          <span className="font-extrabold flex items-center gap-1.5 text-white">
-            <ShieldCheck size={16} className="text-[#38bdf8]" />
+      <div className="bg-white rounded-xl p-4 shadow-soft border border-slate-200/90 space-y-3">
+        <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-100">
+          <span className="font-extrabold flex items-center gap-1.5 text-[#000865] uppercase tracking-wider text-[11px]">
+            <ShieldCheck size={16} className="text-[#0080ff]" />
             Dispatch Dock
           </span>
-          <span className="text-[11px] text-blue-200 font-medium">
+          <span className="text-[11px] text-slate-500 font-medium">
             {patient ? `Patient: ${patient.name}` : 'No patient selected'}
           </span>
         </div>
 
         {hasIncompleteMedicines && medicines.length > 0 && (
-          <div className="flex items-center gap-1.5 text-xs text-amber-300 bg-amber-950/70 border border-amber-700/60 p-2 rounded-lg">
-            <AlertCircle size={14} className="shrink-0" />
+          <div className="flex items-center gap-1.5 text-xs text-amber-800 bg-amber-50 border border-amber-200 p-2 rounded-lg">
+            <AlertCircle size={14} className="shrink-0 text-amber-600" />
             <span>Complete dosage for all medicines before printing.</span>
           </div>
         )}
@@ -329,7 +329,7 @@ export default function LivePrescriptionSheet({
             type="button"
             onClick={onProceedToReview}
             disabled={!patient || medicines.length === 0 || saving}
-            className="w-full bg-gradient-to-r from-[#0080ff] to-[#0052cc] hover:from-[#0070e6] hover:to-[#0047b3] text-white font-extrabold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full bg-gradient-to-r from-[#0080ff] to-[#0052cc] hover:from-[#0070e6] hover:to-[#0047b3] text-white font-extrabold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer active:scale-[0.99]"
           >
             {saving ? (
               <Loader2 className="animate-spin" size={18} />
@@ -344,9 +344,9 @@ export default function LivePrescriptionSheet({
               type="button"
               onClick={onProceedToReview}
               disabled={!patient || medicines.length === 0}
-              className="bg-[#0f1d85] hover:bg-[#1a28a3] text-blue-100 border border-[#2b3bb5] font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs disabled:opacity-40"
+              className="bg-[#e8f1fd] hover:bg-[#dbeafe] text-[#0052cc] border border-[#bfdbfe] font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs disabled:opacity-40 cursor-pointer"
             >
-              <Send size={13} className="text-[#38bdf8]" />
+              <Send size={13} className="text-[#0080ff]" />
               <span>WhatsApp Rx</span>
             </button>
 
@@ -354,9 +354,9 @@ export default function LivePrescriptionSheet({
               type="button"
               onClick={onOpenSaveModal}
               disabled={medicines.length === 0}
-              className="bg-[#0f1d85] hover:bg-[#1a28a3] text-blue-100 border border-[#2b3bb5] font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs disabled:opacity-40"
+              className="bg-[#e8f1fd] hover:bg-[#dbeafe] text-[#0052cc] border border-[#bfdbfe] font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs disabled:opacity-40 cursor-pointer"
             >
-              <Layers size={13} className="text-[#38bdf8]" />
+              <Layers size={13} className="text-[#0080ff]" />
               <span>Save Protocol</span>
             </button>
           </div>

@@ -68,20 +68,20 @@ export default function QuickTestAndDripPanel({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-clinic-navy hover:bg-[#000a80] transition-colors px-5 py-3 border-b border-clinic-border flex items-center justify-between text-left"
+        className="w-full bg-slate-50/70 hover:bg-slate-100/70 transition-colors px-5 py-3 border-b border-slate-100 flex items-center justify-between text-left"
       >
         <div className="flex items-center gap-2">
-          <FlaskConical size={16} className="text-[#38bdf8]" />
-          <span className="text-xs font-bold text-white uppercase tracking-wider">
+          <FlaskConical size={16} className="text-[#0080ff]" />
+          <span className="text-xs font-bold text-[#000865] uppercase tracking-wider">
             Diagnostics & Day-Care Procedures (Optional)
           </span>
           {hasSelections && (
-            <span className="text-[11px] font-bold text-blue-100 bg-blue-900/60 border border-blue-400/30 px-2 py-0.5 rounded-full ml-2">
+            <span className="text-[10px] font-bold text-[#0052cc] bg-[#e8f1fd] border border-[#bfdbfe] px-2 py-0.5 rounded-full ml-2">
               {selectedTests.length + selectedDrips.length} ordered (₹{totalBillable})
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2 text-blue-200 text-xs">
+        <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
           <span>{isOpen ? 'Collapse' : '+ Expand'}</span>
           {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </div>

@@ -121,12 +121,12 @@ export default function QuickSymptomsDiagnosis({
     <div className="space-y-4">
       {/* Block: Chief Complaints */}
       <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden transition-all duration-300">
-        <div className="bg-clinic-navy px-4 py-2.5 border-b border-clinic-border flex items-center justify-between">
+        <div className="bg-slate-50/70 px-4 py-2.5 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Stethoscope size={15} className="text-[#38bdf8]" />
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">Chief Complaints</h3>
+            <Stethoscope size={15} className="text-[#0080ff]" />
+            <h3 className="text-xs font-bold text-[#000865] uppercase tracking-wider">Chief Complaints</h3>
           </div>
-          <span className="text-[10px] text-blue-200 font-medium">Tap to toggle</span>
+          <span className="text-[10px] text-slate-400 font-medium">Tap to toggle</span>
         </div>
 
         <div className="p-3.5 space-y-2.5">
@@ -175,12 +175,12 @@ export default function QuickSymptomsDiagnosis({
 
       {/* Block: Diagnosis / Clinical Impression */}
       <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden transition-all duration-300">
-        <div className="bg-clinic-navy px-4 py-2.5 border-b border-clinic-border flex items-center justify-between">
+        <div className="bg-slate-50/70 px-4 py-2.5 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Activity size={15} className="text-[#38bdf8]" />
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">Diagnosis / Impression</h3>
+            <Activity size={15} className="text-[#0080ff]" />
+            <h3 className="text-xs font-bold text-[#000865] uppercase tracking-wider">Diagnosis / Impression</h3>
           </div>
-          <span className="text-[10px] text-blue-200 font-medium">Tap to toggle</span>
+          <span className="text-[10px] text-slate-400 font-medium">Tap to toggle</span>
         </div>
 
         <div className="p-3.5 space-y-2.5">
