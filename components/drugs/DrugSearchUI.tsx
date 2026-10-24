@@ -97,17 +97,24 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
           <Search size={20} />
         </div>
         <input
+          id="drug-search-input"
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search for medicines (e.g. Dolo, Paracetamol)..."
-          className="w-full pl-12 pr-12 py-3.5 bg-gray-50/50 border border-gray-300 rounded-lg shadow-sm focus:bg-white focus:ring-2 focus:ring-clinic-emerald focus:border-clinic-emerald outline-none text-gray-900 transition-all text-sm"
+          placeholder="Search medicines (e.g. Dolo, Paracetamol)... (Press / to search)"
+          className="w-full pl-12 pr-20 py-3.5 bg-gray-50/50 border border-gray-300 rounded-lg shadow-sm focus:bg-white focus:ring-2 focus:ring-clinic-emerald focus:border-clinic-emerald outline-none text-gray-900 transition-all text-sm"
         />
-        {loading && (
-          <div className="absolute right-4 top-4 text-clinic-emerald">
-            <Loader2 className="animate-spin h-5 w-5" />
-          </div>
-        )}
+        <div className="absolute right-3.5 top-3.5 flex items-center pointer-events-none">
+          {loading ? (
+            <div className="text-clinic-emerald">
+              <Loader2 className="animate-spin h-5 w-5" />
+            </div>
+          ) : (
+            <kbd className="hidden sm:inline-flex items-center px-2 py-0.5 text-[10px] font-mono font-bold text-slate-400 bg-slate-100 border border-slate-300 rounded">
+              /
+            </kbd>
+          )}
+        </div>
       </div>
 
       {error && (

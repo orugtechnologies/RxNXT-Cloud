@@ -52,9 +52,9 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
       dosage_form: drug.dosage_form,
       strength: drug.strength,
       route: drug.route,
-      frequency: '',
-      duration: '',
-      instructions: '',
+      frequency: drug.frequency || '1-0-1',
+      duration: drug.duration || '3 days',
+      instructions: drug.instructions || 'Post-Meal (After Food)',
     };
     onAddDrug(newMed);
   };

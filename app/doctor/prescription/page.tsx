@@ -152,6 +152,38 @@ function PrescriptionWorkflowContent() {
     }
   }, [searchParams]);
 
+  // Global Doctor Hotkeys ('/' for search, Ctrl+Enter to finish)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 1. Focus search with '/' (unless doctor is already in an input/textarea)
+      if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((document.activeElement?.tagName || ''))) {
+        const searchInput = document.getElementById('drug-search-input') as HTMLInputElement | null;
+        if (searchInput) {
+          e.preventDefault();
+          searchInput.focus();
+          searchInput.select();
+        }
+      }
+
+      // 2. Ctrl + Enter or Cmd + Enter to finalize Rx
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (patient && medicines.length > 0) {
+          const validation = validatePrescriptionMedicines();
+          if (!validation.isValid) {
+            alert(validation.message);
+            return;
+          }
+          setShowReview(true);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [patient, medicines]);
+
+
   const handlePatientSelect = async (selectedPatient: Patient) => {
     setPatient(selectedPatient);
     setPatientEncounters([]);
@@ -196,9 +228,9 @@ function PrescriptionWorkflowContent() {
       dosage_form: drug.dosage_form,
       strength: drug.strength,
       route: drug.route,
-      frequency: '',
-      duration: '',
-      instructions: ''
+      frequency: drug.default_frequency || '1-0-1',
+      duration: drug.default_duration || '3 days',
+      instructions: drug.default_instructions || 'Post-Meal (After Food)'
     };
     setMedicines([...medicines, newMed]);
   };
@@ -406,6 +438,16 @@ function PrescriptionWorkflowContent() {
     setLastTimeTaken(null);
   };
 
+  // Real-time Allergy Cross-Check Guardrail
+  const patientAllergies = patient?.allergies;
+  const allergyConflicts = patientAllergies
+    ? medicines.filter(m => {
+        const allergenTerms = patientAllergies.toLowerCase().split(/[,;\s]+/).filter(w => w.length > 2);
+        const medName = (m.name || '').toLowerCase();
+        return allergenTerms.some(term => medName.includes(term));
+      })
+    : [];
+
   if (tab === 'templates') {
     return <TemplateManagementUI />;
   }
@@ -549,17 +591,7 @@ function PrescriptionWorkflowContent() {
 
           {/* Right Column: Medications & Actions */}
           <div className="lg:col-span-8 xl:col-span-9 space-y-6">
-            {/* Quick Diagnostics & Day-Care Procedures (Auto-Billed) */}
-            {patient && (
-              <QuickTestAndDripPanel
-                selectedTests={selectedTests}
-                selectedDrips={selectedDrips}
-                onToggleTest={handleToggleTest}
-                onToggleDrip={handleToggleDrip}
-                onSendForTests={handleSendForTests}
-                isSending={sendingForTests}
-              />
-            )}
+            
 
             {/* Step 3: Medication */}
             {patient && (
@@ -572,6 +604,17 @@ function PrescriptionWorkflowContent() {
                 </div>
                 
                 <div className="p-6">
+                  {/* Real-time Allergy Cross-Check Guardrail */}
+                  {allergyConflicts.length > 0 && (
+                    <div className="mb-4 p-3 bg-red-100 border-2 border-red-500 rounded-lg text-red-900 flex items-center gap-2 animate-bounce">
+                      <AlertCircle size={20} className="text-red-600 shrink-0" />
+                      <div className="text-xs">
+                        <span className="font-extrabold uppercase">Potential Allergy Contraindication!</span>
+                        <p className="mt-0.5">Patient has documented allergy to <strong>{patientAllergies}</strong>. Prescribed: {allergyConflicts.map(m => m.name).join(', ')}</p>
+                      </div>
+                    </div>
+                  )}
+
 
                   {/* 1-Click My Protocol Packs Bar */}
                   <ProtocolPacksBar 
@@ -630,6 +673,18 @@ function PrescriptionWorkflowContent() {
               </div>
             )}
 
+                        {/* SOAP Order: Diagnostics & Day-Care Procedures Demoted below Medications */}
+            {patient && (
+              <QuickTestAndDripPanel
+                selectedTests={selectedTests}
+                selectedDrips={selectedDrips}
+                onToggleTest={handleToggleTest}
+                onToggleDrip={handleToggleDrip}
+                onSendForTests={handleSendForTests}
+                isSending={sendingForTests}
+              />
+            )}
+
             {/* Action Bar */}
             {patient && (() => {
               const hasIncompleteMedicines = medicines.some(
@@ -683,6 +738,7 @@ function PrescriptionWorkflowContent() {
                       } disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-emerald-400`}
                     >
                       <Eye className="mr-2" size={18} /> Review & Print Rx
+                      <kbd className="hidden sm:inline-flex ml-2 px-1.5 py-0.5 text-[10px] font-mono bg-white/20 text-white rounded">Ctrl+Enter</kbd>
                       {hasIncompleteMedicines && (
                         <span className="ml-2 text-[10px] bg-white/30 text-white px-2 py-0.5 rounded-full uppercase font-extrabold tracking-wider">
                           Incomplete

@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { FlaskConical, Droplet, Plus, X } from 'lucide-react';
 
 export interface InvestigationItem {
@@ -60,24 +61,34 @@ export default function QuickTestAndDripPanel({
   ].reduce((sum, p) => sum + p, 0);
 
   const hasSelections = selectedTests.length > 0 || selectedDrips.length > 0;
+  const [isOpen, setIsOpen] = useState(hasSelections);
 
   return (
     <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden animate-in fade-in slide-in-from-bottom-2">
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 px-5 py-3 border-b border-slate-700/60 flex items-center justify-between">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full bg-slate-900 hover:bg-slate-800 transition-colors px-5 py-3 border-b border-slate-800 flex items-center justify-between text-left"
+      >
         <div className="flex items-center gap-2">
-          <FlaskConical size={18} className="text-cyan-400" />
-          <h2 className="text-xs font-extrabold text-white uppercase tracking-wider">
-            Diagnostics & Day-Care Procedures (Auto-Billed)
-          </h2>
-        </div>
-        {totalBillable > 0 && (
-          <span className="text-[11px] font-bold text-cyan-300 bg-cyan-950/70 border border-cyan-800 px-2 py-0.5 rounded-full">
-            Auto-Bill: ₹{totalBillable.toLocaleString('en-IN')}
+          <FlaskConical size={16} className="text-cyan-400" />
+          <span className="text-xs font-bold text-white uppercase tracking-wider">
+            Diagnostics & Day-Care Procedures (Optional)
           </span>
-        )}
-      </div>
+          {hasSelections && (
+            <span className="text-[11px] font-bold text-cyan-300 bg-cyan-950/80 border border-cyan-700 px-2 py-0.5 rounded-full ml-2">
+              {selectedTests.length + selectedDrips.length} ordered (₹{totalBillable})
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 text-slate-400 text-xs">
+          <span>{isOpen ? 'Collapse' : '+ Expand'}</span>
+          {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </div>
+      </button>
 
-      <div className="p-4 space-y-4 bg-white/70">
+      {isOpen && (
+        <div className="p-4 space-y-4 bg-white/70">
         {/* Lab Investigations Chips */}
         <div>
           <div className="flex items-center justify-between mb-2">
@@ -172,6 +183,7 @@ export default function QuickTestAndDripPanel({
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
