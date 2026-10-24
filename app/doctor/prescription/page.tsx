@@ -20,7 +20,6 @@ import QuickTestAndDripPanel, { InvestigationItem, DayCareProcedureItem } from '
 import QuickSymptomsDiagnosis from '@/components/prescriptions/QuickSymptomsDiagnosis';
 import FrequentDrugsBar from '@/components/drugs/FrequentDrugsBar';
 import QuickAdviceChips from '@/components/prescriptions/QuickAdviceChips';
-import VoiceRxBar, { VoiceRxPayload } from '@/components/prescriptions/VoiceRxBar';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
@@ -62,7 +61,7 @@ function PrescriptionWorkflowContent() {
 
   // Speed tracking metrics
   const [startTime, setStartTime] = useState<number | null>(null);
-  const [creationMethod, setCreationMethod] = useState<'MANUAL' | 'TEMPLATE' | 'VOICE'>('MANUAL');
+  const [creationMethod, setCreationMethod] = useState<'MANUAL' | 'TEMPLATE'>('MANUAL');
   const [lastTimeTaken, setLastTimeTaken] = useState<number | null>(null);
 
   const [doctorContext, setDoctorContext] = useState<any>({});
@@ -207,47 +206,6 @@ function PrescriptionWorkflowContent() {
   const loadTemplate = (meds: PrescribedMedicine[]) => {
     setMedicines([...medicines, ...meds]);
     setCreationMethod('TEMPLATE');
-  };
-
-  const handleVoiceRxApply = (data: VoiceRxPayload) => {
-    if (!startTime) setStartTime(Date.now());
-    if (creationMethod === 'MANUAL') setCreationMethod('VOICE');
-
-    if (data.chiefComplaint && !chiefComplaint.trim()) {
-      setChiefComplaint(data.chiefComplaint);
-    }
-
-    if (data.diagnosis) {
-      setDiagnosis(prev => prev.trim() ? `${prev}; ${data.diagnosis}` : data.diagnosis!);
-    }
-
-    if (data.medicines && data.medicines.length > 0) {
-      const newMeds: PrescribedMedicine[] = data.medicines.map(m => ({
-        id: Math.random().toString(36).substring(2, 9),
-        name: m.name,
-        dosage_form: m.dosage_form || 'Tablet',
-        strength: m.strength || '',
-        route: 'Oral',
-        frequency: m.frequency,
-        duration: m.duration,
-        instructions: m.instructions,
-        generic_id: m.generic_id || m.drugId,
-      }));
-
-      setMedicines(prev => {
-        const existingNames = new Set(prev.map(p => p.name.toLowerCase()));
-        const uniqueNew = newMeds.filter(n => !existingNames.has(n.name.toLowerCase()));
-        return [...prev, ...uniqueNew];
-      });
-    }
-
-    if (data.notes) {
-      setNotes(prev => prev.trim() ? `${prev}. ${data.notes}` : data.notes!);
-    }
-
-    if (data.followUpDate) {
-      setFollowUpDate(data.followUpDate);
-    }
   };
 
   const updateMedicine = (id: string, updates: Partial<PrescribedMedicine>) => {
@@ -614,8 +572,6 @@ function PrescriptionWorkflowContent() {
                 </div>
                 
                 <div className="p-6">
-                  {/* Voice Rx Dictation Engine */}
-                  <VoiceRxBar onApply={handleVoiceRxApply} />
 
                   {/* 1-Click My Protocol Packs Bar */}
                   <ProtocolPacksBar 
