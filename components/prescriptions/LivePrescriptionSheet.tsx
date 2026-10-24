@@ -91,13 +91,13 @@ export default function LivePrescriptionSheet({
         {/* Top Sheet Status Ribbon */}
         <div className="bg-gradient-to-r from-[#000865] via-[#001099] to-[#0080ff] text-white px-4 py-2.5 flex items-center justify-between text-xs font-semibold shadow-inner">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#38bdf8] animate-pulse"></span>
-            <span className="tracking-wide uppercase text-[11px] font-black text-white">
-              Live A4 Prescription Preview
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="tracking-wide uppercase text-[11px] font-black text-white flex items-center gap-2">
+              Live Prescription Preview (A4 Sheet)
             </span>
           </div>
-          <span className="text-[10px] text-blue-100 font-mono bg-white/15 border border-white/20 px-2 py-0.5 rounded-full font-bold">
-            {medicines.length} Item{medicines.length !== 1 ? 's' : ''} Prescribed
+          <span className="text-[10px] text-emerald-300 font-semibold bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+            • Syncs Real-Time
           </span>
         </div>
 
@@ -324,33 +324,42 @@ export default function LivePrescriptionSheet({
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2.5">
           <button
             type="button"
             onClick={onProceedToReview}
             disabled={!patient || medicines.length === 0 || saving}
-            className="flex-1 bg-gradient-to-r from-[#0080ff] to-[#0052cc] hover:from-[#0070e6] hover:to-[#0047b3] text-white font-extrabold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full bg-gradient-to-r from-[#0080ff] to-[#0052cc] hover:from-[#0070e6] hover:to-[#0047b3] text-white font-extrabold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             {saving ? (
               <Loader2 className="animate-spin" size={18} />
             ) : (
               <Printer size={18} />
             )}
-            <span>Finalize & Print Rx</span>
-            <kbd className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 text-[10px] font-mono bg-white/20 text-white rounded">
-              Ctrl+Enter
-            </kbd>
+            <span>Print Rx & Complete (Ctrl + Enter)</span>
           </button>
 
-          <button
-            type="button"
-            onClick={onOpenSaveModal}
-            disabled={medicines.length === 0}
-            className="bg-[#0f1d85] hover:bg-[#1a28a3] text-blue-100 border border-[#2b3bb5] font-bold px-3 py-3 rounded-xl transition-colors flex items-center justify-center text-xs disabled:opacity-40"
-            title="Save as reusable protocol group"
-          >
-            <Layers size={16} />
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={onProceedToReview}
+              disabled={!patient || medicines.length === 0}
+              className="bg-[#0f1d85] hover:bg-[#1a28a3] text-blue-100 border border-[#2b3bb5] font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs disabled:opacity-40"
+            >
+              <Send size={13} className="text-[#38bdf8]" />
+              <span>WhatsApp Rx</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onOpenSaveModal}
+              disabled={medicines.length === 0}
+              className="bg-[#0f1d85] hover:bg-[#1a28a3] text-blue-100 border border-[#2b3bb5] font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs disabled:opacity-40"
+            >
+              <Layers size={13} className="text-[#38bdf8]" />
+              <span>Save Protocol</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

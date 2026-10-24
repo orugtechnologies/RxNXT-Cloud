@@ -9,7 +9,7 @@ import TreatmentGroupsUI from '@/components/prescriptions/TreatmentGroupsUI';
 import SaveTemplateModal from '@/components/prescriptions/SaveTemplateModal';
 import ReviewPrescriptionModal from '@/components/prescriptions/ReviewPrescriptionModal';
 import { generatePrescriptionPDF } from '@/components/prescriptions/PrescriptionPrintView';
-import { Activity, User, Pill, Stethoscope, Save, Layers, Eye, AlertCircle, FlaskConical, Droplet, ArrowRightCircle } from 'lucide-react';
+import { Activity, User, Pill, Stethoscope, Save, Layers, Eye, AlertCircle, FlaskConical, Droplet, ArrowRightCircle, FileText } from 'lucide-react';
 import TemplateManagementUI from '@/components/prescriptions/TemplateManagementUI';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense, useEffect } from 'react';
@@ -595,168 +595,148 @@ function PrescriptionWorkflowContent() {
             )}
           </div>
 
-          {/* Center Column: Medications & Actions */}
-          <div className="lg:col-span-8 xl:col-span-5 space-y-6">
+          {/* Center Column: Medications & Clinical Actions */}
+          <div className="lg:col-span-8 xl:col-span-5 space-y-4">
             
-
-            {/* Step 3: Medication */}
             {patient && (
-              <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 animate-in fade-in slide-in-from-bottom-8 relative z-20">
-                <div className="bg-clinic-navy px-6 py-4 border-b border-clinic-border flex items-center justify-between rounded-t-xl">
-                  <div className="flex items-center">
-                    <Pill size={20} className="text-clinic-emerald mr-2" />
-                    <h2 className="text-sm font-bold text-white uppercase tracking-wider">Rx Medications</h2>
-                  </div>
-                </div>
-                
-                <div className="p-6">
-                  {/* Real-time Allergy Cross-Check Guardrail */}
-                  {allergyConflicts.length > 0 && (
-                    <div className="mb-4 p-3 bg-red-100 border-2 border-red-500 rounded-lg text-red-900 flex items-center gap-2 animate-bounce">
-                      <AlertCircle size={20} className="text-red-600 shrink-0" />
-                      <div className="text-xs">
-                        <span className="font-extrabold uppercase">Potential Allergy Contraindication!</span>
-                        <p className="mt-0.5">Patient has documented allergy to <strong>{patientAllergies}</strong>. Prescribed: {allergyConflicts.map(m => m.name).join(', ')}</p>
-                      </div>
+              <>
+                {/* Block 1: 1-Click Protocol Packs & Drug Search */}
+                <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden">
+                  <div className="bg-clinic-navy px-5 py-3 border-b border-clinic-border flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Pill size={16} className="text-[#38bdf8]" />
+                      <h2 className="text-xs font-bold text-white uppercase tracking-wider">
+                        1-Click Protocol Packs & Search
+                      </h2>
                     </div>
-                  )}
-
-
-                  {/* 1-Click My Protocol Packs Bar */}
-                  <ProtocolPacksBar 
-                    onLoadTemplate={loadTemplate} 
-                    onOpenSaveModal={() => setShowSaveTemplate(true)} 
-                    cartCount={medicines.length} 
-                    refreshKey={templateKey} 
-                  />
-
-                  <DrugSearchUI onSelect={handleDrugSelect} />
-                  
-                  {/* 1-Click Frequent Drugs Bar */}
-                  <FrequentDrugsBar 
-                    onAddDrug={(newMed) => {
-                      setMedicines(prev => [...prev, newMed]);
-                      if (!startTime) setStartTime(Date.now());
-                    }}
-                    alreadyPrescribedIds={medicines.map(m => m.generic_id || m.brand_id || m.name)}
-                  />
-                  
-                  <div className="mt-6">
-                    <PrescriptionCart medicines={medicines} onUpdate={updateMedicine} onRemove={removeMedicine} />
+                    <span className="text-[10px] text-blue-200 font-medium">Standardized OPD care</span>
                   </div>
 
-                  <div className="mt-8 pt-6 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Advice & Notes</label>
-                      <QuickAdviceChips notes={notes} setNotes={setNotes} />
-                      <textarea 
-                        placeholder="Additional instructions for the patient..." 
-                        value={notes} 
-                        onChange={e=>setNotes(e.target.value)} 
-                        className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-clinic-emerald focus:border-clinic-emerald outline-none h-24 resize-none transition-shadow" 
-                      />
-                    </div>
+                  <div className="p-4 space-y-3.5">
+                    <ProtocolPacksBar 
+                      onLoadTemplate={loadTemplate} 
+                      onOpenSaveModal={() => setShowSaveTemplate(true)} 
+                      cartCount={medicines.length} 
+                      refreshKey={templateKey} 
+                    />
+
+                    <DrugSearchUI onSelect={handleDrugSelect} />
                     
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <label className="block text-xs font-semibold text-gray-500 uppercase">Follow-up Date</label>
-                        <div className="flex gap-2">
-                          <button onClick={() => setQuickFollowUp(3)} className="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition-colors">3 Days</button>
-                          <button onClick={() => setQuickFollowUp(7)} className="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition-colors">1 Week</button>
-                          <button onClick={() => setQuickFollowUp(14)} className="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition-colors">2 Weeks</button>
-                          <button onClick={() => setQuickFollowUp(30)} className="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition-colors">1 Month</button>
-                        </div>
-                      </div>
-                      <input 
-                        type="date" 
-                        value={followUpDate} 
-                        onChange={e=>setFollowUpDate(e.target.value)} 
-                        className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-clinic-emerald focus:border-clinic-emerald outline-none transition-shadow" 
-                      />
-                    </div>
+                    <FrequentDrugsBar 
+                      onAddDrug={(newMed) => {
+                        setMedicines(prev => [...prev, newMed]);
+                        if (!startTime) setStartTime(Date.now());
+                      }}
+                      alreadyPrescribedIds={medicines.map(m => m.generic_id || m.brand_id || m.name)}
+                    />
                   </div>
                 </div>
-              </div>
-            )}
 
-                        {/* SOAP Order: Diagnostics & Day-Care Procedures Demoted below Medications */}
-            {patient && (
-              <QuickTestAndDripPanel
-                selectedTests={selectedTests}
-                selectedDrips={selectedDrips}
-                onToggleTest={handleToggleTest}
-                onToggleDrip={handleToggleDrip}
-                onSendForTests={handleSendForTests}
-                isSending={sendingForTests}
-              />
-            )}
-
-            {/* Action Bar */}
-            {patient && (() => {
-              const hasIncompleteMedicines = medicines.some(
-                m => !m.frequency?.trim() || !m.duration?.trim() || !m.instructions?.trim()
-              );
-
-              return (
-                <div className="mt-6 xl:hidden">
-                  {medicines.length > 0 && hasIncompleteMedicines && (
-                    <div className="flex items-center gap-2.5 p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-amber-900 text-xs font-semibold mb-3 animate-in fade-in shadow-xs">
-                      <AlertCircle size={18} className="text-amber-600 shrink-0" />
-                      <span>
-                        <strong>Medication Details Required:</strong> Please enter Frequency, Duration, and Instructions for all added medicines before advancing.
-                      </span>
+                {/* Block 2: Prescribed Medicines Cart */}
+                <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden">
+                  <div className="bg-clinic-navy px-5 py-3 border-b border-clinic-border flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Layers size={16} className="text-[#38bdf8]" />
+                      <h2 className="text-xs font-bold text-white uppercase tracking-wider">
+                        Prescribed Medicines ({medicines.length})
+                      </h2>
                     </div>
-                  )}
-
-                  <div className="sticky bottom-0 z-40 bg-white/95 backdrop-blur-md p-4 border-t border-slate-200 shadow-2xl md:static md:bg-transparent md:p-0 md:border-0 md:shadow-none flex flex-wrap justify-end gap-3 rounded-b-2xl md:rounded-none -mx-4 sm:mx-0 px-4 sm:px-0">
-                    {(selectedTests.length > 0 || selectedDrips.length > 0) && (
-                      <button 
+                    {medicines.length > 0 && (
+                      <button
                         type="button"
-                        onClick={handleSendForTests}
-                        disabled={sendingForTests}
-                        className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 px-5 rounded-xl shadow-lg transition-all duration-200 flex items-center text-sm sm:text-base disabled:opacity-50"
+                        onClick={() => setMedicines([])}
+                        className="text-[11px] text-rose-300 hover:text-white font-semibold transition-colors cursor-pointer"
                       >
-                        <FlaskConical className="mr-2" size={18} />
-                        {sendingForTests ? 'Sending...' : 'Send for Tests / Drip & Next Patient'}
+                        Clear All
                       </button>
                     )}
-                    <button 
-                      onClick={() => {
-                        const validation = validatePrescriptionMedicines();
-                        if (!validation.isValid) {
-                          alert(validation.message);
-                          return;
-                        }
-                        setShowSaveTemplate(true);
-                      }}
-                      disabled={medicines.length === 0}
-                      className="bg-white hover:bg-gray-50 text-clinic-navy border border-gray-200 font-bold py-3 px-5 rounded-xl shadow-sm hover:shadow transition-all duration-200 flex items-center text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Layers className="mr-2 text-blue-500" size={18} /> Save as Group
-                    </button>
-                    <button 
-                      onClick={handleProceedToReview}
-                      disabled={medicines.length === 0}
-                      className={`font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center text-sm sm:text-base ${
-                        hasIncompleteMedicines
-                          ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'
-                          : 'bg-gradient-to-r from-[#0080ff] to-[#0052cc] hover:from-[#0070e6] hover:to-[#0047b3] text-white hover:shadow-xl'
-                      } disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-emerald-400`}
-                    >
-                      <Eye className="mr-2" size={18} /> Review & Print Rx
-                      <kbd className="hidden sm:inline-flex ml-2 px-1.5 py-0.5 text-[10px] font-mono bg-white/20 text-white rounded">Ctrl+Enter</kbd>
-                      {hasIncompleteMedicines && (
-                        <span className="ml-2 text-[10px] bg-white/30 text-white px-2 py-0.5 rounded-full uppercase font-extrabold tracking-wider">
-                          Incomplete
-                        </span>
-                      )}
-                    </button>
+                  </div>
+
+                  <div className="p-4">
+                    {/* Real-time Allergy Cross-Check Guardrail */}
+                    {allergyConflicts.length > 0 && (
+                      <div className="mb-4 p-3 bg-red-100 border-2 border-red-500 rounded-lg text-red-900 flex items-center gap-2 animate-bounce">
+                        <AlertCircle size={20} className="text-red-600 shrink-0" />
+                        <div className="text-xs">
+                          <span className="font-extrabold uppercase">Potential Allergy Contraindication!</span>
+                          <p className="mt-0.5">Patient has documented allergy to <strong>{patientAllergies}</strong>. Prescribed: {allergyConflicts.map(m => m.name).join(', ')}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <PrescriptionCart medicines={medicines} onUpdate={updateMedicine} onRemove={removeMedicine} />
                   </div>
                 </div>
-              );
-            })()}
-          </div>
 
+                {/* Block 3: Diagnostics & Day-Care Procedures */}
+                <QuickTestAndDripPanel
+                  selectedTests={selectedTests}
+                  selectedDrips={selectedDrips}
+                  onToggleTest={handleToggleTest}
+                  onToggleDrip={handleToggleDrip}
+                  onSendForTests={handleSendForTests}
+                  isSending={sendingForTests}
+                />
+
+                {/* Block 4: Doctor's Advice & Counseling */}
+                <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden">
+                  <div className="bg-clinic-navy px-5 py-3 border-b border-clinic-border flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText size={16} className="text-[#38bdf8]" />
+                      <h2 className="text-xs font-bold text-white uppercase tracking-wider">
+                        Doctor's Advice & Counseling
+                      </h2>
+                    </div>
+                    <span className="text-[10px] text-blue-200 font-medium">Included on printout</span>
+                  </div>
+
+                  <div className="p-4 space-y-3">
+                    <QuickAdviceChips notes={notes} setNotes={setNotes} />
+                    <textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Specific patient advice, dietary instructions..."
+                      rows={3}
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs text-slate-800 outline-none focus:ring-2 focus:ring-[#0080ff] shadow-xs"
+                    />
+
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
+                      <span className="font-semibold text-slate-600">Follow-up visit:</span>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {[3, 5, 7, 14].map(days => (
+                          <button
+                            key={days}
+                            type="button"
+                            onClick={() => setQuickFollowUp(days)}
+                            className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-[#1e40af] border border-blue-200 rounded-lg text-[11px] font-bold transition-colors cursor-pointer"
+                          >
+                            {days} Days
+                          </button>
+                        ))}
+                        <input
+                          type="date"
+                          value={followUpDate}
+                          onChange={(e) => setFollowUpDate(e.target.value)}
+                          className="border border-slate-300 rounded-lg px-2 py-0.5 text-xs outline-none focus:ring-1 focus:ring-[#0080ff]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile / Tablet Action Bar */}
+                <div className="mt-4 xl:hidden">
+                  <button 
+                    onClick={handleProceedToReview}
+                    disabled={medicines.length === 0}
+                    className="w-full bg-gradient-to-r from-[#0080ff] to-[#0052cc] hover:from-[#0070e6] hover:to-[#0047b3] text-white font-extrabold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50"
+                  >
+                    <Eye size={18} /> Review & Print Rx
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
 
           {/* Right Rail: Real-time Live A4 Prescription Sheet & Fitts's Law Action Dock */}
           <div className="hidden xl:block xl:col-span-4 sticky top-20 self-start space-y-4 max-h-[calc(100vh-6rem)] overflow-y-auto pr-1">
