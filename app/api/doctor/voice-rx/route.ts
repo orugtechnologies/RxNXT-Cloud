@@ -28,6 +28,8 @@ interface VoiceRxResult {
   unmatchedCandidates?: string[];
 }
 
+const STOP_WORDS_REGEX = /\b(patient|has|as|is|with|for|having|complaining|suffering|from|diagnosed|diagnosis|viral|fever|cough|cold|give|prescribe|take|and|also|please|tab|tablet|cap|capsule|syp|syrup|inj|injection|drops|gel|cream|od|bd|tds|qid|hs|sos|food|after|before|meals|days?|weeks?|months?)\b/gi;
+
 /**
  * Searches the Drug Database (PostgreSQL + local catalog fallback)
  * to verify if a candidate medicine name is a genuine medication.
@@ -39,13 +41,16 @@ async function resolveToDatabaseDrug(candidateName: string, clinicId?: string) {
 
   const qLower = query.toLowerCase();
 
-  // Clean common noise prefix words like "give", "tab", "tablet", "cap", "syp", "take"
+  // Clean common noise prefix words and clinical stop words
   const cleanQuery = qLower
-    .replace(/\b(give|prescribe|take|and|also|please|tab|tablet|cap|capsule|syp|syrup|inj|injection)\b/gi, ' ')
+    .replace(STOP_WORDS_REGEX, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 
   if (cleanQuery.length < 2) return null;
+
+  const coreDrugName = cleanQuery.replace(/\d+\s*(mg|ml|gm)?/gi, '').trim();
+  const firstWord = cleanQuery.split(' ')[0];
 
   // 1. First, search live PostgreSQL Database if connected
   try {
@@ -54,10 +59,16 @@ async function resolveToDatabaseDrug(candidateName: string, clinicId?: string) {
         isActive: true,
         OR: [
           { brandName: { equals: cleanQuery, mode: 'insensitive' } },
+          ...(coreDrugName.length >= 3 ? [{ brandName: { equals: coreDrugName, mode: 'insensitive' as const } }] : []),
           { genericName: { equals: cleanQuery, mode: 'insensitive' } },
-          { brandName: { startsWith: cleanQuery.split(' ')[0], mode: 'insensitive' } },
-          { genericName: { startsWith: cleanQuery.split(' ')[0], mode: 'insensitive' } },
-          { aliases: { contains: cleanQuery.split(' ')[0], mode: 'insensitive' } },
+          ...(coreDrugName.length >= 3 ? [{ genericName: { equals: coreDrugName, mode: 'insensitive' as const } }] : []),
+          ...(firstWord.length >= 4
+            ? [
+                { brandName: { startsWith: firstWord, mode: 'insensitive' as const } },
+                { genericName: { startsWith: firstWord, mode: 'insensitive' as const } },
+                { aliases: { contains: firstWord, mode: 'insensitive' as const } },
+              ]
+            : []),
         ],
       },
       select: {
@@ -87,10 +98,10 @@ async function resolveToDatabaseDrug(candidateName: string, clinicId?: string) {
   // 2. Second, search the curated Indian formulary (data/drugs.json)
   const drugsList = rawDrugsData as any[];
 
-  // Priority A: Exact or starts-with Brand Name
+  // Priority A: Direct Brand Name match (Dolo, Pan, Calpol, etc.)
   for (const d of drugsList) {
     const b = (d.brandName || '').toLowerCase();
-    if (b && (cleanQuery === b || cleanQuery.startsWith(b + ' ') || b.startsWith(cleanQuery))) {
+    if (b && (b === cleanQuery || cleanQuery.startsWith(b + ' ') || b === coreDrugName || firstWord === b)) {
       return {
         id: `drug-${d.genericName}-${d.brandName ?? 'generic'}`.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
         brandName: d.brandName,
@@ -102,10 +113,10 @@ async function resolveToDatabaseDrug(candidateName: string, clinicId?: string) {
     }
   }
 
-  // Priority B: Exact or starts-with Generic Name
+  // Priority B: Direct Generic Name match (Paracetamol, Pantoprazole, etc.)
   for (const d of drugsList) {
     const g = (d.genericName || '').toLowerCase();
-    if (g && (cleanQuery === g || cleanQuery.startsWith(g + ' ') || g.startsWith(cleanQuery))) {
+    if (g && (g === cleanQuery || cleanQuery.startsWith(g + ' ') || g === coreDrugName || firstWord === g)) {
       return {
         id: `drug-${d.genericName}-${d.brandName ?? 'generic'}`.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
         brandName: d.brandName || d.genericName,
@@ -117,15 +128,15 @@ async function resolveToDatabaseDrug(candidateName: string, clinicId?: string) {
     }
   }
 
-  // Priority C: Known Aliases (e.g. "Dolo", "PCM", "Augmentin", "Pantocid", "Calpol")
+  // Priority C: Exact / Full Word Alias match (must be at least 3 letters, exact word match)
   for (const d of drugsList) {
     const aliases = (d.aliases || '').toLowerCase().split(',').map((s: string) => s.trim());
-    for (const alias of aliases) {
-      if (alias && alias.length >= 3) {
-        if (cleanQuery === alias || cleanQuery.startsWith(alias + ' ') || cleanQuery.includes(alias)) {
+    for (const a of aliases) {
+      if (a && a.length >= 3) {
+        if (a === cleanQuery || cleanQuery.startsWith(a + ' ') || a === coreDrugName || firstWord === a) {
           return {
             id: `drug-${d.genericName}-${d.brandName ?? 'generic'}`.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
-            brandName: d.brandName || alias.toUpperCase(),
+            brandName: d.brandName || a.toUpperCase(),
             genericName: d.genericName,
             dosageForm: d.dosageForm || 'Tablet',
             strength: d.strength || null,
@@ -270,7 +281,7 @@ async function parseWithGemini(transcript: string, apiKey: string): Promise<any>
 
 const PHONETIC_CORRECTIONS = [
   { pattern: /\b(?:tholo|dollo|tolo)\b/gi, replacement: 'Dolo' },
-  { pattern: /\b(?:pantalos\s+it|pantalos|pantocide|pantacide|pantocid)\b/gi, replacement: 'Pantocid' },
+  { pattern: /\b(?:pantalos\s+it|pantalos|pantocide|pantacide|pantacide\s+40|pantocide\s+40|pantocid|fantastic\s*4[01]|fantastic\s+forty)\b/gi, replacement: 'Pantocid 40' },
   { pattern: /\b(?:pantop\s+40|pantop|panto)\b/gi, replacement: 'Pantop' },
   { pattern: /\b(?:agumentin|augumentin|ogmentin)\b/gi, replacement: 'Augmentin' },
   { pattern: /\b(?:ascoril|askoril|ascoril-d)\b/gi, replacement: 'Ascoril-D' },
@@ -278,6 +289,9 @@ const PHONETIC_CORRECTIONS = [
   { pattern: /\b(?:parasitamol|paracitamol|pcm)\b/gi, replacement: 'Paracetamol' },
   { pattern: /\b(?:setrizin|cetrizin|cetricin)\b/gi, replacement: 'Cetirizine' },
   { pattern: /\b(?:calpol|kalpol)\b/gi, replacement: 'Calpol' },
+  { pattern: /\b(?:stayly|stay\s+daily|steadily)\b/gi, replacement: 'once daily' },
+  { pattern: /\b(?:wise\s+daily)\b/gi, replacement: 'twice daily' },
+  { pattern: /\bpatient\s+as\s+/gi, replacement: 'patient has ' },
 ];
 
 const FREQ_PATTERNS = [
@@ -315,7 +329,7 @@ function parseHeuristicFallback(rawTranscript: string): any {
 
   let chiefComplaint = '';
   let diagnosis = '';
-  const ccMatch = text.match(/\b(?:patient\s+has|complaining of|c\/o|complaints? of|suffering from|having)\s+([^.,;]+?)(?=\bgive\b|\bprescribe\b|\brx\b|\.|$)/i);
+  const ccMatch = text.match(/\b(?:patient\s+(?:has|as|is|with)|complaining\s+of|c\/o|complaints?\s+of|suffering\s+from|having)\s+([^.,;]+?)(?=\bgive\b|\bprescribe\b|\brx\b|\.|$)/i);
   if (ccMatch && ccMatch[1]) {
     chiefComplaint = ccMatch[1].trim();
     text = text.replace(ccMatch[0], ' ');
@@ -363,7 +377,7 @@ function parseHeuristicFallback(rawTranscript: string): any {
     }
 
     let cleanName = cText
-      .replace(/\b(patient|has|complaining|viral|fever|give|prescribe|take|and|also|tab|tablet|cap|capsule|syp|syrup|inj|injection)\b/gi, ' ')
+      .replace(STOP_WORDS_REGEX, ' ')
       .replace(/\s+/g, ' ')
       .trim();
 

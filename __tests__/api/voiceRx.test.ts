@@ -232,4 +232,35 @@ describe('Voice Rx API (/api/doctor/voice-rx)', () => {
     expect(data.data.medicines[0].name).toContain('Dolo');
     expect(data.data.transcript).toContain('viral fever');
   });
+
+  it('correctly maps "patient as viral fever give Dolo 650" to Dolo and NOT Glipizide', async () => {
+    (getAuthenticatedUser as jest.Mock).mockResolvedValue({
+      id: 'doc-1',
+      clinicId: 'clinic-1',
+    });
+
+    (prisma.drug.findFirst as jest.Mock).mockResolvedValue(null);
+
+    // Simulate fallback parsing (no Gemini API call or fetch error)
+    global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
+
+    const req = {
+      json: async () => ({
+        transcript:
+          'patient as viral fever give Dolo 650 twice daily after food for 3 days and fantastic 41 stayly before food for 5 days review in 3 days',
+      }),
+    } as any;
+
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.success).toBe(true);
+
+    // Must resolve Dolo and Pantocid, definitely NOT Glipizide!
+    const names = data.data.medicines.map((m: any) => m.name.toLowerCase());
+    expect(names.some((n: string) => n.includes('dolo'))).toBe(true);
+    expect(names.some((n: string) => n.includes('pan'))).toBe(true);
+    expect(names.some((n: string) => n.includes('glipizide'))).toBe(false);
+  });
 });

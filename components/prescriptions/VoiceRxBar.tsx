@@ -45,7 +45,7 @@ interface VoiceRxBarProps {
 
 const PHONETIC_CORRECTIONS_CLIENT = [
   { pattern: /\b(?:tholo|dollo|tolo)\b/gi, replacement: 'Dolo' },
-  { pattern: /\b(?:pantalos\s+it|pantalos|pantocide|pantacide|pantocid)\b/gi, replacement: 'Pantocid' },
+  { pattern: /\b(?:pantalos\s+it|pantalos|pantocide|pantacide|pantacide\s+40|pantocide\s+40|pantocid|fantastic\s*4[01]|fantastic\s+forty)\b/gi, replacement: 'Pantocid 40' },
   { pattern: /\b(?:pantop\s+40|pantop|panto)\b/gi, replacement: 'Pantop' },
   { pattern: /\b(?:agumentin|augumentin|ogmentin)\b/gi, replacement: 'Augmentin' },
   { pattern: /\b(?:ascoril|askoril)\b/gi, replacement: 'Ascoril' },
@@ -57,6 +57,9 @@ const PHONETIC_CORRECTIONS_CLIENT = [
   { pattern: /\b(?:montair\s+lc|montek\s+lc)\b/gi, replacement: 'Montair-LC' },
   { pattern: /\b(?:pan\s+40)\b/gi, replacement: 'Pan 40' },
   { pattern: /\b(?:pan\s+d)\b/gi, replacement: 'Pan-D' },
+  { pattern: /\b(?:stayly|stay\s+daily|steadily)\b/gi, replacement: 'once daily' },
+  { pattern: /\b(?:wise\s+daily)\b/gi, replacement: 'twice daily' },
+  { pattern: /\bpatient\s+as\s+/gi, replacement: 'patient has ' },
 ];
 
 function cleanPhoneticsClient(text: string): string {
