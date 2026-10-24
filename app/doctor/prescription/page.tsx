@@ -20,6 +20,7 @@ import QuickTestAndDripPanel, { InvestigationItem, DayCareProcedureItem } from '
 import QuickSymptomsDiagnosis from '@/components/prescriptions/QuickSymptomsDiagnosis';
 import FrequentDrugsBar from '@/components/drugs/FrequentDrugsBar';
 import QuickAdviceChips from '@/components/prescriptions/QuickAdviceChips';
+import LivePrescriptionSheet from '@/components/prescriptions/LivePrescriptionSheet';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
@@ -471,9 +472,9 @@ function PrescriptionWorkflowContent() {
         </div>
       </div>
 
-      <div className="w-full max-w-[1500px]">
+      <div className="w-full max-w-[1780px]">
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 gap-6 items-start">
           
           {/* Left Column: Patient & Clinical Details (Sticky docked) */}
           <div className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-6 lg:self-start">
@@ -589,8 +590,8 @@ function PrescriptionWorkflowContent() {
             )}
           </div>
 
-          {/* Right Column: Medications & Actions */}
-          <div className="lg:col-span-8 xl:col-span-9 space-y-6">
+          {/* Center Column: Medications & Actions */}
+          <div className="lg:col-span-8 xl:col-span-5 space-y-6">
             
 
             {/* Step 3: Medication */}
@@ -692,7 +693,7 @@ function PrescriptionWorkflowContent() {
               );
 
               return (
-                <div className="mt-6">
+                <div className="mt-6 xl:hidden">
                   {medicines.length > 0 && hasIncompleteMedicines && (
                     <div className="flex items-center gap-2.5 p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-amber-900 text-xs font-semibold mb-3 animate-in fade-in shadow-xs">
                       <AlertCircle size={18} className="text-amber-600 shrink-0" />
@@ -749,6 +750,25 @@ function PrescriptionWorkflowContent() {
                 </div>
               );
             })()}
+          </div>
+
+
+          {/* Right Rail: Real-time Live A4 Prescription Sheet & Fitts's Law Action Dock */}
+          <div className="hidden xl:block xl:col-span-4 sticky top-6 self-start space-y-4">
+            <LivePrescriptionSheet
+              patient={patient}
+              medicines={medicines}
+              chiefComplaint={chiefComplaint}
+              diagnosis={diagnosis}
+              notes={notes}
+              followUpDate={followUpDate}
+              selectedTests={selectedTests}
+              selectedDrips={selectedDrips}
+              doctorContext={doctorContext}
+              onProceedToReview={handleProceedToReview}
+              onOpenSaveModal={() => setShowSaveTemplate(true)}
+              saving={saving}
+            />
           </div>
 
         </div>
