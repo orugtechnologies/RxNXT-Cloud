@@ -263,4 +263,37 @@ describe('Voice Rx API (/api/doctor/voice-rx)', () => {
     expect(names.some((n: string) => n.includes('pan'))).toBe(true);
     expect(names.some((n: string) => n.includes('glipizide'))).toBe(false);
   });
+
+  it('correctly extracts Dolo 650 and Azithral from Telugu OPD dictation', async () => {
+    (getAuthenticatedUser as jest.Mock).mockResolvedValue({
+      id: 'doc-1',
+      clinicId: 'clinic-1',
+    });
+
+    (prisma.drug.findFirst as jest.Mock).mockResolvedValue(null);
+    global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
+
+    const req = {
+      json: async () => ({
+        transcript:
+          'and body pencil nayi first one clear two days and body pains on my Dolo 650 mg morning and night was calling and azithrol morning was calling',
+      }),
+    } as any;
+
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.success).toBe(true);
+
+    const meds = data.data.medicines;
+    expect(meds.length).toBeGreaterThanOrEqual(2);
+
+    const dolo = meds.find((m: any) => m.name.toLowerCase().includes('dolo'));
+    expect(dolo).toBeDefined();
+    expect(dolo.frequency).toBe('1-0-1');
+
+    const azithral = meds.find((m: any) => m.name.toLowerCase().includes('azithral'));
+    expect(azithral).toBeDefined();
+  });
 });

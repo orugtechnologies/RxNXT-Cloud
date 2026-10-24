@@ -178,7 +178,7 @@ CRITICAL INDIAN CLINICAL & ACOUSTIC RULES (99% ACCURACY BENCHMARK):
    - "Dolo" / "tholo" / "dolo six fifty" / "dolo 650" -> "Dolo 650" (Tablet, 650mg)
    - "Pantocid" / "pantalos it" / "pantop" / "pan forty" / "pan 40" -> "Pantocid 40" or "Pan 40" (Tablet, 40mg)
    - "Augmentin" / "agumentin" / "augmentin 625" -> "Augmentin 625" (Tablet, 625mg)
-   - "Azithral" / "asithral" / "azithro 500" -> "Azithral 500" (Tablet, 500mg)
+   - "Azithral" / "asithral" / "azithrol" / "azithro 500" -> "Azithral 500" (Tablet, 500mg)
    - "Montair LC" / "montek lc" -> "Montair-LC" (Tablet)
    - "Meftal Spas" / "meftal space" -> "Meftal-Spas" (Tablet)
    - "Calpol" / "Crocin" -> Paracetamol formulation
@@ -186,16 +186,18 @@ CRITICAL INDIAN CLINICAL & ACOUSTIC RULES (99% ACCURACY BENCHMARK):
    - "Becosules" / "Neurobion Forte" / "Shelcal 500" / "Zincovit" -> Multivitamin / Mineral
 
 2. INDIAN TIMING & FREQUENCY TRANSLATIONS:
-   - "subah sham" / "do bar" / "twice daily" / "BD" / "bid" / "two times" -> "1-0-1"
-   - "subah dophar sham" / "teen bar" / "thrice daily" / "TDS" / "tid" / "three times" -> "1-1-1"
-   - "sirf subah" / "once daily" / "ek bar" / "OD" / "od" / "morning" -> "1-0-0"
-   - "rat ko" / "bedtime" / "sone se pehle" / "HS" / "hs" / "at night" -> "0-0-1"
+   - "subah sham" / "morning and night" / "morning evening" / "udayam ratri" (Telugu) / "do bar" / "twice daily" / "BD" / "bid" / "two times" -> "1-0-1"
+   - "subah dophar sham" / "teen bar" / "three times" / "thrice daily" / "TDS" / "tid" / "udayam madhyanam ratri" -> "1-1-1"
+   - "sirf subah" / "once daily" / "ek bar" / "OD" / "od" / "morning" / "udayam" -> "1-0-0"
+   - "rat ko" / "bedtime" / "sone se pehle" / "HS" / "hs" / "at night" / "night" / "ratri" -> "0-0-1"
    - "zarurat padne par" / "jab dard ho" / "SOS" / "as needed" -> "SOS"
    - "dophar ko" / "afternoon" -> "0-1-0"
 
-3. INSTRUCTION TRANSLATIONS:
-   - "khali pet" / "parigadupuna" (Telugu) / "pathiya vayiru" (Tamil) / "empty stomach" / "nahaar munh" / "ac" / "before food" -> "Before Food"
-   - "khana khane ke baad" / "food thinnaka" (Telugu) / "after food" / "pc" / "after meals" -> "After Food"
+3. INSTRUCTION & TELUGU TRANSLATIONS:
+   - "vesukondi" / "veskondi" / "veyandi" (Telugu) / "was calling" (STT acoustic artifact) -> take medicine
+   - "unnayi" / "unnai" (Telugu) / "pencil nayi" (STT acoustic artifact) -> present / symptoms
+   - "khali pet" / "parigadupuna" (Telugu) / "pathiya vayiru" (Tamil) / "empty stomach" / "nahaar munh" / "ac" / "before food" / "bhojanam mundu" -> "Before Food"
+   - "khana khane ke baad" / "food thinnaka" (Telugu) / "bhojanam tarvata" (Telugu) / "after food" / "pc" / "after meals" -> "After Food"
    - "with warm water" / "garm pani ke sath" -> "With warm water"
    - "sone se pehle" / "before sleep" -> "At bedtime"
 
@@ -285,20 +287,31 @@ const PHONETIC_CORRECTIONS = [
   { pattern: /\b(?:pantop\s+40|pantop|panto)\b/gi, replacement: 'Pantop' },
   { pattern: /\b(?:agumentin|augumentin|ogmentin)\b/gi, replacement: 'Augmentin' },
   { pattern: /\b(?:ascoril|askoril|ascoril-d)\b/gi, replacement: 'Ascoril-D' },
-  { pattern: /\b(?:azithro|azithral|asithral)\b/gi, replacement: 'Azithral' },
+  { pattern: /\b(?:azithro|azithral|asithral|azithrol|ezithral)\b/gi, replacement: 'Azithral' },
   { pattern: /\b(?:parasitamol|paracitamol|pcm)\b/gi, replacement: 'Paracetamol' },
   { pattern: /\b(?:setrizin|cetrizin|cetricin)\b/gi, replacement: 'Cetirizine' },
   { pattern: /\b(?:calpol|kalpol)\b/gi, replacement: 'Calpol' },
   { pattern: /\b(?:stayly|stay\s+daily|steadily)\b/gi, replacement: 'once daily' },
   { pattern: /\b(?:wise\s+daily)\b/gi, replacement: 'twice daily' },
   { pattern: /\bpatient\s+as\s+/gi, replacement: 'patient has ' },
+  // Telugu Clinical Phonetic Corrections
+  { pattern: /\b(?:pencil\s+nayi|pains\s+nayi|unnayi|unnai)\b/gi, replacement: 'having' },
+  { pattern: /\b(?:was\s+calling|is\s+calling|calling|vesukondi|veskondi|veyandi)\b/gi, replacement: 'take' },
+  { pattern: /\b(?:morning\s+(?:and|&)?\s*night|morning\s+evening|udayam\s+ratri|subah\s+aur\s+rat)\b/gi, replacement: 'twice daily' },
+  { pattern: /\b(?:morning\s+only|udayam)\b/gi, replacement: 'once daily' },
+  { pattern: /\b(?:night\s+only|ratri)\b/gi, replacement: '0-0-1' },
+  { pattern: /\b(?:rendu\s+rojulu)\b/gi, replacement: '2 days' },
+  { pattern: /\b(?:moodu\s+rojulu)\b/gi, replacement: '3 days' },
+  { pattern: /\b(?:aidu\s+rojulu)\b/gi, replacement: '5 days' },
+  { pattern: /\b(?:food\s+tarvata|bhojanam\s+tarvata|thinnaka)\b/gi, replacement: 'after food' },
+  { pattern: /\b(?:parigadupuna|bhojanam\s+mundu)\b/gi, replacement: 'before food' },
 ];
 
 const FREQ_PATTERNS = [
-  { regex: /\b(1-0-1|twice daily|twice a day|two times|bd|bid|subah sham)\b/i, val: '1-0-1' },
-  { regex: /\b(1-1-1|thrice daily|thrice a day|three times|tds|tid|teen bar)\b/i, val: '1-1-1' },
+  { regex: /\b(1-0-1|twice daily|twice a day|two times|bd|bid|subah sham|morning\s+(?:and|&)?\s*night)\b/i, val: '1-0-1' },
+  { regex: /\b(1-1-1|thrice daily|thrice a day|three times|3\s+times|tds|tid|teen bar)\b/i, val: '1-1-1' },
   { regex: /\b(1-0-0|once daily|once a day|one time|od|morning|subah)\b/i, val: '1-0-0' },
-  { regex: /\b(0-0-1|night only|at bedtime|bedtime|hs|rat ko)\b/i, val: '0-0-1' },
+  { regex: /\b(0-0-1|night only|at bedtime|bedtime|hs|rat ko|night)\b/i, val: '0-0-1' },
   { regex: /\b(0-1-0|afternoon|dophar)\b/i, val: '0-1-0' },
   { regex: /\b(1-1-1-1|qid|four times)\b/i, val: '1-1-1-1' },
   { regex: /\b(sos|as needed|jab jarurat)\b/i, val: 'SOS' },
@@ -311,6 +324,40 @@ const INST_PATTERNS = [
   { regex: /\b(at bedtime|sone se pehle)\b/i, val: 'At bedtime' },
   { regex: /\b(with warm water|garm pani)\b/i, val: 'With warm water' },
 ];
+
+function findDrugInClause(clauseText: string): { name: string; strength?: string } | null {
+  const t = clauseText.toLowerCase();
+  const drugsList = rawDrugsData as any[];
+
+  // 1. Check brand names
+  for (const d of drugsList) {
+    const b = (d.brandName || '').toLowerCase();
+    if (b && b.length >= 3) {
+      const bRegex = new RegExp(`\\b${b}\\b`, 'i');
+      if (bRegex.test(t)) {
+        const strMatch = t.match(new RegExp(`\\b${b}\\s*(\\d+\\s*(?:mg|ml|gm)?)\\b`, 'i'));
+        const strength = strMatch ? strMatch[1].replace(/\s+/g, '') : d.strength;
+        const displayName = strength && !d.brandName.toLowerCase().includes(strength.toLowerCase())
+          ? `${d.brandName} ${strength.endsWith('mg') ? strength : `${strength}mg`}`
+          : d.brandName;
+        return { name: displayName, strength: strength || d.strength };
+      }
+    }
+  }
+
+  // 2. Check generic names
+  for (const d of drugsList) {
+    const g = (d.genericName || '').toLowerCase();
+    if (g && g.length >= 4) {
+      const gRegex = new RegExp(`\\b${g}\\b`, 'i');
+      if (gRegex.test(t)) {
+        return { name: d.brandName || d.genericName, strength: d.strength };
+      }
+    }
+  }
+
+  return null;
+}
 
 function parseHeuristicFallback(rawTranscript: string): any {
   let text = rawTranscript;
@@ -329,13 +376,18 @@ function parseHeuristicFallback(rawTranscript: string): any {
 
   let chiefComplaint = '';
   let diagnosis = '';
-  const ccMatch = text.match(/\b(?:patient\s+(?:has|as|is|with)|complaining\s+of|c\/o|complaints?\s+of|suffering\s+from|having)\s+([^.,;]+?)(?=\bgive\b|\bprescribe\b|\brx\b|\.|$)/i);
+  const ccRegex = /\b(?:patient\s+(?:has|as|is|with)|complaining\s+of|c\/o|complaints?\s+of|suffering\s+from|having)\s+([^.,;\n]+?)(?=\b(?:give|prescribe|rx|take|tab|tablet|cap|capsule|dolo|pan|paracetamol|augmentin|azithral|\d+\s*mg)\b|[.,;\n]|$)/i;
+  const ccMatch = text.match(ccRegex);
   if (ccMatch && ccMatch[1]) {
     chiefComplaint = ccMatch[1].trim();
     text = text.replace(ccMatch[0], ' ');
-    if (/fever|pyrexia/i.test(chiefComplaint)) diagnosis = 'Acute Febrile Illness';
-    else if (/cough|cold|throat/i.test(chiefComplaint)) diagnosis = 'Upper Respiratory Tract Infection (URTI)';
+  } else if (/body\s+pains?|body\s+ache/i.test(text)) {
+    chiefComplaint = 'Body ache & fever';
   }
+
+  if (/fever|pyrexia/i.test(chiefComplaint)) diagnosis = 'Acute Febrile Illness';
+  else if (/body\s+pains?|body\s+ache/i.test(chiefComplaint)) diagnosis = 'Acute Febrile Illness with Myalgia';
+  else if (/cough|cold|throat/i.test(chiefComplaint)) diagnosis = 'Upper Respiratory Tract Infection (URTI)';
 
   const clauses = text
     .split(/(?:[.,;]|\band\b|\balso\b)+/i)
@@ -346,8 +398,6 @@ function parseHeuristicFallback(rawTranscript: string): any {
 
   for (const clause of clauses) {
     let cText = clause;
-    const hasFreq = FREQ_PATTERNS.some((fp) => fp.regex.test(cText));
-    const hasDur = /\b(?:for\s+)?(\d+)\s*(days?|din|weeks?|months?)\b/i.test(cText);
 
     let frequency = '1-0-1';
     for (const fp of FREQ_PATTERNS) {
@@ -358,7 +408,7 @@ function parseHeuristicFallback(rawTranscript: string): any {
       }
     }
 
-    let duration = '5 days';
+    let duration = '3 days';
     const durMatch = cText.match(/\b(?:for\s+)?(\d+)\s*(days?|din|weeks?|hafta|months?|mahina)\b/i);
     if (durMatch) {
       const num = durMatch[1];
@@ -376,17 +426,31 @@ function parseHeuristicFallback(rawTranscript: string): any {
       }
     }
 
-    let cleanName = cText
-      .replace(STOP_WORDS_REGEX, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    // 1. Try finding the genuine drug name inside the clause
+    const embeddedDrug = findDrugInClause(clause);
 
-    cleanName = cleanName.replace(/(\d+)\s*m\b/gi, '$1mg');
+    let cleanName = '';
+    let canonicalStrength: string | undefined = embeddedDrug?.strength;
 
-    if (cleanName.length >= 2) {
+    if (embeddedDrug) {
+      cleanName = embeddedDrug.name;
+    } else {
+      const stripped = cText
+        .replace(STOP_WORDS_REGEX, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      // Only push non-embedded candidate if it actually has letters
+      if (stripped.length >= 3 && !/^(body|clear|first|one|two|three|days|morning|night)$/i.test(stripped)) {
+        cleanName = stripped.replace(/(\d+)\s*m\b/gi, '$1mg');
+      }
+    }
+
+    if (cleanName && cleanName.length >= 2) {
       medicines.push({
         name: cleanName,
         dosage_form: 'Tablet',
+        strength: canonicalStrength,
         frequency,
         duration,
         instructions,

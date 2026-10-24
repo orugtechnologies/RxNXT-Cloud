@@ -60,6 +60,13 @@ const PHONETIC_CORRECTIONS_CLIENT = [
   { pattern: /\b(?:stayly|stay\s+daily|steadily)\b/gi, replacement: 'once daily' },
   { pattern: /\b(?:wise\s+daily)\b/gi, replacement: 'twice daily' },
   { pattern: /\bpatient\s+as\s+/gi, replacement: 'patient has ' },
+  // Telugu Clinical Phonetic Corrections
+  { pattern: /\b(?:pencil\s+nayi|pains\s+nayi|unnayi|unnai)\b/gi, replacement: 'having' },
+  { pattern: /\b(?:was\s+calling|is\s+calling|calling|vesukondi|veskondi|veyandi)\b/gi, replacement: 'take' },
+  { pattern: /\b(?:azithrol|asithrol)\b/gi, replacement: 'Azithral' },
+  { pattern: /\b(?:morning\s+(?:and|&)?\s*night|morning\s+evening|udayam\s+ratri)\b/gi, replacement: 'twice daily' },
+  { pattern: /\b(?:thinnaka|bhojanam\s+tarvata)\b/gi, replacement: 'after food' },
+  { pattern: /\b(?:parigadupuna|bhojanam\s+mundu)\b/gi, replacement: 'before food' },
 ];
 
 function cleanPhoneticsClient(text: string): string {
