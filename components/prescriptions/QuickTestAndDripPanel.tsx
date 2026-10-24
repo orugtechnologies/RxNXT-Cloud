@@ -68,22 +68,24 @@ export default function QuickTestAndDripPanel({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-slate-50/70 hover:bg-slate-100/70 transition-colors px-5 py-3 border-b border-slate-100 flex items-center justify-between text-left"
+        className="w-full bg-[#f0f6fe] hover:bg-[#e6f0fd] transition-colors px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between text-left"
       >
-        <div className="flex items-center gap-2">
-          <FlaskConical size={16} className="text-[#0080ff]" />
-          <span className="text-xs font-bold text-[#000865] uppercase tracking-wider">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+            <FlaskConical size={15} className="stroke-[2.5]" />
+          </div>
+          <span className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">
             Diagnostics & Day-Care Procedures (Optional)
           </span>
           {hasSelections && (
-            <span className="text-[10px] font-bold text-[#0052cc] bg-[#e8f1fd] border border-[#bfdbfe] px-2 py-0.5 rounded-full ml-2">
+            <span className="text-[10px] font-bold text-[#0052cc] bg-[#dbeafe] border border-[#93c5fd] px-2 py-0.5 rounded-full ml-1">
               {selectedTests.length + selectedDrips.length} ordered (₹{totalBillable})
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
+        <div className="flex items-center gap-1.5 text-slate-500 text-xs font-semibold bg-white/80 px-2 py-0.5 rounded border border-slate-200/60">
           <span>{isOpen ? 'Collapse' : '+ Expand'}</span>
-          {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </div>
       </button>
 

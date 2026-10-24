@@ -480,10 +480,14 @@ function PrescriptionWorkflowContent() {
           <div className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-20 lg:self-start">
             
             {/* Step 1: Patient Selection */}
-            <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 hover:shadow-md relative z-20">
-              <div className="bg-slate-50/70 px-5 py-3 border-b border-slate-100 flex items-center rounded-t-xl">
-                <User size={18} className="text-[#0080ff] mr-2" />
-                <h2 className="text-sm font-bold text-[#000865] uppercase tracking-wider">Patient</h2>
+            <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 hover:shadow-md relative z-20 overflow-hidden">
+              <div className="bg-[#f0f6fe] px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between rounded-t-xl">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+                    <User size={15} className="stroke-[2.5]" />
+                  </div>
+                  <h2 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">Patient</h2>
+                </div>
               </div>
               <div className="p-5">
                 {!patient ? (
@@ -602,14 +606,16 @@ function PrescriptionWorkflowContent() {
               <>
                 {/* Block 1: 1-Click Protocol Packs & Drug Search */}
                 <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden">
-                  <div className="bg-slate-50/70 px-5 py-3 border-b border-slate-100 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Pill size={16} className="text-[#0080ff]" />
-                      <h2 className="text-xs font-bold text-[#000865] uppercase tracking-wider">
+                  <div className="bg-[#f0f6fe] px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+                        <Pill size={15} className="stroke-[2.5]" />
+                      </div>
+                      <h2 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">
                         1-Click Protocol Packs & Search
                       </h2>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-medium">Standardized OPD care</span>
+                    <span className="text-[10px] text-slate-500 font-semibold bg-white/80 px-2 py-0.5 rounded border border-slate-200/60">Standardized OPD care</span>
                   </div>
 
                   <div className="p-4 space-y-3.5">
@@ -634,10 +640,12 @@ function PrescriptionWorkflowContent() {
 
                 {/* Block 2: Prescribed Medicines Cart */}
                 <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden">
-                  <div className="bg-slate-50/70 px-5 py-3 border-b border-slate-100 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Layers size={16} className="text-[#0080ff]" />
-                      <h2 className="text-xs font-bold text-[#000865] uppercase tracking-wider">
+                  <div className="bg-[#f0f6fe] px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+                        <Layers size={15} className="stroke-[2.5]" />
+                      </div>
+                      <h2 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">
                         Prescribed Medicines {medicines.length > 0 && `(${medicines.length})`}
                       </h2>
                     </div>
@@ -645,7 +653,7 @@ function PrescriptionWorkflowContent() {
                       <button
                         type="button"
                         onClick={() => setMedicines([])}
-                        className="text-xs font-bold text-rose-600 hover:text-rose-700 hover:underline transition-colors cursor-pointer"
+                        className="text-xs font-bold text-rose-600 hover:text-rose-700 hover:underline transition-colors cursor-pointer bg-white/80 px-2.5 py-1 rounded border border-rose-200/80"
                       >
                         Clear All
                       </button>
@@ -680,14 +688,16 @@ function PrescriptionWorkflowContent() {
 
                 {/* Block 4: Doctor's Advice & Counseling */}
                 <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden">
-                  <div className="bg-slate-50/70 px-5 py-3 border-b border-slate-100 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <FileText size={16} className="text-[#0080ff]" />
-                      <h2 className="text-xs font-bold text-[#000865] uppercase tracking-wider">
+                  <div className="bg-[#f0f6fe] px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+                        <FileText size={15} className="stroke-[2.5]" />
+                      </div>
+                      <h2 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">
                         Doctor's Advice & Counseling
                       </h2>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-medium">Included on printout</span>
+                    <span className="text-[10px] text-slate-500 font-semibold bg-white/80 px-2 py-0.5 rounded border border-slate-200/60">Included on printout</span>
                   </div>
 
                   <div className="p-4 space-y-3">

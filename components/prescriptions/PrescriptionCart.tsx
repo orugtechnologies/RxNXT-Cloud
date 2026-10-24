@@ -95,16 +95,7 @@ const QUICK_INSTRUCTIONS = ['After Food', 'Before Food', 'At bedtime', 'SOS'];
 
 export default function PrescriptionCart({ medicines, onUpdate, onRemove }: CartProps) {
   return (
-    <div className="mt-6 border border-clinic-border rounded-xl overflow-hidden bg-white shadow-sm animate-in fade-in">
-      <div className="bg-gray-50/80 px-5 py-3 border-b border-clinic-border flex justify-between items-center">
-        <span className="font-bold text-clinic-navy text-sm uppercase tracking-wide">
-          Prescribed Medicines
-        </span>
-        <span className={`${medicines.length > 0 ? 'bg-clinic-navy text-white' : 'bg-slate-200 text-slate-600'} text-xs font-bold px-2 py-0.5 rounded-full`}>
-          {medicines.length} item{medicines.length !== 1 && 's'}
-        </span>
-      </div>
-      
+    <div className="bg-white animate-in fade-in">
       {medicines.length === 0 ? (
         <div className="py-8 px-4 text-center bg-white flex flex-col items-center justify-center">
           <p className="text-sm font-semibold text-slate-500">

@@ -62,8 +62,8 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
   return (
     <div className="mt-3.5 pt-3 border-t border-slate-100">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-          <Zap size={13} className="text-amber-500 fill-amber-400" />
+        <span className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider flex items-center gap-1.5">
+          <Zap size={14} className="text-[#0080ff] fill-[#0080ff]" />
           My Frequent Drugs (1-Click Add)
         </span>
       </div>

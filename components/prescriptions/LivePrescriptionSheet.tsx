@@ -89,10 +89,10 @@ export default function LivePrescriptionSheet({
       <div className="bg-white rounded-xl shadow-xl border border-slate-300/80 overflow-hidden text-slate-800 transition-all duration-300">
         
         {/* Top Sheet Status Ribbon */}
-        <div className="bg-slate-50/80 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between text-xs font-semibold">
-          <div className="flex items-center gap-2">
+        <div className="bg-[#f0f6fe] px-4 py-3 border-b border-[#d8e7fc] flex items-center justify-between text-xs font-semibold">
+          <div className="flex items-center gap-2.5">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="tracking-wide uppercase text-[11px] font-black text-[#000865] flex items-center gap-2">
+            <span className="tracking-wider uppercase text-xs sm:text-[13px] font-black text-[#000865]">
               Live Prescription Preview (A4 Sheet)
             </span>
           </div>
@@ -307,11 +307,15 @@ export default function LivePrescriptionSheet({
 
       {/* Fitts's Law Primary Action Dock (Directly Anchored Under the Preview) */}
       <div className="bg-white rounded-xl p-4 shadow-soft border border-slate-200/90 space-y-3">
-        <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-100">
-          <span className="font-extrabold flex items-center gap-1.5 text-[#000865] uppercase tracking-wider text-[11px]">
-            <ShieldCheck size={16} className="text-[#0080ff]" />
-            Dispatch Dock
-          </span>
+        <div className="flex items-center justify-between text-xs pb-2.5 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+              <ShieldCheck size={15} className="stroke-[2.5]" />
+            </div>
+            <span className="font-extrabold text-xs sm:text-[13px] text-[#000865] uppercase tracking-wider">
+              Dispatch Dock
+            </span>
+          </div>
           <span className="text-[11px] text-slate-500 font-medium">
             {patient ? `Patient: ${patient.name}` : 'No patient selected'}
           </span>

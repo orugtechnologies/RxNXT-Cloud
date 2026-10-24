@@ -121,12 +121,14 @@ export default function QuickSymptomsDiagnosis({
     <div className="space-y-4">
       {/* Block: Chief Complaints */}
       <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden transition-all duration-300">
-        <div className="bg-slate-50/70 px-4 py-2.5 border-b border-slate-100 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Stethoscope size={15} className="text-[#0080ff]" />
-            <h3 className="text-xs font-bold text-[#000865] uppercase tracking-wider">Chief Complaints</h3>
+        <div className="bg-[#f0f6fe] px-4 py-3 border-b border-[#d8e7fc] flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+              <Stethoscope size={15} className="stroke-[2.5]" />
+            </div>
+            <h3 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">Chief Complaints</h3>
           </div>
-          <span className="text-[10px] text-slate-400 font-medium">Tap to toggle</span>
+          <span className="text-[10px] text-slate-500 font-semibold bg-white/80 px-2 py-0.5 rounded border border-slate-200/60">Tap to toggle</span>
         </div>
 
         <div className="p-3.5 space-y-2.5">
@@ -175,12 +177,14 @@ export default function QuickSymptomsDiagnosis({
 
       {/* Block: Diagnosis / Clinical Impression */}
       <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden transition-all duration-300">
-        <div className="bg-slate-50/70 px-4 py-2.5 border-b border-slate-100 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Activity size={15} className="text-[#0080ff]" />
-            <h3 className="text-xs font-bold text-[#000865] uppercase tracking-wider">Diagnosis / Impression</h3>
+        <div className="bg-[#f0f6fe] px-4 py-3 border-b border-[#d8e7fc] flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+              <Activity size={15} className="stroke-[2.5]" />
+            </div>
+            <h3 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">Diagnosis / Impression</h3>
           </div>
-          <span className="text-[10px] text-slate-400 font-medium">Tap to toggle</span>
+          <span className="text-[10px] text-slate-500 font-semibold bg-white/80 px-2 py-0.5 rounded border border-slate-200/60">ICD-10 Search</span>
         </div>
 
         <div className="p-3.5 space-y-2.5">

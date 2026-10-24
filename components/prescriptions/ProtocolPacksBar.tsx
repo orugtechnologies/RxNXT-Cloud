@@ -148,15 +148,15 @@ export default function ProtocolPacksBar({
   };
 
   return (
-    <div className="bg-gradient-to-r from-emerald-50/70 via-teal-50/40 to-blue-50/50 p-3.5 rounded-2xl border border-emerald-100/80 mb-4 shadow-sm">
+    <div className="bg-gradient-to-r from-[#eef6ff] to-[#f5f9ff] p-3.5 rounded-xl border border-[#cbe1fc] mb-3 shadow-2xs">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2 px-1">
         <div className="flex items-center space-x-2">
-          <div className="bg-emerald-600 text-white p-1 rounded-lg shadow-sm">
+          <div className="bg-[#0080ff] text-white p-1 rounded-md shadow-xs">
             <Zap size={14} className="fill-current" />
           </div>
-          <h3 className="text-xs font-extrabold text-clinic-navy uppercase tracking-wider flex items-center">
+          <h3 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider flex items-center">
             My Protocol Packs
-            <span className="ml-2 bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+            <span className="ml-2 bg-[#dbeafe] text-[#1e40af] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#93c5fd]">
               1-Click Fill
             </span>
           </h3>
@@ -166,7 +166,7 @@ export default function ProtocolPacksBar({
           {cartCount > 0 && (
             <button
               onClick={onOpenSaveModal}
-              className="flex items-center text-xs font-bold bg-white text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 px-2.5 py-1 rounded-lg transition-all shadow-xs"
+              className="flex items-center text-xs font-bold bg-white text-[#0052cc] hover:bg-[#0080ff] hover:text-white border border-[#bfdbfe] px-2.5 py-1 rounded-lg transition-all shadow-xs"
               title="Save current cart medicines as a reusable protocol pack"
             >
               <Plus size={13} className="mr-1 stroke-[3]" />
