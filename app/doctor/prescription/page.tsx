@@ -62,7 +62,7 @@ function PrescriptionWorkflowContent() {
 
   // Speed tracking metrics
   const [startTime, setStartTime] = useState<number | null>(null);
-  const [creationMethod, setCreationMethod] = useState<'MANUAL' | 'TEMPLATE'>('MANUAL');
+  const [creationMethod, setCreationMethod] = useState<'MANUAL' | 'TEMPLATE' | 'VOICE'>('MANUAL');
   const [lastTimeTaken, setLastTimeTaken] = useState<number | null>(null);
 
   const [doctorContext, setDoctorContext] = useState<any>({});
@@ -211,6 +211,7 @@ function PrescriptionWorkflowContent() {
 
   const handleVoiceRxApply = (data: VoiceRxPayload) => {
     if (!startTime) setStartTime(Date.now());
+    if (creationMethod === 'MANUAL') setCreationMethod('VOICE');
 
     if (data.chiefComplaint && !chiefComplaint.trim()) {
       setChiefComplaint(data.chiefComplaint);
