@@ -9,6 +9,17 @@ export interface FormattedPrescriptionSchedule {
   templateSummary: string;
   richSchedule: string;
   fullMessageBody: string;
+  slotDetails?: {
+    patientName: string;
+    clinicName: string;
+    diagnosis: string;
+    morningMeds: string;
+    afternoonMeds: string;
+    nightMeds: string;
+    duration: string;
+    nextVisit: string;
+    doctorAdvice: string;
+  };
 }
 
 export function formatPrescriptionSchedule(params: {

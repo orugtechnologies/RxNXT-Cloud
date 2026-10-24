@@ -354,6 +354,7 @@ export async function sendPrescriptionPDF(
   options?: {
     templateSummary?: string;
     fullMessageBody?: string;
+    slotDetails?: any;
   }
 ) {
   // Construct official direct downloadable PDF link (e.g. https://app.rxnxt.in/api/prescriptions/{id}/pdf)

@@ -20,6 +20,7 @@ import QuickTestAndDripPanel, { InvestigationItem, DayCareProcedureItem } from '
 import QuickSymptomsDiagnosis from '@/components/prescriptions/QuickSymptomsDiagnosis';
 import FrequentDrugsBar from '@/components/drugs/FrequentDrugsBar';
 import QuickAdviceChips from '@/components/prescriptions/QuickAdviceChips';
+import VoiceRxBar, { VoiceRxPayload } from '@/components/prescriptions/VoiceRxBar';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
@@ -206,6 +207,46 @@ function PrescriptionWorkflowContent() {
   const loadTemplate = (meds: PrescribedMedicine[]) => {
     setMedicines([...medicines, ...meds]);
     setCreationMethod('TEMPLATE');
+  };
+
+  const handleVoiceRxApply = (data: VoiceRxPayload) => {
+    if (!startTime) setStartTime(Date.now());
+
+    if (data.chiefComplaint && !chiefComplaint.trim()) {
+      setChiefComplaint(data.chiefComplaint);
+    }
+
+    if (data.diagnosis) {
+      setDiagnosis(prev => prev.trim() ? `${prev}; ${data.diagnosis}` : data.diagnosis!);
+    }
+
+    if (data.medicines && data.medicines.length > 0) {
+      const newMeds: PrescribedMedicine[] = data.medicines.map(m => ({
+        id: Math.random().toString(36).substring(2, 9),
+        name: m.name,
+        dosage_form: m.dosage_form || 'Tablet',
+        strength: m.strength || '',
+        route: 'Oral',
+        frequency: m.frequency,
+        duration: m.duration,
+        instructions: m.instructions,
+        generic_id: m.generic_id || m.drugId,
+      }));
+
+      setMedicines(prev => {
+        const existingNames = new Set(prev.map(p => p.name.toLowerCase()));
+        const uniqueNew = newMeds.filter(n => !existingNames.has(n.name.toLowerCase()));
+        return [...prev, ...uniqueNew];
+      });
+    }
+
+    if (data.notes) {
+      setNotes(prev => prev.trim() ? `${prev}. ${data.notes}` : data.notes!);
+    }
+
+    if (data.followUpDate) {
+      setFollowUpDate(data.followUpDate);
+    }
   };
 
   const updateMedicine = (id: string, updates: Partial<PrescribedMedicine>) => {
@@ -419,7 +460,13 @@ function PrescriptionWorkflowContent() {
             Clinical Workspace
             <InfoTooltip text="Write and send digital prescriptions via WhatsApp. Use the AI Smart Search to quickly find drugs, or switch to the Templates tab to use pre-saved protocols." />
           </h1>
-          <p className="text-slate-500 mt-1 ml-11 text-sm font-medium">RxNXT Digital Prescription Flow</p>
+          <div className="flex flex-wrap items-center gap-2 mt-1 ml-11">
+            <p className="text-slate-500 text-sm font-medium">RxNXT Clinical Flow</p>
+            <span className="text-slate-300">•</span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-[11px] font-bold">
+              ⚡ Zero-Typing Faster Prescription Generator
+            </span>
+          </div>
         </div>
       </div>
 
@@ -566,6 +613,9 @@ function PrescriptionWorkflowContent() {
                 </div>
                 
                 <div className="p-6">
+                  {/* Voice Rx Dictation Engine */}
+                  <VoiceRxBar onApply={handleVoiceRxApply} />
+
                   {/* 1-Click My Protocol Packs Bar */}
                   <ProtocolPacksBar 
                     onLoadTemplate={loadTemplate} 

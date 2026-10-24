@@ -97,8 +97,8 @@ const FOUR_PILLARS = [
   {
     id: 3,
     pillarNumber: 'Pillar 3',
-    title: 'Consult Faster',
-    tagline: '< 20-Second Prescriptions',
+    title: 'Zero Typing Rx',
+    tagline: 'Zero-Typing Faster Rx Generator',
     icon: Zap,
     badgeColor: 'bg-sky-100 text-sky-800 border-sky-200',
     themeColor: 'sky',
@@ -107,22 +107,22 @@ const FOUR_PILLARS = [
     activeBorder: 'border-sky-500 shadow-sky-500/10',
     accentText: 'text-sky-700',
     accentBg: 'bg-sky-100 text-sky-700',
-    description: 'Traditional EMRs steal time with 20 clicks per drug. RxNXT is tuned for high-volume OPDs to finish in under 20s.',
+    description: 'Traditional EMRs steal doctor time with 20 tedious clicks and constant keyboard typing per drug. RxNXT is India’s Zero-Typing faster digital prescription generator — complete OPD prescriptions in under 20s.',
     points: [
       {
-        title: 'Instant Typo-Tolerant Search',
-        detail: 'Type misspellings or clinical shorthands like "PCM" and get immediate brand & generic matches.',
+        title: '1-Click Everyday OPD Medicine Chips',
+        detail: 'Tap frequently prescribed OPD medicines directly into the Rx with smart pre-filled dosage & form.',
       },
       {
-        title: '1-Click Dosage Chips',
-        detail: 'Tap "1-0-1", "After Food", "5 Days" instead of typing repetitive dosage instructions.',
+        title: '1-Click Dosage, Timing & Advice Chips',
+        detail: 'Tap "1-0-1", "After Food", "5 Days" and clinical instructions with zero keyboard typing.',
       },
       {
         title: '1-Tap Chronic Rx Cloning',
         detail: 'For repeat diabetes and hypertension patients, clone the past prescription in 1 single click.',
       },
     ],
-    metric: 'See 20+ More Patients Without Rushing',
+    metric: 'Zero Keyboard Fatigue • Faster Digital Rx Generator',
   },
   {
     id: 4,
@@ -318,7 +318,7 @@ export default function LoginPage() {
               </span>
             </div>
             <p className="text-[11px] font-semibold text-slate-500 hidden sm:block">
-              <span className="text-slate-800 font-bold">The 4 Pillars:</span> Go Digital • Data Protected • Consult Faster • Care Continuity
+              <span className="text-slate-800 font-bold">The 4 Pillars:</span> Go Digital • Data Protected • Zero Typing (Faster Rx) • Care Continuity
             </p>
           </div>
         </div>
@@ -364,12 +364,12 @@ export default function LoginPage() {
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
                 Go Digital. Data Protected.<br />
                 <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300 bg-clip-text text-transparent">
-                  Consult Faster. Care Continuity.
+                  Zero Typing Faster Rx. Care Continuity.
                 </span>
               </h1>
 
               <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-                Every screen, algorithm, and clinical workflow in RxNXT is purpose-built to deliver on these four foundational pillars for Indian outpatient OPDs.
+                Every screen, algorithm, and clinical workflow in RxNXT is purpose-built as a zero-typing faster digital prescription generator for Indian outpatient OPDs.
               </p>
 
               {/* 4 Pillars Interactive Tab Switcher */}
@@ -487,8 +487,8 @@ export default function LoginPage() {
           {/* Quick Pillar Value Metrics Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="bg-white/90 border border-slate-200/90 p-3 rounded-2xl text-center shadow-xs">
-              <div className="text-lg font-black text-emerald-600">&lt; 20s</div>
-              <div className="text-[10px] font-semibold text-slate-500 uppercase mt-0.5">Rx Speed</div>
+              <div className="text-base sm:text-lg font-black text-emerald-600">Zero Typing</div>
+              <div className="text-[10px] font-semibold text-slate-500 uppercase mt-0.5">&lt; 20s Generator</div>
             </div>
             <div className="bg-white/90 border border-slate-200/90 p-3 rounded-2xl text-center shadow-xs">
               <div className="text-lg font-black text-teal-600">100% RLS</div>

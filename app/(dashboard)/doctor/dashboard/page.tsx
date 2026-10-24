@@ -133,7 +133,7 @@ export default function DashboardPage() {
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-200 block mb-0.5">Clinical Workspace</span>
               <h3 className="text-xl font-extrabold text-white">Start Consultation</h3>
-              <p className="text-white/80 text-xs font-medium mt-1">Open digital prescription workspace</p>
+              <p className="text-white/80 text-xs font-medium mt-1">Zero-Typing faster prescription generator</p>
             </div>
           </div>
         </button>

@@ -19,12 +19,12 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'RxNXT™ — Doctor Led. AI Enabled Platform',
+    default: 'RxNXT™ — Zero-Typing Faster Digital Prescription Generator',
     template: '%s | RxNXT™',
   },
   description:
-    'RxNXT™ is a doctor-first digital prescription and clinic management platform. Generate structured prescriptions in 0.1s.',
-  keywords: ['prescription', 'digital health', 'clinic management', 'EMR', 'healthcare', 'RxNXT'],
+    'RxNXT™ is India’s premier Zero-Typing faster digital prescription generator for doctors. Prescribe complete, compliant OPD prescriptions in under 20 seconds with 1-click intelligent chips.',
+  keywords: ['zero typing prescription', 'faster digital prescription generator', 'digital prescription', 'clinic management', 'EMR', 'healthcare', 'RxNXT'],
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

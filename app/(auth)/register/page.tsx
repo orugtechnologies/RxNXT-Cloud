@@ -117,7 +117,7 @@ function RegisterForm() {
               <p className="text-slate-500 text-sm sm:text-base mt-1 font-medium">
                 {inviteCodeParam 
                   ? 'Complete your profile to join your clinic team' 
-                  : 'Get started in seconds with high-speed digital prescriptions and patient queue'}
+                  : 'Get started in seconds with India’s fastest Zero-Typing digital prescription generator and live patient queue'}
               </p>
             </div>
             {!inviteCodeParam && (
