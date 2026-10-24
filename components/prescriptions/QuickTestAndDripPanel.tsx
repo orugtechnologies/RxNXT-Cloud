@@ -68,20 +68,20 @@ export default function QuickTestAndDripPanel({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-slate-900 hover:bg-slate-800 transition-colors px-5 py-3 border-b border-slate-800 flex items-center justify-between text-left"
+        className="w-full bg-clinic-navy hover:bg-[#000a80] transition-colors px-5 py-3 border-b border-clinic-border flex items-center justify-between text-left"
       >
         <div className="flex items-center gap-2">
-          <FlaskConical size={16} className="text-cyan-400" />
+          <FlaskConical size={16} className="text-[#38bdf8]" />
           <span className="text-xs font-bold text-white uppercase tracking-wider">
             Diagnostics & Day-Care Procedures (Optional)
           </span>
           {hasSelections && (
-            <span className="text-[11px] font-bold text-cyan-300 bg-cyan-950/80 border border-cyan-700 px-2 py-0.5 rounded-full ml-2">
+            <span className="text-[11px] font-bold text-blue-100 bg-blue-900/60 border border-blue-400/30 px-2 py-0.5 rounded-full ml-2">
               {selectedTests.length + selectedDrips.length} ordered (₹{totalBillable})
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2 text-slate-400 text-xs">
+        <div className="flex items-center gap-2 text-blue-200 text-xs">
           <span>{isOpen ? 'Collapse' : '+ Expand'}</span>
           {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </div>
@@ -129,7 +129,7 @@ export default function QuickTestAndDripPanel({
         <div className="pt-2 border-t border-slate-100">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
-              <Droplet size={14} className="text-purple-600" />
+              <Droplet size={14} className="text-[#0080ff]" />
               1-Click IV Drip / Day-Care
             </span>
             <span className="text-[10px] text-slate-400">Sent to Nursing & Billing</span>
@@ -144,8 +144,8 @@ export default function QuickTestAndDripPanel({
                   onClick={() => onToggleDrip(drip)}
                   className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 ${
                     selected
-                      ? 'bg-[#ede9fe] text-[#5b21b6] border-[#c4b5fd] font-bold shadow-xs ring-1 ring-[#c4b5fd]'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-purple-300 hover:bg-purple-50/50'
+                      ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50'
                   }`}
                 >
                   <span>{drip.name}</span>
@@ -163,19 +163,19 @@ export default function QuickTestAndDripPanel({
 
         {/* Action Callout if tests or drips are selected */}
         {hasSelections && onSendForTests && (
-          <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-indigo-50/60 -mx-4 -mb-4 p-3.5 rounded-b-xl border-dashed">
-            <div className="text-xs text-indigo-900">
+          <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-[#e8f1fd]/80 -mx-4 -mb-4 p-3.5 rounded-b-xl border-dashed">
+            <div className="text-xs text-[#000865]">
               <span className="font-bold">Ready to order: </span>
               {selectedTests.length > 0 && <span>{selectedTests.length} test{selectedTests.length > 1 ? 's' : ''}</span>}
               {selectedTests.length > 0 && selectedDrips.length > 0 && <span>, </span>}
               {selectedDrips.length > 0 && <span>{selectedDrips.length} drip/procedure{selectedDrips.length > 1 ? 's' : ''}</span>}
-              <span className="font-extrabold text-indigo-950 ml-1.5">(₹{totalBillable.toLocaleString('en-IN')})</span>
+              <span className="font-extrabold text-[#000865] ml-1.5">(₹{totalBillable.toLocaleString('en-IN')})</span>
             </div>
             <button
               type="button"
               onClick={onSendForTests}
               disabled={isSending}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs py-2 px-3.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1.5 disabled:opacity-50"
+              className="bg-[#0080ff] hover:bg-[#0066cc] text-white font-bold text-xs py-2 px-3.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1.5 disabled:opacity-50 active:scale-95"
             >
               <FlaskConical size={14} />
               {isSending ? 'Sending to Lab...' : 'Send for Tests / Drip & Next Patient ➔'}

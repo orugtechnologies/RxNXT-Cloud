@@ -249,7 +249,7 @@ export default function LivePrescriptionSheet({
               )}
               {selectedDrips.length > 0 && (
                 <div>
-                  <span className="font-bold text-purple-700 uppercase text-[9px]">Day-Care Procedures: </span>
+                  <span className="font-bold text-blue-700 uppercase text-[9px]">Day-Care Procedures: </span>
                   <span className="text-slate-800 font-medium">
                     {selectedDrips.map(d => d.name).join(', ')}
                   </span>
