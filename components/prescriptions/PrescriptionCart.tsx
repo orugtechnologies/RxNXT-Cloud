@@ -234,24 +234,52 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                     </button>
                   ))}
                 </div>
-                <div className="relative pt-1">
-                  <input
-                    type="text"
-                    list={`dur-list-${med.id}`}
-                    value={med.duration}
-                    onChange={(e) => onUpdate(med.id, { duration: e.target.value })}
-                    placeholder="e.g. 3 days, 5 days, 1 month..."
-                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-semibold outline-none transition-shadow shadow-xs ${
-                      !med.duration?.trim()
-                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/70'
-                        : 'border-slate-300 focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb]'
-                    }`}
-                  />
-                  <datalist id={`dur-list-${med.id}`}>
-                    {DURATION_OPTIONS.filter(o => o.value).map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </datalist>
+                <div className="flex items-center gap-1.5 pt-1">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      list={`dur-list-${med.id}`}
+                      value={med.duration}
+                      onChange={(e) => onUpdate(med.id, { duration: e.target.value })}
+                      placeholder="e.g. 3 days, 5 days, 1 month..."
+                      className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-semibold outline-none transition-shadow shadow-xs ${
+                        !med.duration?.trim()
+                          ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/70'
+                          : 'border-slate-300 focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb]'
+                      }`}
+                    />
+                    <datalist id={`dur-list-${med.id}`}>
+                      {DURATION_OPTIONS.filter(o => o.value).map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </datalist>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const num = parseInt(med.duration) || 3;
+                        const next = Math.max(1, num - 1);
+                        onUpdate(med.id, { duration: `${next} day${next > 1 ? 's' : ''}` });
+                      }}
+                      className="px-2.5 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition-colors shadow-2xs"
+                      title="Decrease by 1 day"
+                    >
+                      -1d
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const num = parseInt(med.duration) || 3;
+                        const next = num + 1;
+                        onUpdate(med.id, { duration: `${next} day${next > 1 ? 's' : ''}` });
+                      }}
+                      className="px-2.5 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition-colors shadow-2xs"
+                      title="Increase by 1 day"
+                    >
+                      +1d
+                    </button>
+                  </div>
                 </div>
               </div>
 

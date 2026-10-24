@@ -6,7 +6,7 @@ import { PrescribedMedicine } from './PrescriptionCart';
 import QuickTreatmentGroupsPanel from './QuickTreatmentGroupsPanel';
 
 export interface TreatmentGroupItem {
-  id: string;
+  id?: string;
   drugId?: string;
   generic_id?: string;
   brand_id?: string;
@@ -32,6 +32,62 @@ interface ProtocolPacksBarProps {
   refreshKey?: number;
 }
 
+
+export const CURATED_PROTOCOL_PACKS: TreatmentGroup[] = [
+  {
+    id: 'pack-viral-fever',
+    name: 'Viral Fever / Flu Pack',
+    items: [
+      { name: 'Dolo 650', dosage_form: 'Tablet', strength: '650mg', frequency: '1-0-1', duration: '3 days', instructions: 'After Food' },
+      { name: 'Cetirizine 10mg', dosage_form: 'Tablet', strength: '10mg', frequency: '0-0-1', duration: '3 days', instructions: 'At Bedtime' },
+      { name: 'Pantocid 40mg', dosage_form: 'Tablet', strength: '40mg', frequency: '1-0-0', duration: '3 days', instructions: 'Before Breakfast' },
+    ]
+  },
+  {
+    id: 'pack-uri-cough',
+    name: 'URI / Cough & Cold',
+    items: [
+      { name: 'Augmentin 625 Duo', dosage_form: 'Tablet', strength: '625mg', frequency: '1-0-1', duration: '5 days', instructions: 'After Food' },
+      { name: 'Montair-LC', dosage_form: 'Tablet', strength: '10mg', frequency: '0-0-1', duration: '5 days', instructions: 'At Bedtime' },
+      { name: 'Ascoril D Plus Syrup', dosage_form: 'Syrup', strength: '100ml', frequency: '1-1-1', duration: '5 days', instructions: 'After Food' },
+    ]
+  },
+  {
+    id: 'pack-acute-gastro',
+    name: 'Acute Gastroenteritis',
+    items: [
+      { name: 'Norflox-TZ', dosage_form: 'Tablet', strength: 'Standard', frequency: '1-0-1', duration: '3 days', instructions: 'After Food' },
+      { name: 'ORS Sachet', dosage_form: 'Powder', strength: '1 Sachet', frequency: 'SOS', duration: '3 days', instructions: 'In 1L Water' },
+      { name: 'Pantocid 40mg', dosage_form: 'Tablet', strength: '40mg', frequency: '1-0-0', duration: '3 days', instructions: 'Before Food' },
+      { name: 'Voveran 50mg', dosage_form: 'Tablet', strength: '50mg', frequency: 'SOS', duration: '3 days', instructions: 'When Pain Occurs' },
+    ]
+  },
+  {
+    id: 'pack-gastritis-gerd',
+    name: 'Gastritis & Acidity',
+    items: [
+      { name: 'Pantocid-DSR', dosage_form: 'Capsule', strength: '40mg', frequency: '1-0-0', duration: '5 days', instructions: 'Before Breakfast' },
+      { name: 'Digene Gel', dosage_form: 'Gel', strength: '200ml', frequency: '1-1-1', duration: '5 days', instructions: 'After Meals' },
+    ]
+  },
+  {
+    id: 'pack-htn-starter',
+    name: 'Hypertension Starter',
+    items: [
+      { name: 'Telmisartan 40mg', dosage_form: 'Tablet', strength: '40mg', frequency: '1-0-0', duration: '15 days', instructions: 'Morning After Food' },
+      { name: 'Amlodipine 5mg', dosage_form: 'Tablet', strength: '5mg', frequency: '0-0-1', duration: '15 days', instructions: 'Night After Food' },
+    ]
+  },
+  {
+    id: 'pack-t2dm-starter',
+    name: 'Type-2 Diabetes Starter',
+    items: [
+      { name: 'Metformin 500mg SR', dosage_form: 'Tablet', strength: '500mg', frequency: '1-0-1', duration: '30 days', instructions: 'After Meals' },
+      { name: 'Glimepiride 1mg', dosage_form: 'Tablet', strength: '1mg', frequency: '1-0-0', duration: '30 days', instructions: 'Before Breakfast' },
+    ]
+  }
+];
+
 export default function ProtocolPacksBar({
   onLoadTemplate,
   onOpenSaveModal,
@@ -39,6 +95,12 @@ export default function ProtocolPacksBar({
   refreshKey = 0
 }: ProtocolPacksBarProps) {
   const [templates, setTemplates] = useState<TreatmentGroup[]>([]);
+
+  // Combined packs: User's saved templates first, followed by standard clinical curated packs
+  const displayedPacks: TreatmentGroup[] = [
+    ...templates,
+    ...CURATED_PROTOCOL_PACKS.filter(cp => !templates.some(t => t.name.toLowerCase() === cp.name.toLowerCase()))
+  ];
   const [loading, setLoading] = useState(true);
   const [activePackId, setActivePackId] = useState<string | null>(null);
   const [showAllPanel, setShowAllPanel] = useState(false);
@@ -117,7 +179,7 @@ export default function ProtocolPacksBar({
             className="flex items-center text-xs font-semibold text-gray-500 hover:text-clinic-navy px-2 py-1 rounded-lg hover:bg-white/60 transition-colors"
           >
             <FolderOpen size={13} className="mr-1 text-gray-400" />
-            All Packs ({templates.length})
+            All Packs ({displayedPacks.length})
           </button>
         </div>
       </div>
@@ -129,7 +191,7 @@ export default function ProtocolPacksBar({
             <Loader2 size={13} className="animate-spin mr-2 text-emerald-600" />
             Loading protocol packs...
           </div>
-        ) : templates.length === 0 ? (
+        ) : displayedPacks.length === 0 ? (
           <div className="flex items-center space-x-3 text-xs text-gray-500 py-1 px-2">
             <span className="italic">No saved protocol packs yet.</span>
             {cartCount > 0 ? (
@@ -144,7 +206,7 @@ export default function ProtocolPacksBar({
             )}
           </div>
         ) : (
-          templates.map((template) => {
+          displayedPacks.map((template) => {
             const isActive = activePackId === template.id;
 
             return (
