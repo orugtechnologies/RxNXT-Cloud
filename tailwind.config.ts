@@ -10,17 +10,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Existing clinic theme colors (preserved)
+        // Site-wide Blue/Light-Blue clinical palette
+        emerald: {
+          50: '#f0f6ff',
+          100: '#e0effe',
+          200: '#bae0fd',
+          300: '#7cc5fa',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0080ff',
+          700: '#0052cc',
+          800: '#003db3',
+          900: '#001099',
+          950: '#000865',
+        },
         clinic: {
-          navy: '#0f172a',
-          blue: '#2563eb', // RxNXT Logo Vibrant Royal Blue
-          blueDark: '#1d4ed8',
-          sky: '#0ea5e9',  // RxNXT Logo Sky Blue / Cyan
-          emerald: '#10b981', // RxNXT Logo Healthcare Green
-          emeraldDark: '#059669',
-          bg: '#f8fafc',
+          navy: '#000865', // Deep Royal Navy (matching spreadsheet Row 1 Left)
+          blue: '#0080ff', // RxNXT Vibrant Sky / Electric Blue (matching spreadsheet Row 1 Right)
+          blueDark: '#0052cc',
+          sky: '#38bdf8',  // Light Blue / Cyan Accent
+          emerald: '#0080ff', // Electric Blue
+          emeraldDark: '#0052cc',
+          bg: '#f8faff',
           card: '#ffffff',
-          border: '#e2e8f0',
+          border: '#dbeafe', // Soft pastel light blue border
         },
         // shadcn/ui CSS variable-based colors
         border: 'hsl(var(--border))',

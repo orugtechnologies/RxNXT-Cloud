@@ -5,33 +5,33 @@
 @layer base {
   :root {
     /* Healthcare-appropriate color palette for shadcn/ui */
-    --background: 210 40% 98%; /* #f8fafc - matches clinic-bg */
-    --foreground: 222 84% 5%; /* #0f172a - matches clinic-navy */
+    --background: 214 100% 99%; /* #f8faff */
+    --foreground: 235 100% 20%; /* #000865 - matches deep royal blue */
 
-    --card: 0 0% 100%; /* #ffffff - matches clinic-card */
-    --card-foreground: 222 84% 5%;
+    --card: 0 0% 100%; /* #ffffff - pure white */
+    --card-foreground: 235 100% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 84% 5%;
+    --popover-foreground: 235 100% 20%;
 
-    --primary: 221 83% 53%; /* #2563eb - matches RxNXT logo blue */
-    --primary-foreground: 210 40% 98%;
+    --primary: 210 100% 50%; /* #0080ff - matches vivid sky/electric blue */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11.2%;
+    --secondary: 214 90% 95%; /* #e8f1fd - matches soft pastel light blue */
+    --secondary-foreground: 235 100% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 214 50% 96%;
+    --muted-foreground: 220 20% 50%;
 
-    --accent: 160 84% 39%; /* #10b981 - matches clinic-emerald */
+    --accent: 210 100% 50%; /* #0080ff */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 214 32% 91%; /* #e2e8f0 - matches clinic-border */
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
+    --border: 214 80% 93%; /* #dbeafe - matches soft light blue border */
+    --input: 214 80% 93%;
+    --ring: 210 100% 50%;
 
     --radius: 0.625rem;
   }

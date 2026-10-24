@@ -133,9 +133,9 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
                   className={cn(
                     "flex items-center gap-3 py-2.5 transition-all duration-200 group relative",
                     isActive && !collapsed 
-                      ? "bg-gradient-to-r from-[#2563eb] to-[#0ea5e9] text-white shadow-md pr-8 pl-6" 
+                      ? "bg-gradient-to-r from-[#000865] to-[#0080ff] text-white shadow-md pr-8 pl-6" 
                       : isActive && collapsed 
-                      ? "bg-gradient-to-r from-[#2563eb] to-[#0ea5e9] text-white rounded-lg mx-3 px-3 justify-center"
+                      ? "bg-gradient-to-r from-[#000865] to-[#0080ff] text-white rounded-lg mx-3 px-3 justify-center"
                       : collapsed
                       ? "text-slate-600 hover:bg-blue-50 hover:text-[#2563eb] mx-3 px-3 rounded-lg justify-center transition-colors"
                       : "text-slate-600 hover:bg-blue-50 hover:text-[#2563eb] mx-3 px-3 rounded-lg transition-colors"
@@ -168,7 +168,7 @@ export default function AppSidebar({ userRole, userName, collapsed, onToggle }: 
 
   return (
     <div className={cn(
-      "flex flex-col h-full bg-gradient-to-b from-blue-50/60 via-white to-emerald-50/20 text-slate-900 transition-all duration-300 ease-in-out border-r border-slate-200 shadow-sm relative",
+      "flex flex-col h-full bg-gradient-to-b from-[#f0f6ff] via-white to-[#e8f1fd] text-slate-900 transition-all duration-300 ease-in-out border-r border-[#dbeafe] shadow-sm relative",
       collapsed ? "w-[72px]" : "w-[256px]"
     )}>
       {/* Logo Area */}
