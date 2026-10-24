@@ -89,14 +89,14 @@ export default function LivePrescriptionSheet({
       <div className="bg-white rounded-xl shadow-xl border border-slate-300/80 overflow-hidden text-slate-800 transition-all duration-300">
         
         {/* Top Sheet Status Ribbon */}
-        <div className="bg-slate-900 text-white px-4 py-2 flex items-center justify-between text-xs font-semibold">
+        <div className="bg-gradient-to-r from-[#000865] via-[#001099] to-[#0080ff] text-white px-4 py-2.5 flex items-center justify-between text-xs font-semibold shadow-inner">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="tracking-wide uppercase text-[11px] font-bold text-slate-200">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#38bdf8] animate-pulse"></span>
+            <span className="tracking-wide uppercase text-[11px] font-black text-white">
               Live A4 Prescription Preview
             </span>
           </div>
-          <span className="text-[10px] text-slate-400 font-mono">
+          <span className="text-[10px] text-blue-100 font-mono bg-white/15 border border-white/20 px-2 py-0.5 rounded-full font-bold">
             {medicines.length} Item{medicines.length !== 1 ? 's' : ''} Prescribed
           </span>
         </div>
@@ -105,7 +105,7 @@ export default function LivePrescriptionSheet({
         <div className="p-5 sm:p-6 bg-white min-h-[560px] flex flex-col justify-between text-[11px] leading-relaxed">
           
           {/* Header / Clinic Letterhead */}
-          <div className="border-b-2 border-slate-800 pb-3 mb-3">
+          <div className="border-b-2 border-[#001099] pb-3 mb-3">
             <div className="flex justify-between items-start gap-4">
               <div>
                 <h2 className="text-base font-black text-slate-950 uppercase tracking-tight">
@@ -130,7 +130,7 @@ export default function LivePrescriptionSheet({
           </div>
 
           {/* Patient Details Strip */}
-          <div className="bg-slate-50/80 rounded-lg p-2.5 border border-slate-200 mb-3.5">
+          <div className="bg-[#e8f1fd] rounded-lg p-3 border border-[#bfdbfe] mb-3.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-3">
                 <span className="font-bold text-slate-900 text-xs">
@@ -152,7 +152,7 @@ export default function LivePrescriptionSheet({
                     Allergy: {patient.allergies}
                   </span>
                 ) : (
-                  <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[9px] font-bold">
+                  <span className="bg-white text-[#0052cc] border border-[#93c5fd] px-2 py-0.5 rounded text-[9px] font-extrabold shadow-2xs">
                     NKDA
                   </span>
                 )}
@@ -206,7 +206,7 @@ export default function LivePrescriptionSheet({
                 {medicines.map((med, index) => (
                   <div 
                     key={med.id || index}
-                    className="p-2 rounded bg-slate-50/60 border border-slate-200/70 flex items-start justify-between gap-2"
+                    className="p-2.5 rounded-lg bg-[#f0f6ff] border border-[#cbe1fc] flex items-start justify-between gap-2"
                   >
                     <div className="flex items-start gap-1.5 flex-1">
                       <span className="text-[10px] font-bold text-slate-400 mt-0.5">
@@ -306,13 +306,13 @@ export default function LivePrescriptionSheet({
       </div>
 
       {/* Fitts's Law Primary Action Dock (Directly Anchored Under the Preview) */}
-      <div className="bg-slate-900 text-white rounded-xl p-4 shadow-lg border border-slate-800 space-y-3">
-        <div className="flex items-center justify-between text-xs text-slate-300">
-          <span className="font-bold flex items-center gap-1.5 text-white">
-            <ShieldCheck size={16} className="text-emerald-400" />
+      <div className="bg-[#000c66] text-white rounded-xl p-4 shadow-xl border border-[#1a237e] space-y-3">
+        <div className="flex items-center justify-between text-xs text-blue-200">
+          <span className="font-extrabold flex items-center gap-1.5 text-white">
+            <ShieldCheck size={16} className="text-[#38bdf8]" />
             Dispatch Dock
           </span>
-          <span className="text-[11px] text-slate-400">
+          <span className="text-[11px] text-blue-200 font-medium">
             {patient ? `Patient: ${patient.name}` : 'No patient selected'}
           </span>
         </div>
@@ -329,7 +329,7 @@ export default function LivePrescriptionSheet({
             type="button"
             onClick={onProceedToReview}
             disabled={!patient || medicines.length === 0 || saving}
-            className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="flex-1 bg-gradient-to-r from-[#0080ff] to-[#0052cc] hover:from-[#0070e6] hover:to-[#0047b3] text-white font-extrabold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             {saving ? (
               <Loader2 className="animate-spin" size={18} />
@@ -346,7 +346,7 @@ export default function LivePrescriptionSheet({
             type="button"
             onClick={onOpenSaveModal}
             disabled={medicines.length === 0}
-            className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-3 py-3 rounded-xl transition-colors flex items-center justify-center text-xs disabled:opacity-40"
+            className="bg-[#0f1d85] hover:bg-[#1a28a3] text-blue-100 border border-[#2b3bb5] font-bold px-3 py-3 rounded-xl transition-colors flex items-center justify-center text-xs disabled:opacity-40"
             title="Save as reusable protocol group"
           >
             <Layers size={16} />

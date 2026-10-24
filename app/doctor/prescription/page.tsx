@@ -505,11 +505,16 @@ function PrescriptionWorkflowContent() {
                         </p>
                         <p className="text-sm text-gray-500 mt-1">{patient.phone}</p>
 
-                        {/* Drug Allergy Warning */}
-                        {patient.allergies && (
+                        {/* Drug Allergy / NKDA Guardrail */}
+                        {patient.allergies ? (
                           <div className="mt-2.5 flex items-center gap-1.5 p-2 bg-rose-50 border border-rose-300 rounded-lg text-rose-800 text-xs font-bold animate-pulse">
                             <AlertCircle size={14} className="text-rose-600 shrink-0" />
                             <span>Allergy Alert: {patient.allergies}</span>
+                          </div>
+                        ) : (
+                          <div className="mt-2.5 flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-xs font-semibold">
+                            <span className="w-2 h-2 rounded-full bg-blue-600 inline-block shrink-0"></span>
+                            <span>NKDA (No Known Drug Allergies)</span>
                           </div>
                         )}
 
@@ -735,7 +740,7 @@ function PrescriptionWorkflowContent() {
                       className={`font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center text-sm sm:text-base ${
                         hasIncompleteMedicines
                           ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/20'
-                          : 'bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white hover:shadow-xl'
+                          : 'bg-gradient-to-r from-[#0080ff] to-[#0052cc] hover:from-[#0070e6] hover:to-[#0047b3] text-white hover:shadow-xl'
                       } disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-emerald-400`}
                     >
                       <Eye className="mr-2" size={18} /> Review & Print Rx
