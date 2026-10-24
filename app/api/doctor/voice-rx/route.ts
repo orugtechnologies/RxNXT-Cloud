@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { isDrugNameRestricted } from '@/lib/restrictedDrugs';
+import rawDrugsData from '@/data/drugs.json';
 
 interface ParsedMedicine {
   name: string;
@@ -24,50 +25,147 @@ interface VoiceRxResult {
   notes?: string;
   followUpDays?: number;
   followUpDate?: string;
+  unmatchedCandidates?: string[];
+}
+
+/**
+ * Searches the Drug Database (PostgreSQL + local catalog fallback)
+ * to verify if a candidate medicine name is a genuine medication.
+ * Returns canonical drug details or null if not a real medicine.
+ */
+async function resolveToDatabaseDrug(candidateName: string, clinicId?: string) {
+  const query = (candidateName || '').trim();
+  if (!query || query.length < 2) return null;
+
+  const qLower = query.toLowerCase();
+
+  // Clean common noise prefix words like "give", "tab", "tablet", "cap", "syp", "take"
+  const cleanQuery = qLower
+    .replace(/\b(give|prescribe|take|and|also|please|tab|tablet|cap|capsule|syp|syrup|inj|injection)\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (cleanQuery.length < 2) return null;
+
+  // 1. First, search live PostgreSQL Database if connected
+  try {
+    const dbMatch = await prisma.drug.findFirst({
+      where: {
+        isActive: true,
+        OR: [
+          { brandName: { equals: cleanQuery, mode: 'insensitive' } },
+          { genericName: { equals: cleanQuery, mode: 'insensitive' } },
+          { brandName: { startsWith: cleanQuery.split(' ')[0], mode: 'insensitive' } },
+          { genericName: { startsWith: cleanQuery.split(' ')[0], mode: 'insensitive' } },
+          { aliases: { contains: cleanQuery.split(' ')[0], mode: 'insensitive' } },
+        ],
+      },
+      select: {
+        id: true,
+        brandName: true,
+        genericName: true,
+        dosageForm: true,
+        strength: true,
+        isRestricted: true,
+      },
+    });
+
+    if (dbMatch) {
+      return {
+        id: dbMatch.id,
+        brandName: dbMatch.brandName,
+        genericName: dbMatch.genericName,
+        dosageForm: dbMatch.dosageForm || 'Tablet',
+        strength: dbMatch.strength || null,
+        isRestricted: dbMatch.isRestricted,
+      };
+    }
+  } catch {
+    // Continue to fallback catalog if DB query encounters connection limits
+  }
+
+  // 2. Second, search the curated Indian formulary (data/drugs.json)
+  const drugsList = rawDrugsData as any[];
+
+  // Priority A: Exact or starts-with Brand Name
+  for (const d of drugsList) {
+    const b = (d.brandName || '').toLowerCase();
+    if (b && (cleanQuery === b || cleanQuery.startsWith(b + ' ') || b.startsWith(cleanQuery))) {
+      return {
+        id: `drug-${d.genericName}-${d.brandName ?? 'generic'}`.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+        brandName: d.brandName,
+        genericName: d.genericName,
+        dosageForm: d.dosageForm || 'Tablet',
+        strength: d.strength || null,
+        isRestricted: d.isRestricted || false,
+      };
+    }
+  }
+
+  // Priority B: Exact or starts-with Generic Name
+  for (const d of drugsList) {
+    const g = (d.genericName || '').toLowerCase();
+    if (g && (cleanQuery === g || cleanQuery.startsWith(g + ' ') || g.startsWith(cleanQuery))) {
+      return {
+        id: `drug-${d.genericName}-${d.brandName ?? 'generic'}`.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+        brandName: d.brandName || d.genericName,
+        genericName: d.genericName,
+        dosageForm: d.dosageForm || 'Tablet',
+        strength: d.strength || null,
+        isRestricted: d.isRestricted || false,
+      };
+    }
+  }
+
+  // Priority C: Known Aliases (e.g. "Dolo", "PCM", "Augmentin", "Pantocid", "Calpol")
+  for (const d of drugsList) {
+    const aliases = (d.aliases || '').toLowerCase().split(',').map((s: string) => s.trim());
+    for (const alias of aliases) {
+      if (alias && alias.length >= 3) {
+        if (cleanQuery === alias || cleanQuery.startsWith(alias + ' ') || cleanQuery.includes(alias)) {
+          return {
+            id: `drug-${d.genericName}-${d.brandName ?? 'generic'}`.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+            brandName: d.brandName || alias.toUpperCase(),
+            genericName: d.genericName,
+            dosageForm: d.dosageForm || 'Tablet',
+            strength: d.strength || null,
+            isRestricted: d.isRestricted || false,
+          };
+        }
+      }
+    }
+  }
+
+  // If no match found in database or catalog, reject as NOT a drug
+  return null;
 }
 
 const GEMINI_SYSTEM_PROMPT = `You are an expert Indian Clinical OPD Assistant for the RxNXT platform.
-You will receive an unstructured, out-of-order, or dialect-mixed (English, Hindi, Telugu, Tamil, Hinglish) doctor voice dictation.
-Extract and return STRICT JSON matching this schema:
+You will receive an unstructured, out-of-order, or dialect-mixed doctor dictation.
+Extract and return STRICT JSON with this schema:
 {
-  "chiefComplaint": string or null (e.g. "Viral fever with headache"),
-  "diagnosis": string or null (e.g. "Acute Febrile Illness / URTI"),
+  "chiefComplaint": string or null,
+  "diagnosis": string or null,
   "medicines": [
     {
-      "name": string (canonical Indian brand or generic name e.g. "Dolo 650", "Pantocid 40", "Augmentin 625"),
+      "name": string (the medicine brand or generic name e.g. "Dolo 650", "Pantocid 40", "Augmentin 625"),
       "dosage_form": string ("Tablet", "Syrup", "Capsule", "Injection", "Drops", "Gel/Ointment"),
-      "strength": string or null (e.g. "650mg", "40mg"),
-      "frequency": string (standard medical notation like "1-0-1", "1-0-0", "0-0-1", "1-1-1", "SOS", "0-1-0", "1-1-1-1"),
+      "strength": string or null,
+      "frequency": string ("1-0-1", "1-0-0", "0-0-1", "1-1-1", "SOS"),
       "duration": string (e.g. "3 days", "5 days", "1 month"),
-      "instructions": string ("After Food", "Before Food", "At bedtime", "With warm water", "With food")
+      "instructions": string ("After Food", "Before Food", "At bedtime", "With warm water")
     }
   ],
-  "notes": string or null (clinical advice like "Warm saline gargle", "Avoid oily spicy food"),
-  "followUpDays": number or null (e.g. 3, 5, 7)
+  "notes": string or null,
+  "followUpDays": number or null
 }
 
-Clinical Rules:
-1. Indian Regional Dialects:
-   - "khali pet" or "parigadupuna" -> "Before Food"
-   - "subah sham" or "rendu sarlu" -> "1-0-1"
-   - "rat ko" or "padukonetappudu" -> "0-0-1"
-   - "teen bar" or "moodu sarlu" -> "1-1-1"
-   - "3 din" or "moodu rojulu" -> "3 days"
-   - "5 din" or "aidu rojulu" -> "5 days"
-2. Fix Speech-to-Text Phonetic Misrecognitions:
-   - "tholo" / "dollo" -> "Dolo 650"
-   - "pantalos it" / "pantacide" -> "Pantocid 40"
-   - "agumentin" / "ogmentin" -> "Augmentin 625"
-   - "pcm" / "parasitamol" -> "Paracetamol"
-   - "ascoril" -> "Ascoril-D"
-   - "setrizin" / "cetricin" -> "Cetirizine 10"
-3. Semantic Disentanglement:
-   - Match duration and instructions with the correct drug even if the doctor states them out of order or separates them with symptoms/diagnosis sentences.
-4. Return pure JSON only without markdown fences.`;
+CRITICAL RULES:
+1. ONLY extract REAL medications that exist in Indian pharmaceutical practice (e.g. Paracetamol, Dolo, Pantocid, Augmentin, Azithral, Cetirizine, Pantop, Pan, etc.).
+2. If speech recognition produced garbled audio or non-drug words (like "as 658 wise daily", "something something", "de do"), DO NOT extract it as a medicine.
+3. Indian Dialects: "khali pet" or "parigadupuna" -> "Before Food". "subah sham" -> "1-0-1". "rat ko" -> "0-0-1". "3 din" -> "3 days".
+4. Output raw JSON only.`;
 
-/**
- * Call Google Gemini 3.8 Flash for semantic extraction
- */
 async function parseWithGemini(transcript: string, apiKey: string): Promise<any> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`;
   const res = await fetch(url, {
@@ -95,7 +193,6 @@ async function parseWithGemini(transcript: string, apiKey: string): Promise<any>
   return JSON.parse(text);
 }
 
-// Fallback regex / phonetic patterns for offline or fallback mode
 const PHONETIC_CORRECTIONS = [
   { pattern: /\b(?:tholo|dollo|tolo)\b/gi, replacement: 'Dolo' },
   { pattern: /\b(?:pantalos\s+it|pantalos|pantocide|pantacide|pantocid)\b/gi, replacement: 'Pantocid' },
@@ -156,15 +253,12 @@ function parseHeuristicFallback(rawTranscript: string): any {
     .map((c) => c.trim())
     .filter((c) => c.length > 2);
 
-  const medicines: ParsedMedicine[] = [];
+  const medicines: any[] = [];
 
   for (const clause of clauses) {
     let cText = clause;
     const hasFreq = FREQ_PATTERNS.some((fp) => fp.regex.test(cText));
     const hasDur = /\b(?:for\s+)?(\d+)\s*(days?|din|weeks?|months?)\b/i.test(cText);
-    const hasDrug = /\b(Dolo|Pantocid|Augmentin|Paracetamol|Pantop|Ascoril|Azithral|Cetirizine|Calpol|Meftal|Telma|Glycomet|Pan)\b/i.test(cText);
-
-    if (!hasFreq && !hasDur && !hasDrug) continue;
 
     let frequency = '1-0-1';
     for (const fp of FREQ_PATTERNS) {
@@ -202,7 +296,7 @@ function parseHeuristicFallback(rawTranscript: string): any {
 
     if (cleanName.length >= 2) {
       medicines.push({
-        name: cleanName.charAt(0).toUpperCase() + cleanName.slice(1),
+        name: cleanName,
         dosage_form: 'Tablet',
         frequency,
         duration,
@@ -247,41 +341,52 @@ export async function POST(request: Request) {
       parsedResult = parseHeuristicFallback(transcript);
     }
 
-    const medicines: ParsedMedicine[] = (parsedResult.medicines || []).map((m: any) => ({
-      name: m.name || 'Medicine',
-      dosage_form: m.dosage_form || 'Tablet',
-      strength: m.strength || undefined,
-      frequency: m.frequency || '1-0-1',
-      duration: m.duration || '5 days',
-      instructions: m.instructions || 'After Food',
-    }));
+    const candidateMeds = parsedResult.medicines || [];
+    const validatedMedicines: ParsedMedicine[] = [];
+    const unmatchedCandidates: string[] = [];
 
-    // Cross-reference canonical drugId against PostgreSQL database where available
-    for (const med of medicines) {
-      try {
-        const dbDrug = await prisma.drug.findFirst({
-          where: {
-            OR: [
-              { brandName: { contains: med.name.split(' ')[0], mode: 'insensitive' } },
-              { genericName: { contains: med.name.split(' ')[0], mode: 'insensitive' } },
-            ],
-          },
-          select: { id: true, brandName: true, genericName: true, dosageForm: true, strength: true },
+    // CRITICAL SAFETY GATE: Verify every candidate medicine against the real Drug Database
+    for (const rawMed of candidateMeds) {
+      const candidateName = rawMed.name || '';
+      const resolved = await resolveToDatabaseDrug(candidateName, user.clinicId);
+
+      if (resolved) {
+        // Build formatted canonical medicine name (e.g. "Dolo 650mg" or "Pan 40mg")
+        const brandOrGeneric = resolved.brandName || resolved.genericName;
+        const canonicalStrength = resolved.strength || rawMed.strength || '';
+        const displayName = canonicalStrength && !brandOrGeneric.includes(canonicalStrength)
+          ? `${brandOrGeneric} ${canonicalStrength}`
+          : brandOrGeneric;
+
+        validatedMedicines.push({
+          name: displayName,
+          dosage_form: resolved.dosageForm || rawMed.dosage_form || 'Tablet',
+          strength: canonicalStrength || undefined,
+          frequency: rawMed.frequency || '1-0-1',
+          duration: rawMed.duration || '5 days',
+          instructions: rawMed.instructions || 'After Food',
+          drugId: resolved.id,
+          generic_id: resolved.id,
         });
-
-        if (dbDrug) {
-          med.drugId = dbDrug.id;
-          med.generic_id = dbDrug.id;
-          if (dbDrug.dosageForm) med.dosage_form = dbDrug.dosageForm;
-          if (dbDrug.strength && !med.strength) med.strength = dbDrug.strength;
-        }
-      } catch {
-        // Safe if DB query fails in disconnected test environment
+      } else {
+        // Candidate did not match ANY real medicine in the database — reject it!
+        unmatchedCandidates.push(candidateName);
       }
     }
 
-    // Filter restricted/narcotic drugs
-    const safeMedicines = medicines.filter((m) => !isDrugNameRestricted(m.name));
+    // Filter out restricted/narcotic drugs
+    const safeMedicines = validatedMedicines.filter((m) => !isDrugNameRestricted(m.name));
+
+    // If candidate medicines were detected but NONE matched the real drug database:
+    if (candidateMeds.length > 0 && safeMedicines.length === 0) {
+      return NextResponse.json(
+        {
+          error: `Could not match any valid medicine from your speech in the drug database (unrecognized: "${candidateMeds.map((m: any) => m.name).join(', ')}"). Please speak standard medicine names like Dolo 650, Pantocid 40, Augmentin 625, etc.`,
+          unmatchedCandidates,
+        },
+        { status: 422 }
+      );
+    }
 
     // Calculate follow-up ISO string if followUpDays was found
     let followUpDate: string | undefined;
@@ -300,6 +405,7 @@ export async function POST(request: Request) {
       notes: parsedResult.notes || undefined,
       followUpDays: followUpDays || undefined,
       followUpDate,
+      unmatchedCandidates: unmatchedCandidates.length > 0 ? unmatchedCandidates : undefined,
     };
 
     return NextResponse.json({
