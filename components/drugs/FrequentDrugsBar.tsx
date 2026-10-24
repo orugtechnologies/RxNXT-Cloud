@@ -80,12 +80,12 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
               disabled={isAdded}
               className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs ${
                 isAdded
-                  ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60'
-                  : 'bg-white text-slate-800 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 hover:text-emerald-900 ring-1 ring-slate-100 hover:ring-emerald-200'
+                  ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] font-bold cursor-not-allowed shadow-2xs'
+                  : 'bg-white text-slate-800 border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 hover:text-blue-900 ring-1 ring-slate-100 hover:ring-blue-200'
               }`}
               title={`${drug.name} ${drug.strength || ''}`.trim()}
             >
-              <Pill size={13} className={isAdded ? 'text-slate-400' : 'text-emerald-600'} />
+              <Pill size={13} className={isAdded ? 'text-[#1e40af]' : 'text-blue-600'} />
               <span>{drug.name}</span>
               {drug.strength && (
                 <span className="text-[10px] text-slate-400 font-normal">
@@ -93,7 +93,7 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
                 </span>
               )}
               {isAdded ? (
-                <Check size={12} className="text-emerald-600 ml-0.5 stroke-[3]" />
+                <Check size={12} className="text-[#1e40af] ml-0.5 stroke-[3]" />
               ) : (
                 <Plus size={12} className="text-slate-400 group-hover:text-emerald-600 ml-0.5" />
               )}

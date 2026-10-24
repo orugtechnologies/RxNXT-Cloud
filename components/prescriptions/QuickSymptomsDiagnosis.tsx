@@ -158,8 +158,8 @@ export default function QuickSymptomsDiagnosis({
                   onClick={() => toggleSymptom(symptom)}
                   className={`text-[11px] font-semibold px-2.5 py-1 rounded-md border transition-all flex items-center gap-1 cursor-pointer select-none ${
                     active
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs ring-1 ring-emerald-500'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/60'
+                      ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/60'
                   }`}
                 >
                   {active ? <Check size={12} className="stroke-[3]" /> : <Plus size={11} className="text-slate-400" />}
@@ -214,8 +214,8 @@ export default function QuickSymptomsDiagnosis({
                   onClick={() => toggleDiagnosis(diag)}
                   className={`text-[11px] font-semibold px-2.5 py-1 rounded-md border transition-all flex items-center gap-1 cursor-pointer select-none ${
                     active
-                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs ring-1 ring-indigo-500'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/60'
+                      ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/60'
                   }`}
                 >
                   {active ? <Check size={12} className="stroke-[3]" /> : <Plus size={11} className="text-slate-400" />}

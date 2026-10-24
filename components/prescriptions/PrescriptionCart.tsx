@@ -174,8 +174,8 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                       onClick={() => onUpdate(med.id, { frequency: q })}
                       className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all shadow-2xs whitespace-nowrap ${
                         med.frequency === q
-                          ? 'bg-[#2563eb] text-white ring-2 ring-[#2563eb]/20'
-                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#2563eb] hover:border-blue-200'
+                          ? 'bg-[#dbeafe] text-[#1e40af] border border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#1e40af] hover:border-blue-300'
                       }`}
                     >
                       {q}
@@ -226,8 +226,8 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                       onClick={() => onUpdate(med.id, { duration: q })}
                       className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all shadow-2xs whitespace-nowrap ${
                         med.duration === q
-                          ? 'bg-[#2563eb] text-white ring-2 ring-[#2563eb]/20'
-                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#2563eb] hover:border-blue-200'
+                          ? 'bg-[#dbeafe] text-[#1e40af] border border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#1e40af] hover:border-blue-300'
                       }`}
                     >
                       {q}
@@ -306,8 +306,8 @@ export default function PrescriptionCart({ medicines, onUpdate, onRemove }: Cart
                       onClick={() => onUpdate(med.id, { instructions: q })}
                       className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all shadow-2xs whitespace-nowrap ${
                         med.instructions === q
-                          ? 'bg-[#2563eb] text-white ring-2 ring-[#2563eb]/20'
-                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#2563eb] hover:border-blue-200'
+                          ? 'bg-[#dbeafe] text-[#1e40af] border border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#1e40af] hover:border-blue-300'
                       }`}
                     >
                       {q}

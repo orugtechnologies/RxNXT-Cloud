@@ -108,7 +108,7 @@ export default function QuickTestAndDripPanel({
                   onClick={() => onToggleTest(test)}
                   className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 ${
                     selected
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-sm ring-2 ring-blue-500/20'
+                      ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
                       : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50'
                   }`}
                 >
@@ -144,7 +144,7 @@ export default function QuickTestAndDripPanel({
                   onClick={() => onToggleDrip(drip)}
                   className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 ${
                     selected
-                      ? 'bg-purple-600 text-white border-purple-600 shadow-sm ring-2 ring-purple-500/20'
+                      ? 'bg-[#ede9fe] text-[#5b21b6] border-[#c4b5fd] font-bold shadow-xs ring-1 ring-[#c4b5fd]'
                       : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-purple-300 hover:bg-purple-50/50'
                   }`}
                 >

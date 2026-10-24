@@ -215,12 +215,12 @@ export default function ProtocolPacksBar({
                 onClick={() => handleApplyPack(template)}
                 className={`flex-shrink-0 flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all transform active:scale-95 border ${
                   isActive
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md ring-2 ring-emerald-300'
-                    : 'bg-white hover:bg-emerald-600 hover:text-white text-clinic-navy border-emerald-200/80 shadow-xs hover:shadow-md hover:border-emerald-600 group'
+                    ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] shadow-md ring-2 ring-[#93c5fd]'
+                    : 'bg-white hover:bg-blue-50 text-slate-800 border-blue-200/80 shadow-xs hover:border-blue-400 group'
                 }`}
               >
                 {isActive ? (
-                  <Check size={14} className="text-white animate-bounce" />
+                  <Check size={14} className="text-[#1e40af] animate-bounce stroke-[3]" />
                 ) : (
                   <Sparkles size={14} className="text-emerald-500 group-hover:text-white transition-colors" />
                 )}
@@ -228,8 +228,8 @@ export default function ProtocolPacksBar({
                 <span
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md transition-colors ${
                     isActive
-                      ? 'bg-emerald-700 text-emerald-100'
-                      : 'bg-emerald-50 text-emerald-700 group-hover:bg-emerald-500 group-hover:text-white'
+                      ? 'bg-white text-[#1e40af] border border-[#93c5fd]'
+                      : 'bg-blue-50 text-[#1e40af] group-hover:bg-blue-100'
                   }`}
                 >
                   {template.items.length} meds
