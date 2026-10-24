@@ -44,10 +44,34 @@ interface VoiceRxBarProps {
   disabled?: boolean;
 }
 
+const PHONETIC_CORRECTIONS_CLIENT = [
+  { pattern: /\b(?:tholo|dollo|tolo)\b/gi, replacement: 'Dolo' },
+  { pattern: /\b(?:pantalos\s+it|pantalos|pantocide|pantacide|pantocid)\b/gi, replacement: 'Pantocid' },
+  { pattern: /\b(?:pantop\s+40|pantop|panto)\b/gi, replacement: 'Pantop' },
+  { pattern: /\b(?:agumentin|augumentin|ogmentin)\b/gi, replacement: 'Augmentin' },
+  { pattern: /\b(?:ascoril|askoril)\b/gi, replacement: 'Ascoril' },
+  { pattern: /\b(?:azithro|azithral|asithral|ezithral)\b/gi, replacement: 'Azithral' },
+  { pattern: /\b(?:parasitamol|paracitamol|pcm)\b/gi, replacement: 'Paracetamol' },
+  { pattern: /\b(?:setrizin|cetrizin|cetricin)\b/gi, replacement: 'Cetirizine' },
+  { pattern: /\b(?:calpol|kalpol)\b/gi, replacement: 'Calpol' },
+  { pattern: /\b(?:meftal\s+space|meftal\s+spas)\b/gi, replacement: 'Meftal-Spas' },
+  { pattern: /\b(?:montair\s+lc|montek\s+lc)\b/gi, replacement: 'Montair-LC' },
+  { pattern: /\b(?:pan\s+40)\b/gi, replacement: 'Pan 40' },
+  { pattern: /\b(?:pan\s+d)\b/gi, replacement: 'Pan-D' },
+];
+
+function cleanPhoneticsClient(text: string): string {
+  let cleaned = text;
+  for (const item of PHONETIC_CORRECTIONS_CLIENT) {
+    cleaned = cleaned.replace(item.pattern, item.replacement);
+  }
+  return cleaned;
+}
+
 const SAMPLE_CLINICAL_VOICE_SCRIPTS = [
   {
-    label: 'Viral Fever & Cough',
-    text: 'Patient complaining of viral fever with cough for 2 days. Give Dolo 650 1-0-1 for 3 days after food, and Pantocid 40 1-0-0 before food for 5 days. Advise warm water gargle and review in 3 days.',
+    label: 'Viral Fever & Gastritis (Dolo + Pantocid)',
+    text: 'Patient has viral fever. Give Dolo 650 twice daily after food for 3 days, and Pantocid 40 once daily before food for 5 days. Review in 3 days.',
   },
   {
     label: 'Acute Pharyngitis / Tonsillitis',
@@ -89,7 +113,8 @@ export default function VoiceRxBar({ onApply, disabled }: VoiceRxBarProps) {
           for (let i = 0; i < event.results.length; i++) {
             currentTranscript += event.results[i][0].transcript + ' ';
           }
-          setTranscript(currentTranscript.trim());
+          const rawText = currentTranscript.trim();
+          setTranscript(cleanPhoneticsClient(rawText));
         };
 
         recognition.onerror = (event: any) => {

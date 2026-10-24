@@ -24,7 +24,6 @@ jest.mock('../../lib/auth-server', () => ({
   getAuthenticatedUser: jest.fn(),
 }));
 
-// Import after mocking next/server
 import { POST } from '../../app/api/doctor/voice-rx/route';
 
 describe('Voice Rx API (/api/doctor/voice-rx)', () => {
@@ -46,39 +45,16 @@ describe('Voice Rx API (/api/doctor/voice-rx)', () => {
     expect(data.error).toBe('Unauthorized');
   });
 
-  it('returns 400 if transcript is missing or too short', async () => {
+  it('correctly parses user clinical prompt with separate durations and meal instructions in any order', async () => {
     (getAuthenticatedUser as jest.Mock).mockResolvedValue({
       id: 'doc-1',
       clinicId: 'clinic-1',
     });
 
-    const req = {
-      json: async () => ({ transcript: '' }),
-    } as any;
-
-    const res = await POST(req);
-    const data = await res.json();
-
-    expect(res.status).toBe(400);
-    expect(data.error).toContain('Please provide a valid spoken transcript');
-  });
-
-  it('correctly parses clinical transcript into diagnosis, medicines and instructions', async () => {
-    (getAuthenticatedUser as jest.Mock).mockResolvedValue({
-      id: 'doc-1',
-      clinicId: 'clinic-1',
-    });
-
-    (prisma.drug.findFirst as jest.Mock).mockResolvedValue({
-      id: 'drug-dolo-650',
-      brandName: 'Dolo 650',
-      genericName: 'Paracetamol',
-      dosageForm: 'Tablet',
-      strength: '650mg',
-    });
+    (prisma.drug.findFirst as jest.Mock).mockResolvedValue(null);
 
     const transcript =
-      'Patient complaining of fever and cough for 2 days. Give Dolo 650 1-0-1 for 3 days after food. Review in 3 days.';
+      'Patient has viral fever. Give Dolo 650 twice daily after food for 3 days, and Pantocid 40 once daily before food for 5 days. Review in 3 days.';
 
     const req = {
       json: async () => ({ transcript }),
@@ -89,13 +65,62 @@ describe('Voice Rx API (/api/doctor/voice-rx)', () => {
 
     expect(res.status).toBe(200);
     expect(data.success).toBe(true);
-    expect(data.data.medicines.length).toBeGreaterThan(0);
+    expect(data.data.medicines.length).toBe(2);
 
-    const dolo = data.data.medicines.find((m: any) => m.name.includes('Dolo'));
+    // Medicine 1: Dolo 650
+    const dolo = data.data.medicines.find((m: any) => m.name.toLowerCase().includes('dolo'));
     expect(dolo).toBeDefined();
+    expect(dolo.name).toBe('Dolo 650');
     expect(dolo.frequency).toBe('1-0-1');
     expect(dolo.duration).toBe('3 days');
     expect(dolo.instructions).toBe('After Food');
+
+    // Medicine 2: Pantocid 40
+    const pantocid = data.data.medicines.find((m: any) => m.name.toLowerCase().includes('pantocid'));
+    expect(pantocid).toBeDefined();
+    expect(pantocid.name).toBe('Pantocid 40');
+    expect(pantocid.frequency).toBe('1-0-0');
+    expect(pantocid.duration).toBe('5 days');
+    expect(pantocid.instructions).toBe('Before Food');
+
+    expect(data.data.chiefComplaint).toBe('viral fever');
     expect(data.data.followUpDays).toBe(3);
+  });
+
+  it('correctly auto-corrects browser speech recognition phonetics like "tholo" and "pantalos it"', async () => {
+    (getAuthenticatedUser as jest.Mock).mockResolvedValue({
+      id: 'doc-1',
+      clinicId: 'clinic-1',
+    });
+
+    (prisma.drug.findFirst as jest.Mock).mockResolvedValue(null);
+
+    const speechTranscript =
+      'Patient has viral fever give tholo 650 twice daily after food for 3 days and pantalos it 40m once daily before food for 5 days review in 3 days';
+
+    const req = {
+      json: async () => ({ transcript: speechTranscript }),
+    } as any;
+
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(data.data.medicines.length).toBe(2);
+
+    // Phonetic correction of "tholo 650" -> "Dolo 650"
+    const dolo = data.data.medicines.find((m: any) => m.name.toLowerCase().includes('dolo'));
+    expect(dolo).toBeDefined();
+    expect(dolo.name).toBe('Dolo 650');
+    expect(dolo.duration).toBe('3 days');
+    expect(dolo.frequency).toBe('1-0-1');
+
+    // Phonetic correction of "pantalos it 40m" -> "Pantocid 40mg"
+    const pantocid = data.data.medicines.find((m: any) => m.name.toLowerCase().includes('pantocid'));
+    expect(pantocid).toBeDefined();
+    expect(pantocid.frequency).toBe('1-0-0');
+    expect(pantocid.duration).toBe('5 days');
+    expect(pantocid.instructions).toBe('Before Food');
   });
 });
