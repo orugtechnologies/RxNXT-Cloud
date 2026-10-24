@@ -93,7 +93,7 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
   return (
     <div className="w-full relative">
       <div className="relative group">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-clinic-emerald transition-colors">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#0080ff] transition-colors">
           <Search size={20} />
         </div>
         <input
@@ -102,11 +102,11 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search medicines (e.g. Dolo, Paracetamol)... (Press / to search)"
-          className="w-full pl-12 pr-20 py-3.5 bg-gray-50/50 border border-gray-300 rounded-lg shadow-sm focus:bg-white focus:ring-2 focus:ring-clinic-emerald focus:border-clinic-emerald outline-none text-gray-900 transition-all text-sm"
+          className="w-full pl-12 pr-20 py-3.5 bg-gray-50/50 border border-gray-300 rounded-lg shadow-sm focus:bg-white focus:ring-2 focus:ring-[#0080ff] focus:border-[#0080ff] outline-none text-gray-900 transition-all text-sm"
         />
         <div className="absolute right-3.5 top-3.5 flex items-center pointer-events-none">
           {loading ? (
-            <div className="text-clinic-emerald">
+            <div className="text-[#0080ff]">
               <Loader2 className="animate-spin h-5 w-5" />
             </div>
           ) : (
@@ -132,7 +132,7 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
       )}
 
       {results.length > 0 && !error && (
-        <ul className="absolute z-20 w-full mt-2 bg-white border border-clinic-border rounded-lg shadow-xl max-h-96 overflow-y-auto animate-in fade-in slide-in-from-top-2">
+        <ul className="absolute z-50 w-full mt-2 bg-white border border-[#bfdbfe] rounded-lg shadow-2xl max-h-96 overflow-y-auto animate-in fade-in slide-in-from-top-2">
           {isLowConfidence ? (
             <div className="px-4 py-3 text-sm font-bold text-amber-700 uppercase tracking-wider border-b border-amber-200 bg-amber-50">Did you mean?</div>
           ) : (
@@ -153,11 +153,11 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
                   setResults([]);
                 }}
                 className={`p-4 flex justify-between items-start transition-colors border-b border-gray-50 group ${
-                  result.isRestricted ? 'bg-red-50/50 cursor-not-allowed opacity-80' : 'hover:bg-clinic-emerald/5 cursor-pointer'
+                  result.isRestricted ? 'bg-red-50/50 cursor-not-allowed opacity-80' : 'hover:bg-[#e8f1fd]/70 cursor-pointer'
                 }`}
               >
                 <div className={result.isRestricted ? 'grayscale' : ''}>
-                  <p className="font-bold text-clinic-navy text-base group-hover:text-clinic-emerald transition-colors">
+                  <p className="font-bold text-clinic-navy text-base group-hover:text-[#0080ff] transition-colors">
                     {result.brand_name ? result.brand_name : result.generic_name}
                   </p>
                   <p className="text-xs font-semibold text-gray-500 mt-1 uppercase tracking-wide">
@@ -171,7 +171,7 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
                         </span>
                       )}
                       {result.strength && (
-                        <span className="px-2 py-0.5 bg-clinic-emerald/10 text-clinic-emeraldDark text-[11px] font-bold uppercase rounded border border-clinic-emerald/20">
+                        <span className="px-2 py-0.5 bg-clinic-emerald/10 text-[#0080ff]Dark text-[11px] font-bold uppercase rounded border border-clinic-emerald/20">
                           {result.strength}
                         </span>
                       )}
@@ -191,7 +191,7 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
                     </span>
                   )}
                   {(!result.isRestricted && result.popularity !== undefined && result.popularity > 0 && result.popularity < 10) && (
-                    <span className="text-[10px] font-bold text-clinic-emerald bg-clinic-emerald/10 px-2 py-0.5 rounded uppercase border border-clinic-emerald/20 flex items-center shadow-sm">
+                    <span className="text-[10px] font-bold text-[#0052cc] bg-[#e8f1fd] px-2 py-0.5 rounded uppercase border border-[#bfdbfe] flex items-center shadow-sm">
                       ✓ Preferred
                     </span>
                   )}

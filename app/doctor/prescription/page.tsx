@@ -480,7 +480,7 @@ function PrescriptionWorkflowContent() {
           <div className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-20 lg:self-start">
             
             {/* Step 1: Patient Selection */}
-            <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 hover:shadow-md relative z-20 overflow-hidden">
+            <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 hover:shadow-md relative z-30">
               <div className="bg-[#f0f6fe] px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between rounded-t-xl">
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
@@ -605,8 +605,8 @@ function PrescriptionWorkflowContent() {
             {patient && (
               <>
                 {/* Block 1: 1-Click Protocol Packs & Drug Search */}
-                <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden">
-                  <div className="bg-[#f0f6fe] px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between">
+                <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border relative z-20">
+                  <div className="bg-[#f0f6fe] px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between rounded-t-xl">
                     <div className="flex items-center gap-2.5">
                       <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
                         <Pill size={15} className="stroke-[2.5]" />
