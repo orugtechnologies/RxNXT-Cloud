@@ -175,4 +175,61 @@ describe('Voice Rx API (/api/doctor/voice-rx)', () => {
     expect(res.status).toBe(422);
     expect(data.error).toContain('Could not match any valid medicine from your speech in the drug database');
   });
+
+  it('processes direct base64 audio payload via Gemini Flash multimodal audio', async () => {
+    (getAuthenticatedUser as jest.Mock).mockResolvedValue({
+      id: 'doc-1',
+      clinicId: 'clinic-1',
+    });
+
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        candidates: [
+          {
+            content: {
+              parts: [
+                {
+                  text: JSON.stringify({
+                    transcript: 'Patient has viral fever. Give Dolo 650 twice daily after food for 3 days.',
+                    chiefComplaint: 'Viral fever',
+                    diagnosis: 'Acute Febrile Illness',
+                    medicines: [
+                      {
+                        name: 'Dolo 650',
+                        dosage_form: 'Tablet',
+                        strength: '650mg',
+                        frequency: '1-0-1',
+                        duration: '3 days',
+                        instructions: 'After Food',
+                      },
+                    ],
+                    followUpDays: 3,
+                  }),
+                },
+              ],
+            },
+          },
+        ],
+      }),
+    }) as any;
+
+    const req = {
+      json: async () => ({
+        audio: 'GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQRChYECGFOAZwEAAAAAA...',
+        mimeType: 'audio/webm;codecs=opus',
+      }),
+    } as any;
+
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(data.source).toBe('gemini_3.8_flash_audio');
+    expect(data.data.medicines.length).toBe(1);
+    expect(data.data.medicines[0].name).toContain('Dolo');
+    expect(data.data.transcript).toContain('viral fever');
+  });
 });
