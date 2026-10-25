@@ -485,7 +485,7 @@ export default function LoginPage() {
           </div>
 
           {/* Quick Pillar Value Metrics Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div className="bg-white/90 border border-slate-200/90 p-3 rounded-2xl text-center shadow-xs">
               <div className="text-base sm:text-lg font-black text-emerald-600">Zero Typing</div>
               <div className="text-[10px] font-semibold text-slate-500 uppercase mt-0.5">&lt; 20s Generator</div>
@@ -493,10 +493,6 @@ export default function LoginPage() {
             <div className="bg-white/90 border border-slate-200/90 p-3 rounded-2xl text-center shadow-xs">
               <div className="text-lg font-black text-teal-600">100% RLS</div>
               <div className="text-[10px] font-semibold text-slate-500 uppercase mt-0.5">Data Isolation</div>
-            </div>
-            <div className="bg-white/90 border border-slate-200/90 p-3 rounded-2xl text-center shadow-xs">
-              <div className="text-lg font-black text-sky-600">24+ Councils</div>
-              <div className="text-[10px] font-semibold text-slate-500 uppercase mt-0.5">NMC Verified</div>
             </div>
             <div className="bg-white/90 border border-slate-200/90 p-3 rounded-2xl text-center shadow-xs">
               <div className="text-lg font-black text-green-600">+38%</div>
