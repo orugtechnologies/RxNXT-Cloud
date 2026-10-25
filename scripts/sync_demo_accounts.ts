@@ -19,28 +19,25 @@ async function main() {
         phone: '+91 80 1234 5678',
         email: 'info@rxnxtdemo.com',
         subscriptionStatus: 'TRIAL',
-        subscriptionPlan: 'TRIAL_14_DAYS',
+        subscriptionPlan: 'TRIAL_150_RX',
         subscriptionStartedAt: now,
-        trialEndsAt: trialEnd,
-        subscriptionEndsAt: trialEnd,
+        trialPrescriptionCap: 150,
+        prescriptionsCount: 0,
+        trialEndsAt: null,
+        subscriptionEndsAt: null,
       },
     });
   } else {
-    // Ensure 14-day trial is active for the existing clinic
+    // Ensure 150-Rx trial / lifetime active for demo clinic
     const now = new Date();
-    if (!clinic.subscriptionEndsAt || clinic.subscriptionEndsAt < now) {
-      const trialEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
-      clinic = await prisma.clinic.update({
-        where: { id: clinic.id },
-        data: {
-          subscriptionStatus: 'TRIAL',
-          subscriptionPlan: 'TRIAL_14_DAYS',
-          subscriptionStartedAt: now,
-          trialEndsAt: trialEnd,
-          subscriptionEndsAt: trialEnd,
-        },
-      });
-    }
+    clinic = await prisma.clinic.update({
+      where: { id: clinic.id },
+      data: {
+        subscriptionStatus: 'TRIAL',
+        subscriptionPlan: 'TRIAL_150_RX',
+        trialPrescriptionCap: 150,
+      },
+    });
   }
 
   console.log(`🏥 Active Clinic: ${clinic.name} (${clinic.id}) | Sub: ${clinic.subscriptionStatus}`);

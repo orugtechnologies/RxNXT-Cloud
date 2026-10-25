@@ -37,10 +37,12 @@ async function main() {
         phone: '+91 80 1234 5678',
         email: 'info@rxnxtclinic.com',
         subscriptionStatus: 'TRIAL',
-        subscriptionPlan: 'TRIAL_14_DAYS',
+        subscriptionPlan: 'TRIAL_150_RX',
         subscriptionStartedAt: now,
-        trialEndsAt: trialEnd,
-        subscriptionEndsAt: trialEnd,
+        trialPrescriptionCap: 150,
+        prescriptionsCount: 0,
+        trialEndsAt: null,
+        subscriptionEndsAt: null,
       },
     });
   } else {
@@ -48,14 +50,12 @@ async function main() {
       where: { id: clinic.id },
       data: {
         subscriptionStatus: 'TRIAL',
-        subscriptionPlan: 'TRIAL_14_DAYS',
-        subscriptionStartedAt: now,
-        trialEndsAt: trialEnd,
-        subscriptionEndsAt: trialEnd,
+        subscriptionPlan: 'TRIAL_150_RX',
+        trialPrescriptionCap: 150,
       },
     });
   }
-  console.log(`🏥 Clinic: ${clinic.name} (${clinic.id}) with 14-day trial active until ${trialEnd.toLocaleDateString()}`);
+  console.log(`🏥 Clinic: ${clinic.name} (${clinic.id}) with 150-prescription trial active.`);
 
   // 4. Delete all existing non-superadmin accounts
   console.log('🗑️  Removing all old demo staff and doctor accounts...');

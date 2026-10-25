@@ -249,51 +249,46 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
 
   let activeClinic = clinic;
 
-  // If clinic does not have trial dates initialized (e.g. legacy/seed records), initialize 14-day trial
-  if (!activeClinic.trialEndsAt && !activeClinic.subscriptionEndsAt) {
-    const trialEnd = new Date(activeClinic.createdAt.getTime() + 14 * 24 * 60 * 60 * 1000);
-    const isPast = now > trialEnd;
-    const initialStatus = isPast ? 'EXPIRED' : 'TRIAL';
-
-    activeClinic = await prisma.clinic.update({
-      where: { id: clinicId },
-      data: {
-        subscriptionStatus: initialStatus,
-        subscriptionPlan: 'TRIAL_14_DAYS',
-        subscriptionStartedAt: activeClinic.createdAt,
-        trialEndsAt: trialEnd,
-        subscriptionEndsAt: trialEnd,
-      },
-      select: {
-        id: true,
-        name: true,
-        subscriptionStatus: true,
-        subscriptionPlan: true,
-        subscriptionTier: true,
-        prescriptionsCount: true,
-        trialPrescriptionCap: true,
-        whatsappCreditBalance: true,
-        baseSeats: true,
-        additionalSeats: true,
-        subscriptionStartedAt: true,
-        trialEndsAt: true,
-        subscriptionEndsAt: true,
-        renewalReminderSentAt: true,
-        createdAt: true,
-        users: {
-          select: { email: true },
+  // Initialize trial clinic with 150-prescription quota if not initialized
+  if (!activeClinic.subscriptionPlan && !activeClinic.subscriptionEndsAt) {
+    try {
+      const updated = await prisma.clinic.update({
+        where: { id: clinicId },
+        data: {
+          subscriptionStatus: activeClinic.subscriptionStatus || 'TRIAL',
+          subscriptionPlan: 'TRIAL_150_RX',
+          subscriptionTier: 'TRIAL',
+          subscriptionStartedAt: activeClinic.createdAt || now,
+          trialPrescriptionCap: 150,
         },
-      },
-    });
+        select: {
+          id: true,
+          name: true,
+          subscriptionStatus: true,
+          subscriptionPlan: true,
+          subscriptionTier: true,
+          prescriptionsCount: true,
+          trialPrescriptionCap: true,
+          whatsappCreditBalance: true,
+          baseSeats: true,
+          additionalSeats: true,
+          subscriptionStartedAt: true,
+          trialEndsAt: true,
+          subscriptionEndsAt: true,
+          renewalReminderSentAt: true,
+          createdAt: true,
+          users: {
+            select: { email: true },
+          },
+        },
+      });
+      if (updated) activeClinic = updated;
+    } catch (e) {
+      // Ignore update errors in mock/read-only test runs
+    }
   }
 
-  const expiryDate = activeClinic.subscriptionEndsAt || activeClinic.trialEndsAt || new Date(activeClinic.createdAt.getTime() + 14 * 24 * 60 * 60 * 1000);
-  const diffMs = expiryDate.getTime() - now.getTime();
-  const daysRemaining = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
-
-  const isExpired = now > expiryDate;
-  const isExpiringSoon = !isExpired && daysRemaining <= 7;
-  const isTrial = activeClinic.subscriptionPlan === 'TRIAL_14_DAYS' || activeClinic.subscriptionStatus === 'TRIAL' || (activeClinic as any).subscriptionTier === 'TRIAL';
+  const isTrial = activeClinic.subscriptionPlan === 'TRIAL_150_RX' || activeClinic.subscriptionPlan === 'TRIAL_14_DAYS' || activeClinic.subscriptionStatus === 'TRIAL' || (activeClinic as any).subscriptionTier === 'TRIAL';
 
   const prescriptionsCount = (activeClinic as any).prescriptionsCount ?? 0;
   const trialPrescriptionCap = (activeClinic as any).trialPrescriptionCap ?? 150;
@@ -303,14 +298,23 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
   const additionalSeats = (activeClinic as any).additionalSeats ?? 0;
   const totalSeats = baseSeats + additionalSeats;
 
-  // Epic 1: Gated by 150 completed prescriptions
+  // 150-Prescription Free Trial:
+  // Gated purely by volume (prescriptions completed). Trials NEVER expire by calendar countdown.
   const isUsageLocked = isTrial && prescriptionsCount >= trialPrescriptionCap;
   const isUsageWarning = isTrial && prescriptionsCount >= 121 && prescriptionsCount < trialPrescriptionCap;
   const prescriptionsRemaining = Math.max(0, trialPrescriptionCap - prescriptionsCount);
 
+  // Calendar expiry applies exclusively to paid recurring subscriptions
+  const expiryDate = activeClinic.subscriptionEndsAt;
+  const diffMs = expiryDate ? expiryDate.getTime() - now.getTime() : 0;
+  const daysRemaining = isTrial ? 99999 : Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+
+  const isExpired = isTrial ? isUsageLocked : (expiryDate ? now > expiryDate : false);
+  const isExpiringSoon = !isTrial && !isExpired && daysRemaining <= 7;
+
   let currentStatus = activeClinic.subscriptionStatus as 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
 
-  // Automatically update status to EXPIRED if past validity
+  // Automatically update status to EXPIRED if usage cap reached or subscription ended
   if (isExpired && currentStatus !== 'EXPIRED' && currentStatus !== 'CANCELLED') {
     await prisma.clinic.update({
       where: { id: clinicId },
@@ -324,7 +328,7 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
   return {
     allowed,
     status: currentStatus,
-    plan: activeClinic.subscriptionPlan || (isTrial ? 'TRIAL_14_DAYS' : 'PRO_ANNUAL'),
+    plan: activeClinic.subscriptionPlan || (isTrial ? 'TRIAL_150_RX' : 'PRO_ANNUAL'),
     tier,
     prescriptionsCount,
     trialPrescriptionCap,

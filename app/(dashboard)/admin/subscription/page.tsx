@@ -175,7 +175,7 @@ export default function SubscriptionBillingPage() {
           Subscription & License Management
         </h1>
         <p className="text-sm text-slate-500 mt-1">
-          Manage your clinic's 14-day free trial, active licensing plan, and automated OPD continuity.
+          Manage your clinic's 150-prescription free trial, active licensing plan, and automated OPD continuity.
         </p>
       </div>
 
@@ -216,7 +216,7 @@ export default function SubscriptionBillingPage() {
                       ? 'bg-blue-600 text-white' 
                       : 'bg-rose-600 text-white'
                   }>
-                    {sub.status === 'TRIAL' ? '14-Day Free Trial' : sub.status}
+                    {sub.status === 'TRIAL' ? '150-Prescription Free Trial' : sub.status}
                   </Badge>
                 </div>
 
@@ -283,11 +283,11 @@ export default function SubscriptionBillingPage() {
             <div className="mt-6 pt-6 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-600">
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
-                <span><strong>14-Day Full Access Trial:</strong> All features are unlocked during the initial trial period.</span>
+                <span><strong>150-Prescription Full Access Trial:</strong> All clinical features are unlocked for your first 150 prescriptions.</span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
-                <span><strong>7-Day Prior Alert:</strong> WhatsApp reminders are sent 1 week before expiry to ensure zero OPD disruption.</span>
+                <span><strong>Usage-Based Intelligence:</strong> The system trains on your prescribing habits before prompting an upgrade.</span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
@@ -438,9 +438,9 @@ export default function SubscriptionBillingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 text-xs text-slate-600">
             <div>
-              <p className="font-semibold text-slate-800">How does the 14-day free trial work?</p>
+              <p className="font-semibold text-slate-800">How does the 150-prescription free trial work?</p>
               <p className="mt-1 leading-relaxed">
-                When you register your clinic, you receive 14 days of unrestricted access to the entire RxNXT platform, including WhatsApp delivery and smart dose reminders. No credit card required to start.
+                When you register your clinic, you receive 150 free prescriptions with full access to the entire RxNXT platform, including WhatsApp delivery and habit scoring. No calendar cutoff or credit card required to start.
               </p>
             </div>
             <div>

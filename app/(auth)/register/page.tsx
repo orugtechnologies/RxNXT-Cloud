@@ -123,7 +123,7 @@ function RegisterForm() {
             {!inviteCodeParam && (
               <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200/60 rounded-full text-emerald-700 text-xs font-semibold self-start">
                 <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                14-Day Free Trial
+                150 Free Prescriptions Trial
               </div>
             )}
           </div>
@@ -346,7 +346,7 @@ function RegisterForm() {
               )}
             </Button>
             <p className="text-center text-xs text-slate-400 mt-2 font-medium">
-              By creating an account, you get instant access with a 14-day free trial.
+              By creating an account, you get instant access with 150 free prescriptions.
             </p>
           </div>
         </form>

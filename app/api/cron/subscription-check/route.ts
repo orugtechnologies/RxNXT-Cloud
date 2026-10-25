@@ -72,7 +72,7 @@ export async function GET(request: Request) {
         year: 'numeric',
       });
 
-      const planLabel = clinic.subscriptionPlan === 'TRIAL_14_DAYS' ? '14-Day Free Trial' : 'Subscription';
+      const planLabel = clinic.subscriptionPlan === 'TRIAL_150_RX' || clinic.subscriptionPlan === 'TRIAL_14_DAYS' ? '150-Prescription Free Trial' : 'Subscription';
 
       if (phone) {
         try {

@@ -185,26 +185,39 @@ graph LR
 
 ## 4. Recommended Pricing Tiers for the Indian Market
 
+### Usage-Based Acquisition Engine: "The First 150"
+RxNXT has abandoned legacy 14-day calendar trials in favor of a usage-based volume trial:
+* **The First 150 Free Prescriptions:** Every newly registered clinic receives 150 free prescriptions with full platform access and zero calendar time limit.
+* **Progressive Engagement:**
+  * Prescriptions 0–120: Frictionless onboarding and clinical score engine experience.
+  * Prescriptions 121–149: Dismissible warning banner tracking remaining balance.
+  * Prescription #150: Hard lock modal requiring commercial tier activation before generation.
+
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
 │  RECOMMENDED COMMERCIAL PRICING STRUCTURE (ANNUAL BILLING)            │
 ├────────────────────────────────────────────────────────────────────────┤
 │                                                                        │
-│  1. SOLO PRACTITIONER (STARTER)           ₹7,999 – ₹9,999 / year       │
+│  0. THE FIRST 150 (TRIAL)                  ₹0 Upfront (150 Rx Cap)     │
+│     • Full platform features unlocked; strictly gated at 150 Rx        │
+│                                                                        │
+│  1. SOLO GP (BASE)                         ₹7,999 – ₹9,999 / year       │
 │     • 1 Doctor Seat + 1 Receptionist Desk                              │
 │     • Unlimited Prescriptions & Instant WhatsApp PDF Deliveries        │
-│     • Vitals Queue, Clinical Protocols & Practice Setup                │
+│     • Live Queue, Clinical Protocols & Practice Setup                  │
 │                                                                        │
-│  2. POLYCLINIC / CLINIC PRO               ₹18,999 – ₹24,999 / year     │
-│     • Up to 4 Doctor Seats + 2 Reception Desks                         │
-│     • Everything in Starter + Pharmacy Inventory & Dispense Billing    │
-│     • Practice Analytics & Multi-Specialty Protocol Templates          │
-│     • Includes 1,500 Automated WhatsApp Reminder Credits               │
+│  2. SPECIALIST (PATIENT ADHERENCE)         ₹14,999 – ₹18,999 / year    │
+│     • Everything in Solo GP + Patient Adherence Automation             │
+│     • Daily 8 AM Morning Briefings + Day-25 Chronic Care Refill Alerts │
 │                                                                        │
-│  3. HOSPITAL OPD / ENTERPRISE             Custom Quote (₹49,999+ / yr) │
-│     • Unlimited Doctors & Counters                                     │
-│     • Dedicated WhatsApp Phone Number ID & Green Tick Assistance       │
-│     • Custom Protocol Seed Packs & Priority Technical Support          │
+│  3. POLYCLINIC HUB                         ₹24,999 – ₹29,999 / year    │
+│     • Everything in Specialist + In-House Pharmacy Inventory Module    │
+│     • Dispensing Terminal, Stock Alerts & Multi-Seat Doctor Provisioning│
+│     • Additional seats available at ₹499 / doctor / month              │
+│                                                                        │
+│  4. PREPAID WHATSAPP ADHERENCE WALLET      ₹499 (2k) / ₹999 (5k)       │
+│     • Dedicated credit wallet for automated adherence utility messages │
+│     • Zero-balance failsafe & automated low balance alerts (<100)      │
 │                                                                        │
 └────────────────────────────────────────────────────────────────────────┘
 ```

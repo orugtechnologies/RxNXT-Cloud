@@ -76,7 +76,7 @@ describe('GET /api/cron/subscription-check (7-Day Prior Expiry Alerts & Auto-Exp
       '9876543210',
       'Dr. Ramesh Kumar',
       'Apollo Family Clinic',
-      '14-Day Free Trial',
+      '150-Prescription Free Trial',
       expect.any(String),
       expect.any(Number)
     );

@@ -337,7 +337,7 @@ export default function LoginPage() {
             className="text-[11px] font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 px-3.5 py-1.5 rounded-lg shadow-sm shadow-emerald-700/20 transition flex items-center gap-1.5"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>14-Day Free Trial</span>
+            <span>150 Free Prescriptions</span>
           </Link>
         </div>
       </header>
@@ -746,12 +746,12 @@ export default function LoginPage() {
               <ArrowRight className="w-4 h-4 text-emerald-600 group-hover:translate-x-0.5 transition-transform" />
             </div>
 
-            {/* Bottom 14-Day Free Trial Notice & Registration */}
+            {/* Bottom 150-Rx Free Trial Notice & Registration */}
             <div className="pt-2 border-t border-slate-100 text-center space-y-2">
               <p className="text-xs text-slate-600">
                 New to RxNXT?{' '}
                 <Link href="/register" className="font-bold text-emerald-600 hover:text-emerald-700 hover:underline">
-                  Register Your Clinic (14-Day Free Trial)
+                  Register Your Clinic (150 Free Prescriptions)
                 </Link>
               </p>
               <div className="flex items-center justify-center gap-3 text-[10px] text-slate-400 font-medium">

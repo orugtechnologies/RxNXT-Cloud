@@ -15,8 +15,10 @@ export async function POST(request: Request) {
     const sub = await getClinicSubscription(user.clinicId);
     if (!sub.allowed) {
       return NextResponse.json({
-        error: 'SUBSCRIPTION_EXPIRED',
-        message: 'Your 14-day trial or subscription has expired. Please renew your subscription to continue sending WhatsApp prescriptions.',
+        error: sub.isUsageLocked ? 'TRIAL_USAGE_LIMIT_REACHED' : 'SUBSCRIPTION_EXPIRED',
+        message: sub.isUsageLocked
+          ? `Your 150-prescription free trial has ended (${sub.prescriptionsCount || 150}/${sub.trialPrescriptionCap || 150} used). Please select a subscription plan to continue sending prescriptions.`
+          : 'Your subscription has expired. Please renew your subscription to continue sending WhatsApp prescriptions.',
         subscription: sub,
       }, { status: 403 });
     }
@@ -26,7 +28,7 @@ export async function POST(request: Request) {
     if (!usage.allowed) {
       return NextResponse.json({
         error: 'TRIAL_WHATSAPP_CAP_EXCEEDED',
-        message: `Your 14-day free trial has reached the limit of ${usage.cap} WhatsApp messages (${usage.used} sent). Please upgrade to an annual plan to continue automated WhatsApp delivery.`,
+        message: `Your free trial has reached the limit of ${usage.cap} WhatsApp messages (${usage.used} sent). Please upgrade to an annual plan to continue automated WhatsApp delivery.`,
         usage,
       }, { status: 403 });
     }

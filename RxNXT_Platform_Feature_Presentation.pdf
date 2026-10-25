@@ -2088,7 +2088,7 @@ endobj
 endobj
 18 0 obj
 <<
-/Length 10657
+/Length 10705
 >>
 stream
 1.1338582677165356 w
@@ -2276,18 +2276,18 @@ BT
 13.7999999999999989 TL
 1. g
 572.598425196850485 447.878425196850344 Td
-(14-Day Trial & Lockout) Tj
+(150-Prescription Volume Trial) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.796 0.835 0.882 rg
 572.598425196850485 419.5319685039369233 Td
-(• Automated 14-day free trial on registration.) Tj
-T* (• 7-day prior renewal alert sent via Meta WhatsApp.) Tj
-T* (• Grace period lockout system protects clinic data.) Tj
-T* (• Non-destructive read-only archive upon expiration.) Tj
-T* (• Supports Starter, Pro, and Enterprise tiers.) Tj
+(• 150 free prescriptions on signup \(no calendar countdown\).) Tj
+T* (• Smooth onboarding: 0-120 Rx full frictionless access.) Tj
+T* (• Warning banner at 121-149 Rx; hard lock at #150.) Tj
+T* (• 1-click self-serve upgrade to Solo GP, Specialist, Polyclinic.) Tj
+T* (• Non-destructive read-only archive protects clinic data.) Tj
 ET
 0.07 0.12 0.22 rg
 0.12 0.19 0.31 RG
@@ -3029,7 +3029,7 @@ endobj
 37 0 obj
 <<
 /Producer (jsPDF 2.5.2)
-/CreationDate (D:20261010202943+05'30')
+/CreationDate (D:20261025233447+05'30')
 >>
 endobj
 38 0 obj
@@ -3043,8 +3043,8 @@ endobj
 xref
 0 39
 0000000000 65535 f 
-0000107876 00000 n 
-0000109759 00000 n 
+0000107924 00000 n 
+0000109807 00000 n 
 0000000015 00000 n 
 0000000152 00000 n 
 0000011915 00000 n 
@@ -3061,33 +3061,33 @@ xref
 0000067899 00000 n 
 0000076845 00000 n 
 0000076984 00000 n 
-0000087695 00000 n 
-0000087834 00000 n 
-0000098505 00000 n 
-0000098644 00000 n 
-0000107994 00000 n 
-0000108120 00000 n 
-0000108251 00000 n 
-0000108385 00000 n 
-0000108523 00000 n 
-0000108647 00000 n 
-0000108776 00000 n 
-0000108908 00000 n 
-0000109044 00000 n 
-0000109172 00000 n 
-0000109299 00000 n 
-0000109428 00000 n 
-0000109561 00000 n 
-0000109663 00000 n 
-0000110012 00000 n 
-0000110098 00000 n 
+0000087743 00000 n 
+0000087882 00000 n 
+0000098553 00000 n 
+0000098692 00000 n 
+0000108042 00000 n 
+0000108168 00000 n 
+0000108299 00000 n 
+0000108433 00000 n 
+0000108571 00000 n 
+0000108695 00000 n 
+0000108824 00000 n 
+0000108956 00000 n 
+0000109092 00000 n 
+0000109220 00000 n 
+0000109347 00000 n 
+0000109476 00000 n 
+0000109609 00000 n 
+0000109711 00000 n 
+0000110060 00000 n 
+0000110146 00000 n 
 trailer
 <<
 /Size 39
 /Root 38 0 R
 /Info 37 0 R
-/ID [ <48BECEC3361B6378927B44C479AB97B1> <48BECEC3361B6378927B44C479AB97B1> ]
+/ID [ <478FFC0AA34C5D86EC0B0E54A26AD3C7> <478FFC0AA34C5D86EC0B0E54A26AD3C7> ]
 >>
 startxref
-110202
+110250
 %%EOF

@@ -150,7 +150,7 @@ describe('Auth Register API (Without NMC Gating)', () => {
           phone: '+91 9876543210',
           email: 'doctor@cityclinic.com',
           subscriptionStatus: 'TRIAL',
-          subscriptionPlan: 'TRIAL_14_DAYS',
+          subscriptionPlan: 'TRIAL_150_RX',
         }),
       })
     );

@@ -141,11 +141,11 @@ export default function TermsOfServicePage() {
         <section className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
           <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-emerald-600" />
-            4. 14-Day Free Trial & Subscriptions
+            4. 150-Prescription Free Trial & Subscriptions
           </h2>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed">
             <p>
-              Each newly registered clinic receives a <strong>14-day fully featured free trial</strong> without requiring payment information upfront.
+              Each newly registered clinic receives a <strong>150-prescription fully featured free trial</strong> without requiring payment information upfront.
             </p>
             <p>
               Following the trial period, clinics can activate an annual or monthly subscription plan to maintain uninterrupted cloud access, automatic reminder schedules, and inventory tracking.

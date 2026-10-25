@@ -629,16 +629,16 @@ drawCard(196, 42, rW, 100, C.purple);
 doc.setFont('helvetica', 'bold');
 doc.setFontSize(12);
 doc.setTextColor(C.white[0], C.white[1], C.white[2]);
-doc.text('14-Day Trial & Lockout', 202, 52);
+doc.text('150-Prescription Volume Trial', 202, 52);
 doc.setFont('helvetica', 'normal');
 doc.setFontSize(8.5);
 doc.setTextColor(C.grayLight[0], C.grayLight[1], C.grayLight[2]);
 doc.text([
-  '• Automated 14-day free trial on registration.',
-  '• 7-day prior renewal alert sent via Meta WhatsApp.',
-  '• Grace period lockout system protects clinic data.',
-  '• Non-destructive read-only archive upon expiration.',
-  '• Supports Starter, Pro, and Enterprise tiers.'
+  '• 150 free prescriptions on signup (no calendar countdown).',
+  '• Smooth onboarding: 0-120 Rx full frictionless access.',
+  '• Warning banner at 121-149 Rx; hard lock at #150.',
+  '• 1-click self-serve upgrade to Solo GP, Specialist, Polyclinic.',
+  '• Non-destructive read-only archive protects clinic data.'
 ], 202, 62);
 
 drawCard(18, 148, W - 36, 36, C.amber);

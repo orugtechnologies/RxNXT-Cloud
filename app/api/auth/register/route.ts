@@ -55,7 +55,6 @@ export async function POST(request: Request) {
         assignedStatus = 'ACTIVE';
       } else {
         const now = new Date();
-        const trialEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
         const newClinic = await tx.clinic.create({
           data: {
             name: clinicName.trim(),
@@ -63,10 +62,13 @@ export async function POST(request: Request) {
             phone: clinicPhone?.trim() || phone?.trim() || null,
             email: cleanEmail,
             subscriptionStatus: 'TRIAL',
-            subscriptionPlan: 'TRIAL_14_DAYS',
+            subscriptionPlan: 'TRIAL_150_RX',
+            subscriptionTier: 'TRIAL',
+            prescriptionsCount: 0,
+            trialPrescriptionCap: 150,
             subscriptionStartedAt: now,
-            trialEndsAt: trialEnd,
-            subscriptionEndsAt: trialEnd,
+            trialEndsAt: null,
+            subscriptionEndsAt: null,
           },
         });
         activeClinicId = newClinic.id;

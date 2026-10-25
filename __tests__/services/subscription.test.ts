@@ -15,34 +15,33 @@ jest.mock('@/lib/prisma', () => ({
   },
 }));
 
-describe('Subscription & 14-Day Free Trial Engine', () => {
+describe('Subscription & 150-Prescription Free Trial Engine', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('14-Day Free Trial Status & Expiry Logic', () => {
-    it('initializes 14-day trial for clinics without prior trial record', async () => {
+  describe('150-Prescription Free Trial Status & Expiry Logic', () => {
+    it('initializes 150-prescription trial for clinics without prior trial record', async () => {
       const mockCreatedAt = new Date();
       (prisma.clinic.findUnique as jest.Mock).mockResolvedValueOnce({
         id: 'clinic-101',
         name: 'City Care Clinic',
-        subscriptionStatus: null,
+        subscriptionStatus: 'TRIAL',
         subscriptionPlan: null,
         trialEndsAt: null,
         subscriptionEndsAt: null,
         createdAt: mockCreatedAt,
       });
 
-      const trialEndExpected = new Date(mockCreatedAt.getTime() + 14 * 24 * 60 * 60 * 1000);
-
       (prisma.clinic.update as jest.Mock).mockResolvedValueOnce({
         id: 'clinic-101',
         name: 'City Care Clinic',
         subscriptionStatus: 'TRIAL',
-        subscriptionPlan: 'TRIAL_14_DAYS',
+        subscriptionPlan: 'TRIAL_150_RX',
+        subscriptionTier: 'TRIAL',
         subscriptionStartedAt: mockCreatedAt,
-        trialEndsAt: trialEndExpected,
-        subscriptionEndsAt: trialEndExpected,
+        trialPrescriptionCap: 150,
+        prescriptionsCount: 0,
         createdAt: mockCreatedAt,
       });
 
@@ -51,45 +50,46 @@ describe('Subscription & 14-Day Free Trial Engine', () => {
       expect(sub.allowed).toBe(true);
       expect(sub.isTrial).toBe(true);
       expect(sub.status).toBe('TRIAL');
-      expect(sub.daysRemaining).toBeGreaterThanOrEqual(13);
+      expect(sub.prescriptionsRemaining).toBe(150);
       expect(sub.isExpired).toBe(false);
       expect(prisma.clinic.update).toHaveBeenCalled();
     });
 
-    it('flags clinic as expiring soon when <= 7 days remain', async () => {
+    it('keeps trial clinic active regardless of calendar elapsed days until 150 prescriptions are reached', async () => {
       const now = new Date();
-      const trialEndsSoon = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000); // 5 days from now
-
       (prisma.clinic.findUnique as jest.Mock).mockResolvedValueOnce({
         id: 'clinic-102',
         name: 'Apex Health',
         subscriptionStatus: 'TRIAL',
-        subscriptionPlan: 'TRIAL_14_DAYS',
-        trialEndsAt: trialEndsSoon,
-        subscriptionEndsAt: trialEndsSoon,
-        createdAt: new Date(now.getTime() - 9 * 24 * 60 * 60 * 1000),
+        subscriptionPlan: 'TRIAL_150_RX',
+        subscriptionTier: 'TRIAL',
+        prescriptionsCount: 40,
+        trialPrescriptionCap: 150,
+        // Even if clinic registered 30 days ago, trial remains active until 150 Rx!
+        createdAt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
       });
 
       const sub = await getClinicSubscription('clinic-102');
 
       expect(sub.allowed).toBe(true);
-      expect(sub.isExpiringSoon).toBe(true);
-      expect(sub.daysRemaining).toBe(5);
+      expect(sub.isTrial).toBe(true);
+      expect(sub.prescriptionsCount).toBe(40);
+      expect(sub.prescriptionsRemaining).toBe(110);
       expect(sub.isExpired).toBe(false);
+      expect(sub.isUsageLocked).toBe(false);
     });
 
-    it('marks and locks expired trial clinics when trial period has ended', async () => {
+    it('locks trial clinic once the 150 prescription threshold is reached', async () => {
       const now = new Date();
-      const pastTrialEnd = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000); // 2 days ago
-
       (prisma.clinic.findUnique as jest.Mock).mockResolvedValueOnce({
         id: 'clinic-103',
-        name: 'Lapsed Health Clinic',
+        name: 'High Volume Clinic',
         subscriptionStatus: 'TRIAL',
-        subscriptionPlan: 'TRIAL_14_DAYS',
-        trialEndsAt: pastTrialEnd,
-        subscriptionEndsAt: pastTrialEnd,
-        createdAt: new Date(now.getTime() - 16 * 24 * 60 * 60 * 1000),
+        subscriptionPlan: 'TRIAL_150_RX',
+        subscriptionTier: 'TRIAL',
+        prescriptionsCount: 150,
+        trialPrescriptionCap: 150,
+        createdAt: now,
       });
 
       (prisma.clinic.update as jest.Mock).mockResolvedValueOnce({
@@ -100,9 +100,8 @@ describe('Subscription & 14-Day Free Trial Engine', () => {
       const sub = await getClinicSubscription('clinic-103');
 
       expect(sub.allowed).toBe(false);
-      expect(sub.isExpired).toBe(true);
-      expect(sub.status).toBe('EXPIRED');
-      expect(sub.daysRemaining).toBe(0);
+      expect(sub.isUsageLocked).toBe(true);
+      expect(sub.prescriptionsRemaining).toBe(0);
       expect(prisma.clinic.update).toHaveBeenCalledWith({
         where: { id: 'clinic-103' },
         data: { subscriptionStatus: 'EXPIRED' },

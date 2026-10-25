@@ -66,8 +66,10 @@ export async function POST(request: Request) {
       const sub = await getClinicSubscription(clinicId);
       if (!sub.allowed) {
         return NextResponse.json({
-          error: 'SUBSCRIPTION_EXPIRED',
-          message: 'Your 14-day trial or subscription has expired. Please renew your subscription to continue adding patients.',
+          error: sub.isUsageLocked ? 'TRIAL_USAGE_LIMIT_REACHED' : 'SUBSCRIPTION_EXPIRED',
+          message: sub.isUsageLocked
+            ? `Your 150-prescription free trial has ended (${sub.prescriptionsCount || 150}/${sub.trialPrescriptionCap || 150} used). Please select a subscription plan to continue adding patients.`
+            : 'Your subscription has expired. Please renew your subscription to continue adding patients.',
           subscription: sub,
         }, { status: 403 });
       }
