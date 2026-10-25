@@ -152,8 +152,8 @@ graph LR
 | **Follow-Up Appointment Reminder (1 msg / patient)** | Included | Included | Included | — |
 | **Basic Consultation Billing (Receipts / Invoices)** | Included | Included | Included | — |
 | **Direct Doctor Onboarding & Workspace Setup** | Included | Included | Included | — |
-| **Automated Daily Morning WhatsApp Briefings** | *Optional Add-On* | *Optional Add-On* | Included (Bundled pack) | **₹0.25 / reminder or ₹299 / mo** |
-| **Chronic Care Refill Reminders (Day 25 Alert)** | *Optional Add-On* | Included | Included | **₹199 / mo** |
+| **Automated Daily Morning WhatsApp Briefings** | *Optional Add-On* | *Optional Add-On* | Included (1,000 msgs) | **₹299 / mo (1,000 msgs cap)**<br>*(Overage: ₹0.25 / msg)* |
+| **Chronic Care Refill Reminders (Day 25 Alert)** | *Optional Add-On* | Included | Included | **₹199 / mo (500 msgs cap)** |
 | **In-House Pharmacy & Batch Stock Inventory** | — | Included | Included | **₹499 / mo** |
 | **Advanced Practice Analytics & Drug Consumption** | — | Included | Included | **₹299 / mo** |
 | **Additional Doctor Seat** | — | — | — | **₹2,499 / doctor / year** |
@@ -161,12 +161,21 @@ graph LR
 
 ---
 
-## 3. Detailed Justification for Add-On Structuring
+## 3. Detailed Justification for Add-On Structuring & Quota Economics
+
+### Quota Breakdown & Unit Profit Margins for RxNXT
+
+| Add-On Package | Monthly Price | Monthly Quota | Clinical OPD Coverage | COGS (Meta @ ₹0.13 + Gateway) | Net Profit to RxNXT | Gross Margin |
+| :--- | :---: | :---: | :--- | :---: | :---: | :---: |
+| **Daily Morning Reminders** | **₹299 / mo** | **1,000 messages** | ~250 acute patients (4-day course) OR ~70 chronic patients (14-day cycle) | ₹136.50 | **₹162.50 / clinic / mo** | **54.4%** |
+| **Pay-As-You-Go Reminders** | **₹0.25 / msg** | Per message | Pay-as-you-prescribe (Doctor enables per patient) | ₹0.13 | **₹0.12 / msg** | **48.0%** |
+| **Chronic Day-25 Refill Alerts** | **₹199 / mo** | **500 messages** | 500 unique chronic patients (1 message/patient on Day 25) | ₹71.00 | **₹128.00 / clinic / mo** | **64.3%** |
 
 ### Why "Automated Daily Morning Reminders" MUST Be an Add-On
 1. **Direct Variable Cost:** Each WhatsApp template message costs $\approx ₹0.13$ via Meta Cloud API. For a chronic care patient receiving 14 daily briefings, the messaging cost is $\approx ₹1.82$ per patient. A busy doctor seeing 1,000 patients a month could incur ₹1,800+ in messaging fees alone.
 2. **Margin Protection:** Keeping daily reminders off by default in the base subscription guarantees an **85%+ gross profit margin** on software subscriptions.
-3. **Upsell Mechanics:** Clinics can be sold **Prepaid Reminder Packs** (e.g., ₹999 for 3,000 reminder credits) or billed as a flat **Patient Adherence Add-on**.
+3. **Upsell Mechanics:** Clinics can be sold **Prepaid Reminder Packs** (e.g., ₹999 for 3,000 reminder credits) or subscribed to the **₹299 / month pack (1,000 messages)**.
+4. **OPD Reality:** In an average Indian OPD of 750 patients/month, doctors only activate daily reminders for ~25% to 35% of patients (acute infections or complex cases). Therefore, a 1,000-message pack comfortably covers a busy OPD's entire monthly needs with zero overage.
 
 ### Why In-House Pharmacy Should Be a Higher Tier or Add-On
 1. Not all outpatient clinics dispense medicines in-house (many write prescriptions for external retail pharmacies).
