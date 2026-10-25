@@ -13,16 +13,25 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { plan, billingCycle, paymentRef, amount } = await request.json();
+    const { plan, tier, billingCycle, paymentRef, amount } = await request.json();
 
-    if (!plan || !['STARTER_MONTHLY', 'PRO_ANNUAL', 'ENTERPRISE'].includes(plan)) {
+    // Map tier to plan if tier is supplied
+    let resolvedPlan = plan;
+    if (!resolvedPlan && tier) {
+      if (tier === 'SOLO_GP') resolvedPlan = 'STARTER_MONTHLY';
+      else if (tier === 'SPECIALIST') resolvedPlan = 'PRO_ANNUAL';
+      else if (tier === 'POLYCLINIC_HUB') resolvedPlan = 'ENTERPRISE';
+    }
+
+    if (!resolvedPlan || !['STARTER_MONTHLY', 'PRO_ANNUAL', 'ENTERPRISE'].includes(resolvedPlan)) {
       return NextResponse.json({ error: 'Invalid subscription plan selected.' }, { status: 400 });
     }
 
     const result = await renewClinicSubscription({
       clinicId: user.clinicId,
-      plan,
-      billingCycle: billingCycle || (plan === 'PRO_ANNUAL' ? 'ANNUAL' : 'MONTHLY'),
+      plan: resolvedPlan,
+      tier,
+      billingCycle: billingCycle || (resolvedPlan === 'PRO_ANNUAL' ? 'ANNUAL' : 'MONTHLY'),
       amount,
       paymentRef,
     });

@@ -22,9 +22,19 @@ model Clinic {
   logoUrl   String?
   inviteCode String? @unique
   
-  // Subscription & 14-Day Free Trial
+  // Subscription & Commercial Tier Management
   subscriptionStatus      String    @default("TRIAL") // TRIAL, ACTIVE, EXPIRED, CANCELLED
   subscriptionPlan        String    @default("TRIAL_14_DAYS") // TRIAL_14_DAYS, STARTER_MONTHLY, PRO_ANNUAL, ENTERPRISE
+  subscriptionTier        String    @default("TRIAL") // TRIAL, SOLO_GP, SPECIALIST, POLYCLINIC_HUB
+  prescriptionsCount      Int       @default(0)       // Incremented on every completed prescription
+  trialPrescriptionCap    Int       @default(150)     // First 150 trial cap
+  baseSeats               Int       @default(1)
+  additionalSeats         Int       @default(0)
+
+  // Prepaid WhatsApp Adherence Wallet
+  whatsappCreditBalance       Int       @default(0)   // Decrements per adherence message
+  whatsappLowBalanceAlertSent Boolean   @default(false)
+
   subscriptionStartedAt   DateTime  @default(now())
   trialEndsAt             DateTime?
   subscriptionEndsAt      DateTime?
@@ -47,6 +57,7 @@ model Clinic {
   pharmacyItems         PharmacyItem[]
   dispenseLogs          DispenseLog[]
   bills                 Bill[]
+  walletTransactions    WhatsAppCreditTransaction[]
 }
 
 // ─────────────────────────────────────────────
@@ -467,4 +478,22 @@ model BillItem {
   itemType    String   @default("CONSULTATION") // CONSULTATION, MEDICINE, OTHER
 
   @@index([billId])
+}
+
+// ─────────────────────────────────────────────
+// PREPAID WALLET AUDIT LEDGER
+// ─────────────────────────────────────────────
+model WhatsAppCreditTransaction {
+  id           String   @id @default(cuid())
+  clinicId     String
+  clinic       Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  type         String   // RECHARGE, ADHERENCE_DOSE, REFILL_ALERT, REFUND, PROMOTIONAL
+  amount       Int      // e.g. +2000 for recharge, -1 for sent reminder
+  balanceAfter Int
+  referenceId  String?  // reminderId, paymentId, or razorpayPaymentId
+  description  String?
+  createdAt    DateTime @default(now())
+
+  @@index([clinicId, createdAt])
+  @@index([referenceId])
 }

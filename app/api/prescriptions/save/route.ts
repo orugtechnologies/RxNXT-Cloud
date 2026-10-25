@@ -11,12 +11,14 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    // 0. Enforce Subscription / 14-Day Free Trial Guard
+    // 0. Enforce Subscription / 150-Rx Usage-Based Free Trial Guard
     const sub = await getClinicSubscription(user.clinicId);
     if (!sub.allowed) {
       return NextResponse.json({
-        error: 'SUBSCRIPTION_EXPIRED',
-        message: 'Your 14-day trial or subscription has expired. Please renew your subscription to continue creating prescriptions.',
+        error: sub.isUsageLocked ? 'TRIAL_USAGE_LIMIT_REACHED' : 'SUBSCRIPTION_EXPIRED',
+        message: sub.isUsageLocked
+          ? `You have reached your 150 free prescription trial limit. Please select a subscription tier to continue creating prescriptions.`
+          : 'Your subscription has expired. Please renew your subscription to continue creating prescriptions.',
         subscription: sub,
       }, { status: 403 });
     }
@@ -320,6 +322,18 @@ export async function POST(request: Request) {
             });
           })
         );
+      }
+
+      // Epic 1: Atomically increment clinic prescription ledger counter
+      if (tx.clinic?.update) {
+        try {
+          await tx.clinic.update({
+            where: { id: user.clinicId },
+            data: { prescriptionsCount: { increment: 1 } },
+          });
+        } catch (e) {
+          console.warn('Non-blocking clinic prescription count update warning:', e);
+        }
       }
 
       return { encounter, prescription };

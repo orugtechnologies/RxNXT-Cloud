@@ -21,6 +21,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
+import FeatureUpsellModal from '@/components/subscription/FeatureUpsellModal';
+import { Lock, Sparkles } from 'lucide-react';
 
 interface PharmacyItem {
   id: string;
@@ -43,6 +46,7 @@ export default function PharmacyInventoryPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'low_stock' | 'expiring_soon'>('all');
+  const { isAllowed: isPharmacyAllowed, loading: flagLoading, showUpsell, setShowUpsell } = useFeatureFlag('PHARMACY_INVENTORY');
 
   // Add Item Modal
   const [showAddModal, setShowAddModal] = useState(false);
@@ -137,6 +141,35 @@ export default function PharmacyInventoryPage() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 pb-12">
+      {/* Discoverable but Locked Banner for non-Polyclinic Tiers */}
+      {!isPharmacyAllowed && !flagLoading && (
+        <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-900 text-white p-5 rounded-2xl shadow-lg border border-indigo-700/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="h-12 w-12 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300 shrink-0">
+              <Lock className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-sm sm:text-base text-white">Integrated In-House Pharmacy Module</h3>
+                <span className="bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                  Polyclinic Hub Tier
+                </span>
+              </div>
+              <p className="text-xs text-indigo-200/80 mt-1">
+                Direct OPD consultation-to-dispense handoff with automated inventory deduction, batch expiry alerts, and stock management.
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={() => setShowUpsell(true)}
+            className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs h-10 px-5 shadow-md shrink-0"
+          >
+            <Sparkles className="h-4 w-4 mr-1.5" />
+            Upgrade to Polyclinic Hub
+          </Button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
@@ -151,10 +184,16 @@ export default function PharmacyInventoryPage() {
 
         <div className="flex items-center gap-3">
           <Button
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              if (!isPharmacyAllowed) {
+                setShowUpsell(true);
+                return;
+              }
+              setShowAddModal(true);
+            }}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs h-9 shadow-sm"
           >
-            <Plus className="h-4 w-4 mr-1.5" />
+            {!isPharmacyAllowed ? <Lock className="h-3.5 w-3.5 mr-1.5 text-amber-300" /> : <Plus className="h-4 w-4 mr-1.5" />}
             Add New Medicine / Batch
           </Button>
         </div>
@@ -442,6 +481,12 @@ export default function PharmacyInventoryPage() {
           </div>
         </div>
       )}
+      {/* Feature Upsell Modal for Non-Polyclinic Hub accounts */}
+      <FeatureUpsellModal
+        isOpen={showUpsell}
+        featureKey="PHARMACY_INVENTORY"
+        onClose={() => setShowUpsell(false)}
+      />
     </div>
   );
 }

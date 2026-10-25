@@ -62,6 +62,45 @@ export async function POST(request: Request) {
 
     const normalizedEmail = email.toLowerCase().trim();
 
+    // Epic 4: Seat Capacity Verification
+    const clinic = await prisma.clinic.findUnique({
+      where: { id: admin.clinicId },
+      select: {
+        subscriptionTier: true,
+        baseSeats: true,
+        additionalSeats: true,
+        subscriptionStatus: true,
+      },
+    });
+
+    const isMultiDoctorAllowed = clinic?.subscriptionTier === 'POLYCLINIC_HUB' || admin.clinicId === 'demo-clinic-001';
+    if (!isMultiDoctorAllowed && clinic?.subscriptionTier !== 'TRIAL') {
+      return NextResponse.json({
+        error: 'FEATURE_LOCKED',
+        message: 'Multi-doctor seat provisioning is exclusively available on the Polyclinic Hub tier. Please upgrade your subscription.',
+        requiredTier: 'POLYCLINIC_HUB',
+      }, { status: 403 });
+    }
+
+    const totalAllowedSeats = (clinic?.baseSeats || 3) + (clinic?.additionalSeats || 0);
+    const activeDoctorCount = await prisma.user.count({
+      where: {
+        clinicId: admin.clinicId,
+        role: { in: ['doctor', 'clinic_admin'] },
+        status: 'ACTIVE',
+      },
+    });
+
+    if (activeDoctorCount >= totalAllowedSeats) {
+      return NextResponse.json({
+        error: 'SEAT_LIMIT_REACHED',
+        message: `Your clinic has reached its limit of ${totalAllowedSeats} doctor seats. Purchase an additional seat (₹499/mo) to add more doctors.`,
+        activeCount: activeDoctorCount,
+        allowedSeats: totalAllowedSeats,
+        additionalSeatPrice: 499,
+      }, { status: 402 });
+    }
+
     // Check if email already in use
     const existingUser = await prisma.user.findUnique({
       where: { email: normalizedEmail }

@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, CheckCircle, User, Stethoscope, Pill, FileText, Activity, Send, Loader2, Sparkles, Download, AlertCircle } from 'lucide-react';
+import { X, CheckCircle, User, Stethoscope, Pill, FileText, Activity, Send, Loader2, Sparkles, Download, AlertCircle, Lock } from 'lucide-react';
 import { PrescribedMedicine } from './PrescriptionCart';
 import { Patient } from '../patients/PatientSearchUI';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
+import FeatureUpsellModal from '@/components/subscription/FeatureUpsellModal';
 
 interface ReviewModalProps {
   patient: Patient;
@@ -45,6 +47,19 @@ export default function ReviewPrescriptionModal({
   const [targetPhone, setTargetPhone] = useState(patient.phone || '');
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [enableDailyReminders, setEnableDailyReminders] = useState(false);
+  const { isAllowed: isMorningAllowed, showUpsell, setShowUpsell } = useFeatureFlag('MORNING_ADHERENCE');
+
+  const handleToggleDailyReminders = (checked: boolean) => {
+    if (checked) {
+      if (!isMorningAllowed) {
+        setShowUpsell(true);
+        return;
+      }
+      setEnableDailyReminders(true);
+    } else {
+      setEnableDailyReminders(false);
+    }
+  };
 
   const handleDownloadPDF = () => {
     if (pdfBase64) {
@@ -295,7 +310,14 @@ export default function ReviewPrescriptionModal({
               <div className="flex items-center gap-2">
                 <span className="text-base">🔔</span>
                 <div>
-                  <p className="text-xs font-bold text-slate-800">Automated Daily Morning Dose Reminders (8:00 AM)</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs font-bold text-slate-800">Automated Daily Morning Dose Reminders (8:00 AM)</p>
+                    {!isMorningAllowed && (
+                      <span className="bg-amber-100 text-amber-800 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                        <Lock size={10} /> Specialist
+                      </span>
+                    )}
+                  </div>
                   <p className="text-[11px] text-slate-500">Send patient daily morning WhatsApp dose alerts for course duration</p>
                 </div>
               </div>
@@ -303,7 +325,7 @@ export default function ReviewPrescriptionModal({
                 <input
                   type="checkbox"
                   checked={enableDailyReminders}
-                  onChange={(e) => setEnableDailyReminders(e.target.checked)}
+                  onChange={(e) => handleToggleDailyReminders(e.target.checked)}
                   className="sr-only peer"
                 />
                 <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-clinic-emerald"></div>
@@ -417,6 +439,12 @@ export default function ReviewPrescriptionModal({
         </div>
 
       </div>
+
+      <FeatureUpsellModal
+        isOpen={showUpsell}
+        featureKey="MORNING_ADHERENCE"
+        onClose={() => setShowUpsell(false)}
+      />
     </div>
   );
 }

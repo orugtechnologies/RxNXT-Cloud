@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import DoctorQueue from '@/components/dashboard/DoctorQueue';
 import PatientSearchUI, { Patient } from '@/components/patients/PatientSearchUI';
 import PatientHistoryModal from '@/components/patients/PatientHistoryModal';
-import { Loader2, Search, History, Stethoscope, Sparkles, X, RefreshCw } from 'lucide-react';
+import { Loader2, Search, History, Stethoscope, Sparkles, X, RefreshCw, TrendingUp } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -115,6 +115,39 @@ export default function DashboardPage() {
               <RefreshCw size={14} />
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Epic 4: ROI Telemetry Widget (Patient Return Attribution via WhatsApp Follow-up Alerts) */}
+      <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200/90 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="h-12 w-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white shrink-0 shadow-sm">
+            <TrendingUp className="h-6 w-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Practice ROI Telemetry</span>
+              <span className="bg-emerald-200/60 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                This Month
+              </span>
+            </div>
+            <h4 className="text-sm sm:text-base font-extrabold text-slate-900 mt-0.5">
+              Patients returned this month after a WhatsApp Follow-up Alert:{' '}
+              <span className="text-emerald-700 font-mono text-lg font-black ml-1">
+                {(data as any).roiTelemetry?.returnedPatientsCount ?? 0}
+              </span>
+            </h4>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Automated reminders actively driving OPD retention and recovering missed follow-up appointments.
+            </p>
+          </div>
+        </div>
+
+        <div className="shrink-0 bg-white px-4 py-2.5 rounded-xl border border-emerald-200/70 shadow-2xs text-center sm:text-right w-full sm:w-auto">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Estimated Retained OPD</span>
+          <span className="text-base sm:text-lg font-black text-emerald-700 font-mono">
+            ₹{(((data as any).roiTelemetry?.returnedPatientsCount ?? 0) * 500).toLocaleString()}
+          </span>
         </div>
       </div>
 

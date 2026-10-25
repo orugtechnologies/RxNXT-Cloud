@@ -172,4 +172,79 @@ describe('Subscription & 14-Day Free Trial Engine', () => {
       expect(result.newExpiry.getTime()).toBeGreaterThan(now.getTime() + 13 * 24 * 60 * 60 * 1000);
     });
   });
+
+  describe('Epic 1: The "First 150" Usage-Based Trial Engine', () => {
+    it('State 1 (0-120 Prescriptions): provides full, frictionless access without warning or lock', async () => {
+      const now = new Date();
+      (prisma.clinic.findUnique as jest.Mock).mockResolvedValueOnce({
+        id: 'clinic-trial-01',
+        name: 'Green Valley Clinic',
+        subscriptionStatus: 'TRIAL',
+        subscriptionPlan: 'TRIAL_14_DAYS',
+        subscriptionTier: 'TRIAL',
+        prescriptionsCount: 45,
+        trialPrescriptionCap: 150,
+        trialEndsAt: new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000),
+        subscriptionEndsAt: new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000),
+        createdAt: now,
+      });
+
+      const sub = await getClinicSubscription('clinic-trial-01');
+
+      expect(sub.allowed).toBe(true);
+      expect(sub.isTrial).toBe(true);
+      expect(sub.prescriptionsCount).toBe(45);
+      expect(sub.trialPrescriptionCap).toBe(150);
+      expect(sub.prescriptionsRemaining).toBe(105);
+      expect(sub.isUsageWarning).toBe(false);
+      expect(sub.isUsageLocked).toBe(false);
+    });
+
+    it('State 2 (121-149 Prescriptions): flags usage warning banner while keeping access allowed', async () => {
+      const now = new Date();
+      (prisma.clinic.findUnique as jest.Mock).mockResolvedValueOnce({
+        id: 'clinic-trial-02',
+        name: 'Sunrise Care',
+        subscriptionStatus: 'TRIAL',
+        subscriptionPlan: 'TRIAL_14_DAYS',
+        subscriptionTier: 'TRIAL',
+        prescriptionsCount: 135,
+        trialPrescriptionCap: 150,
+        trialEndsAt: new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000),
+        subscriptionEndsAt: new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000),
+        createdAt: now,
+      });
+
+      const sub = await getClinicSubscription('clinic-trial-02');
+
+      expect(sub.allowed).toBe(true);
+      expect(sub.isTrial).toBe(true);
+      expect(sub.prescriptionsCount).toBe(135);
+      expect(sub.prescriptionsRemaining).toBe(15);
+      expect(sub.isUsageWarning).toBe(true);
+      expect(sub.isUsageLocked).toBe(false);
+    });
+
+    it('State 3 (150 Prescriptions): activates hard usage lock and disallows prescription generation', async () => {
+      const now = new Date();
+      (prisma.clinic.findUnique as jest.Mock).mockResolvedValueOnce({
+        id: 'clinic-trial-03',
+        name: 'Apex Polyclinic',
+        subscriptionStatus: 'TRIAL',
+        subscriptionPlan: 'TRIAL_14_DAYS',
+        subscriptionTier: 'TRIAL',
+        prescriptionsCount: 150,
+        trialPrescriptionCap: 150,
+        trialEndsAt: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000),
+        subscriptionEndsAt: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000),
+        createdAt: now,
+      });
+
+      const sub = await getClinicSubscription('clinic-trial-03');
+
+      expect(sub.allowed).toBe(false);
+      expect(sub.isUsageLocked).toBe(true);
+      expect(sub.prescriptionsRemaining).toBe(0);
+    });
+  });
 });

@@ -8,7 +8,7 @@ jest.mock('../../lib/prisma', () => ({
   prisma: {
     patient: { count: jest.fn() },
     prescription: { count: jest.fn(), findMany: jest.fn() },
-    encounter: { findMany: jest.fn() },
+    encounter: { findMany: jest.fn(), count: jest.fn().mockResolvedValue(5) },
     clinicDrugPreference: { findMany: jest.fn() },
     queueItem: { findMany: jest.fn() },
   }

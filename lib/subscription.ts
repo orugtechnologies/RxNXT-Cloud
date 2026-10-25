@@ -4,6 +4,16 @@ export interface SubscriptionInfo {
   allowed: boolean;
   status: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
   plan: string;
+  tier: 'TRIAL' | 'SOLO_GP' | 'SPECIALIST' | 'POLYCLINIC_HUB';
+  prescriptionsCount: number;
+  trialPrescriptionCap: number;
+  prescriptionsRemaining: number;
+  isUsageLocked: boolean;
+  isUsageWarning: boolean; // Between 121 and 149 prescriptions
+  whatsappCreditBalance: number;
+  baseSeats: number;
+  additionalSeats: number;
+  totalSeats: number;
   trialEndsAt: Date | null;
   subscriptionEndsAt: Date | null;
   subscriptionStartedAt: Date | null;
@@ -15,6 +25,55 @@ export interface SubscriptionInfo {
   clinicId: string;
   clinicName: string;
 }
+
+export const COMMERCIAL_TIERS = {
+  SOLO_GP: {
+    id: 'SOLO_GP',
+    name: 'Solo GP',
+    monthly: 999,
+    annual: 9990,
+    description: 'Core OPD Workspace & Token Queue for Individual Practitioners',
+    seatsIncluded: 1,
+    features: [
+      'Core Clinical Workspace & Fuzzy Search',
+      'Additive Clinical Habit Engine',
+      'OPD Front-Desk Token Queue',
+      'Instant Patient WhatsApp Prescription PDF Link',
+      'Unlimited Prescription Generation',
+    ],
+  },
+  SPECIALIST: {
+    id: 'SPECIALIST',
+    name: 'Specialist',
+    monthly: 1999,
+    annual: 19990,
+    description: 'Full Clinical Intelligence & Patient Adherence Ecosystem',
+    seatsIncluded: 1,
+    features: [
+      'Everything in Solo GP',
+      'Automated Morning Dose Briefings (8:00 AM WhatsApp)',
+      'Day 25 Monthly Chronic Refill Alerts',
+      'Post-Visit Follow-Up Appointment Reminders',
+      'Patient Adherence Telemetry & Analytics',
+    ],
+  },
+  POLYCLINIC_HUB: {
+    id: 'POLYCLINIC_HUB',
+    name: 'Polyclinic Hub',
+    monthly: 3999,
+    annual: 39990,
+    description: 'Multi-Doctor Clinic with Integrated In-House Pharmacy',
+    seatsIncluded: 3,
+    additionalSeatPrice: 499, // ₹499/mo per extra doctor
+    features: [
+      'Everything in Specialist',
+      'Pharmacy Inventory & Real-Time Stock Alerts',
+      'Direct-to-Pharmacy Dispensing Queue & Billing',
+      'Multi-Doctor & Staff Access Provisioning',
+      'Clinic Admin Central Billing & Multi-Seat Management',
+    ],
+  },
+} as const;
 
 export const PLAN_PRICING: Record<string, { name: string; monthly: number; annual: number; features: string[] }> = {
   STARTER_MONTHLY: {
@@ -93,6 +152,12 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
       name: true,
       subscriptionStatus: true,
       subscriptionPlan: true,
+      subscriptionTier: true,
+      prescriptionsCount: true,
+      trialPrescriptionCap: true,
+      whatsappCreditBalance: true,
+      baseSeats: true,
+      additionalSeats: true,
       subscriptionStartedAt: true,
       trialEndsAt: true,
       subscriptionEndsAt: true,
@@ -110,6 +175,16 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
       allowed: true,
       status: 'ACTIVE',
       plan: 'DEMO_LIFETIME',
+      tier: 'POLYCLINIC_HUB',
+      prescriptionsCount: 0,
+      trialPrescriptionCap: 999999,
+      prescriptionsRemaining: 999999,
+      isUsageLocked: false,
+      isUsageWarning: false,
+      whatsappCreditBalance: 99999,
+      baseSeats: 99,
+      additionalSeats: 0,
+      totalSeats: 99,
       trialEndsAt: null,
       subscriptionEndsAt: null,
       subscriptionStartedAt: new Date(),
@@ -147,6 +222,16 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
       allowed: true,
       status: 'ACTIVE',
       plan: 'DEMO_LIFETIME',
+      tier: 'POLYCLINIC_HUB',
+      prescriptionsCount: 0,
+      trialPrescriptionCap: 999999,
+      prescriptionsRemaining: 999999,
+      isUsageLocked: false,
+      isUsageWarning: false,
+      whatsappCreditBalance: 99999,
+      baseSeats: 99,
+      additionalSeats: 0,
+      totalSeats: 99,
       trialEndsAt: null,
       subscriptionEndsAt: null,
       subscriptionStartedAt: clinic.createdAt,
@@ -184,6 +269,12 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
         name: true,
         subscriptionStatus: true,
         subscriptionPlan: true,
+        subscriptionTier: true,
+        prescriptionsCount: true,
+        trialPrescriptionCap: true,
+        whatsappCreditBalance: true,
+        baseSeats: true,
+        additionalSeats: true,
         subscriptionStartedAt: true,
         trialEndsAt: true,
         subscriptionEndsAt: true,
@@ -202,7 +293,20 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
 
   const isExpired = now > expiryDate;
   const isExpiringSoon = !isExpired && daysRemaining <= 7;
-  const isTrial = activeClinic.subscriptionPlan === 'TRIAL_14_DAYS' || activeClinic.subscriptionStatus === 'TRIAL';
+  const isTrial = activeClinic.subscriptionPlan === 'TRIAL_14_DAYS' || activeClinic.subscriptionStatus === 'TRIAL' || (activeClinic as any).subscriptionTier === 'TRIAL';
+
+  const prescriptionsCount = (activeClinic as any).prescriptionsCount ?? 0;
+  const trialPrescriptionCap = (activeClinic as any).trialPrescriptionCap ?? 150;
+  const tier = (((activeClinic as any).subscriptionTier) || (isTrial ? 'TRIAL' : 'SOLO_GP')) as 'TRIAL' | 'SOLO_GP' | 'SPECIALIST' | 'POLYCLINIC_HUB';
+  const whatsappCreditBalance = (activeClinic as any).whatsappCreditBalance ?? 0;
+  const baseSeats = (activeClinic as any).baseSeats ?? 1;
+  const additionalSeats = (activeClinic as any).additionalSeats ?? 0;
+  const totalSeats = baseSeats + additionalSeats;
+
+  // Epic 1: Gated by 150 completed prescriptions
+  const isUsageLocked = isTrial && prescriptionsCount >= trialPrescriptionCap;
+  const isUsageWarning = isTrial && prescriptionsCount >= 121 && prescriptionsCount < trialPrescriptionCap;
+  const prescriptionsRemaining = Math.max(0, trialPrescriptionCap - prescriptionsCount);
 
   let currentStatus = activeClinic.subscriptionStatus as 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
 
@@ -215,12 +319,22 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
     currentStatus = 'EXPIRED';
   }
 
-  const allowed = !isExpired && (currentStatus === 'TRIAL' || currentStatus === 'ACTIVE');
+  const allowed = !isExpired && !isUsageLocked && (currentStatus === 'TRIAL' || currentStatus === 'ACTIVE');
 
   return {
     allowed,
     status: currentStatus,
     plan: activeClinic.subscriptionPlan || (isTrial ? 'TRIAL_14_DAYS' : 'PRO_ANNUAL'),
+    tier,
+    prescriptionsCount,
+    trialPrescriptionCap,
+    prescriptionsRemaining,
+    isUsageLocked,
+    isUsageWarning,
+    whatsappCreditBalance,
+    baseSeats,
+    additionalSeats,
+    totalSeats,
     trialEndsAt: activeClinic.trialEndsAt,
     subscriptionEndsAt: activeClinic.subscriptionEndsAt,
     subscriptionStartedAt: activeClinic.subscriptionStartedAt,
@@ -240,12 +354,14 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
 export async function renewClinicSubscription({
   clinicId,
   plan,
+  tier,
   billingCycle = 'MONTHLY',
   amount,
   paymentRef,
 }: {
   clinicId: string;
   plan: 'STARTER_MONTHLY' | 'PRO_ANNUAL' | 'ENTERPRISE';
+  tier?: 'SOLO_GP' | 'SPECIALIST' | 'POLYCLINIC_HUB';
   billingCycle: 'MONTHLY' | 'ANNUAL';
   amount?: number;
   paymentRef?: string;
@@ -265,12 +381,17 @@ export async function renewClinicSubscription({
   const finalAmount = amount ?? (billingCycle === 'ANNUAL' ? planDetails.annual : planDetails.monthly);
   const finalRef = paymentRef || `PAY_${Date.now()}_${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
+  const mappedTier = tier || (plan === 'STARTER_MONTHLY' ? 'SOLO_GP' : plan === 'PRO_ANNUAL' ? 'SPECIALIST' : 'POLYCLINIC_HUB');
+  const baseSeats = mappedTier === 'POLYCLINIC_HUB' ? 3 : 1;
+
   const result = await prisma.$transaction(async (tx) => {
     const updatedClinic = await tx.clinic.update({
       where: { id: clinicId },
       data: {
         subscriptionStatus: 'ACTIVE',
         subscriptionPlan: plan,
+        subscriptionTier: mappedTier,
+        baseSeats,
         subscriptionEndsAt: newExpiry,
         renewalReminderSentAt: null, // Reset reminder flag for the new cycle
         lastPaymentAmount: finalAmount,

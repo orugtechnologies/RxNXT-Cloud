@@ -106,6 +106,28 @@ export async function GET() {
       }),
     ]);
 
+    // Epic 4: Practice ROI Telemetry - Patients returned this month after a WhatsApp Follow-up Alert
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    let returnedPatientsCount = 0;
+    try {
+      returnedPatientsCount = await prisma.encounter.count({
+        where: {
+          clinicId,
+          createdAt: { gte: startOfMonth },
+          patient: {
+            reminders: {
+              some: {
+                messageType: 'FOLLOW_UP',
+                status: 'SENT',
+              },
+            },
+          },
+        },
+      });
+    } catch (e) {
+      console.warn('Non-blocking ROI telemetry count fallback:', e);
+    }
+
     // Auto-backfill missing token numbers for Doctor's queue
     const queueWithoutToken = queueItems.filter(q => q.tokenNumber === null);
     if (queueWithoutToken.length > 0) {
@@ -227,6 +249,10 @@ export async function GET() {
       followUps: formattedFollowUps,
       frequentMedicines: formattedFreqMeds,
       todayQueue: formattedQueue,
+      roiTelemetry: {
+        returnedPatientsCount,
+        estimatedOpdRetained: returnedPatientsCount * 500,
+      },
     });
 
   } catch (error: any) {

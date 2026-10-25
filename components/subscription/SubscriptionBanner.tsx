@@ -2,13 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { AlertCircle, Clock, Sparkles, ArrowRight, ShieldAlert } from 'lucide-react';
+import { AlertCircle, Clock, Sparkles, ArrowRight, ShieldAlert, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface SubscriptionData {
   allowed: boolean;
   status: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
   plan: string;
+  tier?: 'TRIAL' | 'SOLO_GP' | 'SPECIALIST' | 'POLYCLINIC_HUB';
+  prescriptionsCount?: number;
+  trialPrescriptionCap?: number;
+  prescriptionsRemaining?: number;
+  isUsageLocked?: boolean;
+  isUsageWarning?: boolean;
+  whatsappCreditBalance?: number;
   daysRemaining: number;
   isExpired: boolean;
   isExpiringSoon: boolean;
@@ -20,6 +27,7 @@ interface SubscriptionData {
 export default function SubscriptionBanner() {
   const [sub, setSub] = useState<SubscriptionData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   const fetchStatus = async () => {
     try {
@@ -53,7 +61,73 @@ export default function SubscriptionBanner() {
     return null;
   }
 
-  // Case 1: EXPIRED
+  // Epic 1 State 3: Hard Usage Lockout (150 Completed Prescriptions)
+  if (sub.isTrial && sub.isUsageLocked) {
+    return (
+      <div className="bg-rose-600 text-white px-4 py-3 rounded-xl mb-6 shadow-md flex flex-col sm:flex-row items-center justify-between gap-3 animate-pulse border border-rose-500">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-lg bg-rose-700/80 flex items-center justify-center shrink-0">
+            <ShieldAlert className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <p className="font-semibold text-sm">
+              Free Trial Limit Reached ({sub.prescriptionsCount || 150} / {sub.trialPrescriptionCap || 150} Prescriptions)
+            </p>
+            <p className="text-xs text-rose-100">
+              Your free trial has ended. Select a subscription tier to keep your workspace active and continue generating digital prescriptions.
+            </p>
+          </div>
+        </div>
+        <Link href="/admin/subscription">
+          <Button size="sm" className="bg-white text-rose-700 hover:bg-rose-50 font-bold text-xs shadow-sm">
+            Select Subscription Plan
+            <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // Epic 1 State 2: 121–149 Prescriptions (Dismissible Non-Intrusive Learning Engine Banner)
+  if (sub.isTrial && sub.isUsageWarning && !isDismissed) {
+    return (
+      <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white px-4 py-3 rounded-xl mb-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 border border-amber-400">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0">
+            <Sparkles className="h-5 w-5 text-amber-200" />
+          </div>
+          <div>
+            <p className="font-semibold text-sm flex items-center gap-2">
+              <span>Your RxNXT intelligence engine is learning your habits.</span>
+              <span className="bg-white/25 text-white text-[11px] px-2 py-0.5 rounded-full font-mono font-bold">
+                {sub.prescriptionsRemaining ?? (150 - (sub.prescriptionsCount || 0))} free prescriptions remaining
+              </span>
+            </p>
+            <p className="text-xs text-amber-100">
+              Upgrade to keep your workspace active and continue clinical habit prediction uninterrupted.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link href="/admin/subscription">
+            <Button size="sm" className="bg-slate-900 text-white hover:bg-slate-800 font-semibold text-xs shadow-sm">
+              Upgrade Plan
+              <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+            </Button>
+          </Link>
+          <button
+            onClick={() => setIsDismissed(true)}
+            className="p-1.5 text-white/80 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
+            title="Dismiss notification"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Case 1: EXPIRED (Time-based fallback)
   if (sub.isExpired) {
     return (
       <div className="bg-rose-600 text-white px-4 py-3 rounded-xl mb-6 shadow-md flex flex-col sm:flex-row items-center justify-between gap-3 animate-pulse border border-rose-500">
@@ -63,7 +137,7 @@ export default function SubscriptionBanner() {
           </div>
           <div>
             <p className="font-semibold text-sm">
-              {sub.isTrial ? '14-Day Free Trial Expired' : 'Subscription Expired'}
+              {sub.isTrial ? 'Free Trial Expired' : 'Subscription Expired'}
             </p>
             <p className="text-xs text-rose-100">
               Clinical actions (prescriptions, patient queue) are currently paused. Renew your subscription to restore full access.
@@ -80,8 +154,8 @@ export default function SubscriptionBanner() {
     );
   }
 
-  // Case 2: EXPIRING SOON (<= 7 days remaining)
-  if (sub.isExpiringSoon) {
+  // Case 2: EXPIRING SOON (<= 7 days remaining for paid accounts)
+  if (!sub.isTrial && sub.isExpiringSoon) {
     return (
       <div className="bg-amber-500 text-white px-4 py-3 rounded-xl mb-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 border border-amber-400">
         <div className="flex items-center gap-3">
@@ -90,7 +164,7 @@ export default function SubscriptionBanner() {
           </div>
           <div>
             <p className="font-semibold text-sm flex items-center gap-2">
-              <span>{sub.isTrial ? 'Free Trial Expiring Soon' : 'Subscription Renewal Due'}</span>
+              <span>Subscription Renewal Due</span>
               <span className="bg-white/20 text-white text-[11px] px-2 py-0.5 rounded-full font-mono">
                 {sub.daysRemaining} {sub.daysRemaining === 1 ? 'day' : 'days'} remaining
               </span>
@@ -110,8 +184,8 @@ export default function SubscriptionBanner() {
     );
   }
 
-  // Case 3: ACTIVE TRIAL (> 7 days remaining)
-  if (sub.isTrial) {
+  // Case 3: ACTIVE TRIAL (State 1: 0–120 Prescriptions, Full & Frictionless Access)
+  if (sub.isTrial && !sub.isUsageWarning && !sub.isUsageLocked) {
     return (
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl mb-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -120,9 +194,9 @@ export default function SubscriptionBanner() {
           </div>
           <div>
             <p className="font-medium text-xs sm:text-sm flex items-center gap-2">
-              <span>14-Day Free Trial Active</span>
+              <span>RxNXT Free Trial Active</span>
               <span className="bg-white/20 text-blue-50 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-mono">
-                {sub.daysRemaining} days left
+                {sub.prescriptionsCount || 0} / {sub.trialPrescriptionCap || 150} Prescriptions used
               </span>
             </p>
           </div>
@@ -136,6 +210,5 @@ export default function SubscriptionBanner() {
     );
   }
 
-  // Active paid subscription with > 7 days remaining: no intrusive banner needed
   return null;
 }

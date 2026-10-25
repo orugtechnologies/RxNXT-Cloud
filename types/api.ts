@@ -34,6 +34,10 @@ export interface DashboardResponse {
   followUps: UpcomingFollowUp[];
   frequentMedicines: FrequentMedicine[];
   todayQueue?: any[];
+  roiTelemetry?: {
+    returnedPatientsCount: number;
+    estimatedOpdRetained?: number;
+  };
 }
 
 // ==========================================

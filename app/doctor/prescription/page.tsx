@@ -21,6 +21,7 @@ import QuickSymptomsDiagnosis from '@/components/prescriptions/QuickSymptomsDiag
 import FrequentDrugsBar from '@/components/drugs/FrequentDrugsBar';
 import QuickAdviceChips from '@/components/prescriptions/QuickAdviceChips';
 import LivePrescriptionSheet from '@/components/prescriptions/LivePrescriptionSheet';
+import SubscriptionLockoutModal from '@/components/subscription/SubscriptionLockoutModal';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
@@ -59,6 +60,10 @@ function PrescriptionWorkflowContent() {
   const [pdfBase64, setPdfBase64] = useState<string | null>(null);
   // Using a key to remount TreatmentGroupsUI and fetch fresh templates
   const [templateKey, setTemplateKey] = useState(0);
+
+  // Epic 1 State 3: Hard usage lockout modal
+  const [showLockoutModal, setShowLockoutModal] = useState(false);
+  const [lockoutInfo, setLockoutInfo] = useState<{ isUsageLocked?: boolean; prescriptionsCount?: number } | null>(null);
 
   // Speed tracking metrics
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -391,7 +396,16 @@ function PrescriptionWorkflowContent() {
         if (res.status === 401) {
           throw new Error('Your session has expired. Please refresh the page and log in again.');
         }
-        throw new Error(errData.error || `Server error (${res.status}): Failed to save prescription`);
+        if (res.status === 403 && (errData.error === 'TRIAL_USAGE_LIMIT_REACHED' || errData.error === 'SUBSCRIPTION_EXPIRED')) {
+          setLockoutInfo({
+            isUsageLocked: errData.error === 'TRIAL_USAGE_LIMIT_REACHED' || errData.subscription?.isUsageLocked,
+            prescriptionsCount: errData.subscription?.prescriptionsCount || 150,
+          });
+          setShowLockoutModal(true);
+          setShowReview(false);
+          return;
+        }
+        throw new Error(errData.message || errData.error || `Server error (${res.status}): Failed to save prescription`);
       }
       
       const data = await res.json();
@@ -809,6 +823,17 @@ function PrescriptionWorkflowContent() {
           onConfirm={savePrescription}
           onNewPrescription={startNewPrescription}
           onGoToDashboard={() => router.push('/doctor/dashboard')}
+        />
+      )}
+
+      {showLockoutModal && (
+        <SubscriptionLockoutModal
+          isOpen={showLockoutModal}
+          clinicName={doctorContext?.clinicName}
+          isTrial={true}
+          isUsageLocked={lockoutInfo?.isUsageLocked ?? true}
+          prescriptionsCount={lockoutInfo?.prescriptionsCount ?? 150}
+          onClose={() => setShowLockoutModal(false)}
         />
       )}
     </div>

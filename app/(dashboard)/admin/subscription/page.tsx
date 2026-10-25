@@ -22,11 +22,23 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
+import WhatsAppWalletCard from '@/components/subscription/WhatsAppWalletCard';
+import { calculateTierProration } from '@/lib/billing-proration';
 
 interface SubscriptionDetails {
   allowed: boolean;
   status: 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
   plan: string;
+  tier?: 'TRIAL' | 'SOLO_GP' | 'SPECIALIST' | 'POLYCLINIC_HUB';
+  prescriptionsCount?: number;
+  trialPrescriptionCap?: number;
+  prescriptionsRemaining?: number;
+  isUsageLocked?: boolean;
+  isUsageWarning?: boolean;
+  whatsappCreditBalance?: number;
+  baseSeats?: number;
+  additionalSeats?: number;
+  totalSeats?: number;
   daysRemaining: number;
   isExpired: boolean;
   isExpiringSoon: boolean;
@@ -212,6 +224,25 @@ export default function SubscriptionBillingPage() {
                   {sub.clinicName}
                 </h2>
 
+                {sub.isTrial && (
+                  <div className="pt-1 pb-2">
+                    <div className="flex items-center justify-between text-xs mb-1 font-semibold">
+                      <span className="text-slate-600">Free Trial Usage Progress:</span>
+                      <span className="text-blue-700 font-mono">
+                        {sub.prescriptionsCount || 0} / {sub.trialPrescriptionCap || 150} Prescriptions
+                      </span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full transition-all"
+                        style={{
+                          width: `${Math.min(100, Math.round(((sub.prescriptionsCount || 0) / (sub.trialPrescriptionCap || 150)) * 100))}%`
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <p className="text-sm text-slate-600 flex items-center gap-4 pt-1">
                   <span className="flex items-center gap-1.5">
                     <Clock className="h-4 w-4 text-slate-400" />
@@ -266,6 +297,9 @@ export default function SubscriptionBillingPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Epic 3: Prepaid WhatsApp Adherence Wallet Card */}
+      <WhatsAppWalletCard onRechargeSuccess={fetchSubscription} />
 
       {/* Billing Cycle Selector */}
       <div className="flex flex-col items-center justify-center space-y-4 pt-4">

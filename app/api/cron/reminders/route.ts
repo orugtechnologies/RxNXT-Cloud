@@ -68,6 +68,21 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
         return { id: reminder.id, status: 'FAILED', reason: 'Trial WhatsApp quota (500) reached' };
       }
     }
+
+    // Epic 3: Prepaid WhatsApp Wallet Guard for Adherence Reminders
+    const isAdherenceMessage = reminder.messageType !== 'FOLLOW_UP';
+    if (isAdherenceMessage && clinic.subscriptionStatus === 'ACTIVE') {
+      const creditBalance = (clinic as any).whatsappCreditBalance ?? 0;
+      if (creditBalance <= 0) {
+        // Failsafe: Gracefully skip without breaking the cron or prescription system
+        await prisma.reminder.update({
+          where: { id: reminder.id },
+          data: { status: 'SUPERSEDED' },
+        });
+        console.log(`[Wallet Failsafe] Clinic ${clinic.id} has 0 WhatsApp credits. Gracefully skipped adherence message for reminder ${reminder.id}.`);
+        return { id: reminder.id, status: 'FAILED', reason: 'Zero WhatsApp credit balance' };
+      }
+    }
   }
 
   let sendResult: any = null;
@@ -264,6 +279,49 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
   }
 
   if (sendResult?.success) {
+    const isAdherenceMessage = reminder.messageType !== 'FOLLOW_UP';
+
+    // Atomic update of reminder status + credit deduction ledger
+    if (isAdherenceMessage && clinic && clinic.subscriptionStatus === 'ACTIVE' && (prisma as any).whatsAppCreditTransaction) {
+      try {
+        const currentBalance = (clinic as any).whatsappCreditBalance ?? 0;
+        const newBalance = Math.max(0, currentBalance - 1);
+        const shouldAlertLowBalance = newBalance < 100 && !(clinic as any).whatsappLowBalanceAlertSent;
+
+        await prisma.$transaction([
+          prisma.reminder.update({
+            where: { id: reminder.id },
+            data: {
+              status: 'SENT',
+              sentAt: new Date(),
+              providerMessageId: sendResult.messageId || null,
+            },
+          }),
+          prisma.clinic.update({
+            where: { id: clinic.id },
+            data: {
+              whatsappCreditBalance: { decrement: 1 },
+              whatsappLowBalanceAlertSent: shouldAlertLowBalance ? true : (clinic as any).whatsappLowBalanceAlertSent,
+            },
+          }),
+          (prisma as any).whatsAppCreditTransaction.create({
+            data: {
+              clinicId: clinic.id,
+              type: reminder.messageType === 'REFILL' ? 'REFILL_ALERT' : 'ADHERENCE_DOSE',
+              amount: -1,
+              balanceAfter: newBalance,
+              referenceId: reminder.id,
+              description: `WhatsApp Adherence deduction for reminder #${reminder.id}`,
+            },
+          }),
+        ]);
+        return { id: reminder.id, status: 'SENT' };
+      } catch (txErr) {
+        console.warn('Transaction fallback for reminder update:', txErr);
+      }
+    }
+
+    // Standard fallback reminder update
     await prisma.reminder.update({
       where: { id: reminder.id },
       data: {
