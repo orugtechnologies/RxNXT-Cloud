@@ -546,6 +546,10 @@ export async function sendMedicineReminder(
     headerIcon = '🌙';
     slotTitle = 'Night Dose Reminder';
     foodNote = '😴 Take medicine as per the direction. Have a healthy day';
+  } else if (slotType === 'DAILY' || slotType === 'TODAY') {
+    headerIcon = '🌅';
+    slotTitle = "Today's Medication Schedule";
+    foodNote = '🥛 Take medicine as per the direction. Have a healthy day';
   }
 
   const messageBody =
@@ -555,7 +559,9 @@ export async function sendMedicineReminder(
     `${foodNote}\n\n` +
     `_To pause reminders, reply STOP_`;
 
-  const slotLabel = `${slotType.charAt(0) + slotType.slice(1).toLowerCase()} Dose`;
+  const slotLabel = slotType === 'DAILY' || slotType === 'TODAY'
+    ? "Today's Schedule"
+    : `${slotType.charAt(0) + slotType.slice(1).toLowerCase()} Dose`;
 
   return await dispatchWhatsAppMessage({
     phone: patientPhone,

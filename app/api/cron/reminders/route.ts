@@ -103,57 +103,150 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
       sendResult = null;
     }
   } else {
-    // MEDICINE reminder (MEDICINE_MORNING, MEDICINE_AFTERNOON, MEDICINE_NIGHT, or generic MEDICINE)
+    // MEDICINE reminder (Single Daily Morning Briefing covering Morning + Afternoon + Night doses, or legacy slots)
     const doctorName = prescription?.doctor?.fullName || 'your doctor';
     const clinicName = prescription?.clinic?.name || 'RxNXT Clinic';
 
-    let slotType = 'MORNING';
-    if (reminder.messageType === 'MEDICINE_AFTERNOON') {
-      slotType = 'AFTERNOON';
-    } else if (reminder.messageType === 'MEDICINE_NIGHT') {
-      slotType = 'NIGHT';
-    }
+    const isSlot = (freq: string | null | undefined, slot: 'MORNING' | 'AFTERNOON' | 'NIGHT') => {
+      const f = (freq || '').toLowerCase().trim();
+      if (!f || f === 'sos' || f.includes('as needed') || f.includes('prn')) {
+        return false;
+      }
 
-    const isMedForSlot = (freq: string, slot: string) => {
-      const f = (freq || '').toLowerCase();
       if (slot === 'MORNING') {
-        if (f.includes('0-1-0') || f.includes('0-0-1') || f.includes('bedtime') || f.includes('hs')) {
-          if (!f.includes('1-1-1') && !f.includes('1-0-1') && !f.includes('thrice') && !f.includes('3 times')) return false;
-        }
-        return true;
-      }
-      if (slot === 'AFTERNOON') {
-        return f.includes('1-1-1') || f.includes('0-1-0') || f.includes('thrice') || f.includes('3 times') || f.includes('afternoon');
-      }
-      if (slot === 'NIGHT') {
-        return f.includes('1-0-1') || f.includes('1-1-1') || f.includes('0-0-1') || f.includes('bedtime') || f.includes('hs') || f.includes('night') || f.includes('twice') || f.includes('thrice') || f.includes('2 times') || f.includes('3 times');
-      }
-      return true;
-    };
-
-    const filteredMeds = prescription?.medicines?.filter((m: any) => isMedForSlot(m.frequency || '', slotType)) || [];
-    const targetMeds = filteredMeds.length > 0 ? filteredMeds : prescription?.medicines || [];
-
-    const medicinesList = targetMeds
-      .map((m: any) => {
-        const name = m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine';
-        const strength = m.strength ? ` ${m.strength}` : '';
-        let rawInst = (m.instructions || '').trim();
-        let inst = rawInst;
-        if (rawInst) {
-          if (/after\s+(meals?|food)/i.test(rawInst)) {
-            inst = 'After Food';
-          } else if (/before\s+(meals?|food)/i.test(rawInst)) {
-            inst = 'Before Food';
-          } else if (/with\s+(meals?|food)/i.test(rawInst)) {
-            inst = 'With Food';
+        if (f.includes('0-1-0') || f.includes('0-0-1') || f.includes('bedtime') || f.includes('hs') || f.includes('night')) {
+          if (!f.includes('1-1-1') && !f.includes('1-0-1') && !f.includes('thrice') && !f.includes('3 times') && !f.includes('twice')) {
+            return false;
           }
         }
-        const instStr = inst ? ` - ${inst}` : '';
-        return `"${name}${strength}${instStr}"`;
-      })
-      .filter(Boolean)
-      .join('\n') || '"Prescribed medicines"';
+        return (
+          f.includes('1-') ||
+          f.includes('2-') ||
+          f.includes('morning') ||
+          f.includes('od') ||
+          f.includes('bd') ||
+          f.includes('tds') ||
+          f.includes('qid') ||
+          f.includes('once') ||
+          f.includes('twice') ||
+          f.includes('thrice') ||
+          f.includes('breakfast') ||
+          f.includes('daily')
+        );
+      }
+      if (slot === 'AFTERNOON') {
+        return (
+          f.includes('1-1-1') ||
+          f.includes('0-1-0') ||
+          f.includes('thrice') ||
+          f.includes('3 times') ||
+          f.includes('tds') ||
+          f.includes('qid') ||
+          f.includes('afternoon') ||
+          f.includes('lunch')
+        );
+      }
+      if (slot === 'NIGHT') {
+        return (
+          f.includes('1-0-1') ||
+          f.includes('1-1-1') ||
+          f.includes('0-0-1') ||
+          f.includes('bedtime') ||
+          f.includes('hs') ||
+          f.includes('night') ||
+          f.includes('dinner') ||
+          f.includes('bd') ||
+          f.includes('tds') ||
+          f.includes('qid') ||
+          f.includes('twice') ||
+          f.includes('thrice')
+        );
+      }
+      return false;
+    };
+
+    const formatMedItem = (m: any) => {
+      const name = m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine';
+      const strength = m.strength ? ` ${m.strength.trim()}` : '';
+      let rawInst = (m.instructions || '').trim();
+      let inst = rawInst;
+      if (rawInst) {
+        if (/after\s+(meals?|food)/i.test(rawInst)) {
+          inst = 'After Food';
+        } else if (/before\s+(meals?|food)/i.test(rawInst)) {
+          inst = 'Before Food';
+        } else if (/with\s+(meals?|food)/i.test(rawInst)) {
+          inst = 'With Food';
+        } else if (/at\s+bedtime|night/i.test(rawInst)) {
+          inst = 'At Bedtime';
+        }
+      }
+      const instStr = inst ? ` - ${inst}` : '';
+      return `"${name}${strength}${instStr}"`;
+    };
+
+    const allPrescribedMeds = prescription?.medicines || [];
+    const isLegacySingleSlot = reminder.messageType === 'MEDICINE_AFTERNOON' || reminder.messageType === 'MEDICINE_NIGHT';
+
+    let slotType = 'DAILY';
+    let medicinesList = '';
+
+    if (isLegacySingleSlot) {
+      slotType = reminder.messageType === 'MEDICINE_AFTERNOON' ? 'AFTERNOON' : 'NIGHT';
+      const filtered = allPrescribedMeds.filter((m: any) => isSlot(m.frequency, slotType as any));
+      const targetMeds = filtered.length > 0 ? filtered : allPrescribedMeds;
+      medicinesList = targetMeds.map((m: any) => formatMedItem(m)).join('\n') || '"Prescribed medicines"';
+    } else {
+      // 🌅 Single Daily Morning Briefing: Formats the COMPLETE DAY'S DOSES (Morning + Afternoon + Night)
+      slotType = 'DAILY';
+
+      const morningMeds: string[] = [];
+      const afternoonMeds: string[] = [];
+      const nightMeds: string[] = [];
+      const sosMeds: string[] = [];
+
+      allPrescribedMeds.forEach((m: any) => {
+        const itemStr = formatMedItem(m);
+        const freq = m.frequency || '';
+        let matched = false;
+
+        if (isSlot(freq, 'MORNING')) {
+          morningMeds.push(itemStr);
+          matched = true;
+        }
+        if (isSlot(freq, 'AFTERNOON')) {
+          afternoonMeds.push(itemStr);
+          matched = true;
+        }
+        if (isSlot(freq, 'NIGHT')) {
+          nightMeds.push(itemStr);
+          matched = true;
+        }
+        if (!matched) {
+          sosMeds.push(itemStr);
+        }
+      });
+
+      const slotLines: string[] = [];
+      if (morningMeds.length > 0) {
+        slotLines.push(`🌅 Morning:\n${morningMeds.join('\n')}`);
+      }
+      if (afternoonMeds.length > 0) {
+        slotLines.push(`☀️ Afternoon:\n${afternoonMeds.join('\n')}`);
+      }
+      if (nightMeds.length > 0) {
+        slotLines.push(`🌙 Night:\n${nightMeds.join('\n')}`);
+      }
+      if (sosMeds.length > 0) {
+        slotLines.push(`💊 When Needed (SOS):\n${sosMeds.join('\n')}`);
+      }
+
+      if (slotLines.length === 0 && allPrescribedMeds.length > 0) {
+        slotLines.push(allPrescribedMeds.map((m: any) => formatMedItem(m)).join('\n'));
+      }
+
+      medicinesList = slotLines.join('\n\n') || '"Prescribed medicines"';
+    }
 
     try {
       sendResult = await sendMedicineReminder(
