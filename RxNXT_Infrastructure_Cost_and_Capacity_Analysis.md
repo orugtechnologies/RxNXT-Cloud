@@ -29,7 +29,7 @@ RxNXT operates on a lean, high-margin serverless infrastructure. By eliminating 
 | **Supabase PostgreSQL** | ₹0 *(500 MB Free)* | ₹2,100 / mo *($25 USD Pro)* | ₹4,200 / mo *($50 USD Pro + Compute)* |
 | **Meta WhatsApp API** | ₹280 – ₹420 / mo | ₹1,700 – ₹2,600 / mo | ₹8,500 – ₹10,500 / mo |
 | **Prescription PDF Engine** | ₹0 *(Client-side jsPDF)* | ₹0 *(Client-side jsPDF)* | ₹0 *(Client-side jsPDF)* |
-| **Doctor License Verification** | ₹0 *(Direct NMC API)* | ₹0 *(Direct NMC API)* | ₹0 *(Direct NMC API)* |
+| **Doctor Onboarding & Workspace** | ₹0 *(Direct Self-Registration)* | ₹0 *(Direct Self-Registration)* | ₹0 *(Direct Self-Registration)* |
 | **Domain, SSL & DNS** | ~₹70 / mo *(₹800/yr)* | ~₹70 / mo | ~₹70 / mo |
 | **👉 Total Monthly Cost (INR)** | **₹350 – ₹500 / mo** | **₹5,550 – ₹6,450 / mo** | **₹16,130 – ₹18,130 / mo** |
 | **👉 Cost Per Clinic / Month** | **~₹80 – ₹100** | **~₹185 – ₹250** | **~₹160 – ₹180** |
@@ -78,9 +78,9 @@ graph LR
 * **Cost**: **₹0 (Zero)**.
 * **Why**: Renders entirely on the doctor's device (browser DOM). 5,000 doctors generating prescriptions concurrently consumes 0 server compute.
 
-### 5. Medical Council Verification (NMC Service)
+### 5. Doctor Onboarding & Workspace Setup
 * **Cost**: **₹0 (Zero)**.
-* **Why**: Direct REST integration with the National Medical Commission & State Medical Council databases.
+* **Why**: Direct, zero-friction doctor self-registration and clinic workspace provisioning with immediate access.
 
 ---
 

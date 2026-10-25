@@ -3,7 +3,7 @@
 > **Prepared for:** Product Management, Commercial Strategy & Pricing Teams  
 > **Platform:** RxNXT Cloud (Clinic Operating System & Patient Adherence Engine)  
 > **Market:** Indian Outpatient Clinics, Polyclinics, Multi-Specialty OPDs & Solo Practitioners  
-> **Date:** October 2026 | **Version:** 1.0 Production-Ready
+> **Date:** October 2026 | **Version:** 1.1 (Updated)
 
 ---
 
@@ -11,7 +11,7 @@
 
 **RxNXT** is a cloud-native, high-speed **Clinic Operating System (Clinic OS)**, digital prescription engine, and automated patient communication platform. It bridges the gap between **fast consultation workflows for doctors** and **patient medication adherence via WhatsApp**.
 
-Unlike legacy Electronic Health Record (EHR) systems that slow down doctors with tedious multi-screen forms, RxNXT allows a doctor to generate an NMC-compliant prescription in **under 30 seconds**. The patient instantly receives an official prescription PDF and schedule directly on their WhatsApp without installing any mobile app.
+Unlike legacy Electronic Health Record (EHR) systems that slow down doctors with tedious multi-screen forms, RxNXT allows a doctor to generate a complete electronic prescription in **under 30 seconds**. The patient instantly receives an official prescription PDF and schedule directly on their WhatsApp without installing any mobile app.
 
 ---
 
@@ -54,12 +54,12 @@ graph TD
   * **Typo-tolerant Fuzzy Search:** Powered by Fuse.js for rapid brand and generic matching.
 * **1-Click Clinical Protocol Bundles:** Pre-configured treatment templates (e.g., *Viral Fever Protocol, Type-2 Diabetes Care, Acute Gastritis, Hypertension Starter*) that populate complete medication regimes, dosages, and instructions in 1 click.
 * **Live Sticky A4 Preview Rail:** Real-time visual representation of the printed prescription alongside the prescription editor, ensuring what the doctor sees is exactly what the patient receives.
-* **Clinical Safety & Legal Compliance:**
-  * **Schedule X / Narcotic Blocking:** Automatically restricts narcotic and habit-forming drugs from telemedicine dispatches in strict compliance with the **NMC Telemedicine Guidelines 2023**.
+* **Clinical Safety & Telemedicine Compliance:**
+  * **Schedule X / Narcotic Blocking:** Automatically restricts narcotic and habit-forming drugs from telemedicine dispatches in strict compliance with the **Telemedicine Practice Guidelines**.
   * **Mandatory Dosage Fields:** Enforces frequency, duration, and instructions to eliminate dispensing ambiguity.
 * **Instant Client-Side PDF Generation (`jsPDF`):**
-  * Generates branded, print-ready, NMC-compliant PDFs in **<250ms** directly inside the doctor's browser.
-  * Incorporates doctor digital signature, medical council registration number (MCI/SMC), clinic letterhead, and a tamper-evident QR verification code.
+  * Generates branded, print-ready PDFs in **<250ms** directly inside the doctor's browser.
+  * Incorporates doctor digital signature, registration number, qualifications, clinic letterhead, and a tamper-evident QR verification code.
 
 ---
 
@@ -105,11 +105,12 @@ graph TD
 
 ---
 
-### Module 6: Clinic Administration & Medical Council Verification (`/admin/*`)
+### Module 6: Clinic Administration, Staff & Practice Management (`/admin/*`)
 *Target User: Clinic Owners, Lead Doctors, Practice Managers*
 
-* **Automated NMC Doctor Verification:** Direct REST connection to the National Medical Commission & 24+ Indian State Councils for doctor license validation.
-* **Multi-User Role-Based Access Control (RBAC):** Distinct roles for `doctor`, `clinic_admin`, `receptionist`, `nurse`, `pharmacist`, and `superadmin`.
+* **Direct Doctor Onboarding:** Zero-friction doctor sign-up and clinic workspace provisioning without external registry delays, allowing doctors to self-register and start prescribing immediately.
+* **Clinic Profile & Branding Customization:** Upload clinic logo, customize letterhead branding, upload doctor digital signatures, and enter doctor qualifications (`MBBS`, `MD`) and registration details for prescription letterheads.
+* **Multi-User Role-Based Access Control (RBAC):** Distinct roles for `doctor`, `clinic_admin`, `receptionist`, `nurse`, `pharmacist`, and `superadmin` with strict multi-tenant clinic data isolation.
 * **Practice Analytics:** Tracks patient volume, prescription turnaround time, common diagnoses, and most-prescribed medicines.
 
 ---
@@ -124,7 +125,7 @@ graph LR
         S1[Doctor Clinical Workspace]
         S2[Receptionist Queue & Vitals]
         S3[Instant WhatsApp Rx Delivery]
-        S4[NMC License Verification]
+        S4[Direct Doctor Onboarding]
         S5[Basic Billing & Invoice]
     end
 
@@ -150,7 +151,7 @@ graph LR
 | **Doctor Habit Scoring & Custom Protocols** | Included | Included | Included | — |
 | **Follow-Up Appointment Reminder (1 msg / patient)** | Included | Included | Included | — |
 | **Basic Consultation Billing (Receipts / Invoices)** | Included | Included | Included | — |
-| **NMC Doctor Verification** | Included | Included | Included | — |
+| **Direct Doctor Onboarding & Workspace Setup** | Included | Included | Included | — |
 | **Automated Daily Morning WhatsApp Briefings** | *Optional Add-On* | *Optional Add-On* | Included (Bundled pack) | **₹0.25 / reminder or ₹299 / mo** |
 | **Chronic Care Refill Reminders (Day 25 Alert)** | *Optional Add-On* | Included | Included | **₹199 / mo** |
 | **In-House Pharmacy & Batch Stock Inventory** | — | Included | Included | **₹499 / mo** |
@@ -183,7 +184,7 @@ graph LR
 │  1. SOLO PRACTITIONER (STARTER)           ₹7,999 – ₹9,999 / year       │
 │     • 1 Doctor Seat + 1 Receptionist Desk                              │
 │     • Unlimited Prescriptions & Instant WhatsApp PDF Deliveries        │
-│     • Vitals Queue, Clinical Protocols & NMC Compliance                │
+│     • Vitals Queue, Clinical Protocols & Practice Setup                │
 │                                                                        │
 │  2. POLYCLINIC / CLINIC PRO               ₹18,999 – ₹24,999 / year     │
 │     • Up to 4 Doctor Seats + 2 Reception Desks                         │
@@ -206,6 +207,6 @@ graph LR
 When creating brochures, pitch decks, and website pricing pages:
 
 * [x] **Core Hero Message:** *"Write prescriptions in 30 seconds. Deliver to patient WhatsApp instantly. Zero apps needed."*
-* [x] **Regulatory Peace of Mind:** Fully compliant with NMC 2023 Guidelines and Telemedicine Act Schedule X drug restrictions.
+* [x] **Zero-Friction Doctor Onboarding:** Instant sign-up and clinic workspace creation without administrative delays.
 * [x] **Standard vs Add-On Clarity:** Doctor Prescriptions & Instant WhatsApp PDFs are always free/unlimited; Daily adherence dose alerts are flexible add-ons.
 * [x] **Cost Advantage:** Bypasses Twilio and aggregator markups, passing pure cost savings to clinic owners.

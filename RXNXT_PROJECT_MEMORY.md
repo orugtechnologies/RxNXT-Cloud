@@ -41,7 +41,7 @@ Fully migrated to a modern, scalable cloud architecture on Supabase Mumbai Cloud
 ## 🔑 Authentication & Doctor Registration
 - **Frontend:** `app/(auth)/login/page.tsx` & `app/(auth)/register/page.tsx`
 - **Backend Setup:** `app/api/auth/[...nextauth]/route.ts`, `app/api/auth/register/route.ts` & `lib/auth.ts`
-- **Medical License Verification:** Direct connection to the official National Medical Commission (NMC) REST API (`services/doctorVerificationService.ts`). Automatically queries NMC & all 24+ Indian State Medical Councils in ~0.4s. Enforces mandatory verification before workspace creation and double-validates server-side.
+- **Doctor Onboarding & Registration:** Direct, zero-friction doctor self-registration and clinic workspace provisioning without external registry gating. Doctors register and start writing prescriptions immediately while storing doctor registration numbers for prescription letterhead printing.
 - **Security:** Passwords hashed via `bcryptjs`. JWT strategy — session stores `clinicId`, `role`, `id` for strict multi-tenant isolation. All API routes use `await getAuthenticatedUser()`.
 
 
