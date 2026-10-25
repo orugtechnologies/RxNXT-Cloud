@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RxNXT Cloud — Product Capabilities & Pricing Blueprint</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0A2540;
+      --primary-light: #1E3A8A;
+      --accent: #2563EB;
+      --accent-soft: #EFF6FF;
+      --emerald: #059669;
+      --emerald-soft: #ECFDF5;
+      --purple: #7C3AED;
+      --purple-soft: #F5F3FF;
+      --amber: #D97706;
+      --amber-soft: #FFFBEB;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --card-bg: #FFFFFF;
+      --surface: #F8FAFC;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background-color: #F1F5F9;
+      line-height: 1.55;
+      font-size: 13.5px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Print Controls */
+    @page {
+      size: A4 portrait;
+      margin: 14mm 14mm 14mm 14mm;
+    }
+
+    @media print {
+      body {
+        background: #FFFFFF !important;
+        font-size: 12.5px;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .document-wrapper {
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .page-break {
+        page-break-before: always;
+        break-before: page;
+      }
+      .avoid-break {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+    }
+
+    .top-action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(10, 37, 64, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .top-action-bar .brand {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge-status {
+      background: #10B981;
+      color: white;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .btn-print {
+      background: #2563EB;
+      color: white;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .btn-print:hover {
+      background: #1D4ED8;
+    }
+
+    .document-wrapper {
+      max-width: 900px;
+      margin: 25px auto 40px auto;
+      background: #FFFFFF;
+      padding: 42px 48px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+      border-radius: 12px;
+    }
+
+    /* Header Banner */
+    .doc-header {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 26px;
+    }
+    .doc-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-box {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #0A2540 0%, #2563EB 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 20px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .logo-text h2 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .logo-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .doc-meta-table {
+      font-size: 0.75rem;
+      text-align: right;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .doc-meta-table strong {
+      color: var(--text);
+    }
+    .doc-title-block {
+      background: linear-gradient(135deg, #0A2540 0%, #1E3A8A 65%, #2563EB 100%);
+      color: white;
+      padding: 24px 28px;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .doc-title-block::after {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(0,0,0,0) 70%);
+      border-radius: 50%;
+    }
+    .doc-title-block .tagline {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.15);
+      color: #93C5FD;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+    .doc-title-block h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .doc-title-block p {
+      color: #CBD5E1;
+      font-size: 0.85rem;
+      max-width: 680px;
+    }
+
+    /* Section Styling */
+    .section {
+      margin-bottom: 30px;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 14px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title span.number {
+      background: var(--accent-soft);
+      color: var(--accent);
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    /* Executive Callout */
+    .callout-box {
+      background: var(--surface);
+      border-left: 4px solid var(--accent);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 18px;
+      font-size: 0.85rem;
+    }
+    .callout-box strong {
+      color: var(--primary);
+    }
+
+    /* Workflow Diagram Box */
+    .workflow-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+    .workflow-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      position: relative;
+    }
+    .workflow-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.78rem;
+    }
+    .workflow-card .step-num {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .workflow-card h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .workflow-card p {
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Module Grid */
+    .module-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      background: white;
+      transition: all 0.15s;
+    }
+    .module-card:hover {
+      border-color: #CBD5E1;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.03);
+    }
+    .module-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .module-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .module-audience {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--surface);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid #E2E8F0;
+    }
+    .module-features-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .module-features-list li {
+      font-size: 0.8rem;
+      color: var(--text);
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+    }
+    .module-features-list li::before {
+      content: '✓';
+      color: var(--emerald);
+      font-weight: 800;
+      font-size: 0.85rem;
+      line-height: 1.3;
+    }
+
+    /* Comparison & Matrix Table */
+    .table-container {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      text-align: left;
+    }
+    th {
+      background: #F8FAFC;
+      color: var(--primary);
+      font-weight: 700;
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--border);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:nth-child(even) td {
+      background: #FCFDFE;
+    }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .pill-included {
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      border: 1px solid #A7F3D0;
+    }
+    .pill-addon {
+      background: var(--purple-soft);
+      color: var(--purple);
+      border: 1px solid #DDD6FE;
+    }
+    .pill-custom {
+      background: var(--amber-soft);
+      color: var(--amber);
+      border: 1px solid #FDE68A;
+    }
+
+    /* Pricing Cards */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .pricing-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      background: white;
+      display: flex;
+      flex-col: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .pricing-card.featured {
+      border: 2px solid var(--accent);
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.1);
+      background: #FAFCFF;
+    }
+    .pricing-card.featured::before {
+      content: 'MOST POPULAR';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: white;
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 2px 10px;
+      border-radius: 10px;
+      letter-spacing: 0.06em;
+    }
+    .pricing-header h4 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .pricing-header .subtext {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .pricing-price {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--primary);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin-bottom: 12px;
+      line-height: 1;
+    }
+    .pricing-price span {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .pricing-features {
+      list-style: none;
+      font-size: 0.75rem;
+      margin-bottom: 14px;
+    }
+    .pricing-features li {
+      padding: 4px 0;
+      color: var(--text);
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .pricing-features li::before {
+      content: '✓';
+      color: var(--emerald);
+      font-weight: 700;
+    }
+
+    /* Unit Economics Box */
+    .economics-box {
+      background: linear-gradient(135deg, #0A2540 0%, #1E293B 100%);
+      color: white;
+      padding: 20px 24px;
+      border-radius: 10px;
+      margin-top: 18px;
+    }
+    .economics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 12px;
+      text-align: center;
+    }
+    .economics-item {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .economics-item .val {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #34D399;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .economics-item .lbl {
+      font-size: 0.7rem;
+      color: #94A3B8;
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Footer */
+    .doc-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      margin-top: 36px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Action Bar (Hidden in Print) -->
+  <div class="top-action-bar no-print">
+    <div class="brand">
+      <span>RxNXT Cloud</span>
+      <span class="badge-status">Product Strategy 2026</span>
+    </div>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <span style="font-size: 0.8rem; color: #94A3B8;">Format: Full-Length Executive PDF</span>
+      <button class="btn-print" onclick="window.print()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+        Save / Print PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="document-wrapper">
+
+    <!-- Document Header -->
+    <header class="doc-header">
+      <div class="doc-header-top">
+        <div class="logo-container">
+          <div class="logo-box">Rx</div>
+          <div class="logo-text">
+            <h2>RxNXT Cloud</h2>
+            <p>Clinical Operating System & Adherence Platform</p>
+          </div>
+        </div>
+        <div class="doc-meta-table">
+          <div><strong>Doc ID:</strong> RXNXT-PROD-2026-V1</div>
+          <div><strong>Target:</strong> Product Management & Pricing Committee</div>
+          <div><strong>Market:</strong> India Healthcare (OPD & Clinics)</div>
+          <div><strong>Date:</strong> October 2026 | Confidential</div>
+        </div>
+      </div>
+
+      <div class="doc-title-block">
+        <div class="tagline">Official Product & Commercial Blueprint</div>
+        <h1>Platform Capabilities, System Architecture & Commercial Pricing Strategy</h1>
+        <p>A comprehensive functional audit of RxNXT Cloud modules, technical differentiators, and a recommended Standard vs. Add-On packaging model for commercial go-to-market.</p>
+      </div>
+    </header>
+
+    <!-- Section 1: Executive Summary -->
+    <section class="section avoid-break">
+      <div class="section-title">
+        <span class="number">1</span>
+        <span>Executive Summary & Platform Identity</span>
+      </div>
+
+      <div class="callout-box">
+        <strong>What is RxNXT?</strong> RxNXT is a high-velocity <strong>Clinic Operating System (Clinic OS)</strong> that enables Indian doctors to write complete, legally compliant electronic prescriptions in <strong>under 30 seconds</strong>, while delivering instant digital prescriptions and structured daily medication schedules directly to patient WhatsApp without requiring patients to download any app.
+      </div>
+
+      <p style="margin-bottom: 14px; font-size: 0.85rem; color: #334155;">
+        Legacy electronic health record (EHR) platforms fail in Indian outpatient departments (OPDs) because they impose high typing friction on doctors seeing 30 to 80 patients per day. RxNXT solves this through <strong>Additive Search Scoring</strong> (learning doctor prescribing habits), <strong>1-Click Curated Protocol Bundles</strong>, and <strong>Direct Meta WhatsApp Cloud API integration</strong> (delivering zero-cold-start messaging with attached official PDF prescriptions).
+      </p>
+
+      <div class="workflow-container">
+        <div style="font-size: 0.72rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.04em;">End-to-End Clinic Patient Journey</div>
+        <div class="workflow-steps">
+          <div class="workflow-card">
+            <div class="step-num">Step 01</div>
+            <h4>Reception Triage</h4>
+            <p>Fast mobile-based registration, vitals logging (BP, Pulse, SpO2) and token queue generation.</p>
+          </div>
+          <div class="workflow-card">
+            <div class="step-num">Step 02</div>
+            <h4>Doctor Consultation</h4>
+            <p>Prescribes via habit-scored search or 1-click clinical protocol packs with live A4 preview.</p>
+          </div>
+          <div class="workflow-card">
+            <div class="step-num">Step 03</div>
+            <h4>Instant Delivery</h4>
+            <p>Patient instantly receives Super-Prescription on WhatsApp with official NMC-compliant PDF.</p>
+          </div>
+          <div class="workflow-card">
+            <div class="step-num">Step 04</div>
+            <h4>Care & Adherence</h4>
+            <p>Single morning daily briefing covering all doses, follow-up alerts, and Day-25 chronic refills.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Page Break for Clean Printing -->
+    <div class="page-break"></div>
+
+    <!-- Section 2: Complete Module-by-Module Functional Breakdown -->
+    <section class="section">
+      <div class="section-title">
+        <span class="number">2</span>
+        <span>Complete Functional Module Breakdown (What RxNXT Actually Does)</span>
+      </div>
+
+      <!-- Module 1 -->
+      <div class="module-card avoid-break">
+        <div class="module-header">
+          <div class="module-title">
+            <span style="color: var(--accent);">🩺</span>
+            <span>Module 1: High-Speed Clinical Prescription Workspace (<code>/doctor/prescription</code>)</span>
+          </div>
+          <span class="module-audience">Users: Doctors, Specialists, Medical Officers</span>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">The core consultation interface optimized for minimum keystrokes and rapid patient turnover.</p>
+        <ul class="module-features-list">
+          <li><strong>Additive Clinical Scoring Engine:</strong> Exact alias short-circuits (e.g. typing "PCM" brings Paracetamol to rank #1 instantly) + Doctor frequency weight (+50 pts) + Clinic preference weight (+20 pts).</li>
+          <li><strong>Curated Clinical Protocol Bundles:</strong> 1-click execution of standard treatment regimens (Viral Fever, Hypertension, Type-2 Diabetes, Acute Gastritis) that prefill drugs, strengths, routes, frequencies, and durations.</li>
+          <li><strong>Live Sticky A4 Preview Rail:</strong> Real-time reactive rendering of the final print-ready prescription alongside the input form. Eliminates guesswork and preview modal delays.</li>
+          <li><strong>Regulatory Safety Enforcements:</strong> Automatic Schedule X / Narcotic drug blocking (in strict adherence with Indian Telemedicine Practice Guidelines 2023) and mandatory dosage frequency/duration verification.</li>
+          <li><strong>Instant Browser-Side PDF Engine (<code>jsPDF</code>):</strong> Compiles official prescription documents in &lt;250ms with doctor registration numbers, council credentials, clinic letterhead, and tamper-evident QR codes. Consumes zero server compute.</li>
+        </ul>
+      </div>
+
+      <!-- Module 2 -->
+      <div class="module-card avoid-break">
+        <div class="module-header">
+          <div class="module-title">
+            <span style="color: var(--emerald);">📋</span>
+            <span>Module 2: Patient Registration, Queue & Triage Desk (<code>/receptionist/dashboard</code>)</span>
+          </div>
+          <span class="module-audience">Users: Receptionists, Triage Staff, Front Office</span>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">Manages front-desk patient intake, queue ordering, and preliminary clinical vital capture.</p>
+        <ul class="module-features-list">
+          <li><strong>Fast Registration & Duplicate Prevention:</strong> Intelligent mobile number normalization (+91 sanitization) with real-time detection of existing patient records to eliminate fragmented clinical histories.</li>
+          <li><strong>Live Token Queue Management:</strong> Automated token sequencing (e.g. <code>#RX-001</code>, <code>#RX-002</code>) with live status transitions (<code>WAITING</code>, <code>IN_PROCEDURE</code>, <code>RETURNED_READY</code>, <code>COMPLETED</code>).</li>
+          <li><strong>Comprehensive Vitals Triage Logging:</strong> Captures Blood Pressure (systolic/diastolic), Pulse rate, Body Temperature, Weight, Height, and SpO2. Vitals automatically populate on the doctor's consultation desk.</li>
+        </ul>
+      </div>
+
+      <!-- Module 3 -->
+      <div class="module-card avoid-break">
+        <div class="module-header">
+          <div class="module-title">
+            <span style="color: #25D366;">💬</span>
+            <span>Module 3: Meta WhatsApp Cloud API Patient Communication</span>
+          </div>
+          <span class="module-audience">Users: Outpatients & Family Caregivers (Zero Mobile App Needed)</span>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">Direct server-to-server messaging via official Meta Graph API v20.0 with approved Utility templates.</p>
+        <ul class="module-features-list">
+          <li><strong>Instant Super-Prescription Dispatch:</strong> Delivered immediately upon consultation completion with a structured dosage breakdown (Morning, Afternoon, Night) and a direct link to the official downloadable PDF.</li>
+          <li><strong>Consolidated Daily Morning Briefing (8:00 AM IST):</strong> Groups all prescribed medications across Morning, Afternoon, and Night into a single morning alert. Eliminates spam while ensuring patients never miss afternoon or bedtime medications.</li>
+          <li><strong>Automated Follow-Up Appointment Alerts:</strong> Sends a personalized reminder on the doctor's advised follow-up date to maximize OPD return consultation rates.</li>
+          <li><strong>Chronic Care Day-25 Refill Alerts:</strong> Automatically reminds long-term care patients (courses &gt;14 days) to schedule consultation refills 5 days before their current medication pack exhausts.</li>
+          <li><strong>DPDP Act & Consent Architecture:</strong> Automatic unsubscribe handling; if a patient replies "STOP", the system immediately pauses outgoing reminders in compliance with Indian privacy laws.</li>
+        </ul>
+      </div>
+
+      <!-- Module 4 -->
+      <div class="module-card avoid-break">
+        <div class="module-header">
+          <div class="module-title">
+            <span style="color: var(--purple);">💊</span>
+            <span>Module 4: In-House Clinic Pharmacy & Inventory (<code>/pharmacist/*</code>)</span>
+          </div>
+          <span class="module-audience">Users: In-House Dispensary, Clinic Pharmacists</span>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">Connects doctor prescribing directly to dispensary stock reduction and revenue reconciliation.</p>
+        <ul class="module-features-list">
+          <li><strong>Batch & Expiry Management:</strong> Tracks batch numbers, expiry dates, rack locations, unit cost prices, and MRP selling prices per drug.</li>
+          <li><strong>1-Click Prescription Dispensing:</strong> Pharmacist dashboard displays pending prescriptions in real-time. Dispensing automatically decrements inventory count and creates an auditable <code>DispenseLog</code>.</li>
+          <li><strong>Low-Stock & Expiry Early Warnings:</strong> Highlights critical inventory shortages and items nearing 60-day expiry to prevent clinical stock-outs.</li>
+        </ul>
+      </div>
+
+      <!-- Module 5 & 6 -->
+      <div class="module-card avoid-break">
+        <div class="module-header">
+          <div class="module-title">
+            <span style="color: var(--amber);">🧾</span>
+            <span>Modules 5 & 6: Invoicing Desk & Medical Council Verification (<code>/admin/*</code>)</span>
+          </div>
+          <span class="module-audience">Users: Clinic Owners, Practice Managers, Administrators</span>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">Financial reconciliation, multi-user role management, and doctor license verification.</p>
+        <ul class="module-features-list">
+          <li><strong>Multi-Line Consultation Billing:</strong> Consolidates doctor consultation fees, pharmacy line items, diagnostics, and discounts with payment tracking (<code>CASH</code>, <code>UPI</code>, <code>CARD</code>).</li>
+          <li><strong>NMC & State Medical Council Verification:</strong> Direct integration with the National Medical Commission REST database for instant license validation of onboarding doctors.</li>
+          <li><strong>Role-Based Access Control (RBAC):</strong> Strict clinic-level data tenancy isolating records between <code>doctor</code>, <code>clinic_admin</code>, <code>receptionist</code>, <code>nurse</code>, and <code>pharmacist</code>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Page Break for Clean Printing -->
+    <div class="page-break"></div>
+
+    <!-- Section 3: Product Packaging (Standard vs Add-On) -->
+    <section class="section">
+      <div class="section-title">
+        <span class="number">3</span>
+        <span>Product Team Packaging Strategy: Standard vs. Add-On Matrix</span>
+      </div>
+
+      <p style="font-size: 0.85rem; color: #334155; margin-bottom: 12px;">
+        To maximize market penetration while protecting software gross margins (&gt;80%), features must be structured into a <strong>Core High-Value Base</strong> and <strong>Usage-Based / Expansion Add-Ons</strong>.
+      </p>
+
+      <div class="table-container avoid-break">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 32%;">Feature / Capability</th>
+              <th style="width: 22%;">Packaging Status</th>
+              <th style="width: 26%;">Commercial Logic</th>
+              <th style="width: 20%;">Suggested Pricing</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Doctor Prescription Workspace</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">Additive search, live preview, PDF gen</span></td>
+              <td><span class="pill pill-included">Core Standard</span></td>
+              <td>Zero server compute (runs in browser). Drives primary doctor stickiness.</td>
+              <td>Included in Base</td>
+            </tr>
+            <tr>
+              <td><strong>Receptionist Token Queue & Vitals</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">Intake desk, live token statuses</span></td>
+              <td><span class="pill pill-included">Core Standard</span></td>
+              <td>Essential for single-doctor and polyclinic workflow integrity.</td>
+              <td>Included in Base</td>
+            </tr>
+            <tr>
+              <td><strong>Instant WhatsApp Super-Prescription</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">1 template message + PDF download link</span></td>
+              <td><span class="pill pill-included">Core Standard</span></td>
+              <td>Cost is negligible (1 msg $\approx$ ₹0.13 per consultation). High perceived value.</td>
+              <td>Included in Base</td>
+            </tr>
+            <tr>
+              <td><strong>Automated Follow-Up Reminder</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">1 WhatsApp message on advised revisit date</span></td>
+              <td><span class="pill pill-included">Core Standard</span></td>
+              <td>Directly increases clinic revisit footfall and doctor retention.</td>
+              <td>Included in Base</td>
+            </tr>
+            <tr>
+              <td><strong>NMC Doctor License Verification</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">Automated council registration check</span></td>
+              <td><span class="pill pill-included">Core Standard</span></td>
+              <td>Builds platform legal trust and prevents unauthorized usage.</td>
+              <td>Included in Base</td>
+            </tr>
+            <tr>
+              <td><strong>Automated Daily Morning Reminders</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">Daily 8 AM WhatsApp schedule for course duration</span></td>
+              <td><span class="pill pill-addon">Monetizable Add-On</span></td>
+              <td>Direct variable cost (14 msgs $\approx$ ₹1.82/patient). Must be doctor-opted.</td>
+              <td><strong>₹0.25 / reminder</strong> or <strong>₹299 / month</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Chronic Care Day-25 Refill Alerts</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">Monthly WhatsApp alert for chronic patients</span></td>
+              <td><span class="pill pill-addon">Monetizable Add-On</span></td>
+              <td>High value for Diabetologists, Cardiologists, and Psychiatrists.</td>
+              <td><strong>₹199 / month</strong></td>
+            </tr>
+            <tr>
+              <td><strong>In-House Pharmacy & Batch Stock</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">Inventory tracking, batch expiry, dispense logs</span></td>
+              <td><span class="pill pill-addon">Expansion Add-On</span></td>
+              <td>Relevant only to clinics with dispensaries. High willingness to pay.</td>
+              <td><strong>₹499 / month</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Additional Doctor Seats</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">Secondary doctor logins under same clinic</span></td>
+              <td><span class="pill pill-addon">Seat Expansion</span></td>
+              <td>Scales with clinic size without increasing base infrastructure load.</td>
+              <td><strong>₹2,499 / doctor / yr</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Strategic Callout -->
+      <div class="callout-box avoid-break" style="border-left-color: var(--purple);">
+        <strong>Why Daily Morning Reminders MUST Be a Separate Add-On / Opt-In:</strong>
+        <p style="margin-top: 4px; font-size: 0.8rem; color: #475569;">
+          Each WhatsApp utility message carries a direct cost of $\approx ₹0.13$. If an acute or chronic patient receives daily alerts for a 14-day course, that is 14 messages ($\approx ₹1.82$ per patient). A clinic seeing 1,000 patients a month could accumulate over ₹1,800 in direct messaging fees. Keeping this toggle <strong>OFF by default</strong> in the consultation modal protects software gross margins, while allowing clinics to purchase <strong>Patient Adherence Packs</strong> as a premium service.
+        </p>
+      </div>
+    </section>
+
+    <!-- Page Break for Clean Printing -->
+    <div class="page-break"></div>
+
+    <!-- Section 4: Recommended Commercial Pricing Structure -->
+    <section class="section avoid-break">
+      <div class="section-title">
+        <span class="number">4</span>
+        <span>Recommended Commercial Pricing Tiers (Annual Billing)</span>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Tier 1 -->
+        <div class="pricing-card">
+          <div>
+            <div class="pricing-header">
+              <h4>Solo Practitioner</h4>
+              <div class="subtext">For independent clinics & solo doctors</div>
+            </div>
+            <div class="pricing-price">₹8,999 <span>/ year</span></div>
+            <ul class="pricing-features">
+              <li>1 Doctor Seat + 1 Reception Desk</li>
+              <li>Unlimited Prescriptions & PDFs</li>
+              <li>Instant WhatsApp Delivery</li>
+              <li>1-Click Clinical Protocols</li>
+              <li>Patient Vitals & Queue Management</li>
+              <li>NMC License Verification</li>
+              <li>Follow-up Visit Alerts</li>
+            </ul>
+          </div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 8px;">
+            Effective: <strong>₹750 / month</strong>
+          </div>
+        </div>
+
+        <!-- Tier 2 -->
+        <div class="pricing-card featured">
+          <div>
+            <div class="pricing-header">
+              <h4>Clinic / Polyclinic Pro</h4>
+              <div class="subtext">For multi-doctor clinics & centers</div>
+            </div>
+            <div class="pricing-price">₹19,999 <span>/ year</span></div>
+            <ul class="pricing-features">
+              <li>Up to 4 Doctor Seats + 2 Reception Desks</li>
+              <li>Everything in Solo Plan</li>
+              <li>In-House Pharmacy & Batch Stock</li>
+              <li>Prescription Dispense Billing</li>
+              <li>Full Consultation Invoicing</li>
+              <li>Practice Volume Analytics</li>
+              <li>Includes 1,000 Reminder Credits</li>
+            </ul>
+          </div>
+          <div style="font-size: 0.7rem; color: var(--accent); font-weight: 700; border-top: 1px solid var(--border); padding-top: 8px;">
+            Effective: <strong>₹1,666 / month</strong>
+          </div>
+        </div>
+
+        <!-- Tier 3 -->
+        <div class="pricing-card">
+          <div>
+            <div class="pricing-header">
+              <h4>Hospital OPD Enterprise</h4>
+              <div class="subtext">For nursing homes & hospital chains</div>
+            </div>
+            <div class="pricing-price">₹49,999 <span>/ year+</span></div>
+            <ul class="pricing-features">
+              <li>Unlimited Doctor Seats & Desks</li>
+              <li>Multi-Counter Queue Management</li>
+              <li>Custom WhatsApp Phone Number ID</li>
+              <li>Dedicated Green Tick Assistance</li>
+              <li>Bulk Pharmacy Store Reconciliation</li>
+              <li>API & Export Connectors</li>
+              <li>Priority 24/7 Account Manager</li>
+            </ul>
+          </div>
+          <div style="font-size: 0.7rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 8px;">
+            Custom enterprise onboarding
+          </div>
+        </div>
+      </div>
+
+      <!-- Unit Economics Box -->
+      <div class="economics-box avoid-break">
+        <div style="font-size: 0.78rem; font-weight: 700; color: #A7F3D0; text-transform: uppercase; letter-spacing: 0.05em;">Unit Economics & Infrastructure Margin Analysis</div>
+        <p style="font-size: 0.8rem; color: #CBD5E1; margin-top: 4px;">
+          Because RxNXT leverages client-side PDF rendering, serverless edge compute, and direct Meta Cloud APIs (bypassing Twilio markups), infrastructure hosting costs per clinic are exceptionally low.
+        </p>
+        <div class="economics-grid">
+          <div class="economics-item">
+            <div class="val">₹833</div>
+            <div class="lbl">Monthly Revenue / Clinic</div>
+          </div>
+          <div class="economics-item">
+            <div class="val">~₹70</div>
+            <div class="lbl">Hosting + Meta Cost / Mo</div>
+          </div>
+          <div class="economics-item">
+            <div class="val">91.6%</div>
+            <div class="lbl">Software Gross Margin</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Commercial Checklist -->
+    <section class="section avoid-break" style="margin-top: 24px;">
+      <div class="section-title">
+        <span class="number">5</span>
+        <span>Marketing & Sales Positioning Guidelines</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; font-size: 0.8rem;">
+        <div style="background: var(--surface); padding: 14px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--primary); display: block; margin-bottom: 6px;">🎯 Primary Sales Value Pitch</strong>
+          <p style="color: #475569; line-height: 1.45;">
+            "RxNXT is the only clinic platform designed around the 30-second doctor consultation. Write prescriptions faster than paper, comply 100% with NMC guidelines, and keep your patients coming back with automated WhatsApp reminders without asking them to install any app."
+          </p>
+        </div>
+        <div style="background: var(--surface); padding: 14px; border-radius: 8px; border: 1px solid var(--border);">
+          <strong style="color: var(--primary); display: block; margin-bottom: 6px;">🛡️ Regulatory & Competitive Differentiator</strong>
+          <p style="color: #475569; line-height: 1.45;">
+            Built-in validation checks against Indian Schedule X and Narcotic substances protect clinics from telemedicine non-compliance, while direct NMC licensing checks guarantee verified medical practice.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Document Footer -->
+    <footer class="doc-footer">
+      <div>RxNXT Cloud Platform Architecture & Pricing Blueprint | Document Version 1.0</div>
+      <div>© 2026 Orug Technologies. All rights reserved. Confidential.</div>
+    </footer>
+
+  </div>
+
+</body>
+</html>
