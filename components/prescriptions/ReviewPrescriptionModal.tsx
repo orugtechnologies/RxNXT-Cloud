@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CheckCircle, User, Stethoscope, Pill, FileText, Activity, Send, Loader2, Sparkles, Download, AlertCircle, Lock } from 'lucide-react';
 import { PrescribedMedicine } from './PrescriptionCart';
 import { Patient } from '../patients/PatientSearchUI';
@@ -46,8 +46,15 @@ export default function ReviewPrescriptionModal({
   const [sendError, setSendError] = useState<string | null>(null);
   const [targetPhone, setTargetPhone] = useState(patient.phone || '');
   const [isEditingPhone, setIsEditingPhone] = useState(false);
-  const [enableDailyReminders, setEnableDailyReminders] = useState(false);
   const { isAllowed: isMorningAllowed, showUpsell, setShowUpsell } = useFeatureFlag('MORNING_ADHERENCE');
+  const [enableDailyReminders, setEnableDailyReminders] = useState(true);
+
+  // If the tier explicitly locks morning adherence, keep it toggled off
+  useEffect(() => {
+    if (!isMorningAllowed) {
+      setEnableDailyReminders(false);
+    }
+  }, [isMorningAllowed]);
 
   const handleToggleDailyReminders = (checked: boolean) => {
     if (checked) {
