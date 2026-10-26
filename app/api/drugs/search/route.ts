@@ -4,6 +4,53 @@ import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import Fuse from 'fuse.js';
 
+interface CachedDrugCatalog {
+  drugs: any[];
+  fuse: Fuse<any>;
+  cachedAt: number;
+}
+
+// In-memory catalog cache with 5-minute TTL to prevent rebuilding Fuse on every keystroke
+let globalCatalogCache: CachedDrugCatalog | null = null;
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
+async function getGlobalDrugCatalog(): Promise<CachedDrugCatalog> {
+  const now = Date.now();
+  if (globalCatalogCache && (now - globalCatalogCache.cachedAt < CACHE_TTL_MS)) {
+    return globalCatalogCache;
+  }
+
+  const drugs = await prisma.drug.findMany({
+    where: { isActive: true, clinicId: null },
+    select: {
+      id: true,
+      genericName: true,
+      brandName: true,
+      aliases: true,
+      dosageForm: true,
+      strength: true,
+      route: true,
+      clinicId: true,
+      isRestricted: true,
+    },
+  });
+
+  const fuse = new Fuse(drugs, {
+    keys: ['genericName', 'brandName', 'aliases'],
+    includeScore: true,
+    threshold: 0.4,
+    ignoreLocation: true,
+  });
+
+  globalCatalogCache = {
+    drugs,
+    fuse,
+    cachedAt: now,
+  };
+
+  return globalCatalogCache;
+}
+
 export async function GET(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -18,21 +65,30 @@ export async function GET(request: Request) {
   try {
     const queryLower = q.toLowerCase();
 
-    // 1. Fetch active drug catalog and personalized preferences
-    const [allDrugs, doctorPrefs, clinicPrefs] = await Promise.all([
-      prisma.drug.findMany({
-        where: { 
-          isActive: true,
-          OR: [
-            { clinicId: null },
-            { clinicId: user.clinicId }
-          ]
-        },
-        select: { id: true, genericName: true, brandName: true, aliases: true, dosageForm: true, strength: true, route: true, clinicId: true, isRestricted: true }
-      }),
+    // 1. Fetch cached global catalog in parallel with custom clinic drugs and user preferences
+    const [globalCatalog, customDrugs, doctorPrefs, clinicPrefs] = await Promise.all([
+      getGlobalDrugCatalog(),
+      user.clinicId
+        ? prisma.drug.findMany({
+            where: { isActive: true, clinicId: user.clinicId },
+            select: {
+              id: true,
+              genericName: true,
+              brandName: true,
+              aliases: true,
+              dosageForm: true,
+              strength: true,
+              route: true,
+              clinicId: true,
+              isRestricted: true,
+            },
+          })
+        : Promise.resolve([]),
       prisma.doctorDrugPreference.findMany({ where: { doctorId: user.id } }),
-      prisma.clinicDrugPreference.findMany({ where: { clinicId: user.clinicId } })
+      prisma.clinicDrugPreference.findMany({ where: { clinicId: user.clinicId } }),
     ]);
+
+    const allDrugs = customDrugs.length > 0 ? [...customDrugs, ...globalCatalog.drugs] : globalCatalog.drugs;
 
     // O(1) Lookups for preferences
     const docPrefMap = new Map(doctorPrefs.map(p => [p.drugId, p.count]));
@@ -78,14 +134,20 @@ export async function GET(request: Request) {
     }
 
     // 3. FULL ADDITIVE SCORING (ML Search Strategy)
-    const fuse = new Fuse(allDrugs, {
-      keys: ['genericName', 'brandName', 'aliases'],
-      includeScore: true,
-      threshold: 0.4,
-      ignoreLocation: true,
-    });
+    // Reuse pre-indexed global Fuse instance; only index custom drugs if present
+    let fuseResults: Array<{ item: any; score?: number }> = [];
 
-    const fuseResults = fuse.search(q);
+    if (customDrugs.length === 0) {
+      fuseResults = globalCatalog.fuse.search(q);
+    } else {
+      const customFuse = new Fuse(customDrugs, {
+        keys: ['genericName', 'brandName', 'aliases'],
+        includeScore: true,
+        threshold: 0.4,
+        ignoreLocation: true,
+      });
+      fuseResults = [...customFuse.search(q), ...globalCatalog.fuse.search(q)];
+    }
 
     let rankedResults = fuseResults.map(result => {
       const d = result.item;

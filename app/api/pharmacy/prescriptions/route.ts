@@ -74,15 +74,28 @@ export async function GET(request: Request) {
       where: { clinicId: user.clinicId, isActive: true },
     });
 
+    // O(1) Indexing of inventory by medicine name and generic name
+    const inventoryNameMap = new Map<string, any>();
+    const inventoryGenericMap = new Map<string, any>();
+    for (const inv of inventory) {
+      if (inv.medicineName) inventoryNameMap.set(inv.medicineName.toLowerCase().trim(), inv);
+      if (inv.genericName) inventoryGenericMap.set(inv.genericName.toLowerCase().trim(), inv);
+    }
+
     const enrichedPrescriptions = prescriptions.map((p) => {
       const mappedMedicines = p.medicines.map((m) => {
         const medName = m.customName || m.drug?.brandName || m.drug?.genericName || '';
+        const cleanMed = medName.toLowerCase().trim();
+        const cleanGen = m.drug?.genericName ? m.drug.genericName.toLowerCase().trim() : null;
         
-        // Find matching inventory item (case-insensitive fuzzy/exact match)
-        const stockItem = inventory.find((inv) =>
-          inv.medicineName.toLowerCase().includes(medName.toLowerCase()) ||
-          (m.drug?.genericName && inv.genericName?.toLowerCase().includes(m.drug.genericName.toLowerCase()))
-        );
+        // Fast O(1) Map match with fallback to substring match
+        const stockItem = 
+          inventoryNameMap.get(cleanMed) ||
+          (cleanGen ? inventoryGenericMap.get(cleanGen) : null) ||
+          inventory.find((inv) =>
+            inv.medicineName.toLowerCase().includes(cleanMed) ||
+            (cleanGen && inv.genericName?.toLowerCase().includes(cleanGen))
+          );
 
         // Estimate prescribed quantity from duration & frequency (e.g. 1-0-1 for 5 days = 10 units)
         let estimatedUnits = 10;

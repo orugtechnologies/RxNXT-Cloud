@@ -295,35 +295,6 @@ export async function POST(request: Request) {
         data: { status: 'COMPLETED' },
       });
 
-      // Increment prescription count for global, doctor, and clinic preferences
-      console.log('--- SAVING PRESCRIPTION ---');
-      console.log('medicines:', medicines);
-      console.log('drugIds:', drugIds);
-      
-      if (drugIds.length > 0) {
-        await Promise.all(
-          drugIds.map(async (id: string) => {
-            // Global
-            await tx.drug.update({
-              where: { id },
-              data: { prescriptionCount: { increment: 1 } },
-            });
-            // Doctor Preference
-            await tx.doctorDrugPreference.upsert({
-              where: { doctorId_drugId: { doctorId: user.id, drugId: id } },
-              update: { count: { increment: 1 } },
-              create: { doctorId: user.id, drugId: id, count: 1 },
-            });
-            // Clinic Preference
-            await tx.clinicDrugPreference.upsert({
-              where: { clinicId_drugId: { clinicId: user.clinicId, drugId: id } },
-              update: { count: { increment: 1 } },
-              create: { clinicId: user.clinicId, drugId: id, count: 1 },
-            });
-          })
-        );
-      }
-
       // Epic 1: Atomically increment clinic prescription ledger counter
       if (tx.clinic?.update) {
         try {
@@ -338,9 +309,37 @@ export async function POST(request: Request) {
 
       return { encounter, prescription };
     }, {
-      maxWait: 10000,
-      timeout: 25000,
+      maxWait: 5000,
+      timeout: 10000,
     });
+
+    // Performance Optimization: Update drug & preference counters non-blocking outside the critical ACID transaction
+    if (drugIds.length > 0) {
+      Promise.allSettled(
+        drugIds.map(async (id: string) => {
+          try {
+            await Promise.all([
+              prisma.drug.update({
+                where: { id },
+                data: { prescriptionCount: { increment: 1 } },
+              }),
+              prisma.doctorDrugPreference.upsert({
+                where: { doctorId_drugId: { doctorId: user.id, drugId: id } },
+                update: { count: { increment: 1 } },
+                create: { doctorId: user.id, drugId: id, count: 1 },
+              }),
+              prisma.clinicDrugPreference.upsert({
+                where: { clinicId_drugId: { clinicId: user.clinicId, drugId: id } },
+                update: { count: { increment: 1 } },
+                create: { clinicId: user.clinicId, drugId: id, count: 1 },
+              }),
+            ]);
+          } catch (e) {
+            console.warn('Non-blocking drug preference increment warning:', e);
+          }
+        })
+      ).catch(() => {});
+    }
 
     return NextResponse.json({
       success: true,

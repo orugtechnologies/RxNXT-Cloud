@@ -17,9 +17,10 @@ function getOptimizedDatabaseUrl(): string | undefined {
       parsed.port = '6543';
     }
 
-    // Set connection_limit=1 for serverless functions to prevent pool starvation
+    // Set connection_limit=5 for serverless functions when using Supabase pooler
+    // to allow parallel Promise.all queries without starvation or connection timeouts
     if (!parsed.searchParams.has('connection_limit')) {
-      parsed.searchParams.set('connection_limit', '1');
+      parsed.searchParams.set('connection_limit', '5');
     }
 
     // When on port 6543 or using pooler, enable pgbouncer mode for Prisma

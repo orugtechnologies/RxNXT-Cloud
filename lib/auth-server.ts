@@ -45,17 +45,10 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
     }
   }
 
-  // Fallback to first clinic if still missing
-  if (!clinicId) {
-    try {
-      const firstClinic = await prisma.clinic.findFirst();
-      if (firstClinic) {
-        clinicId = firstClinic.id;
-        clinicName = firstClinic.name;
-      }
-    } catch (e) {
-      console.error('Failed to fallback to first clinic:', e);
-    }
+  // Strict Multi-Tenancy Guard: If clinicId is still missing and user is not superadmin, deny access
+  if (!clinicId && user.role !== 'superadmin') {
+    console.warn(`[Multi-Tenancy Guard] User ${email} has no clinicId assigned. Access denied.`);
+    return null;
   }
 
   return {

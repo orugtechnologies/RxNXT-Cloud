@@ -138,14 +138,16 @@ export async function GET() {
       let currentMax = maxToken._max.tokenNumber || 0;
       
       const sortedWithoutToken = queueWithoutToken.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-      for (const item of sortedWithoutToken) {
-        currentMax++;
-        await prisma.queueItem.update({
-          where: { id: item.id },
-          data: { tokenNumber: currentMax }
-        });
-        item.tokenNumber = currentMax;
-      }
+      await Promise.all(
+        sortedWithoutToken.map(async (item) => {
+          currentMax++;
+          item.tokenNumber = currentMax;
+          return prisma.queueItem.update({
+            where: { id: item.id },
+            data: { tokenNumber: currentMax }
+          });
+        })
+      );
     }
 
     // Format recent prescriptions
