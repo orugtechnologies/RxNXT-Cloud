@@ -795,25 +795,25 @@
               <td><strong>Automated Daily Morning Reminders</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">Daily 8 AM WhatsApp schedule for course duration</span></td>
               <td><span class="pill pill-addon">Monetizable Add-On</span></td>
               <td>Direct variable cost. Covers ~250 acute or ~70 chronic patients/mo.</td>
-              <td><strong>₹299 / month</strong><br><span style="font-size: 0.7rem; color: var(--text-muted);">(1,000 msgs cap; overage ₹0.25)</span></td>
+              <td><strong>Monthly Usage Pack</strong><br><span style="font-size: 0.7rem; color: var(--text-muted);">(Volume quota + prepaid top-up)</span></td>
             </tr>
             <tr>
               <td><strong>Chronic Care Day-25 Refill Alerts</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">Monthly WhatsApp alert for chronic patients</span></td>
               <td><span class="pill pill-addon">Monetizable Add-On</span></td>
               <td>1 message/patient/mo. Covers 500 unique chronic patients.</td>
-              <td><strong>₹199 / month</strong><br><span style="font-size: 0.7rem; color: var(--text-muted);">(500 msgs cap)</span></td>
+              <td><strong>Monthly Usage Pack</strong><br><span style="font-size: 0.7rem; color: var(--text-muted);">(Volume quota)</span></td>
             </tr>
             <tr>
               <td><strong>In-House Pharmacy & Batch Stock</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">Inventory tracking, batch expiry, dispense logs</span></td>
               <td><span class="pill pill-addon">Expansion Add-On</span></td>
               <td>Relevant only to clinics with dispensaries. High willingness to pay.</td>
-              <td><strong>₹499 / month</strong></td>
+              <td><strong>Modular Add-On</strong></td>
             </tr>
             <tr>
               <td><strong>Additional Doctor Seats</strong><br><span style="font-size: 0.72rem; color: var(--text-muted);">Secondary doctor logins under same clinic</span></td>
               <td><span class="pill pill-addon">Seat Expansion</span></td>
               <td>Scales with clinic size without increasing base infrastructure load.</td>
-              <td><strong>₹2,499 / doctor / yr</strong></td>
+              <td><strong>Per Doctor Expansion</strong></td>
             </tr>
           </tbody>
         </table>
@@ -821,25 +821,10 @@
 
       <!-- Strategic Callout -->
       <div class="callout-box avoid-break" style="border-left-color: var(--purple);">
-        <strong>Why Daily Morning Reminders MUST Be a Separate Add-On / Opt-In:</strong>
+        <strong>Why Daily Morning Reminders Is Structured as an Add-On:</strong>
         <p style="margin-top: 4px; font-size: 0.8rem; color: #475569;">
-          Each WhatsApp utility message carries a direct cost of $\approx ₹0.13$. If an acute or chronic patient receives daily alerts for a 14-day course, that is 14 messages ($\approx ₹1.82$ per patient). A clinic seeing 1,000 patients a month could accumulate over ₹1,800 in direct messaging fees. Keeping this toggle <strong>OFF by default</strong> in the consultation modal protects software gross margins, while allowing clinics to purchase <strong>Patient Adherence Packs</strong> as a premium service.
+          Each WhatsApp utility message carries a direct delivery cost via Meta Cloud API. For chronic patients receiving extended courses, messaging volumes scale with patient intake. Structuring automated adherence briefings as an add-on protects software gross margins while allowing clinics to activate patient adherence packs as needed.
         </p>
-        <div style="margin-top: 10px; font-size: 0.78rem; font-weight: 700; color: var(--primary);">
-          Add-On Package Quotas & Profit Margins for RxNXT:
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; font-size: 0.75rem;">
-          <div style="background: white; border: 1px solid var(--border); padding: 8px 10px; border-radius: 6px;">
-            <div style="font-weight: 700; color: var(--primary);">₹299 / mo Plan (1,000 Messages Cap)</div>
-            <div style="color: var(--text-muted); margin-top: 2px;">Covers ~250 acute or ~70 chronic OPD patients.</div>
-            <div style="color: var(--emerald); font-weight: 700; margin-top: 4px;">RxNXT Profit: ₹162.50 / mo (54.4% Margin)</div>
-          </div>
-          <div style="background: white; border: 1px solid var(--border); padding: 8px 10px; border-radius: 6px;">
-            <div style="font-weight: 700; color: var(--primary);">₹199 / mo Plan (500 Refill Messages Cap)</div>
-            <div style="color: var(--text-muted); margin-top: 2px;">Covers 500 unique monthly chronic patients.</div>
-            <div style="color: var(--emerald); font-weight: 700; margin-top: 4px;">RxNXT Profit: ₹128.00 / mo (64.3% Margin)</div>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -850,7 +835,7 @@
     <section class="section avoid-break">
       <div class="section-title">
         <span class="number">4</span>
-        <span>Recommended Commercial Pricing Tiers (Annual Billing)</span>
+        <span>Commercial Tier Architecture</span>
       </div>
 
       <div class="pricing-grid">
@@ -861,7 +846,7 @@
               <h4>Solo Practitioner</h4>
               <div class="subtext">For independent clinics & solo doctors</div>
             </div>
-            <div class="pricing-price">₹8,999 <span>/ year</span></div>
+            <div class="pricing-price">Solo GP <span>Plan</span></div>
             <ul class="pricing-features">
               <li>1 Doctor Seat + 1 Reception Desk</li>
               <li>Unlimited Prescriptions & PDFs</li>
@@ -873,7 +858,7 @@
             </ul>
           </div>
           <div style="font-size: 0.7rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 8px;">
-            Effective: <strong>₹750 / month</strong>
+            Tier: <strong>Core Clinical OPD</strong>
           </div>
         </div>
 
@@ -881,22 +866,22 @@
         <div class="pricing-card featured">
           <div>
             <div class="pricing-header">
-              <h4>Clinic / Polyclinic Pro</h4>
-              <div class="subtext">For multi-doctor clinics & centers</div>
+              <h4>Specialist Practice</h4>
+              <div class="subtext">For patient adherence & chronic care</div>
             </div>
-            <div class="pricing-price">₹19,999 <span>/ year</span></div>
+            <div class="pricing-price">Specialist <span>Plan</span></div>
             <ul class="pricing-features">
-              <li>Up to 4 Doctor Seats + 2 Reception Desks</li>
+              <li>Up to 2 Doctor Seats + Reception Desk</li>
               <li>Everything in Solo Plan</li>
-              <li>In-House Pharmacy & Batch Stock</li>
-              <li>Prescription Dispense Billing</li>
+              <li>Automated Daily 8 AM Morning Briefings</li>
+              <li>Day-25 Chronic Care Refill Alerts</li>
+              <li>Adherence Telemetry & Analytics</li>
               <li>Full Consultation Invoicing</li>
-              <li>Practice Volume Analytics</li>
-              <li>Includes 1,000 Reminder Credits</li>
+              <li>Prepaid Wallet Integration</li>
             </ul>
           </div>
           <div style="font-size: 0.7rem; color: var(--accent); font-weight: 700; border-top: 1px solid var(--border); padding-top: 8px;">
-            Effective: <strong>₹1,666 / month</strong>
+            Tier: <strong>Clinical Intelligence & Retention</strong>
           </div>
         </div>
 
@@ -904,22 +889,22 @@
         <div class="pricing-card">
           <div>
             <div class="pricing-header">
-              <h4>Hospital OPD Enterprise</h4>
-              <div class="subtext">For nursing homes & hospital chains</div>
+              <h4>Polyclinic Hub</h4>
+              <div class="subtext">For multi-doctor clinics & dispensaries</div>
             </div>
-            <div class="pricing-price">₹49,999 <span>/ year+</span></div>
+            <div class="pricing-price">Polyclinic <span>Plan</span></div>
             <ul class="pricing-features">
-              <li>Unlimited Doctor Seats & Desks</li>
+              <li>Multi-Doctor Seats & Desks</li>
+              <li>Everything in Specialist Plan</li>
+              <li>In-House Pharmacy & Batch Stock</li>
+              <li>Dispensing Queue & Medicine Billing</li>
               <li>Multi-Counter Queue Management</li>
-              <li>Custom WhatsApp Phone Number ID</li>
-              <li>Dedicated Green Tick Assistance</li>
-              <li>Bulk Pharmacy Store Reconciliation</li>
-              <li>API & Export Connectors</li>
-              <li>Priority 24/7 Account Manager</li>
+              <li>Practice Volume Analytics</li>
+              <li>Priority Onboarding Support</li>
             </ul>
           </div>
           <div style="font-size: 0.7rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 8px;">
-            Custom enterprise onboarding
+            Tier: <strong>Multi-Doctor Center</strong>
           </div>
         </div>
       </div>
@@ -932,15 +917,15 @@
         </p>
         <div class="economics-grid">
           <div class="economics-item">
-            <div class="val">₹833</div>
-            <div class="lbl">Monthly Revenue / Clinic</div>
+            <div class="val">150 Rx</div>
+            <div class="lbl">Zero-Risk Free Trial</div>
           </div>
           <div class="economics-item">
-            <div class="val">~₹70</div>
+            <div class="val">&lt;₹250</div>
             <div class="lbl">Hosting + Meta Cost / Mo</div>
           </div>
           <div class="economics-item">
-            <div class="val">91.6%</div>
+            <div class="val">>75%</div>
             <div class="lbl">Software Gross Margin</div>
           </div>
         </div>

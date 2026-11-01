@@ -15,7 +15,7 @@ Fully migrated to a modern, scalable cloud architecture on Supabase Mumbai Cloud
 - **Database:** PostgreSQL (Supabase Mumbai Cloud - ap-south-1) via Prisma ORM
 - **Authentication:** NextAuth.js (Credentials Provider + bcrypt hashing + JWT strategy)
 - **Search Engine:** Fuse.js (Fuzzy matching, typo-tolerance, and custom additive clinical scoring)
-- **WhatsApp:** Official Meta WhatsApp Cloud API (Graph API v20.0). Direct server-to-server messaging for PDFs, smart-slot reminders, follow-ups, and chronic refills. Zero microservice cold starts, no Twilio.
+- **WhatsApp:** Official Meta WhatsApp Cloud API (Graph API v20.0). Direct server-to-server messaging for PDFs, daily morning reminders, follow-ups, and chronic refills. Zero microservice cold starts, no Twilio.
 - **PDF Generation:** jsPDF (client-side, instant, no server lag)
 - **Hosting:** Vercel (Frontend + Serverless API + Vercel Cron Jobs)
 - **PWA:** Full Progressive Web App support (manifest.json, Apple iOS standalone metadata)
@@ -68,23 +68,21 @@ The search API (`app/api/drugs/search/route.ts`) uses an **Additive Scoring Algo
 
 ---
 
-## 📱 Meta WhatsApp Cloud API Integration & Smart Slot Reminders
+## 📱 Meta WhatsApp Cloud API Integration & Daily Morning Reminders
 - **Provider:** Official Meta WhatsApp Cloud API (`https://graph.facebook.com/v20.0/`)
 - **Service file:** `services/whatsappService.ts`
 - **Zero Cold Starts:** Direct Meta Graph API integration with instant dispatch (24/7 availability)
 - **Direct Endpoints:** `messages` endpoint for text & approved utility templates; `media` endpoint for direct Base64 PDF uploads
-- **Smart Slot Cron Schedules (Asia/Kolkata)**:
-  - 🌅 **8:00 AM IST**: Morning Doses (`MEDICINE_MORNING`), Follow-ups (`FOLLOW_UP`), and Refills (`REFILL`)
-  - ☀️ **1:30 PM IST**: Afternoon Doses (`MEDICINE_AFTERNOON`)
-  - 🌙 **8:30 PM IST**: Night Doses (`MEDICINE_NIGHT`)
+- **Daily Cron Schedule (Asia/Kolkata)**:
+  - 🌅 **8:00 AM IST (`30 2 * * *`)**: Daily Morning Medicine Reminders (`MEDICINE_MORNING`), Follow-ups (`FOLLOW_UP`), and Refills (`REFILL`)
 
 ### Four Send Functions:
 | Function | Trigger | What it sends |
 |----------|---------|---------------|
 | `sendPrescriptionPDF()` | Doctor clicks "Send via WhatsApp" | PDF uploaded to Meta `/media` + approved utility template summary |
-| `sendMedicineReminder()` | Vercel 3-Slot Cron | Smart Slot Morning / Afternoon / Night dose alert |
-| `sendFollowUpReminder()` | Vercel 8:00 AM Cron | Doctor follow-up visit appointment reminder |
-| `sendRefillReminder()` | Vercel 8:00 AM Cron | Day 25 monthly prescription refill reminder for chronic care |
+| `sendMedicineReminder()` | Vercel Daily 8:00 AM Cron | Daily morning medicine schedule reminder |
+| `sendFollowUpReminder()` | Vercel Daily 8:00 AM Cron | Doctor follow-up visit appointment reminder |
+| `sendRefillReminder()` | Vercel Daily 8:00 AM Cron | Day 25 monthly prescription refill reminder for chronic care |
 
 ---
 

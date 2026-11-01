@@ -55,7 +55,7 @@ This document is intended for incoming developers to quickly understand the curr
       ├── clinic/               # Clinic profile management
       ├── users/                # Staff management
       ├── receptionist/         # Receptionist-specific endpoints
-      ├── cron/reminders/       # Vercel Cron — Smart Slot WhatsApp reminders
+      ├── cron/reminders/       # Vercel Cron — Daily morning WhatsApp reminders
       ├── cron/wakeup/          # 24/7 Meta API health status
       ├── whatsapp-status/      # Meta WhatsApp Cloud API status check
       └── health/               # App health check endpoint
@@ -134,7 +134,7 @@ This document is intended for incoming developers to quickly understand the curr
 ### WhatsApp Integration
 - ✅ "Send Rx via WhatsApp" button in prescription review modal
 - ✅ Sends prescription PDF directly via Meta WhatsApp Cloud API (`/media` upload + template delivery)
-- ✅ Automated medicine reminders via Vercel 3-Slot Cron — `messageType: MEDICINE`
+- ✅ Automated medicine reminders via Vercel Daily 8:00 AM Cron — `messageType: MEDICINE`
 - ✅ Automated follow-up visit reminders via Vercel Cron — `messageType: FOLLOW_UP`
 - ✅ Zero cold starts — 100% cloud-hosted on Meta Graph API v20.0
 - ✅ Phone sanitization — strips formatting, strips leading zeros, auto-prepends `91`

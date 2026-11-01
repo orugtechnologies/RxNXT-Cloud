@@ -1,6 +1,6 @@
-# 📘 RxNXT — Product Capabilities, Architecture & Pricing Blueprint
+# 📘 RxNXT — Product Capabilities & Tier Architecture Blueprint
 
-> **Prepared for:** Product Management, Commercial Strategy & Pricing Teams  
+> **Prepared for:** Product Management & Commercial Strategy Teams  
 > **Platform:** RxNXT Cloud (Clinic Operating System & Patient Adherence Engine)  
 > **Market:** Indian Outpatient Clinics, Polyclinics, Multi-Specialty OPDs & Solo Practitioners  
 > **Date:** October 2026 | **Version:** 1.1 (Updated)
@@ -152,30 +152,30 @@ graph LR
 | **Follow-Up Appointment Reminder (1 msg / patient)** | Included | Included | Included | — |
 | **Basic Consultation Billing (Receipts / Invoices)** | Included | Included | Included | — |
 | **Direct Doctor Onboarding & Workspace Setup** | Included | Included | Included | — |
-| **Automated Daily Morning WhatsApp Briefings** | *Optional Add-On* | *Optional Add-On* | Included (1,000 msgs) | **₹299 / mo (1,000 msgs cap)**<br>*(Overage: ₹0.25 / msg)* |
-| **Chronic Care Refill Reminders (Day 25 Alert)** | *Optional Add-On* | Included | Included | **₹199 / mo (500 msgs cap)** |
-| **In-House Pharmacy & Batch Stock Inventory** | — | Included | Included | **₹499 / mo** |
-| **Advanced Practice Analytics & Drug Consumption** | — | Included | Included | **₹299 / mo** |
-| **Additional Doctor Seat** | — | — | — | **₹2,499 / doctor / year** |
-| **Custom Clinic WhatsApp Number (Verified Green Tick)** | — | — | Included | **One-time Setup Fee** |
+| **Automated Daily Morning WhatsApp Briefings** | *Optional Add-On* | *Optional Add-On* | Included | *Monthly Usage Pack / Top-Up* |
+| **Chronic Care Refill Reminders (Day 25 Alert)** | *Optional Add-On* | Included | Included | *Monthly Usage Pack* |
+| **In-House Pharmacy & Batch Stock Inventory** | — | Included | Included | *Modular Add-On* |
+| **Advanced Practice Analytics & Drug Consumption** | — | Included | Included | *Modular Add-On* |
+| **Additional Doctor Seat** | — | — | — | *Per Additional Seat Expansion* |
+| **Custom Clinic WhatsApp Number (Verified Green Tick)** | — | — | Included | *Enterprise Provisioning* |
 
 ---
 
 ## 3. Detailed Justification for Add-On Structuring & Quota Economics
 
-### Quota Breakdown & Unit Profit Margins for RxNXT
+### Quota Breakdown & Operational Dynamics
 
-| Add-On Package | Monthly Price | Monthly Quota | Clinical OPD Coverage | COGS (Meta @ ₹0.13 + Gateway) | Net Profit to RxNXT | Gross Margin |
-| :--- | :---: | :---: | :--- | :---: | :---: | :---: |
-| **Daily Morning Reminders** | **₹299 / mo** | **1,000 messages** | ~250 acute patients (4-day course) OR ~70 chronic patients (14-day cycle) | ₹136.50 | **₹162.50 / clinic / mo** | **54.4%** |
-| **Pay-As-You-Go Reminders** | **₹0.25 / msg** | Per message | Pay-as-you-prescribe (Doctor enables per patient) | ₹0.13 | **₹0.12 / msg** | **48.0%** |
-| **Chronic Day-25 Refill Alerts** | **₹199 / mo** | **500 messages** | 500 unique chronic patients (1 message/patient on Day 25) | ₹71.00 | **₹128.00 / clinic / mo** | **64.3%** |
+| Add-On Package | Quota Structure | Clinical OPD Coverage | Infrastructure Basis |
+| :--- | :---: | :--- | :--- |
+| **Daily Morning Reminders** | Tiered Monthly Bundles | ~250 acute patients (4-day course) OR ~70 chronic patients (14-day cycle) | Direct Meta Cloud API delivery |
+| **Pay-As-You-Go Reminders** | Pay-as-you-prescribe | Doctor enables selectively per patient | Direct debit from prepaid clinic wallet |
+| **Chronic Day-25 Refill Alerts** | Monthly Volume Bundles | 500 unique chronic patients (1 message/patient on Day 25) | Triggered 25 days post-consultation |
 
-### Why "Automated Daily Morning Reminders" MUST Be an Add-On
-1. **Direct Variable Cost:** Each WhatsApp template message costs $\approx ₹0.13$ via Meta Cloud API. For a chronic care patient receiving 14 daily briefings, the messaging cost is $\approx ₹1.82$ per patient. A busy doctor seeing 1,000 patients a month could incur ₹1,800+ in messaging fees alone.
-2. **Margin Protection:** Keeping daily reminders off by default in the base subscription guarantees an **85%+ gross profit margin** on software subscriptions.
-3. **Upsell Mechanics:** Clinics can be sold **Prepaid Reminder Packs** (e.g., ₹999 for 3,000 reminder credits) or subscribed to the **₹299 / month pack (1,000 messages)**.
-4. **OPD Reality:** In an average Indian OPD of 750 patients/month, doctors only activate daily reminders for ~25% to 35% of patients (acute infections or complex cases). Therefore, a 1,000-message pack comfortably covers a busy OPD's entire monthly needs with zero overage.
+### Why "Automated Daily Morning Reminders" Is Structured as an Add-On
+1. **Direct Variable Delivery:** Each WhatsApp template message is processed via the Meta Cloud API. For chronic care patients receiving daily briefings over extended cycles, messaging volumes scale with patient load.
+2. **Margin & Resource Protection:** Structuring high-frequency automated briefings as usage-based keeps the core clinical platform highly accessible while preventing runaway messaging consumption.
+3. **Flexible Clinic Scaling:** Clinics can configure prepaid wallet credits or subscribe to monthly quota bundles based on their actual patient intake.
+4. **OPD Reality:** In an average Indian OPD, doctors typically activate daily adherence reminders selectively for patients requiring strict monitoring (acute infections, post-operative care, or complex chronic titrations).
 
 ### Why In-House Pharmacy Should Be a Higher Tier or Add-On
 1. Not all outpatient clinics dispense medicines in-house (many write prescriptions for external retail pharmacies).
@@ -183,10 +183,10 @@ graph LR
 
 ---
 
-## 4. Recommended Pricing Tiers for the Indian Market
+## 4. Tier Architecture for the Indian Market
 
 ### Usage-Based Acquisition Engine: "The First 150"
-RxNXT has abandoned legacy 14-day calendar trials in favor of a usage-based volume trial:
+RxNXT has abandoned legacy calendar trials in favor of a usage-based volume trial:
 * **The First 150 Free Prescriptions:** Every newly registered clinic receives 150 free prescriptions with full platform access and zero calendar time limit.
 * **Progressive Engagement:**
   * Prescriptions 0–120: Frictionless onboarding and clinical score engine experience.
@@ -195,27 +195,27 @@ RxNXT has abandoned legacy 14-day calendar trials in favor of a usage-based volu
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
-│  RECOMMENDED COMMERCIAL PRICING STRUCTURE (ANNUAL BILLING)            │
+│  COMMERCIAL TIER STRUCTURE                                             │
 ├────────────────────────────────────────────────────────────────────────┤
 │                                                                        │
-│  0. THE FIRST 150 (TRIAL)                  ₹0 Upfront (150 Rx Cap)     │
+│  0. THE FIRST 150 (TRIAL)                  Full Access (150 Rx Cap)    │
 │     • Full platform features unlocked; strictly gated at 150 Rx        │
 │                                                                        │
-│  1. SOLO GP (BASE)                         ₹7,999 – ₹9,999 / year       │
+│  1. SOLO GP (BASE)                         Subscription Tier           │
 │     • 1 Doctor Seat + 1 Receptionist Desk                              │
 │     • Unlimited Prescriptions & Instant WhatsApp PDF Deliveries        │
 │     • Live Queue, Clinical Protocols & Practice Setup                  │
 │                                                                        │
-│  2. SPECIALIST (PATIENT ADHERENCE)         ₹14,999 – ₹18,999 / year    │
+│  2. SPECIALIST (PATIENT ADHERENCE)         Subscription Tier           │
 │     • Everything in Solo GP + Patient Adherence Automation             │
 │     • Daily 8 AM Morning Briefings + Day-25 Chronic Care Refill Alerts │
 │                                                                        │
-│  3. POLYCLINIC HUB                         ₹24,999 – ₹29,999 / year    │
+│  3. POLYCLINIC HUB                         Subscription Tier           │
 │     • Everything in Specialist + In-House Pharmacy Inventory Module    │
 │     • Dispensing Terminal, Stock Alerts & Multi-Seat Doctor Provisioning│
-│     • Additional seats available at ₹499 / doctor / month              │
+│     • Additional seats available per doctor expansion                  │
 │                                                                        │
-│  4. PREPAID WHATSAPP ADHERENCE WALLET      ₹499 (2k) / ₹999 (5k)       │
+│  4. PREPAID WHATSAPP ADHERENCE WALLET      Credit Recharge Packs       │
 │     • Dedicated credit wallet for automated adherence utility messages │
 │     • Zero-balance failsafe & automated low balance alerts (<100)      │
 │                                                                        │

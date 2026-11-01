@@ -411,27 +411,28 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
     x: 0.8, y: 1.85, w: 5.7, h: 4.9, r: 0.15,
     fill: { color: CARD_BG }, line: { color: BLUE, width: 1.5 }
   });
-  slide.addText('Strategic 3-Tier Pricing Model', {
+  slide.addText('Commercial Tier Architecture', {
     x: 1.1, y: 2.05, w: 5.1, h: 0.35,
     fontSize: 14, bold: true, color: SKY, fontFace: FONT
   });
   const tiers = [
-    { name: 'Tier 1 (SaaS BYOD)', price: '₹9,999 / year (~₹833/mo)', desc: 'For solo clinic practitioners using laptop, tablet, or phone.' },
-    { name: 'Tier 2 (Hardware Bundle)', price: '₹24,999 One-Time', desc: 'Pre-configured 11" Android Kiosk Tablet + Stand + 1-Year SaaS subscription.' },
-    { name: 'Tier 3 (Polyclinic Pack)', price: '₹18,000 / year', desc: 'Multi-doctor clinic network with centralized reception & pharmacy.' }
+    { name: 'Trial (The First 150)', price: '150 Free Rx', desc: 'Full clinical workflow and queue access with zero calendar pressure.' },
+    { name: 'Solo GP Tier', price: 'Standard Plan', desc: '1 Doctor Seat + Receptionist Queue for individual OPD practitioners.' },
+    { name: 'Specialist Tier', price: 'Adherence Plan', desc: 'Automated 8 AM WhatsApp briefings + Day-25 chronic refill alerts.' },
+    { name: 'Polyclinic Hub', price: 'Multi-Doctor', desc: 'Multi-doctor clinic network with integrated in-house pharmacy inventory.' }
   ];
   tiers.forEach((t, tIdx) => {
-    const ty = 2.5 + tIdx * 1.0;
-    slide.addText(t.name, { x: 1.1, y: ty, w: 2.8, h: 0.3, fontSize: 10, bold: true, color: TEXT_WHITE, fontFace: FONT });
-    slide.addText(t.price, { x: 3.9, y: ty, w: 2.3, h: 0.3, fontSize: 10, bold: true, color: MINT, align: 'right', fontFace: FONT });
-    slide.addText(t.desc, { x: 1.1, y: ty + 0.3, w: 5.1, h: 0.45, fontSize: 8.5, color: TEXT_LIGHT, fontFace: FONT });
+    const ty = 2.45 + tIdx * 0.75;
+    slide.addText(t.name, { x: 1.1, y: ty, w: 2.8, h: 0.25, fontSize: 9.5, bold: true, color: TEXT_WHITE, fontFace: FONT });
+    slide.addText(t.price, { x: 3.9, y: ty, w: 2.3, h: 0.25, fontSize: 9.5, bold: true, color: MINT, align: 'right', fontFace: FONT });
+    slide.addText(t.desc, { x: 1.1, y: ty + 0.25, w: 5.1, h: 0.4, fontSize: 8, color: TEXT_LIGHT, fontFace: FONT });
   });
 
   slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
     x: 1.1, y: 5.5, w: 5.1, h: 1.0, r: 0.1,
     fill: { color: '162544' }, line: { color: '2563EB', width: 1 }
   });
-  slide.addText('💡 The "2-Patient" Psychological Pitch:\nAt ₹9,999/year (~₹833/month), writing just 2 to 3 consultations a month pays for the software. The remaining 500+ consultations are 100% pure profit.', {
+  slide.addText('💡 Zero-Friction Clinical Onboarding:\nThe First 150 Free Prescriptions allow doctors to embed RxNXT directly into daily consultation workflows before activating a subscription.', {
     x: 1.25, y: 5.55, w: 4.8, h: 0.9,
     fontSize: 8.5, color: SKY, fontFace: FONT
   });
@@ -455,7 +456,7 @@ function addFooter(slide, text = 'ORUG Technologies Pvt. Ltd. • Pitch Presenta
     [{ text: 'Allocated PostgreSQL DB (Supabase Pro)' }, { text: '~₹75 / mo', options: { align: 'right' } }],
     [{ text: 'Meta WhatsApp Utility API (~600 msgs @ ₹0.13)' }, { text: '~₹78 / mo', options: { align: 'right' } }],
     [{ text: 'Client-Side PDF Generation (jsPDF)' }, { text: '₹0 / mo (Zero CPU)', options: { align: 'right', color: MINT } }],
-    [{ text: 'NMC Doctor Verification API' }, { text: '₹0 / mo (Direct REST)', options: { align: 'right', color: MINT } }],
+    [{ text: 'Direct Doctor Onboarding' }, { text: '₹0 / mo (Self-Registration)', options: { align: 'right', color: MINT } }],
     [
       { text: 'TOTAL HOSTING COST PER CLINIC', options: { bold: true, color: TEXT_WHITE, fill: '1E293B' } },
       { text: '~₹213 / month', options: { bold: true, color: AMBER, align: 'right', fill: '1E293B' } }

@@ -504,13 +504,13 @@ doc.roundedRect(25, uY + 28, uW - 14, 26, 2, 2, 'F');
 doc.setFont('helvetica', 'bold');
 doc.setFontSize(9);
 doc.setTextColor(C.white[0], C.white[1], C.white[2]);
-doc.text('Tier 1: BYOD SaaS Only', 30, uY + 36);
+doc.text('Tier 1: Solo GP (BYOD)', 30, uY + 36);
 doc.setTextColor(C.mint[0], C.mint[1], C.mint[2]);
-doc.text('₹9,999 / year (~₹833/mo)', uW - 5, uY + 36, { align: 'right' });
+doc.text('Core Clinical OPD', uW - 5, uY + 36, { align: 'right' });
 doc.setFont('helvetica', 'normal');
 doc.setFontSize(7.5);
 doc.setTextColor(C.grayLight[0], C.grayLight[1], C.grayLight[2]);
-doc.text('For doctors using existing laptops/tablets. Unlimited PDF prescriptions, Smart Slot reminders, cloud updates, and support.', 30, uY + 43, { maxWidth: uW - 24 });
+doc.text('For doctors using existing laptops/tablets. Unlimited PDF prescriptions, OPD queue, cloud updates, and support.', 30, uY + 43, { maxWidth: uW - 24 });
 
 // Tier 2
 doc.setFillColor(14, 25, 48);
@@ -518,13 +518,13 @@ doc.roundedRect(25, uY + 58, uW - 14, 26, 2, 2, 'F');
 doc.setFont('helvetica', 'bold');
 doc.setFontSize(9);
 doc.setTextColor(C.white[0], C.white[1], C.white[2]);
-doc.text('Tier 2: Hardware Bundle', 30, uY + 66);
+doc.text('Tier 2: Specialist Practice', 30, uY + 66);
 doc.setTextColor(C.mint[0], C.mint[1], C.mint[2]);
-doc.text('₹24,999 One-Time', uW - 5, uY + 66, { align: 'right' });
+doc.text('Patient Adherence', uW - 5, uY + 66, { align: 'right' });
 doc.setFont('helvetica', 'normal');
 doc.setFontSize(7.5);
 doc.setTextColor(C.grayLight[0], C.grayLight[1], C.grayLight[2]);
-doc.text('Pre-configured 11" Android Kiosk Tablet + Desktop Stand + 1-Year SaaS subscription. Renews at ₹9,999/yr from Year 2.', 30, uY + 73, { maxWidth: uW - 24 });
+doc.text('Everything in Solo GP plus Daily 8 AM WhatsApp Morning Briefings, Day-25 chronic refill alerts, and adherence analytics.', 30, uY + 73, { maxWidth: uW - 24 });
 
 // Tier 3
 doc.setFillColor(14, 25, 48);
@@ -534,21 +534,21 @@ doc.setFontSize(9);
 doc.setTextColor(C.white[0], C.white[1], C.white[2]);
 doc.text('Tier 3: Polyclinic Multi-Doctor', 30, uY + 96);
 doc.setTextColor(C.mint[0], C.mint[1], C.mint[2]);
-doc.text('₹18,000 / year', uW - 5, uY + 96, { align: 'right' });
+doc.text('Multi-Doctor Group', uW - 5, uY + 96, { align: 'right' });
 doc.setFont('helvetica', 'normal');
 doc.setFontSize(7.5);
 doc.setTextColor(C.grayLight[0], C.grayLight[1], C.grayLight[2]);
-doc.text('For clinics with 2 to 4 doctors. Unified front desk receptionist, multi-queue routing, and consolidated clinic analytics.', 30, uY + 103, { maxWidth: uW - 24 });
+doc.text('For clinics with multi-doctor seating, in-house pharmacy inventory sync, dispensing billing queue, and consolidated analytics.', 30, uY + 103, { maxWidth: uW - 24 });
 
 // Pitch Callout
 doc.setFont('helvetica', 'bold');
 doc.setFontSize(8.5);
 doc.setTextColor(C.amber[0], C.amber[1], C.amber[2]);
-doc.text('💡 The "2-Patient" Psychological Hook:', 25, uY + 123);
+doc.text('💡 Zero-Friction Clinical Onboarding:', 25, uY + 123);
 doc.setFont('helvetica', 'normal');
 doc.setFontSize(8);
 doc.setTextColor(C.grayLight[0], C.grayLight[1], C.grayLight[2]);
-doc.text('At ₹9,999/year (~₹833/month), writing just 2 to 3 consultations a month pays for the software. The remaining 500+ consultations are 100% pure profit.', 25, uY + 129, { maxWidth: uW - 14 });
+doc.text('The First 150 Free Prescriptions allow doctors to embed RxNXT directly into daily consultation workflows before selecting a subscription tier.', 25, uY + 129, { maxWidth: uW - 14 });
 
 // Right Box: Unit Economics Table
 drawCard(18 + uW + 14, uY, uW, 138, C.emerald);
@@ -563,12 +563,12 @@ doc.text('Demonstrating exceptional gross margins across a standard 20-clinic co
 
 // Table Inside Right Box
 const uTable = [
-  ['Monthly SaaS Subscription (from ₹9,999/yr)', '+ ₹833 / mo', 'Revenue'],
+  ['Standard Clinic Subscription Plan', 'SaaS Model', 'Revenue'],
   ['Allocated Serverless Hosting (Vercel Pro)', '- ₹60 / mo', 'Fixed Cloud'],
   ['Allocated PostgreSQL DB (Supabase Pro)', '- ₹75 / mo', 'Fixed Cloud'],
   ['Meta WhatsApp Utility API (~600 msgs @ ₹0.13)', '- ₹78 / mo', 'Variable Messaging'],
   ['Client-Side PDF Generation (jsPDF)', '₹0 / mo', 'Zero Server CPU'],
-  ['NMC Doctor Verification (Direct REST)', '₹0 / mo', 'Zero Third-Party Cost'],
+  ['Doctor Direct Self-Registration', '₹0 / mo', 'Zero Friction'],
   ['Domain & SSL Amortization', '- ₹5 / mo', 'Infrastructure']
 ];
 
@@ -986,11 +986,15 @@ const desktopPath = 'C:\\Users\\orugt\\Desktop\\RxNXT_50L_Funding_Pitch_Presenta
 const repoPath = path.join(__dirname, 'RxNXT_50L_Funding_Pitch_Presentation.pdf');
 
 const pdfBytes = doc.output('arraybuffer');
-fs.writeFileSync(desktopPath, Buffer.from(pdfBytes));
+try {
+  fs.writeFileSync(desktopPath, Buffer.from(pdfBytes));
+  console.log('1. Desktop:', desktopPath);
+} catch (e) {
+  // Desktop write omitted in sandbox
+}
 fs.writeFileSync(repoPath, Buffer.from(pdfBytes));
 
 console.log('SUCCESS: Pitch Deck PDF saved to:');
-console.log('1. Desktop:', desktopPath);
-console.log('2. Repo:', repoPath);
+console.log('Repo:', repoPath);
 console.log('Total Pages:', doc.getNumberOfPages());
-console.log('File Size:', fs.statSync(desktopPath).size, 'bytes');
+console.log('File Size:', fs.statSync(repoPath).size, 'bytes');

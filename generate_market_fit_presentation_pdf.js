@@ -339,10 +339,10 @@ drawHeader('Benchmarking', 3, 'Head-to-Head Competitive Scorecard', 'Direct comp
 const mRows = [
   { dim: 'Prescribing Speed', practo: 'Slow (2-3 mins)', plix: 'Medium (~45s)', eka: 'Medium (~1 min)', rxnxt: 'Sub-30 Seconds (<28s avg)' },
   { dim: 'Medicine Search', practo: 'Exact spelling only', plix: 'Standard brand search', eka: 'Standard search', rxnxt: 'Additive Scoring ("PCM" -> Dolo 650)' },
-  { dim: 'WhatsApp Adherence', practo: 'SMS link to portal', plix: 'SMS / 3rd-party aggregator', eka: 'Basic PDF delivery', rxnxt: 'Meta Cloud API v20.0 + 3-Window Crons' },
+  { dim: 'WhatsApp Adherence', practo: 'SMS link to portal', plix: 'SMS / 3rd-party aggregator', eka: 'Basic PDF delivery', rxnxt: 'Meta Cloud API v20.0 + Morning Briefing' },
   { dim: 'In-Clinic Pharmacy Sync', practo: 'None', plix: 'None', eka: 'None', rxnxt: 'Built-in Dispensing Terminal & Stock Sync' },
   { dim: 'Doctor Data Trust', practo: 'Competes (marketplace)', plix: 'Sells pharma analytics', eka: 'ABDM health locker focus', rxnxt: '100% Doctor-Sovereign (DPDP Act 2023)' },
-  { dim: 'Pricing & Onboarding', practo: 'High (Rs 18K-30K/yr)', plix: 'Freemium / Pharma ads', eka: 'Freemium', rxnxt: 'Affordable SaaS (Rs 7,999-11,999/yr)' }
+  { dim: 'Pricing & Onboarding', practo: 'High legacy enterprise', plix: 'Freemium / Pharma ads', eka: 'Freemium', rxnxt: '150 Free Rx Trial + Transparent SaaS' }
 ];
 
 const colX = [20, 72, 116, 160, 206];
@@ -524,8 +524,8 @@ y5B += 2;
 y5B = drawWrappedLines('2. Unshakeable Data Gravity (Near-Zero Churn):', 158, y5B, s5W - 12, 4.2);
 y5B = drawWrappedLines('  - Once a clinic has 1,500 patient records, custom drug templates, and stock batches in RxNXT, switching away is extremely painful.', 158, y5B, s5W - 12, 4);
 y5B += 2;
-y5B = drawWrappedLines('3. Negative Working Capital:', 158, y5B, s5W - 12, 4.2);
-y5B = drawWrappedLines('  - Upfront annual collections (Rs 7,999 to Rs 11,999) fund ongoing server operations from Day 1 without external debt.', 158, y5B, s5W - 12, 4);
+y5B = drawWrappedLines('3. High Operating Leverage:', 158, y5B, s5W - 12, 4.2);
+y5B = drawWrappedLines('  - Annual upfront subscription collections fund ongoing server operations from Day 1 without external debt.', 158, y5B, s5W - 12, 4);
 y5B += 2;
 y5B = drawWrappedLines('4. Word-of-Mouth Referral Network:', 158, y5B, s5W - 12, 4.2);
 drawWrappedLines('  - Doctors actively recommend RxNXT to department colleagues and medical alumni batches.', 158, y5B, s5W - 12, 4);
@@ -710,58 +710,58 @@ drawCard(18, 40, plW, 96, C.blue);
 doc.setFont('helvetica', 'bold');
 doc.setFontSize(11);
 doc.setTextColor(C.white[0], C.white[1], C.white[2]);
-doc.text('Starter (Solo Doctor)', 24, 50);
+doc.text('Solo GP Plan', 24, 50);
 doc.setFont('helvetica', 'bold');
-doc.setFontSize(13);
+doc.setFontSize(11);
 doc.setTextColor(C.sky[0], C.sky[1], C.sky[2]);
-doc.text('Rs 7,999 / year', 24, 59);
+doc.text('Core Clinical OPD', 24, 59);
 doc.setFont('helvetica', 'normal');
 doc.setFontSize(7.8);
 doc.setTextColor(C.grayLight[0], C.grayLight[1], C.grayLight[2]);
 let y8A = 66;
 y8A = drawWrappedLines('- For single practitioners (BYOD)', 24, y8A, plW - 12, 4);
-y8A = drawWrappedLines('- Incurred Cost: Rs 2,079 / yr', 24, y8A, plW - 12, 4);
-y8A = drawWrappedLines('- Net Profit: Rs 5,920 / clinic', 24, y8A, plW - 12, 4);
-y8A = drawWrappedLines('- Gross Profit Margin: 74.0%', 24, y8A, plW - 12, 4);
-drawWrappedLines('- Max WhatsApp Quota: 750 msgs/mo', 24, y8A, plW - 12, 4);
+y8A = drawWrappedLines('- Lean Serverless Architecture', 24, y8A, plW - 12, 4);
+y8A = drawWrappedLines('- Full Prescription Preserving', 24, y8A, plW - 12, 4);
+y8A = drawWrappedLines('- Gross Profit Margin: 74.0%+', 24, y8A, plW - 12, 4);
+drawWrappedLines('- Unlimited Prescriptions & PDFs', 24, y8A, plW - 12, 4);
 
 drawCard(18 + plW + plGap, 40, plW, 96, C.emerald);
 doc.setFont('helvetica', 'bold');
 doc.setFontSize(11);
 doc.setTextColor(C.white[0], C.white[1], C.white[2]);
-doc.text('Pro (Clinic + Pharmacy)', 18 + plW + plGap + 6, 50);
+doc.text('Specialist Plan', 18 + plW + plGap + 6, 50);
 doc.setFont('helvetica', 'bold');
-doc.setFontSize(13);
+doc.setFontSize(11);
 doc.setTextColor(C.mint[0], C.mint[1], C.mint[2]);
-doc.text('Rs 11,999 / year', 18 + plW + plGap + 6, 59);
+doc.text('Adherence Engine', 18 + plW + plGap + 6, 59);
 doc.setFont('helvetica', 'normal');
 doc.setFontSize(7.8);
 doc.setTextColor(C.grayLight[0], C.grayLight[1], C.grayLight[2]);
 let y8B = 66;
-y8B = drawWrappedLines('- Hero Tier: Doctor + Desk + Pharmacy', 18 + plW + plGap + 6, y8B, plW - 12, 4);
-y8B = drawWrappedLines('- Incurred Cost: Rs 4,303 / yr', 18 + plW + plGap + 6, y8B, plW - 12, 4);
-y8B = drawWrappedLines('- Net Profit: Rs 7,696 / clinic', 18 + plW + plGap + 6, y8B, plW - 12, 4);
-y8B = drawWrappedLines('- Gross Profit Margin: 64.1%', 18 + plW + plGap + 6, y8B, plW - 12, 4);
-drawWrappedLines('- Max WhatsApp Quota: 2,000 msgs/mo', 18 + plW + plGap + 6, y8B, plW - 12, 4);
+y8B = drawWrappedLines('- Hero Tier: Doctor + Desk + Retention', 18 + plW + plGap + 6, y8B, plW - 12, 4);
+y8B = drawWrappedLines('- Daily 8 AM WhatsApp Morning Briefings', 18 + plW + plGap + 6, y8B, plW - 12, 4);
+y8B = drawWrappedLines('- Day-25 Chronic Care Refill Alerts', 18 + plW + plGap + 6, y8B, plW - 12, 4);
+y8B = drawWrappedLines('- Gross Profit Margin: 64.0%+', 18 + plW + plGap + 6, y8B, plW - 12, 4);
+drawWrappedLines('- Automated Adherence Analytics', 18 + plW + plGap + 6, y8B, plW - 12, 4);
 
 drawCard(18 + (plW + plGap) * 2, 40, plW, 96, C.purple);
 doc.setFont('helvetica', 'bold');
 doc.setFontSize(11);
 doc.setTextColor(C.white[0], C.white[1], C.white[2]);
-doc.text('Polyclinic / Group', 18 + (plW + plGap) * 2 + 6, 50);
+doc.text('Polyclinic Hub Plan', 18 + (plW + plGap) * 2 + 6, 50);
 doc.setFont('helvetica', 'bold');
-doc.setFontSize(13);
+doc.setFontSize(11);
 doc.setTextColor(C.purple[0], C.purple[1], C.purple[2]);
-doc.text('Rs 19,999 / year', 18 + (plW + plGap) * 2 + 6, 59);
+doc.text('Multi-Doctor Group', 18 + (plW + plGap) * 2 + 6, 59);
 doc.setFont('helvetica', 'normal');
 doc.setFontSize(7.8);
 doc.setTextColor(C.grayLight[0], C.grayLight[1], C.grayLight[2]);
 let y8C = 66;
-y8C = drawWrappedLines('- 2-4 Doctors Group Practice', 18 + (plW + plGap) * 2 + 6, y8C, plW - 12, 4);
-y8C = drawWrappedLines('- Incurred Cost: Rs 8,932 / yr', 18 + (plW + plGap) * 2 + 6, y8C, plW - 12, 4);
-y8C = drawWrappedLines('- Net Profit: Rs 11,067 / clinic', 18 + (plW + plGap) * 2 + 6, y8C, plW - 12, 4);
-y8C = drawWrappedLines('- Gross Profit Margin: 55.3%', 18 + (plW + plGap) * 2 + 6, y8C, plW - 12, 4);
-drawWrappedLines('- Max WhatsApp Quota: 4,500 msgs/mo', 18 + (plW + plGap) * 2 + 6, y8C, plW - 12, 4);
+y8C = drawWrappedLines('- Multi-Doctor Practice Seating', 18 + (plW + plGap) * 2 + 6, y8C, plW - 12, 4);
+y8C = drawWrappedLines('- Integrated In-House Pharmacy Inventory', 18 + (plW + plGap) * 2 + 6, y8C, plW - 12, 4);
+y8C = drawWrappedLines('- Direct-to-Pharmacy Dispensing Queue', 18 + (plW + plGap) * 2 + 6, y8C, plW - 12, 4);
+y8C = drawWrappedLines('- Gross Profit Margin: 55.0%+', 18 + (plW + plGap) * 2 + 6, y8C, plW - 12, 4);
+drawWrappedLines('- Multi-Seat Practice Administration', 18 + (plW + plGap) * 2 + 6, y8C, plW - 12, 4);
 
 // 100-Clinic Cohort
 drawCard(18, 142, W - 36, 40, C.amber);

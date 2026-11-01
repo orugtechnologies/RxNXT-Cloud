@@ -94,10 +94,9 @@ export async function POST(request: Request) {
     if (activeDoctorCount >= totalAllowedSeats) {
       return NextResponse.json({
         error: 'SEAT_LIMIT_REACHED',
-        message: `Your clinic has reached its limit of ${totalAllowedSeats} doctor seats. Purchase an additional seat (₹499/mo) to add more doctors.`,
+        message: `Your clinic has reached its limit of ${totalAllowedSeats} doctor seats. Add additional doctor seats to add more doctors.`,
         activeCount: activeDoctorCount,
         allowedSeats: totalAllowedSeats,
-        additionalSeatPrice: 499,
       }, { status: 402 });
     }
 

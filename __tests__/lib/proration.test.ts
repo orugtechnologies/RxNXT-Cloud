@@ -1,12 +1,12 @@
 import { calculateTierProration } from '@/lib/billing-proration';
 
 describe('Epic 4: Automated Mid-Cycle Tier Proration Engine', () => {
-  it('calculates exact prorated upgrade credit when upgrading from Solo GP (₹999) to Polyclinic Hub (₹3,999) mid-cycle', () => {
-    // Current plan: Solo GP (₹999 / 30 days = ₹33.30/day)
+  it('calculates exact prorated upgrade credit when upgrading mid-cycle', () => {
+    // Current plan: Base tier (999 / 30 days = 33.30/day)
     // 15 days remaining in billing cycle
-    // Unused credit: ₹33.30 * 15 = ₹500
-    // New plan: Polyclinic Hub (₹3,999)
-    // Net payable: ₹3,999 - ₹500 = ₹3,499
+    // Unused credit: 33.30 * 15 = 500
+    // New plan: Higher tier (3999)
+    // Net payable: 3999 - 500 = 3499
     const calculation = calculateTierProration({
       currentPlanPrice: 999,
       newPlanPrice: 3999,

@@ -64,7 +64,7 @@ export const COMMERCIAL_TIERS = {
     annual: 39990,
     description: 'Multi-Doctor Clinic with Integrated In-House Pharmacy',
     seatsIncluded: 3,
-    additionalSeatPrice: 499, // ₹499/mo per extra doctor
+    additionalSeatPrice: 0,
     features: [
       'Everything in Specialist',
       'Pharmacy Inventory & Real-Time Stock Alerts',

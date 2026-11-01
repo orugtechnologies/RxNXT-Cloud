@@ -10,7 +10,7 @@ RxNXT has successfully transitioned from a local prototype to a **fully cloud-ho
 
 **What is Live Today:**
 - **Cloud Infrastructure:** Hosted on Vercel with Supabase Mumbai Cloud PostgreSQL as the database.
-- **WhatsApp Gateway:** Official Meta WhatsApp Cloud API (v20.0) handles automated WhatsApp delivery of PDFs and cron-based Smart Slot reminders. **No reliance on Twilio or third-party scrapers.**
+- **WhatsApp Gateway:** Official Meta WhatsApp Cloud API (v20.0) handles automated WhatsApp delivery of PDFs and cron-based daily morning reminders. **No reliance on Twilio or third-party scrapers.**
 - **Role-Based Workflows:** Distinct, fully-functional dashboards for Doctors, Admins, Receptionists, and Nurses.
 - **Queue Management:** Live patient queuing connecting the reception desk to the doctor's dashboard.
 - **Intelligent Prescribing:** Sub-100ms drug search with additive scoring, one-click templates, and historical cloning.

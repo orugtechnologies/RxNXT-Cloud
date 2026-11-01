@@ -22,7 +22,7 @@ The platform operates on a heavily optimized, multi-tenant Serverless cloud arch
 - **Frontend / API:** Next.js 14 (App Router) executing on Vercel's Edge Network.
 - **Backend / Database:** PostgreSQL hosted on Supabase Mumbai (`ap-south-1`), accessed via Prisma ORM.
 - **Authentication:** NextAuth.js providing secure, multi-tenant RBAC.
-- **WhatsApp Integration:** Official Meta WhatsApp Cloud API (Graph API v20.0) for delivering PDFs and cron-scheduled Smart Slot reminders.
+- **WhatsApp Integration:** Official Meta WhatsApp Cloud API (Graph API v20.0) for delivering PDFs and cron-scheduled daily morning reminders.
 - **Search Engine:** Fuse.js with custom additive clinical scoring (prioritizing doctor/clinic favorites and handling typos).
 
 ## 5. User Roles
@@ -40,7 +40,7 @@ The system is built on a strict Multi-Tenant Role-Based Access Control (RBAC) fo
 - **Patient Queue Management:** Receptionists register patients to a live queue, instantly visible on the Doctor's dashboard with waiting times.
 - **Treatment Templates:** One-click application of complex, multi-drug protocols (e.g., "Viral Fever").
 - **WhatsApp PDF Delivery:** Instantly sends the generated A4 prescription PDF directly to the patient's WhatsApp via Meta Cloud API.
-- **Automated Reminders:** Vercel Cron triggers automated medicine intake (Smart Slots) and follow-up visit reminders.
+- **Automated Reminders:** Vercel Cron triggers automated daily morning medicine reminders and follow-up visit reminders.
 - **Progressive Web App (PWA):** Installable on mobile devices with sticky action footers for easy mobile prescribing.
 
 ## 7. Workflow Diagrams

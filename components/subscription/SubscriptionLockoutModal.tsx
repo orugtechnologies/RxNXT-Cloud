@@ -104,8 +104,8 @@ export default function SubscriptionLockoutModal({
               <User className="h-3.5 w-3.5 text-slate-500" />
             </div>
             <p className="text-[11px] text-slate-500 mb-2">Core OPD + Token Queue</p>
-            <div className="font-bold text-sm text-slate-900">
-              ₹999 <span className="text-[10px] text-slate-400 font-normal">/mo</span>
+            <div className="font-semibold text-xs text-blue-600">
+              Standard Plan
             </div>
           </div>
 
@@ -126,8 +126,8 @@ export default function SubscriptionLockoutModal({
               <Stethoscope className="h-3.5 w-3.5 text-emerald-600" />
             </div>
             <p className="text-[11px] text-slate-500 mb-2">Morning WhatsApp + Refills</p>
-            <div className="font-bold text-sm text-emerald-700">
-              ₹1,999 <span className="text-[10px] text-slate-400 font-normal">/mo</span>
+            <div className="font-semibold text-xs text-emerald-700">
+              Practice Plan
             </div>
           </div>
 
@@ -145,8 +145,8 @@ export default function SubscriptionLockoutModal({
               <Building2 className="h-3.5 w-3.5 text-indigo-600" />
             </div>
             <p className="text-[11px] text-slate-500 mb-2">Pharmacy + 3 Doctor Seats</p>
-            <div className="font-bold text-sm text-slate-900">
-              ₹3,999 <span className="text-[10px] text-slate-400 font-normal">/mo</span>
+            <div className="font-semibold text-xs text-indigo-700">
+              Multi-Doctor Plan
             </div>
           </div>
         </div>

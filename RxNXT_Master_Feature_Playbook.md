@@ -18,14 +18,14 @@ graph TD
     R[Receptionist Desk] -->|Step 1: Patient Queue Token| D[Doctor Workstation]
     D -->|Step 2: Sub-30s Digital Rx| P[Patient WhatsApp Care]
     D -->|Step 3: Verified E-Prescription| Ph[Pharmacist Counter - Future]
-    P -->|Step 4: Smart Slot Reminders| P
+    P -->|Step 4: Daily Morning Reminders| P
     P -->|Step 5: Day 25 Refill Alert| R
 ```
 
 | Stakeholder | Core Problem Solved | Key Features Used | Tangible Benefit / ROI |
 | :--- | :--- | :--- | :--- |
 | **🩺 Doctor** | Slow, tedious paper writing; handwriting misinterpretations; patient non-compliance. | Sub-30s Rx Engine, Fuzzy Drug Search, 1-Click Chips, History Cloning, Digital Signature. | **85% time savings** (under 30s per Rx); zero handwriting errors; protected doctor brand. |
-| **👨‍👩‍👧 Patient** | Forgotten medicine times; lost paper prescriptions; dose confusion. | Instant WhatsApp PDF, Treatment Summary, 3-Window Smart Slot Nudges, Refill Alerts. | **Higher compliance & faster recovery**; 0 dosage confusion; direct access to PDF on WhatsApp. |
+| **👨‍👩‍👧 Patient** | Forgotten medicine times; lost paper prescriptions; dose confusion. | Instant WhatsApp PDF, Treatment Summary, Daily Morning WhatsApp Nudges, Refill Alerts. | **Higher compliance & faster recovery**; 0 dosage confusion; direct access to PDF on WhatsApp. |
 | **📋 Receptionist** | Waiting room chaos; registration errors; manual patient callouts. | Token Queue System, Auto-Reset Registration Form, Live Waiting Timers, Doctor Queue Status. | **70% fewer phone calls**; smooth, organized front-desk OPD flow. |
 | **💊 Pharmacist** *(Future)* | Unreadable doctor handwriting; fake/tampered prescriptions; stock sync delays. | E-Prescription QR Scanner, Dispensing Verification, Live Stock Deduction. | **Zero dispensing errors**; 100% legal verification; automated inventory tracking. |
 
@@ -70,31 +70,24 @@ graph TD
 
 ---
 
-### 📍 Workflow 3: Automated Smart-Slot Medication Adherence (Patient Care Engine)
+### 📍 Workflow 3: Automated Daily Morning Medication Adherence (Patient Care Engine)
 
 ```
-[Prescription Saved] ➔ [Calculate Frequencies] ➔ [Schedule 3-Window Crons] ➔ [Deliver Targeted Nudges]
+[Prescription Saved] ➔ [Calculate Regimen] ➔ [Schedule Daily 8:00 AM IST Cron] ➔ [Deliver Morning Nudge]
 ```
 
-When a prescription is saved, RxNXT's Smart-Slot engine automatically categorizes medicines and schedules dispatches across 3 daily IST time windows:
+When a prescription is saved, RxNXT automatically schedules a daily WhatsApp morning briefing delivered via cron:
 
 ```
-🌅 8:00 AM IST (Morning Slot)
-   • Filters: 1-0-0, 1-0-1, 1-1-1, OD, Before breakfast, Morning
-   • Message: "🌅 Morning Dose Reminder... Take with water."
-
-☀️ 1:30 PM IST (Afternoon Slot)
-   • Filters: 0-1-0, 1-1-1, Afternoon, Thrice daily
-   • Message: "☀️ Afternoon Dose Reminder... Take after lunch."
-
-🌙 8:30 PM IST (Night Slot)
-   • Filters: 0-0-1, 1-0-1, 1-1-1, Bedtime, Night, HS
-   • Message: "🌙 Night Dose Reminder... Take after dinner/at bedtime."
+🌅 8:00 AM IST (Daily Morning Reminder)
+   • Schedule: Every morning at 8:00 AM IST (cron: 30 2 * * *)
+   • Content: Summary of prescribed daily medicines, dosages, and follow-up guidance.
+   • Message: "🌅 Morning Medicine Reminder... Please take your prescribed medicines today as directed."
 ```
 
-#### 🛡️ Smart Slot Rules:
-- **Zero Message Waste**: If a patient is prescribed *Aceclo (1-0-0)* (Morning only), it is **excluded from Afternoon and Night messages**.
-- **Superseding Rule**: If a doctor modifies or re-issues a prescription for a patient on Wednesday, all old pending Monday reminders are automatically marked **`SUPERSEDED`** (cancelled). The patient receives **only 1 clean message** reflecting their latest active treatment!
+#### 🛡️ Reminder Engine Rules:
+- **Clean Daily Briefing**: Rather than spamming multiple notifications throughout the day, patients receive one clear, comprehensive morning summary to stay adherent.
+- **Superseding Rule**: If a doctor modifies or re-issues a prescription for a patient, all old pending reminders are automatically marked **`SUPERSEDED`** (cancelled). The patient receives **only 1 clean message** reflecting their latest active treatment!
 
 ---
 
@@ -156,5 +149,5 @@ RxNXT connects the entire outpatient care chain into a unified digital workflow:
 
 - **Receptionists** manage queue footfall effortlessly.
 - **Doctors** write structured prescriptions in under 30 seconds.
-- **Patients** stay compliant with 3-window Smart Slot WhatsApp nudges.
+- **Patients** stay compliant with automated daily morning WhatsApp nudges.
 - **Pharmacists** *(Future)* verify digital authenticity and manage stock seamlessly.

@@ -112,8 +112,8 @@ export async function GET(request: Request) {
     });
 
     // 2. SHORT-CIRCUIT: Exact Alias Match
-    const exactAliasMatches = allDrugs.filter(d => 
-      d.aliases && d.aliases.toLowerCase().split(',').map(a => a.trim()).includes(queryLower)
+    const exactAliasMatches = allDrugs.filter((d: any) => 
+      d.aliases && typeof d.aliases === 'string' && d.aliases.toLowerCase().split(',').map((a: string) => a.trim()).includes(queryLower)
     );
 
     if (exactAliasMatches.length > 0) {

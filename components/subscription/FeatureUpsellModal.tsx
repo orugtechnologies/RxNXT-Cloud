@@ -46,7 +46,6 @@ export default function FeatureUpsellModal({
 
   const isPolyclinic = metadata.requiredTier === 'POLYCLINIC_HUB';
   const targetPlanName = isPolyclinic ? 'Polyclinic Hub' : 'Specialist';
-  const targetPlanPrice = isPolyclinic ? '₹3,999' : '₹1,999';
 
   const handle1ClickUpgrade = async () => {
     try {
@@ -108,7 +107,7 @@ export default function FeatureUpsellModal({
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Available in the {targetPlanName} Tier ({targetPlanPrice}/month)
+              Available in the {targetPlanName} Tier
             </p>
           </div>
         </div>
@@ -151,7 +150,7 @@ export default function FeatureUpsellModal({
             ) : (
               <Sparkles className="h-4 w-4" />
             )}
-            Upgrade to {targetPlanName} ({targetPlanPrice}/mo)
+            Upgrade to {targetPlanName}
           </Button>
 
           <Link href="/admin/subscription" className="block w-full">

@@ -52,7 +52,7 @@ graph LR
 * **Pilot (Hobby Tier)**: **₹0**. Ample compute and bandwidth for 5 clinics.
 * **Commercial (Pro Tier)**: **$20 / month (~₹1,680 / mo)**.
   * Unlocks production commercial rights.
-  * Allows multiple custom cron schedules (Morning 8:00 AM, Afternoon 1:30 PM, Night 8:30 PM).
+  * Supports automated daily cron schedules (Daily 8:00 AM IST morning reminder).
   * Increases serverless timeout from 15s to up to 300s.
 
 ### 2. Database Layer (Supabase Mumbai `ap-south-1`)
@@ -68,7 +68,7 @@ graph LR
 * **Architecture**: Official Meta Graph API v20.0 (`services/whatsappService.ts`).
 * **Cost Structure in India**:
   * Free allowance: **1,000 service conversations / month**.
-  * Utility Template Messages (Prescriptions, Smart Slot Dose Reminders, Follow-ups): **~₹0.12 to ₹0.14 per message**.
+  * Utility Template Messages (Prescriptions, Daily Dose Reminders, Follow-ups): **~₹0.12 to ₹0.14 per message**.
 * **Monthly Cost Estimates**:
   * 5 Clinics (~2,500 messages/mo): **~₹325 / month**.
   * 20 Clinics (~15,000 messages/mo): **~₹1,950 / month**.
@@ -82,28 +82,19 @@ graph LR
 * **Cost**: **₹0 (Zero)**.
 * **Why**: Direct, zero-friction doctor self-registration and clinic workspace provisioning with immediate access.
 
----
-
-## 📈 Unit Economics & Profit Margins (ROI)
-
-Under the **RxNXT Strategic Pricing Model** (`RxNXT_Strategic_Pricing_Masterplan.md`), pricing is set at **₹9,999 / year per clinic** (~₹833 / month per clinic):
-
-```text
-┌─────────────────────────────────────────────────────────────┐
-│ 1 Clinic Financial Unit Economics (Monthly)                 │
-├─────────────────────────────────────────────────────────────┤
-│ Gross Subscription Revenue:              ₹833 / mo          │
-│ Less Cloud Hosting & Meta Costs:       - ₹210 / mo (Average)│
-├─────────────────────────────────────────────────────────────┤
-│ NET GROSS PROFIT PER CLINIC:             ₹623 / mo          │
-│ GROSS PROFIT MARGIN:                     74.8%              │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Cohort Simulation: 100 Clinics
-* **Annual Subscription Revenue** (100 $\times$ ₹9,999): **₹9,99,900 / year** (~₹83,325 / month)
-* **Total Annual Cloud & WhatsApp Cost**: **~₹2,04,000 / year** (~₹17,000 / month)
-* **Net Annual Infrastructure Profit**: **₹7,95,900 / year (~79.6% Net Margin)**
+### 6. 150 Free Prescription Trial Database Architecture
+* **Usage-Based Gating**: Instead of arbitrary calendar-day countdowns, new clinics are provisioned with a strict **150 free prescription trial cap** (`trialPrescriptionCap = 150`, `subscriptionPlan = 'TRIAL_150_RX'`).
+* **Database Tracking**:
+  * Tracked on the `Clinic` model via `prescriptionsCount` and `trialPrescriptionCap`.
+  * Atomically checked before prescription creation in `app/api/prescriptions/save/route.ts` via `getClinicSubscription(user.clinicId)`.
+* **State Progression**:
+  * **0 to 120 Prescriptions**: Clean, unrestricted trial usage with zero nagging.
+  * **121 to 149 Prescriptions**: Non-blocking `isUsageWarning` indicator informing the doctor of remaining free trial capacity.
+  * **150+ Prescriptions**: Hard-lock `isUsageLocked` (`403 TRIAL_USAGE_LIMIT_REACHED`) redirecting to subscription tier selection.
+* **Database Storage & Concurrency Economics**:
+  * Each prescription record consumes **~2.5 KB** of database disk storage.
+  * 150 trial prescriptions = **~375 KB per doctor trial**.
+  * A baseline 500 MB PostgreSQL database easily accommodates **over 1,300 doctors actively completing their 150-prescription trial** before requiring any storage upgrade.
 
 ---
 
