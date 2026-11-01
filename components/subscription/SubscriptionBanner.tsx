@@ -55,8 +55,7 @@ export default function SubscriptionBanner() {
   if (
     sub.plan === 'DEMO_LIFETIME' ||
     (sub as any).isDemo ||
-    (sub as any).clinicId === 'demo-clinic-001' ||
-    (sub as any).clinicName?.toLowerCase().includes('demo')
+    (sub as any).clinicId === 'demo-clinic-001'
   ) {
     return null;
   }

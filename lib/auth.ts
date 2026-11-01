@@ -290,7 +290,7 @@ export const authOptions: NextAuthOptions = {
           'admin@rxnxt.com',
         ];
 
-        if (user.clinicId && (demoEmails.includes(cleanEmail) || user.clinicId === 'demo-clinic-001' || user.clinic?.name?.toLowerCase().includes('demo'))) {
+        if (user.clinicId === 'demo-clinic-001') {
           try {
             await prisma.clinic.update({
               where: { id: user.clinicId },
