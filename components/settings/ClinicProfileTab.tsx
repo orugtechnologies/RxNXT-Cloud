@@ -42,14 +42,44 @@ export default function ClinicProfileTab() {
   const handleFileUpload = (type: 'logo' | 'signature') => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        alert('File size exceeds 2MB. Please select an image under 2MB.');
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size exceeds 5MB. Please select an image under 5MB.');
         return;
       }
       const reader = new FileReader();
       reader.onload = (event) => {
-        const base64 = event.target?.result as string;
-        setFormData(prev => ({ ...prev, [type === 'logo' ? 'logoUrl' : 'signatureUrl']: base64 }));
+        const rawData = event.target?.result as string;
+        // Optimize and compress image dimensions using canvas
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = type === 'logo' ? 400 : 500;
+          let width = img.width;
+          let height = img.height;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressed = canvas.toDataURL('image/png');
+            setFormData(prev => ({ ...prev, [type === 'logo' ? 'logoUrl' : 'signatureUrl']: compressed }));
+          } else {
+            setFormData(prev => ({ ...prev, [type === 'logo' ? 'logoUrl' : 'signatureUrl']: rawData }));
+          }
+        };
+        img.onerror = () => {
+          setFormData(prev => ({ ...prev, [type === 'logo' ? 'logoUrl' : 'signatureUrl']: rawData }));
+        };
+        img.src = rawData;
       };
       reader.readAsDataURL(file);
     }

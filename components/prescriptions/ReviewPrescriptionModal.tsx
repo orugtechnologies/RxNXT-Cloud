@@ -98,12 +98,12 @@ export default function ReviewPrescriptionModal({
       const res = await fetch('/api/prescriptions/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prescriptionId, pdfBase64, overridePhone: targetPhone })
+        body: JSON.stringify({ prescriptionId, overridePhone: targetPhone })
       });
       
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || 'Failed to send WhatsApp message');
+        throw new Error(errData.message || errData.error || (res.status === 413 ? 'Payload too large to send' : `Failed to send WhatsApp message (${res.status})`));
       }
       
       if (timeTakenSeconds) {
