@@ -42,10 +42,16 @@ export default function ClinicProfileTab() {
   const handleFileUpload = (type: 'logo' | 'signature') => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // In a real app, upload to S3/Cloud Storage here and get URL.
-      // For this MVP, we create a local object URL to display it visually.
-      const url = URL.createObjectURL(file);
-      setFormData({ ...formData, [type === 'logo' ? 'logoUrl' : 'signatureUrl']: url });
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File size exceeds 2MB. Please select an image under 2MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        setFormData(prev => ({ ...prev, [type === 'logo' ? 'logoUrl' : 'signatureUrl']: base64 }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 

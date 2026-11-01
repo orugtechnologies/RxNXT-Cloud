@@ -65,6 +65,8 @@ export async function GET(
       doctorSpecialization: doctor?.specialization || undefined,
       verificationStatus: doctor?.verificationStatus || undefined,
       medicalCouncil: doctor?.medicalCouncil || undefined,
+      logoUrl: prescription.clinic?.logoUrl || undefined,
+      signatureUrl: doctor?.signatureUrl || undefined,
     });
 
     const safePatientName = (prescription.patient?.name || 'Patient').replace(/[^a-zA-Z0-9]/g, '_');

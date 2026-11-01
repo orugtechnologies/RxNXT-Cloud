@@ -22,9 +22,11 @@ export async function GET() {
       medicalCouncil: doctor.medicalCouncil,
       verificationStatus: doctor.verificationStatus,
       qualification: doctor.qualification,
+      signatureUrl: doctor.signatureUrl || undefined,
       clinicName: doctor.clinic?.name,
       clinicAddress: doctor.clinic?.address,
       clinicPhone: doctor.clinic?.phone,
+      logoUrl: doctor.clinic?.logoUrl || undefined,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

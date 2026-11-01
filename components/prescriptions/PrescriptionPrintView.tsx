@@ -21,6 +21,8 @@ export interface PrintViewProps {
   doctorSpecialization?: string;
   verificationStatus?: string;
   medicalCouncil?: string;
+  logoUrl?: string;
+  signatureUrl?: string;
 }
 
 export { formatScheduleDescription };

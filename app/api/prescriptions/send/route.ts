@@ -119,6 +119,8 @@ export async function POST(request: Request) {
           doctorSpecialization: doctor?.specialization || undefined,
           verificationStatus: doctor?.verificationStatus || undefined,
           medicalCouncil: doctor?.medicalCouncil || undefined,
+          logoUrl: prescription.clinic?.logoUrl || undefined,
+          signatureUrl: doctor?.signatureUrl || undefined,
         });
       } catch (genErr) {
         console.warn('[Server PDF Gen Warning]:', genErr);

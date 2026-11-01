@@ -36,6 +36,8 @@ export interface PrescriptionPDFData {
   doctorSpecialization?: string;
   verificationStatus?: string;
   medicalCouncil?: string;
+  logoUrl?: string;
+  signatureUrl?: string;
 }
 
 /**
@@ -108,6 +110,16 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   const drawFooter = () => {
     const footerY = pageHeight - 20;
 
+    // Doctor digital signature image
+    if (data.signatureUrl && data.signatureUrl.startsWith('data:image')) {
+      try {
+        const signFormat = data.signatureUrl.includes('image/jpeg') || data.signatureUrl.includes('image/jpg') ? 'JPEG' : 'PNG';
+        doc.addImage(data.signatureUrl, signFormat, pageWidth - margin - 45, footerY - 17, 35, 11);
+      } catch (signErr) {
+        console.warn('Could not render digital signature in PDF:', signErr);
+      }
+    }
+
     // Doctor signature line
     doc.setDrawColor(203, 213, 225); // Slate-300
     doc.setLineWidth(0.4);
@@ -159,11 +171,25 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
 
   y = 12;
 
+  // Check if clinic logo exists
+  const hasLogo = Boolean(data.logoUrl && data.logoUrl.startsWith('data:image'));
+  let textStartX = margin;
+
+  if (hasLogo && data.logoUrl) {
+    try {
+      const logoFormat = data.logoUrl.includes('image/jpeg') || data.logoUrl.includes('image/jpg') ? 'JPEG' : 'PNG';
+      doc.addImage(data.logoUrl, logoFormat, margin, y - 2, 16, 16);
+      textStartX = margin + 20;
+    } catch (logoErr) {
+      console.warn('Could not render clinic logo in PDF:', logoErr);
+    }
+  }
+
   // 2. Clinic branding & Doctor info
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(15, 23, 42); // Slate-900
-  doc.text(data.clinicName || 'RxNXT™ Health Clinic', margin, y + 4);
+  doc.text(data.clinicName || 'RxNXT™ Health Clinic', textStartX, y + 4);
 
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
@@ -179,7 +205,7 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(71, 85, 105);
   if (data.clinicAddress) {
-    doc.text(data.clinicAddress, margin, y + 2);
+    doc.text(data.clinicAddress, textStartX, y + 2);
   }
   
   if (data.doctorSpecialization || data.doctorRegNo) {
@@ -189,7 +215,7 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
 
   y += 4;
   if (data.clinicPhone) {
-    doc.text(`Ph: ${data.clinicPhone}`, margin, y + 2);
+    doc.text(`Ph: ${data.clinicPhone}`, textStartX, y + 2);
   }
 
   y += 6;
