@@ -135,10 +135,8 @@ export function isDemoEmail(email?: string | null): boolean {
 }
 
 export function isDemoClinic(clinicId?: string | null, clinicName?: string | null): boolean {
-  if (!clinicId) return true; // Safe fallback for demo sessions
-  if (clinicId === DEMO_CLINIC_ID) return true;
-  if (clinicName && clinicName.toLowerCase().includes('demo')) return true;
-  return false;
+  if (!clinicId) return false;
+  return clinicId === DEMO_CLINIC_ID;
 }
 
 /**
