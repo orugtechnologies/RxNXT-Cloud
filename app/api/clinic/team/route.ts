@@ -11,7 +11,10 @@ export async function GET() {
 
   try {
     const team = await prisma.user.findMany({
-      where: { clinicId: user.clinicId },
+      where: { 
+        clinicId: user.clinicId,
+        role: { in: ['doctor', 'clinic_admin'] }
+      },
       select: {
         id: true,
         fullName: true,
