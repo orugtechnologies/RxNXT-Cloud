@@ -493,8 +493,12 @@ export async function getClinicWhatsAppUsage(clinicId: string): Promise<{
 
   // Count WhatsApp messages sent during current cycle
   const startDate = sub.isTrial
-    ? (sub.subscriptionStartedAt || sub.trialEndsAt ? new Date(sub.trialEndsAt!.getTime() - 14 * 24 * 60 * 60 * 1000) : new Date(0))
-    : (sub.subscriptionStartedAt || new Date(0));
+    ? (sub.subscriptionStartedAt
+        ? new Date(sub.subscriptionStartedAt)
+        : sub.trialEndsAt
+          ? new Date(sub.trialEndsAt.getTime() - 14 * 24 * 60 * 60 * 1000)
+          : new Date(0))
+    : (sub.subscriptionStartedAt ? new Date(sub.subscriptionStartedAt) : new Date(0));
 
   const sentCount = await prisma.reminder.count({
     where: {
