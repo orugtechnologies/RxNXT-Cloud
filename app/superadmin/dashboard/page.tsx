@@ -266,7 +266,7 @@ export default function SuperAdminDashboardPage() {
                                 : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                             }`}>
                               {clinic.subscriptionStatus === 'TRIAL' 
-                                ? `14D TRIAL (${clinic.daysRemaining}d left)`
+                                ? `150-RX TRIAL (${clinic.prescriptionCount || 0}/150)`
                                 : clinic.subscriptionStatus === 'ACTIVE'
                                 ? `ACTIVE PRO (${clinic.daysRemaining}d left)`
                                 : 'EXPIRED'}

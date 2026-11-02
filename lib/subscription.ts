@@ -305,7 +305,7 @@ export async function getClinicSubscription(clinicId: string): Promise<Subscript
   // Calendar expiry applies exclusively to paid recurring subscriptions
   const expiryDate = activeClinic.subscriptionEndsAt;
   const diffMs = expiryDate ? expiryDate.getTime() - now.getTime() : 0;
-  const daysRemaining = isTrial ? 99999 : Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+  const daysRemaining = isTrial ? 0 : Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
 
   const isExpired = isTrial ? isUsageLocked : (expiryDate ? now > expiryDate : false);
   const isExpiringSoon = !isTrial && !isExpired && daysRemaining <= 7;

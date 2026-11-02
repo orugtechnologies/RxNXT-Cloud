@@ -243,17 +243,23 @@ export default function SubscriptionBillingPage() {
                   </div>
                 )}
 
-                <p className="text-sm text-slate-600 flex items-center gap-4 pt-1">
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="h-4 w-4 text-slate-400" />
-                    <strong>{sub.daysRemaining} {sub.daysRemaining === 1 ? 'day' : 'days'}</strong> remaining
-                  </span>
-                  <span className="text-slate-300">•</span>
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="h-4 w-4 text-slate-400" />
-                    Expires on: <strong>{sub.subscriptionEndsAt ? new Date(sub.subscriptionEndsAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}</strong>
-                  </span>
-                </p>
+                {sub.isTrial ? (
+                  <p className="text-xs text-slate-500 font-medium pt-1">
+                    <span className="text-blue-700 font-bold">{Math.max(0, (sub.trialPrescriptionCap || 150) - (sub.prescriptionsCount || 0))} prescriptions remaining</span> in your free pilot. Gated purely by usage — no calendar days limit.
+                  </p>
+                ) : sub.subscriptionEndsAt ? (
+                  <p className="text-sm text-slate-600 flex items-center gap-4 pt-1">
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="h-4 w-4 text-slate-400" />
+                      <strong>{sub.daysRemaining} {sub.daysRemaining === 1 ? 'day' : 'days'}</strong> remaining
+                    </span>
+                    <span className="text-slate-300">•</span>
+                    <span className="flex items-center gap-1.5">
+                      <Calendar className="h-4 w-4 text-slate-400" />
+                      Expires on: <strong>{new Date(sub.subscriptionEndsAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</strong>
+                    </span>
+                  </p>
+                ) : null}
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
