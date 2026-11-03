@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
+import { optimizeBase64Png } from '@/lib/imageOptimizer';
 
 export async function GET() {
   const user = await getAuthenticatedUser();
@@ -40,7 +41,7 @@ export async function PUT(request: Request) {
         phone: body.phone,
         email: body.email,
         address: body.address,
-        logoUrl: body.logoUrl,
+        logoUrl: optimizeBase64Png(body.logoUrl, 400),
       }
     });
 
@@ -48,7 +49,7 @@ export async function PUT(request: Request) {
       where: { id: user.id },
       data: {
         registrationNumber: body.registrationNumber,
-        signatureUrl: body.signatureUrl,
+        signatureUrl: optimizeBase64Png(body.signatureUrl, 500),
       }
     });
 
