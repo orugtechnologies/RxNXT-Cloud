@@ -387,7 +387,8 @@ function PrescriptionWorkflowContent() {
           followUpDate,
           medicines,
           timeTakenSeconds: startTime ? Math.floor((Date.now() - startTime) / 1000) : null,
-          creationMethod
+          creationMethod,
+          enableDailyReminders: enableDailyReminders !== undefined ? enableDailyReminders : true
         })
       });
       

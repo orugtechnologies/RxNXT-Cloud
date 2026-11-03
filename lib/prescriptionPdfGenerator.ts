@@ -114,7 +114,7 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
     if (data.signatureUrl && data.signatureUrl.startsWith('data:image')) {
       try {
         const signFormat = data.signatureUrl.includes('image/jpeg') || data.signatureUrl.includes('image/jpg') ? 'JPEG' : 'PNG';
-        doc.addImage(data.signatureUrl, signFormat, pageWidth - margin - 45, footerY - 17, 35, 11);
+        doc.addImage(data.signatureUrl, signFormat, pageWidth - margin - 45, footerY - 17, 35, 11, undefined, 'FAST');
       } catch (signErr) {
         console.warn('Could not render digital signature in PDF:', signErr);
       }
@@ -178,7 +178,7 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   if (hasLogo && data.logoUrl) {
     try {
       const logoFormat = data.logoUrl.includes('image/jpeg') || data.logoUrl.includes('image/jpg') ? 'JPEG' : 'PNG';
-      doc.addImage(data.logoUrl, logoFormat, margin, y - 2, 16, 16);
+      doc.addImage(data.logoUrl, logoFormat, margin, y - 2, 16, 16, undefined, 'FAST');
       textStartX = margin + 20;
     } catch (logoErr) {
       console.warn('Could not render clinic logo in PDF:', logoErr);

@@ -375,12 +375,6 @@ export async function sendPrescriptionPDF(
       `Get well soon!`;
 
   let documentMediaId: string | undefined;
-  if (pdfBase64 && pdfBase64.length > 50) {
-    const uploadedId = await uploadPDFToMetaMedia(pdfBase64);
-    if (uploadedId) {
-      documentMediaId = uploadedId;
-    }
-  }
 
   const cleanPhone = sanitizePhone(patientPhone);
   const safePatientName = sanitizeTemplateParam(patientName).replace(/[^a-zA-Z0-9]/g, '_') || 'Patient';
@@ -488,6 +482,18 @@ export async function sendPrescriptionPDF(
     }
   } catch (docErr: any) {
     console.warn('[Meta WhatsApp] rxnxt_prescription_doc failed, falling back to rxnxt_prescription_ready:', docErr.message);
+  }
+
+  // Fallback: only upload media if Candidate 1 and Candidate 2 failed
+  if (pdfBase64 && pdfBase64.length > 50) {
+    try {
+      const uploadedId = await uploadPDFToMetaMedia(pdfBase64);
+      if (uploadedId) {
+        documentMediaId = uploadedId;
+      }
+    } catch (uploadErr) {
+      console.warn('[Meta WhatsApp] Fallback upload failed:', uploadErr);
+    }
   }
 
   // 3. Fallback: rxnxt_prescription_ready (Language: 'en_US')
