@@ -225,11 +225,10 @@ export async function POST(request: Request) {
 
       const now = new Date();
 
-      // NEW RULE:
-      // The Single Super-Prescription Message automatically delivers the complete schedule and PDF upon consultation.
-      // Ongoing automated daily morning reminders are only scheduled if explicitly opted-in (enableDailyReminders === true).
-      // Grandfathered prescriptions (like Swamiji's) already in the DB continue running their scheduled reminders normally.
-      if (enableDailyReminders) {
+      // Reminders are ACTIVE BY DEFAULT (Opt-out policy).
+      // Unless the doctor explicitly unchecks the toggle (enableDailyReminders === false),
+      // adherence dose reminders are always scheduled automatically.
+      if (enableDailyReminders !== false) {
         if (isChronic) {
           // CHRONIC CARE: Daily morning briefings for 14 days + Refill Reminder on Day 25
           for (let day = 1; day <= 14; day++) {

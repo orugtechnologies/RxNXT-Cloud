@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, CheckCircle, User, Stethoscope, Pill, FileText, Activity, Send, Loader2, Sparkles, Download, AlertCircle, Lock } from 'lucide-react';
 import { PrescribedMedicine } from './PrescriptionCart';
 import { Patient } from '../patients/PatientSearchUI';
@@ -43,11 +43,21 @@ export default function ReviewPrescriptionModal({
   onGoToDashboard
 }: ReviewModalProps) {
   const [isSending, setIsSending] = useState(false);
+  const [sendSuccess, setSendSuccess] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const [targetPhone, setTargetPhone] = useState(patient.phone || '');
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const { isAllowed: isMorningAllowed, showUpsell, setShowUpsell } = useFeatureFlag('MORNING_ADHERENCE');
   const [enableDailyReminders, setEnableDailyReminders] = useState(true);
+  const hasAutoSentRef = useRef(false);
+
+  // Auto-send WhatsApp immediately upon prescription creation if valid phone number is present
+  useEffect(() => {
+    if (isSuccess && prescriptionId && targetPhone && !hasAutoSentRef.current && !sendSuccess && !isSending) {
+      hasAutoSentRef.current = true;
+      sendViaWhatsApp(false);
+    }
+  }, [isSuccess, prescriptionId, targetPhone]);
 
   // If the tier explicitly locks morning adherence, keep it toggled off
   useEffect(() => {
@@ -90,7 +100,7 @@ export default function ReviewPrescriptionModal({
     }
   };
 
-  const sendViaWhatsApp = async () => {
+  const sendViaWhatsApp = async (showAlert = true) => {
     if (!prescriptionId) return;
     setIsSending(true);
     setSendError(null);
@@ -105,20 +115,25 @@ export default function ReviewPrescriptionModal({
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.message || errData.error || (res.status === 413 ? 'Payload too large to send' : `Failed to send WhatsApp message (${res.status})`));
       }
-      
-      if (timeTakenSeconds) {
-        alert(`✅ Prescription sent successfully to ${targetPhone || patient.phone}! (Completed in ${timeTakenSeconds} seconds 🚀)`);
-      } else {
-        alert(`✅ Prescription sent successfully to ${targetPhone || patient.phone}!`);
+
+      setSendSuccess(true);
+      if (showAlert) {
+        if (timeTakenSeconds) {
+          alert(`✅ Prescription sent successfully to ${targetPhone || patient.phone}! (Completed in ${timeTakenSeconds} seconds 🚀)`);
+        } else {
+          alert(`✅ Prescription sent successfully to ${targetPhone || patient.phone}!`);
+        }
       }
     } catch (err: any) {
       console.error(err);
       const msg = err.message || 'Error sending WhatsApp message';
       setSendError(msg);
-      if (err.message === 'WhatsApp is not connected yet') {
-        alert('WhatsApp service is still connecting. Please verify your Meta WhatsApp Cloud API credentials and try again.');
-      } else {
-        alert(msg);
+      if (showAlert) {
+        if (err.message === 'WhatsApp is not connected yet') {
+          alert('WhatsApp service is still connecting. Please verify your Meta WhatsApp Cloud API credentials and try again.');
+        } else {
+          alert(msg);
+        }
       }
     } finally {
       setIsSending(false);
@@ -149,18 +164,53 @@ export default function ReviewPrescriptionModal({
           </button>
 
           <div className="flex justify-center mb-4">
-            <div className="h-16 w-16 bg-emerald-100 text-clinic-emerald rounded-full flex items-center justify-center">
-              <CheckCircle size={36} />
+            <div className={`h-16 w-16 ${sendSuccess ? 'bg-emerald-100 text-emerald-600' : isSending ? 'bg-blue-100 text-blue-600' : 'bg-emerald-100 text-clinic-emerald'} rounded-full flex items-center justify-center transition-all`}>
+              {isSending ? (
+                <Loader2 className="animate-spin" size={36} />
+              ) : (
+                <CheckCircle size={36} />
+              )}
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-clinic-navy mb-1">Prescription Generated!</h2>
+          <h2 className="text-2xl font-bold text-clinic-navy mb-1">
+            {sendSuccess ? 'Prescription Sent!' : isSending ? 'Sending to Patient WhatsApp...' : 'Prescription Generated!'}
+          </h2>
           {prescriptionId && (
             <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-full text-xs font-mono font-bold mb-3 mx-auto">
               <span>Rx ID: #{prescriptionId.slice(-6).toUpperCase()}</span>
             </div>
           )}
-          <p className="text-slate-500 mb-5 text-sm">
-            The official PDF has been created for <span className="font-bold text-slate-800">{patient.name}</span>. You can now send it securely via WhatsApp or download it directly.
+
+          {/* Adherence & Delivery Status Cards */}
+          <div className="mb-4 space-y-2">
+            {sendSuccess ? (
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-left text-xs text-emerald-800 flex items-center gap-2 font-medium">
+                <span className="text-base">📱</span>
+                <div>
+                  <p className="font-bold">WhatsApp Prescription Delivered</p>
+                  <p className="text-emerald-700 font-mono text-[11px]">{targetPhone || patient.phone}</p>
+                </div>
+              </div>
+            ) : isSending ? (
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-left text-xs text-blue-800 flex items-center gap-2">
+                <Loader2 className="animate-spin text-blue-600 shrink-0" size={16} />
+                <span>Sending official PDF & routine schedule to WhatsApp ({targetPhone || patient.phone})...</span>
+              </div>
+            ) : null}
+
+            {enableDailyReminders && (
+              <div className="p-2.5 bg-blue-50/70 border border-blue-200/80 rounded-xl text-left text-xs text-blue-900 flex items-center gap-2">
+                <span className="text-base">🔔</span>
+                <div>
+                  <p className="font-bold text-slate-800">Automated Daily Morning Reminders Active</p>
+                  <p className="text-slate-600 text-[11px]">Patient will receive daily 8:00 AM WhatsApp dose alerts for this course.</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <p className="text-slate-500 mb-4 text-xs">
+            Official NMC 2023 Compliant prescription generated for <span className="font-bold text-slate-800">{patient.name}</span>.
           </p>
 
           {sendError && (
@@ -207,12 +257,14 @@ export default function ReviewPrescriptionModal({
 
           <div className="space-y-3">
             <button
-              onClick={sendViaWhatsApp}
+              onClick={() => sendViaWhatsApp(true)}
               disabled={isSending || !targetPhone}
-              className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center disabled:opacity-70 gap-2"
+              className={`w-full ${sendSuccess ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300' : 'bg-[#25D366] hover:bg-[#20bd5a] text-white'} font-bold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center disabled:opacity-70 gap-2`}
             >
               {isSending ? (
                 <><Loader2 className="animate-spin" size={20}/> Sending...</>
+              ) : sendSuccess ? (
+                <><Send size={20}/> Resend to WhatsApp {targetPhone ? `(${targetPhone})` : ''}</>
               ) : (
                 <><Send size={20}/> Send Rx via WhatsApp {targetPhone ? `(${targetPhone})` : ''}</>
               )}
