@@ -20,6 +20,9 @@ model Clinic {
   phone     String?
   email     String?
   logoUrl   String?
+  prescriptionPadUrl          String?
+  prescriptionHeaderHeight    Float?    @default(48)
+  prescriptionFooterHeight    Float?    @default(30)
   inviteCode String? @unique
   
   // Subscription & Commercial Tier Management

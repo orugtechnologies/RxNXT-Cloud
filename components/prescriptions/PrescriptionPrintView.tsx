@@ -23,6 +23,9 @@ export interface PrintViewProps {
   medicalCouncil?: string;
   logoUrl?: string;
   signatureUrl?: string;
+  prescriptionPadUrl?: string;
+  prescriptionHeaderHeight?: number;
+  prescriptionFooterHeight?: number;
 }
 
 export { formatScheduleDescription };

@@ -67,6 +67,9 @@ export async function GET(
       medicalCouncil: doctor?.medicalCouncil || undefined,
       logoUrl: prescription.clinic?.logoUrl || undefined,
       signatureUrl: doctor?.signatureUrl || undefined,
+      prescriptionPadUrl: (prescription.clinic as any)?.prescriptionPadUrl || undefined,
+      prescriptionHeaderHeight: (prescription.clinic as any)?.prescriptionHeaderHeight ?? 48,
+      prescriptionFooterHeight: (prescription.clinic as any)?.prescriptionFooterHeight ?? 30,
     });
 
     const safePatientName = (prescription.patient?.name || 'Patient').replace(/[^a-zA-Z0-9]/g, '_');

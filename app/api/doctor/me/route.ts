@@ -27,6 +27,9 @@ export async function GET() {
       clinicAddress: doctor.clinic?.address,
       clinicPhone: doctor.clinic?.phone,
       logoUrl: doctor.clinic?.logoUrl || undefined,
+      prescriptionPadUrl: doctor.clinic?.prescriptionPadUrl || undefined,
+      prescriptionHeaderHeight: doctor.clinic?.prescriptionHeaderHeight ?? 48,
+      prescriptionFooterHeight: doctor.clinic?.prescriptionFooterHeight ?? 30,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

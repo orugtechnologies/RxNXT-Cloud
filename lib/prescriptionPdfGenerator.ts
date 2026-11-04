@@ -38,6 +38,9 @@ export interface PrescriptionPDFData {
   medicalCouncil?: string;
   logoUrl?: string;
   signatureUrl?: string;
+  prescriptionPadUrl?: string;
+  prescriptionHeaderHeight?: number;
+  prescriptionFooterHeight?: number;
 }
 
 /**
@@ -86,7 +89,15 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   const pageHeight = doc.internal.pageSize.getHeight(); // 297mm
   const margin = 15;
   const contentWidth = pageWidth - margin * 2; // 180mm
-  const bottomThreshold = pageHeight - 35; // Space for footer
+
+  const hasCustomPad = Boolean(data.prescriptionPadUrl && data.prescriptionPadUrl.startsWith('data:image'));
+  const headerOffset = (data.prescriptionHeaderHeight && data.prescriptionHeaderHeight >= 20 && data.prescriptionHeaderHeight <= 100)
+    ? data.prescriptionHeaderHeight
+    : 48;
+  const footerOffset = (data.prescriptionFooterHeight && data.prescriptionFooterHeight >= 15 && data.prescriptionFooterHeight <= 60)
+    ? data.prescriptionFooterHeight
+    : 28;
+  const bottomThreshold = hasCustomPad ? pageHeight - footerOffset - 5 : pageHeight - 35; // Space for footer
 
   let y = 12;
 
@@ -94,6 +105,17 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   const { fullId, shortId, badgeText } = formatDisplayRxId(rawRxId);
   const displayRxId = rawRxId ? fullId : '';
   const shortRxToken = rawRxId ? shortId : '';
+
+  const renderPadBackground = () => {
+    if (hasCustomPad && data.prescriptionPadUrl) {
+      try {
+        const padFormat = data.prescriptionPadUrl.includes('image/png') ? 'PNG' : 'JPEG';
+        doc.addImage(data.prescriptionPadUrl, padFormat, 0, 0, pageWidth, pageHeight, undefined, 'FAST');
+      } catch (padErr) {
+        console.warn('Could not render prescription pad background:', padErr);
+      }
+    }
+  };
 
   const drawSubHeader = () => {
     doc.setFillColor(30, 41, 59); // Slate-800
@@ -108,6 +130,47 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   };
 
   const drawFooter = () => {
+    if (hasCustomPad) {
+      // For custom prescription pads, the physical paper footer already contains clinic branding.
+      // We cleanly position the doctor signature & verification tag in the allocated lower margin.
+      const footerY = pageHeight - footerOffset;
+
+      if (data.signatureUrl && data.signatureUrl.startsWith('data:image')) {
+        try {
+          const signFormat = data.signatureUrl.includes('image/jpeg') || data.signatureUrl.includes('image/jpg') ? 'JPEG' : 'PNG';
+          doc.addImage(data.signatureUrl, signFormat, pageWidth - margin - 45, footerY - 14, 35, 11, undefined, 'FAST');
+        } catch (signErr) {
+          console.warn('Could not render digital signature in PDF:', signErr);
+        }
+      }
+
+      doc.setDrawColor(203, 213, 225);
+      doc.setLineWidth(0.4);
+      doc.line(pageWidth - margin - 55, footerY - 2, pageWidth - margin, footerY - 2);
+
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 41, 59);
+      const rawSignDocName = (data.doctorName || 'Doctor').trim();
+      const cleanSignDocName = rawSignDocName.toLowerCase().startsWith('dr.') || rawSignDocName.toLowerCase().startsWith('dr ')
+        ? rawSignDocName
+        : `Dr. ${rawSignDocName}`;
+      doc.text(cleanSignDocName, pageWidth - margin - 27.5, footerY + 2, { align: 'center' });
+
+      if (data.doctorRegNo) {
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(100, 116, 139);
+        doc.text(`Reg: ${data.doctorRegNo}`, pageWidth - margin - 27.5, footerY + 5.5, { align: 'center' });
+      }
+
+      // Subtle verification stamp on bottom left
+      doc.setFontSize(6.5);
+      doc.setTextColor(148, 163, 184);
+      doc.text(displayRxId ? `Rx: ${displayRxId} • RxNXT Verified` : 'RxNXT Verified', margin, footerY + 5.5);
+      return;
+    }
+
     const footerY = pageHeight - 20;
 
     // Doctor digital signature image
@@ -160,145 +223,235 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
     if (y + neededHeight > bottomThreshold) {
       drawFooter();
       doc.addPage();
-      y = margin;
-      drawSubHeader();
+      if (hasCustomPad) {
+        renderPadBackground();
+        y = headerOffset;
+      } else {
+        y = margin;
+        drawSubHeader();
+      }
     }
   };
 
-  // 1. Accent header bar
-  doc.setFillColor(15, 118, 110); // Emerald/Teal
-  doc.rect(0, 0, pageWidth, 4, 'F');
+  if (hasCustomPad) {
+    // ── CUSTOM PRESCRIPTION PAD LETTERHEAD MODE ─────────────────────────
+    // Draw the authentic scanned prescription pad as the A4 full-page background
+    renderPadBackground();
 
-  y = 12;
+    // Start printing right below the doctor's printed letterhead header
+    y = headerOffset;
 
-  // Check if clinic logo exists
-  const hasLogo = Boolean(data.logoUrl && data.logoUrl.startsWith('data:image'));
-  let textStartX = margin;
+    // Patient Info Card (Clean, high-legibility card over the custom pad)
+    const cardHeight = (data.chiefComplaint || data.diagnosis) ? 22 : 14;
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(203, 213, 225);
+    doc.roundedRect(margin, y, contentWidth, cardHeight, 1.5, 1.5, 'FD');
 
-  if (hasLogo && data.logoUrl) {
-    try {
-      const logoFormat = data.logoUrl.includes('image/jpeg') || data.logoUrl.includes('image/jpg') ? 'JPEG' : 'PNG';
-      doc.addImage(data.logoUrl, logoFormat, margin, y - 2, 16, 16, undefined, 'FAST');
-      textStartX = margin + 20;
-    } catch (logoErr) {
-      console.warn('Could not render clinic logo in PDF:', logoErr);
-    }
-  }
+    const cardPadding = 3;
+    const pY = y + cardPadding + 2.5;
 
-  // 2. Clinic branding & Doctor info
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(15, 23, 42); // Slate-900
-  doc.text(data.clinicName || 'RxNXT™ Health Clinic', textStartX, y + 4);
-
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(15, 118, 110);
-  const rawHeaderDocName = (data.doctorName || 'Attending Physician').trim();
-  const cleanHeaderDocName = rawHeaderDocName.toLowerCase().startsWith('dr.') || rawHeaderDocName.toLowerCase().startsWith('dr ')
-    ? rawHeaderDocName
-    : `Dr. ${rawHeaderDocName}`;
-  doc.text(cleanHeaderDocName, pageWidth - margin, y + 2, { align: 'right' });
-
-  y += 7;
-  doc.setFontSize(8.5);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(71, 85, 105);
-  if (data.clinicAddress) {
-    doc.text(data.clinicAddress, textStartX, y + 2);
-  }
-  
-  if (data.doctorSpecialization || data.doctorRegNo) {
-    const specText = [data.doctorSpecialization, data.doctorRegNo ? `Reg: ${data.doctorRegNo}` : ''].filter(Boolean).join(' • ');
-    doc.text(specText, pageWidth - margin, y + 2, { align: 'right' });
-  }
-
-  y += 4;
-  if (data.clinicPhone) {
-    doc.text(`Ph: ${data.clinicPhone}`, textStartX, y + 2);
-  }
-
-  y += 6;
-  doc.setDrawColor(226, 232, 240);
-  doc.setLineWidth(0.5);
-  doc.line(margin, y, pageWidth - margin, y);
-
-  y += 5;
-
-  // 3. Patient Info Card
-  const cardHeight = (data.chiefComplaint || data.diagnosis) ? 24 : 16;
-  doc.setFillColor(248, 250, 252);
-  doc.setDrawColor(226, 232, 240);
-  doc.roundedRect(margin, y, contentWidth, cardHeight, 2, 2, 'FD');
-
-  const cardPadding = 3.5;
-  const pY = y + cardPadding + 3;
-
-  doc.setFontSize(8.5);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(71, 85, 105);
-  doc.text('PATIENT:', margin + cardPadding, pY);
-  
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(15, 23, 42);
-  const patientNameFormatted = doc.splitTextToSize(data.patient?.name || 'Patient', 45)[0];
-  doc.text(patientNameFormatted, margin + cardPadding + 15, pY);
-
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(71, 85, 105);
-  doc.text('AGE/SEX:', margin + 65, pY);
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(15, 23, 42);
-  doc.text(`${data.patient?.age || '—'}Y / ${data.patient?.gender || '—'}`, margin + 81, pY);
-
-  if (displayRxId) {
+    doc.setFontSize(8.5);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(71, 85, 105);
-    doc.text('Rx ID:', margin + 108, pY);
+    doc.setTextColor(30, 41, 59);
+    doc.text('PATIENT:', margin + cardPadding, pY);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42);
+    const patientNameFormatted = doc.splitTextToSize(data.patient?.name || 'Patient', 45)[0];
+    doc.text(patientNameFormatted, margin + cardPadding + 16, pY);
 
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(15, 118, 110); // Emerald/Teal
-    doc.text(displayRxId, margin + 118, pY);
-  }
+    doc.setTextColor(30, 41, 59);
+    doc.text('AGE/SEX:', margin + 68, pY);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(15, 23, 42);
+    doc.text(`${data.patient?.age || '—'}Y / ${data.patient?.gender || '—'}`, margin + 84, pY);
 
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(71, 85, 105);
-  doc.text('DATE:', pageWidth - margin - 35, pY);
-  
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(15, 23, 42);
-  doc.text(new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }), pageWidth - margin - cardPadding, pY, { align: 'right' });
-
-  if (data.chiefComplaint || data.diagnosis) {
-    const diagY = pY + 7;
-    doc.setDrawColor(241, 245, 249);
-    doc.line(margin + cardPadding, diagY - 2.5, pageWidth - margin - cardPadding, diagY - 2.5);
-
-    if (data.chiefComplaint) {
+    if (displayRxId) {
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(71, 85, 105);
-      doc.text('Complaint:', margin + cardPadding, diagY + 1.5);
-      
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(15, 23, 42);
-      const complaintText = doc.splitTextToSize(data.chiefComplaint, 60)[0];
-      doc.text(complaintText, margin + cardPadding + 18, diagY + 1.5);
-    }
+      doc.setTextColor(30, 41, 59);
+      doc.text('Rx ID:', margin + 112, pY);
 
-    if (data.diagnosis) {
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(71, 85, 105);
-      doc.text('Diagnosis:', margin + 95, diagY + 1.5);
-      
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(15, 118, 110);
-      const diagText = doc.splitTextToSize(data.diagnosis, 70)[0];
-      doc.text(diagText, margin + 112, diagY + 1.5);
+      doc.text(displayRxId, margin + 122, pY);
     }
-  }
 
-  y += cardHeight + 6;
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 41, 59);
+    doc.text('DATE:', pageWidth - margin - 35, pY);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(15, 23, 42);
+    doc.text(new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }), pageWidth - margin - cardPadding, pY, { align: 'right' });
+
+    if (data.chiefComplaint || data.diagnosis) {
+      const diagY = pY + 6.5;
+      doc.setDrawColor(226, 232, 240);
+      doc.line(margin + cardPadding, diagY - 2, pageWidth - margin - cardPadding, diagY - 2);
+
+      if (data.chiefComplaint) {
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(71, 85, 105);
+        doc.text('Complaint:', margin + cardPadding, diagY + 1.5);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(15, 23, 42);
+        const complaintText = doc.splitTextToSize(data.chiefComplaint, 60)[0];
+        doc.text(complaintText, margin + cardPadding + 18, diagY + 1.5);
+      }
+
+      if (data.diagnosis) {
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(71, 85, 105);
+        doc.text('Diagnosis:', margin + 95, diagY + 1.5);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(15, 118, 110);
+        const diagText = doc.splitTextToSize(data.diagnosis, 70)[0];
+        doc.text(diagText, margin + 112, diagY + 1.5);
+      }
+    }
+
+    y += cardHeight + 5;
+  } else {
+    // ── STANDARD SYNTHETIC NMC TEMPLATE MODE ─────────────────────────────
+    // 1. Accent header bar
+    doc.setFillColor(15, 118, 110); // Emerald/Teal
+    doc.rect(0, 0, pageWidth, 4, 'F');
+
+    y = 12;
+
+    // Check if clinic logo exists
+    const hasLogo = Boolean(data.logoUrl && data.logoUrl.startsWith('data:image'));
+    let textStartX = margin;
+
+    if (hasLogo && data.logoUrl) {
+      try {
+        const logoFormat = data.logoUrl.includes('image/jpeg') || data.logoUrl.includes('image/jpg') ? 'JPEG' : 'PNG';
+        doc.addImage(data.logoUrl, logoFormat, margin, y - 2, 16, 16, undefined, 'FAST');
+        textStartX = margin + 20;
+      } catch (logoErr) {
+        console.warn('Could not render clinic logo in PDF:', logoErr);
+      }
+    }
+
+    // 2. Clinic branding & Doctor info
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42); // Slate-900
+    doc.text(data.clinicName || 'RxNXT™ Health Clinic', textStartX, y + 4);
+
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 118, 110);
+    const rawHeaderDocName = (data.doctorName || 'Attending Physician').trim();
+    const cleanHeaderDocName = rawHeaderDocName.toLowerCase().startsWith('dr.') || rawHeaderDocName.toLowerCase().startsWith('dr ')
+      ? rawHeaderDocName
+      : `Dr. ${rawHeaderDocName}`;
+    doc.text(cleanHeaderDocName, pageWidth - margin, y + 2, { align: 'right' });
+
+    y += 7;
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(71, 85, 105);
+    if (data.clinicAddress) {
+      doc.text(data.clinicAddress, textStartX, y + 2);
+    }
+    
+    if (data.doctorSpecialization || data.doctorRegNo) {
+      const specText = [data.doctorSpecialization, data.doctorRegNo ? `Reg: ${data.doctorRegNo}` : ''].filter(Boolean).join(' • ');
+      doc.text(specText, pageWidth - margin, y + 2, { align: 'right' });
+    }
+
+    y += 4;
+    if (data.clinicPhone) {
+      doc.text(`Ph: ${data.clinicPhone}`, textStartX, y + 2);
+    }
+
+    y += 6;
+    doc.setDrawColor(226, 232, 240);
+    doc.setLineWidth(0.5);
+    doc.line(margin, y, pageWidth - margin, y);
+
+    y += 5;
+
+    // 3. Patient Info Card
+    const cardHeight = (data.chiefComplaint || data.diagnosis) ? 24 : 16;
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(margin, y, contentWidth, cardHeight, 2, 2, 'FD');
+
+    const cardPadding = 3.5;
+    const pY = y + cardPadding + 3;
+
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(71, 85, 105);
+    doc.text('PATIENT:', margin + cardPadding, pY);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42);
+    const patientNameFormatted = doc.splitTextToSize(data.patient?.name || 'Patient', 45)[0];
+    doc.text(patientNameFormatted, margin + cardPadding + 15, pY);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(71, 85, 105);
+    doc.text('AGE/SEX:', margin + 65, pY);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(15, 23, 42);
+    doc.text(`${data.patient?.age || '—'}Y / ${data.patient?.gender || '—'}`, margin + 81, pY);
+
+    if (displayRxId) {
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(71, 85, 105);
+      doc.text('Rx ID:', margin + 108, pY);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(15, 118, 110); // Emerald/Teal
+      doc.text(displayRxId, margin + 118, pY);
+    }
+
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(71, 85, 105);
+    doc.text('DATE:', pageWidth - margin - 35, pY);
+    
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(15, 23, 42);
+    doc.text(new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }), pageWidth - margin - cardPadding, pY, { align: 'right' });
+
+    if (data.chiefComplaint || data.diagnosis) {
+      const diagY = pY + 7;
+      doc.setDrawColor(241, 245, 249);
+      doc.line(margin + cardPadding, diagY - 2.5, pageWidth - margin - cardPadding, diagY - 2.5);
+
+      if (data.chiefComplaint) {
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(71, 85, 105);
+        doc.text('Complaint:', margin + cardPadding, diagY + 1.5);
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(15, 23, 42);
+        const complaintText = doc.splitTextToSize(data.chiefComplaint, 60)[0];
+        doc.text(complaintText, margin + cardPadding + 18, diagY + 1.5);
+      }
+
+      if (data.diagnosis) {
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(71, 85, 105);
+        doc.text('Diagnosis:', margin + 95, diagY + 1.5);
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(15, 118, 110);
+        const diagText = doc.splitTextToSize(data.diagnosis, 70)[0];
+        doc.text(diagText, margin + 112, diagY + 1.5);
+      }
+    }
+
+    y += cardHeight + 6;
+  }
 
   // 4. Rx Symbol & Header
   doc.setFontSize(14);

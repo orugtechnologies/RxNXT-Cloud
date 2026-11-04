@@ -121,6 +121,9 @@ export async function POST(request: Request) {
           medicalCouncil: doctor?.medicalCouncil || undefined,
           logoUrl: prescription.clinic?.logoUrl || undefined,
           signatureUrl: doctor?.signatureUrl || undefined,
+          prescriptionPadUrl: (prescription.clinic as any)?.prescriptionPadUrl || undefined,
+          prescriptionHeaderHeight: (prescription.clinic as any)?.prescriptionHeaderHeight ?? 48,
+          prescriptionFooterHeight: (prescription.clinic as any)?.prescriptionFooterHeight ?? 30,
         });
       } catch (genErr) {
         console.warn('[Server PDF Gen Warning]:', genErr);

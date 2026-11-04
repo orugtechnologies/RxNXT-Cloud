@@ -42,6 +42,9 @@ export async function PUT(request: Request) {
         email: body.email,
         address: body.address,
         logoUrl: optimizeBase64Png(body.logoUrl, 400),
+        prescriptionPadUrl: body.prescriptionPadUrl !== undefined ? body.prescriptionPadUrl : undefined,
+        prescriptionHeaderHeight: body.prescriptionHeaderHeight !== undefined ? Number(body.prescriptionHeaderHeight) : undefined,
+        prescriptionFooterHeight: body.prescriptionFooterHeight !== undefined ? Number(body.prescriptionFooterHeight) : undefined,
       }
     });
 
