@@ -331,28 +331,28 @@ export default function ReviewPrescriptionModal({
           {/* AI Present-Day Treatment Summary Preview Card */}
           <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50/70 via-white to-blue-50/50 p-4 shadow-sm relative overflow-hidden">
             <div className="flex items-center gap-2 mb-2 pb-2 border-b border-blue-100">
-              <div className="p-1 rounded-md bg-[#0080ff] text-white shadow-xs">
+              <div className="p-1 rounded-md bg-blue-600 text-white shadow-xs">
                 <Sparkles size={14} className="animate-pulse" />
               </div>
-              <h4 className="text-xs font-bold text-[#000865] uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 Treatment Summary (Included in WhatsApp Message)
               </h4>
             </div>
 
             <div className="space-y-1.5 text-xs text-slate-700">
               {diagnosis && (
-                <p><span className="font-bold text-[#000865]">🩺 Diagnosis:</span> {diagnosis}</p>
+                <p><span className="font-bold text-slate-900">🩺 Diagnosis:</span> {diagnosis}</p>
               )}
               
               <div>
-                <span className="font-bold text-[#000865]">💊 Prescribed Medicines ({medicines.length}):</span>
+                <span className="font-bold text-slate-900">💊 Prescribed Medicines ({medicines.length}):</span>
                 <ul className="mt-1 space-y-1 pl-2">
                   {medicines.map((m, idx) => (
                     <li key={idx} className="flex items-center gap-1.5 text-slate-800">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#0080ff] shrink-0"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0"></span>
                       <span className="font-semibold">{m.name}</span>
                       <span className="text-slate-500">
-                        ({[m.dosage_form, m.strength].filter(Boolean).join(' ') || 'Standard'}) • Dose: <strong className="text-[#000865]">{m.frequency}</strong> for {m.duration} {m.instructions ? `[${m.instructions}]` : ''}
+                        ({[m.dosage_form, m.strength].filter(Boolean).join(' ') || 'Standard'}) • Dose: <strong className="text-slate-900">{m.frequency}</strong> for {m.duration} {m.instructions ? `[${m.instructions}]` : ''}
                       </span>
                     </li>
                   ))}
@@ -360,7 +360,7 @@ export default function ReviewPrescriptionModal({
               </div>
 
               {notes && (
-                <p className="mt-1 pt-1 border-t border-blue-100/60"><span className="font-bold text-[#000865]">📝 Doctor Advice:</span> {notes}</p>
+                <p className="mt-1 pt-1 border-t border-blue-100/60"><span className="font-bold text-slate-900">📝 Doctor Advice:</span> {notes}</p>
               )}
             </div>
 

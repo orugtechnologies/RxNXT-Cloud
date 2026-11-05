@@ -76,7 +76,7 @@ export default function DoctorQueue({
         <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
           <button
             onClick={() => router.push('/doctor/prescription')}
-            className="bg-clinic-emerald hover:bg-clinic-emeraldDark text-white font-bold px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition-all text-sm flex items-center"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition-all text-sm flex items-center cursor-pointer"
           >
             <Stethoscope size={18} className="mr-2" /> Open Clinical Workspace
           </button>
@@ -258,17 +258,17 @@ export default function DoctorQueue({
                   {isSkipping ? <Loader2 size={16} className="animate-spin" /> : <FastForward size={16} className="mr-1" />} Skip
                 </button>
 
-                {/* 1-Click Consult Now Action -> Immediately loads Clinical Workspace */}
+                {/* 1-Click Consult / Write Rx Action -> Immediately loads Clinical Workspace */}
                 <button
                   onClick={() => handleStartConsultation(item.patient_id, item.id)}
-                  className={`font-bold px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all text-xs flex items-center ${
+                  className={`font-bold px-5 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all text-xs flex items-center cursor-pointer ${
                     item.status === 'RETURNED_READY'
-                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-blue-500/20'
-                      : 'bg-clinic-blue hover:bg-clinic-blueDark text-white'
+                      ? 'bg-blue-700 hover:bg-blue-800 text-white shadow-blue-500/20'
+                      : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20'
                   }`}
                 >
                   <Stethoscope size={16} className="mr-1.5" />
-                  {item.status === 'RETURNED_READY' ? 'Resume & Finalize' : 'Consult Now'}
+                  {item.status === 'RETURNED_READY' ? 'Resume & Finalize' : 'Consult / Write Rx'}
                 </button>
               </div>
             </div>

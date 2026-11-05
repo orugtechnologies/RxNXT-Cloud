@@ -229,7 +229,7 @@ export default function ClinicProfileTab() {
         <div className="pt-6 border-t border-gray-200">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
             <div className="flex items-center gap-2">
-              <FileText className="text-[#0060df]" size={20} />
+              <FileText className="text-blue-600" size={20} />
               <h3 className="text-base font-extrabold text-slate-900">
                 Doctor Scanned Prescription Pad / Letterhead (Soft Copy)
               </h3>

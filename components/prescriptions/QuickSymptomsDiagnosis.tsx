@@ -117,18 +117,18 @@ export default function QuickSymptomsDiagnosis({
   const displayedSymptoms = showAllSymptoms ? COMMON_SYMPTOMS : COMMON_SYMPTOMS.slice(0, 8);
   const displayedDiagnoses = showAllDiagnoses ? COMMON_DIAGNOSES : COMMON_DIAGNOSES.slice(0, 8);
 
-    return (
+  return (
     <div className="space-y-4">
       {/* Block: Chief Complaints */}
-      <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden transition-all duration-300">
-        <div className="bg-[#f0f6fe] px-4 py-3 border-b border-[#d8e7fc] flex items-center justify-between">
+      <div className="bg-white rounded-xl shadow-soft border border-slate-200 overflow-hidden transition-all duration-300">
+        <div className="bg-slate-50/80 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+            <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
               <Stethoscope size={15} className="stroke-[2.5]" />
             </div>
-            <h3 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">Chief Complaints</h3>
+            <h3 className="text-xs sm:text-[13px] font-extrabold text-slate-900 uppercase tracking-wider">Chief Complaints</h3>
           </div>
-          <span className="text-[10px] text-slate-500 font-semibold bg-white/80 px-2 py-0.5 rounded border border-slate-200/60">Tap to toggle</span>
+          <span className="text-[10px] text-slate-500 font-semibold bg-white px-2 py-0.5 rounded border border-slate-200">Tap to toggle</span>
         </div>
 
         <div className="p-3.5 space-y-2.5">
@@ -137,7 +137,7 @@ export default function QuickSymptomsDiagnosis({
             placeholder="e.g. Fever, Cold & Runny Nose, Headache"
             value={chiefComplaint}
             onChange={e => setChiefComplaint(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-2.5 text-xs font-medium focus:ring-2 focus:ring-[#0080ff] focus:border-[#0080ff] outline-none transition-shadow bg-white shadow-xs"
+            className="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-medium focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-shadow bg-white shadow-xs text-slate-900"
           />
 
           <div className="flex flex-wrap gap-1.5">
@@ -150,8 +150,8 @@ export default function QuickSymptomsDiagnosis({
                   onClick={() => toggleSymptom(symptom)}
                   className={`text-[11px] font-semibold px-2.5 py-1 rounded-md border transition-all flex items-center gap-1 cursor-pointer select-none ${
                     active
-                      ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/60'
+                      ? 'bg-blue-50 text-blue-800 border-blue-300 font-bold shadow-2xs'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100'
                   }`}
                 >
                   {active ? <Check size={12} className="stroke-[3]" /> : <Plus size={11} className="text-slate-400" />}
@@ -163,7 +163,7 @@ export default function QuickSymptomsDiagnosis({
             <button
               type="button"
               onClick={() => setShowAllSymptoms(!showAllSymptoms)}
-              className="text-[10px] font-bold text-[#1e40af] bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2 py-1 rounded-md flex items-center gap-0.5 transition-colors"
+              className="text-[10px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2 py-1 rounded-md flex items-center gap-0.5 transition-colors cursor-pointer"
             >
               {showAllSymptoms ? (
                 <>Less <ChevronUp size={12} /></>
@@ -176,15 +176,15 @@ export default function QuickSymptomsDiagnosis({
       </div>
 
       {/* Block: Diagnosis / Clinical Impression */}
-      <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden transition-all duration-300">
-        <div className="bg-[#f0f6fe] px-4 py-3 border-b border-[#d8e7fc] flex items-center justify-between">
+      <div className="bg-white rounded-xl shadow-soft border border-slate-200 overflow-hidden transition-all duration-300">
+        <div className="bg-slate-50/80 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+            <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
               <Activity size={15} className="stroke-[2.5]" />
             </div>
-            <h3 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">Diagnosis / Impression</h3>
+            <h3 className="text-xs sm:text-[13px] font-extrabold text-slate-900 uppercase tracking-wider">Diagnosis / Impression</h3>
           </div>
-          <span className="text-[10px] text-slate-500 font-semibold bg-white/80 px-2 py-0.5 rounded border border-slate-200/60">ICD-10 Search</span>
+          <span className="text-[10px] text-slate-500 font-semibold bg-white px-2 py-0.5 rounded border border-slate-200">ICD-10 Quick Pick</span>
         </div>
 
         <div className="p-3.5 space-y-2.5">
@@ -193,7 +193,7 @@ export default function QuickSymptomsDiagnosis({
             placeholder="e.g. Viral Pyrexia, Acute Pharyngitis"
             value={diagnosis}
             onChange={e => setDiagnosis(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-2.5 text-xs font-medium focus:ring-2 focus:ring-[#0080ff] focus:border-[#0080ff] outline-none transition-shadow bg-white shadow-xs"
+            className="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-medium focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition-shadow bg-white shadow-xs text-slate-900"
           />
 
           <div className="flex flex-wrap gap-1.5">
@@ -206,8 +206,8 @@ export default function QuickSymptomsDiagnosis({
                   onClick={() => toggleDiagnosis(diag)}
                   className={`text-[11px] font-semibold px-2.5 py-1 rounded-md border transition-all flex items-center gap-1 cursor-pointer select-none ${
                     active
-                      ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/60'
+                      ? 'bg-blue-50 text-blue-800 border-blue-300 font-bold shadow-2xs'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100'
                   }`}
                 >
                   {active ? <Check size={12} className="stroke-[3]" /> : <Plus size={11} className="text-slate-400" />}
@@ -219,7 +219,7 @@ export default function QuickSymptomsDiagnosis({
             <button
               type="button"
               onClick={() => setShowAllDiagnoses(!showAllDiagnoses)}
-              className="text-[10px] font-bold text-[#1e40af] bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2 py-1 rounded-md flex items-center gap-0.5 transition-colors"
+              className="text-[10px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2 py-1 rounded-md flex items-center gap-0.5 transition-colors cursor-pointer"
             >
               {showAllDiagnoses ? (
                 <>Less <ChevronUp size={12} /></>

@@ -133,14 +133,13 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
                   className={cn(
                     "flex items-center gap-3 py-2.5 transition-all duration-200 group relative",
                     isActive && !collapsed 
-                      ? "bg-gradient-to-r from-[#000865] to-[#0080ff] text-white shadow-md pr-8 pl-6" 
+                      ? "bg-blue-700 text-white shadow-sm pr-6 pl-4 rounded-lg mx-3 font-semibold" 
                       : isActive && collapsed 
-                      ? "bg-gradient-to-r from-[#000865] to-[#0080ff] text-white rounded-lg mx-3 px-3 justify-center"
+                      ? "bg-blue-700 text-white rounded-lg mx-3 px-3 justify-center shadow-sm"
                       : collapsed
-                      ? "text-slate-600 hover:bg-blue-50 hover:text-[#2563eb] mx-3 px-3 rounded-lg justify-center transition-colors"
-                      : "text-slate-600 hover:bg-blue-50 hover:text-[#2563eb] mx-3 px-3 rounded-lg transition-colors"
+                      ? "text-slate-600 hover:bg-slate-100 hover:text-slate-900 mx-3 px-3 rounded-lg justify-center transition-colors font-medium"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 mx-3 px-3 rounded-lg transition-colors font-medium"
                   )}
-                  style={isActive && !collapsed ? { clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 16px) 50%, 100% 100%, 0% 100%)' } : {}}
                 >
                   <item.icon className={cn("h-5 w-5 shrink-0", isActive ? "text-white" : "text-slate-400 group-hover:text-clinic-blue")} />
                   
@@ -168,7 +167,7 @@ export default function AppSidebar({ userRole, userName, collapsed, onToggle }: 
 
   return (
     <div className={cn(
-      "flex flex-col h-full bg-gradient-to-b from-[#f0f6ff] via-white to-[#e8f1fd] text-slate-900 transition-all duration-300 ease-in-out border-r border-[#dbeafe] shadow-sm relative",
+      "flex flex-col h-full bg-white text-slate-900 transition-all duration-300 ease-in-out border-r border-slate-200 shadow-2xs relative",
       collapsed ? "w-[72px]" : "w-[256px]"
     )}>
       {/* Logo Area */}

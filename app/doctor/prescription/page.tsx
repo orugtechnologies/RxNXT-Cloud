@@ -22,6 +22,7 @@ import FrequentDrugsBar from '@/components/drugs/FrequentDrugsBar';
 import QuickAdviceChips from '@/components/prescriptions/QuickAdviceChips';
 import LivePrescriptionSheet from '@/components/prescriptions/LivePrescriptionSheet';
 import SubscriptionLockoutModal from '@/components/subscription/SubscriptionLockoutModal';
+import { getSmartClinicalDefaults } from '@/lib/prescriptionClinicalDefaults';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
@@ -226,6 +227,7 @@ function PrescriptionWorkflowContent() {
   };
 
   const handleDrugSelect = (drug: any) => {
+    const smart = getSmartClinicalDefaults(drug.brand_name || drug.generic_name, drug.generic_name);
     const newMed: PrescribedMedicine = {
       id: Math.random().toString(36).substr(2, 9),
       generic_id: drug.generic_id,
@@ -234,9 +236,9 @@ function PrescriptionWorkflowContent() {
       dosage_form: drug.dosage_form,
       strength: drug.strength,
       route: drug.route,
-      frequency: drug.default_frequency || '1-0-1',
-      duration: drug.default_duration || '3 days',
-      instructions: drug.default_instructions || 'Post-Meal (After Food)'
+      frequency: drug.default_frequency || smart.frequency,
+      duration: drug.default_duration || smart.duration,
+      instructions: drug.default_instructions || smart.instructions
     };
     setMedicines([...medicines, newMed]);
   };
@@ -496,12 +498,12 @@ function PrescriptionWorkflowContent() {
             
             {/* Step 1: Patient Selection */}
             <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 hover:shadow-md relative z-30">
-              <div className="bg-[#f0f6fe] px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between rounded-t-xl">
+              <div className="bg-slate-50/80 px-4 sm:px-5 py-3 border-b border-slate-200 flex items-center justify-between rounded-t-xl">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+                  <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
                     <User size={15} className="stroke-[2.5]" />
                   </div>
-                  <h2 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">Patient</h2>
+                  <h2 className="text-xs sm:text-[13px] font-extrabold text-slate-900 uppercase tracking-wider">Patient</h2>
                 </div>
               </div>
               <div className="p-5">
@@ -547,7 +549,7 @@ function PrescriptionWorkflowContent() {
                               </span>
                               <span className="text-emerald-600 font-semibold lowercase">Today</span>
                             </div>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
+                            <div className="grid grid-cols-5 gap-1.5 text-xs">
                               {patient.vitals.bp && (
                                 <div className="bg-white border border-slate-200 rounded p-1.5 text-center shadow-2xs">
                                   <span className="text-[9px] text-slate-400 block font-semibold">BP</span>
@@ -621,12 +623,12 @@ function PrescriptionWorkflowContent() {
               <>
                 {/* Block 1: 1-Click Protocol Packs & Drug Search */}
                 <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border relative z-20">
-                  <div className="bg-[#f0f6fe] px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between rounded-t-xl">
+                  <div className="bg-slate-50/80 px-4 sm:px-5 py-3 border-b border-slate-200 flex items-center justify-between rounded-t-xl">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+                      <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
                         <Pill size={15} className="stroke-[2.5]" />
                       </div>
-                      <h2 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">
+                      <h2 className="text-xs sm:text-[13px] font-extrabold text-slate-900 uppercase tracking-wider">
                         1-Click Protocol Packs & Search
                       </h2>
                     </div>
@@ -655,12 +657,12 @@ function PrescriptionWorkflowContent() {
 
                 {/* Block 2: Prescribed Medicines Cart */}
                 <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden">
-                  <div className="bg-[#f0f6fe] px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between">
+                  <div className="bg-slate-50/80 px-4 sm:px-5 py-3 border-b border-slate-200 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+                      <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
                         <Layers size={15} className="stroke-[2.5]" />
                       </div>
-                      <h2 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">
+                      <h2 className="text-xs sm:text-[13px] font-extrabold text-slate-900 uppercase tracking-wider">
                         Prescribed Medicines {medicines.length > 0 && `(${medicines.length})`}
                       </h2>
                     </div>
@@ -703,12 +705,12 @@ function PrescriptionWorkflowContent() {
 
                 {/* Block 4: Doctor's Advice & Counseling */}
                 <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden">
-                  <div className="bg-[#f0f6fe] px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between">
+                  <div className="bg-slate-50/80 px-4 sm:px-5 py-3 border-b border-slate-200 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+                      <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
                         <FileText size={15} className="stroke-[2.5]" />
                       </div>
-                      <h2 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">
+                      <h2 className="text-xs sm:text-[13px] font-extrabold text-slate-900 uppercase tracking-wider">
                         Doctor's Advice & Counseling
                       </h2>
                     </div>
@@ -722,27 +724,27 @@ function PrescriptionWorkflowContent() {
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Specific patient advice, dietary instructions..."
                       rows={3}
-                      className="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs text-slate-800 outline-none focus:ring-2 focus:ring-[#0080ff] shadow-xs"
+                      className="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs text-slate-800 outline-none focus:ring-2 focus:ring-blue-600 shadow-xs"
                     />
 
                     <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
                       <span className="font-semibold text-slate-600">Follow-up visit:</span>
                       <div className="flex flex-wrap items-center gap-1.5">
-                        {[3, 5, 7, 14].map(days => (
+                        {[3, 5, 7, 15, 30].map(days => (
                           <button
                             key={days}
                             type="button"
                             onClick={() => setQuickFollowUp(days)}
-                            className="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-[#1e40af] border border-blue-200 rounded-lg text-[11px] font-bold transition-colors cursor-pointer"
+                            className="px-2.5 py-1 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-[11px] font-bold transition-colors cursor-pointer"
                           >
-                            {days} Days
+                            {days === 30 ? '1 Month' : `${days} Days`}
                           </button>
                         ))}
                         <input
                           type="date"
                           value={followUpDate}
                           onChange={(e) => setFollowUpDate(e.target.value)}
-                          className="border border-slate-300 rounded-lg px-2 py-0.5 text-xs outline-none focus:ring-1 focus:ring-[#0080ff]"
+                          className="border border-slate-300 rounded-lg px-2 py-0.5 text-xs outline-none focus:ring-1 focus:ring-blue-600"
                         />
                       </div>
                     </div>
@@ -754,9 +756,9 @@ function PrescriptionWorkflowContent() {
                   <button 
                     onClick={handleProceedToReview}
                     disabled={medicines.length === 0}
-                    className="w-full bg-gradient-to-r from-[#0080ff] to-[#0052cc] hover:from-[#0070e6] hover:to-[#0047b3] text-white font-extrabold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50"
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 cursor-pointer"
                   >
-                    <Eye size={18} /> Review & Print Rx
+                    <Eye size={18} /> Save & Generate Prescription (Ctrl + Enter)
                   </button>
                 </div>
               </>

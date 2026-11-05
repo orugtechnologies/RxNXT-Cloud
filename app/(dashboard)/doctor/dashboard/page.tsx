@@ -56,7 +56,7 @@ export default function DashboardPage() {
     return (
       <div className="flex items-center justify-center h-[65vh]">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-10 w-10 animate-spin text-clinic-emerald" />
+          <Loader2 className="h-10 w-10 animate-spin text-emerald-600" />
           <p className="text-slate-500 font-medium animate-pulse text-sm">Loading Doctor's Command Center...</p>
         </div>
       </div>
@@ -91,11 +91,11 @@ export default function DashboardPage() {
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-xs font-semibold text-clinic-emerald backdrop-blur-md mb-2">
+            <div className="inline-flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-xs font-semibold text-emerald-300 backdrop-blur-md mb-2">
               <Sparkles size={14} /> Doctor Command Center
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-              {greeting}, <span className="text-clinic-emerald">Dr. {doctorName.replace(/^Dr\.\s*/i, '')}</span>
+              {greeting}, <span className="text-emerald-300">Dr. {doctorName.replace(/^Dr\.\s*/i, '')}</span>
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm mt-1.5 font-medium">
               {formatDate(new Date().toISOString(), { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}

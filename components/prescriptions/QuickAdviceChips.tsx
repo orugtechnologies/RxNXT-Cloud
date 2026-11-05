@@ -61,8 +61,8 @@ export default function QuickAdviceChips({ notes, setNotes }: QuickAdviceChipsPr
               onClick={() => handleToggleAdvice(advice)}
               className={`text-[11px] font-medium px-2 py-0.5 rounded-md border transition-all flex items-center gap-1 cursor-pointer ${
                 selected
-                  ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] font-bold shadow-2xs ring-1 ring-[#93c5fd]'
-                  : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50'
+                  ? 'bg-blue-50 text-blue-800 border-blue-300 font-bold shadow-2xs'
+                  : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100'
               }`}
             >
               {selected ? <Check size={11} className="stroke-[3]" /> : <Plus size={10} className="text-slate-400" />}

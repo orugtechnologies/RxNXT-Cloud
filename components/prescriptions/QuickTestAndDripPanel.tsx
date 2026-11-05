@@ -1,45 +1,50 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { FlaskConical, Droplet, Plus, X } from 'lucide-react';
+import { FlaskConical, Droplet, Plus, X, ChevronDown, ChevronUp, Check, ShieldAlert } from 'lucide-react';
 
 export interface InvestigationItem {
   id: string;
   name: string;
+  category: 'BLOOD' | 'IMAGING' | 'URINE' | 'OTHER';
   price: number;
 }
 
 export interface DayCareProcedureItem {
   id: string;
   name: string;
+  category: 'IV_DRIP' | 'INJECTION' | 'NEBULIZATION' | 'DRESSING';
   price: number;
 }
 
 const COMMON_TESTS: InvestigationItem[] = [
-  { id: 't1', name: 'Complete Blood Count (CBC)', price: 300 },
-  { id: 't2', name: 'Random Blood Sugar (RBS)', price: 100 },
-  { id: 't3', name: 'Dengue NS1 Antigen', price: 600 },
-  { id: 't4', name: 'Urine Routine & Micro', price: 150 },
-  { id: 't5', name: 'Serum Widal / Typhoid', price: 250 },
-  { id: 't6', name: '12-Lead ECG', price: 350 },
+  { id: 't-cbc', name: 'Complete Blood Count (CBC)', category: 'BLOOD', price: 250 },
+  { id: 't-widal', name: 'Widal / Typhidot Test', category: 'BLOOD', price: 200 },
+  { id: 't-dengue', name: 'Dengue NS1 Antigen', category: 'BLOOD', price: 600 },
+  { id: 't-rbs', name: 'Random Blood Sugar (RBS)', category: 'BLOOD', price: 80 },
+  { id: 't-lft', name: 'Liver Function Test (LFT)', category: 'BLOOD', price: 650 },
+  { id: 't-kft', name: 'Kidney Function Test (KFT)', category: 'BLOOD', price: 550 },
+  { id: 't-crp', name: 'C-Reactive Protein (CRP)', category: 'BLOOD', price: 350 },
+  { id: 't-urine-re', name: 'Urine Routine & Micro', category: 'URINE', price: 120 },
+  { id: 't-cxr', name: 'Chest X-Ray PA View', category: 'IMAGING', price: 350 },
+  { id: 't-ecg', name: '12-Lead Resting ECG', category: 'OTHER', price: 200 },
 ];
 
 const COMMON_DRIPS: DayCareProcedureItem[] = [
-  { id: 'd1', name: 'IV Normal Saline (500ml) + Set', price: 250 },
-  { id: 'd2', name: 'IV Paracetamol (100ml Infusion)', price: 200 },
-  { id: 'd3', name: 'Nebulization (Duolin / Budecort)', price: 150 },
-  { id: 'd4', name: 'IV Pantoprazole / Ondansetron', price: 120 },
-  { id: 'd5', name: 'IV Dextrose Normal Saline (DNS)', price: 250 },
+  { id: 'd-ns-pantop', name: 'IV Pantocid + Ondem in 100ml NS', category: 'IV_DRIP', price: 450 },
+  { id: 'd-ns-pcm', name: 'IV Paracetamol (100ml Infusion)', category: 'IV_DRIP', price: 350 },
+  { id: 'd-dns-multivit', name: 'IV DNS + Multivitamin + Neurobion', category: 'IV_DRIP', price: 550 },
+  { id: 'd-neb-duo', name: 'Nebulization (Duolin + Budecort)', category: 'NEBULIZATION', price: 200 },
+  { id: 'd-inj-tt', name: 'Inj. Tetanus Toxoid (TT 0.5ml)', category: 'INJECTION', price: 100 },
+  { id: 'd-inj-voveran', name: 'Inj. Voveran (Diclofenac) IM/IV', category: 'INJECTION', price: 150 },
+  { id: 'd-dressing', name: 'Wound Cleaning & Sterile Dressing', category: 'DRESSING', price: 250 },
 ];
 
 interface QuickTestAndDripPanelProps {
   selectedTests: InvestigationItem[];
   selectedDrips: DayCareProcedureItem[];
-  onToggleTest: (test: InvestigationItem) => void;
-  onToggleDrip: (drip: DayCareProcedureItem) => void;
-  onAddCustomTest?: (name: string, price: number) => void;
-  onAddCustomDrip?: (name: string, price: number) => void;
+  onToggleTest: (item: InvestigationItem) => void;
+  onToggleDrip: (item: DayCareProcedureItem) => void;
   onSendForTests?: () => void;
   isSending?: boolean;
 }
@@ -64,26 +69,26 @@ export default function QuickTestAndDripPanel({
   const [isOpen, setIsOpen] = useState(hasSelections);
 
   return (
-    <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+    <div className="bg-white rounded-xl shadow-soft border border-slate-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-[#f0f6fe] hover:bg-[#e6f0fd] transition-colors px-4 sm:px-5 py-3 border-b border-[#d8e7fc] flex items-center justify-between text-left"
+        className="w-full bg-slate-50/80 hover:bg-slate-100 transition-colors px-4 sm:px-5 py-3 border-b border-slate-200 flex items-center justify-between text-left cursor-pointer"
       >
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+          <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
             <FlaskConical size={15} className="stroke-[2.5]" />
           </div>
-          <span className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider">
+          <span className="text-xs sm:text-[13px] font-extrabold text-slate-900 uppercase tracking-wider">
             Diagnostics & Day-Care Procedures (Optional)
           </span>
           {hasSelections && (
-            <span className="text-[10px] font-bold text-[#0052cc] bg-[#dbeafe] border border-[#93c5fd] px-2 py-0.5 rounded-full ml-1">
+            <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full ml-1">
               {selectedTests.length + selectedDrips.length} ordered (₹{totalBillable})
             </span>
           )}
         </div>
-        <div className="flex items-center gap-1.5 text-slate-500 text-xs font-semibold bg-white/80 px-2 py-0.5 rounded border border-slate-200/60">
+        <div className="flex items-center gap-1.5 text-slate-500 text-xs font-semibold bg-white px-2 py-0.5 rounded border border-slate-200">
           <span>{isOpen ? 'Collapse' : '+ Expand'}</span>
           {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </div>
@@ -94,7 +99,7 @@ export default function QuickTestAndDripPanel({
         {/* Lab Investigations Chips */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
               <FlaskConical size={14} className="text-blue-600" />
               1-Click Lab Tests
             </span>
@@ -108,15 +113,15 @@ export default function QuickTestAndDripPanel({
                   key={test.id}
                   type="button"
                   onClick={() => onToggleTest(test)}
-                  className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 ${
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer ${
                     selected
-                      ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50'
+                      ? 'bg-blue-50 text-blue-800 border-blue-300 font-bold shadow-2xs'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100'
                   }`}
                 >
                   <span>{test.name}</span>
                   <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
-                    selected ? 'bg-white/20 text-white' : 'bg-slate-200/70 text-slate-600'
+                    selected ? 'bg-blue-200/60 text-blue-900' : 'bg-slate-200/70 text-slate-600'
                   }`}>
                     ₹{test.price}
                   </span>
@@ -130,8 +135,8 @@ export default function QuickTestAndDripPanel({
         {/* Day-Care Procedures / IV Drips Chips */}
         <div className="pt-2 border-t border-slate-100">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
-              <Droplet size={14} className="text-[#0080ff]" />
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+              <Droplet size={14} className="text-blue-600" />
               1-Click IV Drip / Day-Care
             </span>
             <span className="text-[10px] text-slate-400">Sent to Nursing & Billing</span>
@@ -144,15 +149,15 @@ export default function QuickTestAndDripPanel({
                   key={drip.id}
                   type="button"
                   onClick={() => onToggleDrip(drip)}
-                  className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 ${
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer ${
                     selected
-                      ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-300 hover:bg-blue-50/50'
+                      ? 'bg-blue-50 text-blue-800 border-blue-300 font-bold shadow-2xs'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-100'
                   }`}
                 >
                   <span>{drip.name}</span>
                   <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
-                    selected ? 'bg-white/20 text-white' : 'bg-slate-200/70 text-slate-600'
+                    selected ? 'bg-blue-200/60 text-blue-900' : 'bg-slate-200/70 text-slate-600'
                   }`}>
                     ₹{drip.price}
                   </span>
@@ -165,19 +170,19 @@ export default function QuickTestAndDripPanel({
 
         {/* Action Callout if tests or drips are selected */}
         {hasSelections && onSendForTests && (
-          <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-[#e8f1fd]/80 -mx-4 -mb-4 p-3.5 rounded-b-xl border-dashed">
-            <div className="text-xs text-[#000865]">
+          <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-slate-50 -mx-4 -mb-4 p-3.5 rounded-b-xl border-dashed">
+            <div className="text-xs text-slate-900">
               <span className="font-bold">Ready to order: </span>
               {selectedTests.length > 0 && <span>{selectedTests.length} test{selectedTests.length > 1 ? 's' : ''}</span>}
               {selectedTests.length > 0 && selectedDrips.length > 0 && <span>, </span>}
               {selectedDrips.length > 0 && <span>{selectedDrips.length} drip/procedure{selectedDrips.length > 1 ? 's' : ''}</span>}
-              <span className="font-extrabold text-[#000865] ml-1.5">(₹{totalBillable.toLocaleString('en-IN')})</span>
+              <span className="font-extrabold text-blue-700 ml-1.5">(₹{totalBillable.toLocaleString('en-IN')})</span>
             </div>
             <button
               type="button"
               onClick={onSendForTests}
               disabled={isSending}
-              className="bg-[#0080ff] hover:bg-[#0066cc] text-white font-bold text-xs py-2 px-3.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1.5 disabled:opacity-50 active:scale-95"
+              className="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs py-2 px-3.5 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1.5 disabled:opacity-50 active:scale-95 cursor-pointer"
             >
               <FlaskConical size={14} />
               {isSending ? 'Sending to Lab...' : 'Send for Tests / Drip & Next Patient ➔'}

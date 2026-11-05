@@ -98,10 +98,10 @@ export default function LivePrescriptionSheet({
       <div className="bg-white rounded-xl shadow-xl border border-slate-300/80 overflow-hidden text-slate-800 transition-all duration-300">
         
         {/* Top Sheet Status Ribbon */}
-        <div className="bg-[#f0f6fe] px-4 py-3 border-b border-[#d8e7fc] flex items-center justify-between text-xs font-semibold">
+        <div className="bg-slate-50/80 px-4 py-3 border-b border-slate-200 flex items-center justify-between text-xs font-semibold">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="tracking-wider uppercase text-xs sm:text-[13px] font-black text-[#000865]">
+            <span className="tracking-wider uppercase text-xs sm:text-[13px] font-black text-slate-900">
               Live Prescription Preview (A4 Sheet)
             </span>
           </div>
@@ -195,7 +195,7 @@ export default function LivePrescriptionSheet({
                       Allergy: {patient.allergies}
                     </span>
                   ) : (
-                    <span className="bg-white text-[#0052cc] border border-[#93c5fd] px-2 py-0.5 rounded text-[9px] font-extrabold shadow-2xs">
+                    <span className="bg-white text-blue-700 border border-blue-200 px-2 py-0.5 rounded text-[9px] font-extrabold shadow-2xs">
                       NKDA
                     </span>
                   )}
@@ -238,7 +238,7 @@ export default function LivePrescriptionSheet({
             {/* Rx Medications Table / List */}
             <div className="flex-1 mb-3">
               <div className="flex items-center gap-1.5 text-slate-900 font-black text-xs mb-2">
-                <span className="text-base font-serif italic font-extrabold text-[#0052cc]">℞</span>
+                <span className="text-base font-serif italic font-extrabold text-blue-700">℞</span>
                 <span className="uppercase tracking-wider text-[10px]">Medications</span>
               </div>
 
@@ -258,7 +258,7 @@ export default function LivePrescriptionSheet({
                       className={`p-2.5 rounded-lg border flex items-start justify-between gap-2 shadow-2xs transition-all ${
                         hasCustomPad 
                           ? 'bg-white/95 backdrop-blur-xs border-slate-300' 
-                          : 'bg-[#f0f6ff] border-[#cbe1fc]'
+                          : 'bg-slate-50 border-slate-200'
                       }`}
                     >
                       <div className="flex items-start gap-1.5 flex-1">
@@ -275,7 +275,7 @@ export default function LivePrescriptionSheet({
                             )}
                           </p>
                           <div className="text-[10px] text-slate-700 mt-0.5 flex flex-wrap gap-x-2 font-medium">
-                            <span className="text-[#0052cc] font-extrabold">{med.frequency || '1-0-1'}</span>
+                            <span className="text-blue-700 font-extrabold">{med.frequency || '1-0-1'}</span>
                             <span>•</span>
                             <span className="font-semibold">{med.duration || '3 days'}</span>
                             <span>•</span>
@@ -304,7 +304,7 @@ export default function LivePrescriptionSheet({
                 )}
                 {selectedDrips.length > 0 && (
                   <div>
-                    <span className="font-bold text-[#0052cc] uppercase text-[9px]">Day-Care Procedures: </span>
+                    <span className="font-bold text-blue-700 uppercase text-[9px]">Day-Care Procedures: </span>
                     <span className="text-slate-900 font-semibold">
                       {selectedDrips.map(d => d.name).join(', ')}
                     </span>
@@ -325,8 +325,8 @@ export default function LivePrescriptionSheet({
                   </div>
                 )}
                 {followUpDate && (
-                  <div className="flex items-center gap-1 text-[#0052cc] font-bold pt-1">
-                    <Clock size={11} className="text-[#0052cc]" />
+                  <div className="flex items-center gap-1 text-blue-700 font-bold pt-1">
+                    <Clock size={11} className="text-blue-700" />
                     <span>Next Follow-Up: {followUpDate}</span>
                   </div>
                 )}
@@ -385,10 +385,10 @@ export default function LivePrescriptionSheet({
       <div className="bg-white rounded-xl p-4 shadow-soft border border-slate-200/90 space-y-3">
         <div className="flex items-center justify-between text-xs pb-2.5 border-b border-slate-100">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#dbeafe] text-[#0060df] flex items-center justify-center shrink-0 border border-[#bfdbfe]">
+            <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
               <ShieldCheck size={15} className="stroke-[2.5]" />
             </div>
-            <span className="font-extrabold text-xs sm:text-[13px] text-[#000865] uppercase tracking-wider">
+            <span className="font-extrabold text-xs sm:text-[13px] text-slate-900 uppercase tracking-wider">
               Dispatch Dock
             </span>
           </div>
@@ -409,14 +409,14 @@ export default function LivePrescriptionSheet({
             type="button"
             onClick={onProceedToReview}
             disabled={!patient || medicines.length === 0 || saving}
-            className="w-full bg-gradient-to-r from-[#0080ff] to-[#0052cc] hover:from-[#0070e6] hover:to-[#0047b3] text-white font-extrabold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer active:scale-[0.99]"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer active:scale-[0.99]"
           >
             {saving ? (
               <Loader2 className="animate-spin" size={18} />
             ) : (
               <Printer size={18} />
             )}
-            <span>Print Rx & Complete (Ctrl + Enter)</span>
+            <span>Save & Generate Prescription (Ctrl + Enter)</span>
           </button>
 
           <div className="grid grid-cols-2 gap-2">
@@ -424,9 +424,9 @@ export default function LivePrescriptionSheet({
               type="button"
               onClick={onProceedToReview}
               disabled={!patient || medicines.length === 0}
-              className="bg-[#e8f1fd] hover:bg-[#dbeafe] text-[#0052cc] border border-[#bfdbfe] font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs disabled:opacity-40 cursor-pointer"
+              className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs disabled:opacity-40 cursor-pointer"
             >
-              <Send size={13} className="text-[#0080ff]" />
+              <Send size={13} className="text-blue-600" />
               <span>WhatsApp Rx</span>
             </button>
 
@@ -434,9 +434,9 @@ export default function LivePrescriptionSheet({
               type="button"
               onClick={onOpenSaveModal}
               disabled={medicines.length === 0}
-              className="bg-[#e8f1fd] hover:bg-[#dbeafe] text-[#0052cc] border border-[#bfdbfe] font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs disabled:opacity-40 cursor-pointer"
+              className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold py-2.5 px-3 rounded-xl transition-colors flex items-center justify-center gap-1.5 text-xs disabled:opacity-40 cursor-pointer"
             >
-              <Layers size={13} className="text-[#0080ff]" />
+              <Layers size={13} className="text-blue-600" />
               <span>Save Protocol</span>
             </button>
           </div>

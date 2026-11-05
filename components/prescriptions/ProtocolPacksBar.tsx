@@ -148,15 +148,15 @@ export default function ProtocolPacksBar({
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#eef6ff] to-[#f5f9ff] p-3.5 rounded-xl border border-[#cbe1fc] mb-3 shadow-2xs">
+    <div className="bg-slate-50/90 p-3.5 rounded-xl border border-slate-200 mb-3 shadow-2xs">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2 px-1">
         <div className="flex items-center space-x-2">
-          <div className="bg-[#0080ff] text-white p-1 rounded-md shadow-xs">
+          <div className="bg-blue-600 text-white p-1 rounded-md shadow-xs">
             <Zap size={14} className="fill-current" />
           </div>
-          <h3 className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider flex items-center">
+          <h3 className="text-xs sm:text-[13px] font-extrabold text-slate-900 uppercase tracking-wider flex items-center">
             My Protocol Packs
-            <span className="ml-2 bg-[#dbeafe] text-[#1e40af] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#93c5fd]">
+            <span className="ml-2 bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-200">
               1-Click Fill
             </span>
           </h3>
@@ -166,7 +166,7 @@ export default function ProtocolPacksBar({
           {cartCount > 0 && (
             <button
               onClick={onOpenSaveModal}
-              className="flex items-center text-xs font-bold bg-white text-[#0052cc] hover:bg-[#0080ff] hover:text-white border border-[#bfdbfe] px-2.5 py-1 rounded-lg transition-all shadow-xs"
+              className="flex items-center text-xs font-bold bg-white text-blue-700 hover:bg-blue-600 hover:text-white border border-slate-200 hover:border-blue-600 px-2.5 py-1 rounded-lg transition-all shadow-xs cursor-pointer"
               title="Save current cart medicines as a reusable protocol pack"
             >
               <Plus size={13} className="mr-1 stroke-[3]" />
@@ -176,9 +176,9 @@ export default function ProtocolPacksBar({
 
           <button
             onClick={() => setShowAllPanel(true)}
-            className="flex items-center text-xs font-semibold text-gray-500 hover:text-clinic-navy px-2 py-1 rounded-lg hover:bg-white/60 transition-colors"
+            className="flex items-center text-xs font-semibold text-slate-500 hover:text-slate-900 px-2 py-1 rounded-lg hover:bg-white/80 transition-colors"
           >
-            <FolderOpen size={13} className="mr-1 text-gray-400" />
+            <FolderOpen size={13} className="mr-1 text-slate-400" />
             All Packs ({displayedPacks.length})
           </button>
         </div>
@@ -187,12 +187,12 @@ export default function ProtocolPacksBar({
       {/* Horizontal Scrollable Packs Row */}
       <div className="flex items-center space-x-2 overflow-x-auto pb-1 pt-1 scrollbar-none">
         {loading ? (
-          <div className="flex items-center text-xs text-gray-400 py-1.5 px-3">
+          <div className="flex items-center text-xs text-slate-400 py-1.5 px-3">
             <Loader2 size={13} className="animate-spin mr-2 text-emerald-600" />
             Loading protocol packs...
           </div>
         ) : displayedPacks.length === 0 ? (
-          <div className="flex items-center space-x-3 text-xs text-gray-500 py-1 px-2">
+          <div className="flex items-center space-x-3 text-xs text-slate-500 py-1 px-2">
             <span className="italic">No saved protocol packs yet.</span>
             {cartCount > 0 ? (
               <button
@@ -202,7 +202,7 @@ export default function ProtocolPacksBar({
                 Save your first pack now
               </button>
             ) : (
-              <span className="text-gray-400">Add medicines below and click "Save Cart as Pack"</span>
+              <span className="text-slate-400">Add medicines below and click "Save Cart as Pack"</span>
             )}
           </div>
         ) : (
@@ -213,23 +213,23 @@ export default function ProtocolPacksBar({
               <button
                 key={template.id}
                 onClick={() => handleApplyPack(template)}
-                className={`flex-shrink-0 flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all transform active:scale-95 border ${
+                className={`flex-shrink-0 flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all transform active:scale-95 border cursor-pointer ${
                   isActive
-                    ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] shadow-md ring-2 ring-[#93c5fd]'
-                    : 'bg-white hover:bg-blue-50 text-slate-800 border-blue-200/80 shadow-xs hover:border-blue-400 group'
+                    ? 'bg-blue-50 text-blue-800 border-blue-300 shadow-sm ring-2 ring-blue-200'
+                    : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200 shadow-xs hover:border-slate-300 group'
                 }`}
               >
                 {isActive ? (
-                  <Check size={14} className="text-[#1e40af] animate-bounce stroke-[3]" />
+                  <Check size={14} className="text-blue-700 animate-bounce stroke-[3]" />
                 ) : (
-                  <Sparkles size={14} className="text-emerald-500 group-hover:text-white transition-colors" />
+                  <Sparkles size={14} className="text-emerald-500 group-hover:text-emerald-600 transition-colors" />
                 )}
                 <span>{template.name}</span>
                 <span
                   className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md transition-colors ${
                     isActive
-                      ? 'bg-white text-[#1e40af] border border-[#93c5fd]'
-                      : 'bg-blue-50 text-[#1e40af] group-hover:bg-blue-100'
+                      ? 'bg-white text-blue-700 border border-blue-200'
+                      : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
                   }`}
                 >
                   {template.items.length} meds

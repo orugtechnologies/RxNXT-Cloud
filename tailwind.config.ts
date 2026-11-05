@@ -10,30 +10,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Site-wide Blue/Light-Blue clinical palette
-        emerald: {
-          50: '#f0f6ff',
-          100: '#e0effe',
-          200: '#bae0fd',
-          300: '#7cc5fa',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0080ff',
-          700: '#0052cc',
-          800: '#003db3',
-          900: '#001099',
-          950: '#000865',
-        },
         clinic: {
-          navy: '#000865', // Deep Royal Navy (matching spreadsheet Row 1 Left)
-          blue: '#0080ff', // RxNXT Vibrant Sky / Electric Blue (matching spreadsheet Row 1 Right)
-          blueDark: '#0052cc',
-          sky: '#38bdf8',  // Light Blue / Cyan Accent
-          emerald: '#0080ff', // Electric Blue
-          emeraldDark: '#0052cc',
-          bg: '#f8faff',
+          navy: '#0f172a',    // Deep slate ink
+          blue: '#1d4ed8',    // Calm clinical cobalt
+          blueDark: '#1e40af',
+          sky: '#0284c7',     // Clinical cyan / info
+          emerald: '#059669', // Native true-green emerald for clinical actions/success
+          emeraldDark: '#047857',
+          bg: '#f8fafc',      // Warm alabaster canvas
           card: '#ffffff',
-          border: '#dbeafe', // Soft pastel light blue border
+          border: '#e2e8f0',  // Neutral slate border
         },
         // shadcn/ui CSS variable-based colors
         border: 'hsl(var(--border))',

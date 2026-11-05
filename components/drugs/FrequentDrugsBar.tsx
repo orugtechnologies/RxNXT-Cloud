@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Zap, Plus, Check, Pill } from 'lucide-react';
 import { PrescribedMedicine } from '@/components/prescriptions/PrescriptionCart';
+import { getSmartClinicalDefaults } from '@/lib/prescriptionClinicalDefaults';
 
 interface FrequentDrug {
   id: string;
@@ -44,6 +45,7 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
   }
 
   const handleChipClick = (drug: FrequentDrug) => {
+    const smart = getSmartClinicalDefaults(drug.name, drug.genericName);
     const newMed: PrescribedMedicine = {
       id: Math.random().toString(36).substr(2, 9),
       generic_id: drug.drugId,
@@ -52,9 +54,9 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
       dosage_form: drug.dosage_form,
       strength: drug.strength,
       route: drug.route,
-      frequency: drug.frequency || '1-0-1',
-      duration: drug.duration || '3 days',
-      instructions: drug.instructions || 'Post-Meal (After Food)',
+      frequency: drug.frequency || smart.frequency,
+      duration: drug.duration || smart.duration,
+      instructions: drug.instructions || smart.instructions,
     };
     onAddDrug(newMed);
   };
@@ -62,8 +64,8 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
   return (
     <div className="mt-3.5 pt-3 border-t border-slate-100">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs sm:text-[13px] font-extrabold text-[#000865] uppercase tracking-wider flex items-center gap-1.5">
-          <Zap size={14} className="text-[#0080ff] fill-[#0080ff]" />
+        <span className="text-xs sm:text-[13px] font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+          <Zap size={14} className="text-blue-600 fill-blue-600" />
           My Frequent Drugs (1-Click Add)
         </span>
       </div>
@@ -80,12 +82,12 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
               disabled={isAdded}
               className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs ${
                 isAdded
-                  ? 'bg-[#dbeafe] text-[#1e40af] border-[#93c5fd] font-bold cursor-not-allowed shadow-2xs'
+                  ? 'bg-blue-50 text-blue-800 border-blue-200 font-bold cursor-not-allowed shadow-2xs'
                   : 'bg-white text-slate-800 border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 hover:text-blue-900 ring-1 ring-slate-100 hover:ring-blue-200'
               }`}
               title={`${drug.name} ${drug.strength || ''}`.trim()}
             >
-              <Pill size={13} className={isAdded ? 'text-[#1e40af]' : 'text-blue-600'} />
+              <Pill size={13} className={isAdded ? 'text-blue-700' : 'text-blue-600'} />
               <span>{drug.name}</span>
               {drug.strength && (
                 <span className="text-[10px] text-slate-400 font-normal">
@@ -93,7 +95,7 @@ export default function FrequentDrugsBar({ onAddDrug, alreadyPrescribedIds = [] 
                 </span>
               )}
               {isAdded ? (
-                <Check size={12} className="text-[#1e40af] ml-0.5 stroke-[3]" />
+                <Check size={12} className="text-blue-700 ml-0.5 stroke-[3]" />
               ) : (
                 <Plus size={12} className="text-slate-400 group-hover:text-emerald-600 ml-0.5" />
               )}

@@ -93,7 +93,7 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
   return (
     <div className="w-full relative">
       <div className="relative group">
-        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#0080ff] transition-colors">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
           <Search size={20} />
         </div>
         <input
@@ -102,11 +102,11 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search medicines (e.g. Dolo, Paracetamol)... (Press / to search)"
-          className="w-full pl-12 pr-20 py-3.5 bg-gray-50/50 border border-gray-300 rounded-lg shadow-sm focus:bg-white focus:ring-2 focus:ring-[#0080ff] focus:border-[#0080ff] outline-none text-gray-900 transition-all text-sm"
+          className="w-full pl-12 pr-20 py-3.5 bg-slate-50/70 border border-slate-300 rounded-lg shadow-sm focus:bg-white focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none text-slate-900 transition-all text-sm"
         />
         <div className="absolute right-3.5 top-3.5 flex items-center pointer-events-none">
           {loading ? (
-            <div className="text-[#0080ff]">
+            <div className="text-blue-600">
               <Loader2 className="animate-spin h-5 w-5" />
             </div>
           ) : (
@@ -125,18 +125,18 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
       )}
 
       {!loading && !error && query.length >= 2 && results.length === 0 && (
-        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 p-6 text-center rounded-lg shadow-xl text-gray-500 animate-in fade-in flex flex-col items-center">
-          <Pill size={32} className="text-gray-300 mb-2" />
-          <p className="text-sm">No medicines found matching "<span className="font-semibold text-gray-700">{query}</span>"</p>
+        <div className="absolute z-10 w-full mt-2 bg-white border border-slate-200 p-6 text-center rounded-lg shadow-xl text-slate-500 animate-in fade-in flex flex-col items-center">
+          <Pill size={32} className="text-slate-300 mb-2" />
+          <p className="text-sm">No medicines found matching "<span className="font-semibold text-slate-700">{query}</span>"</p>
         </div>
       )}
 
       {results.length > 0 && !error && (
-        <ul className="absolute z-50 w-full mt-2 bg-white border border-[#bfdbfe] rounded-lg shadow-2xl max-h-96 overflow-y-auto animate-in fade-in slide-in-from-top-2">
+        <ul className="absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-lg shadow-2xl max-h-96 overflow-y-auto animate-in fade-in slide-in-from-top-2">
           {isLowConfidence ? (
             <div className="px-4 py-3 text-sm font-bold text-amber-700 uppercase tracking-wider border-b border-amber-200 bg-amber-50">Did you mean?</div>
           ) : (
-            <div className="px-3 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 bg-gray-50/80">Search Results</div>
+            <div className="px-3 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 bg-slate-50/80">Search Results</div>
           )}
           {results.map((result, idx) => {
             const keyId = result.brand_id || result.generic_id || `idx-${idx}`;
@@ -152,26 +152,26 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
                   setQuery('');
                   setResults([]);
                 }}
-                className={`p-4 flex justify-between items-start transition-colors border-b border-gray-50 group ${
-                  result.isRestricted ? 'bg-red-50/50 cursor-not-allowed opacity-80' : 'hover:bg-[#e8f1fd]/70 cursor-pointer'
+                className={`p-4 flex justify-between items-start transition-colors border-b border-slate-50 group ${
+                  result.isRestricted ? 'bg-red-50/50 cursor-not-allowed opacity-80' : 'hover:bg-slate-50 cursor-pointer'
                 }`}
               >
                 <div className={result.isRestricted ? 'grayscale' : ''}>
-                  <p className="font-bold text-clinic-navy text-base group-hover:text-[#0080ff] transition-colors">
+                  <p className="font-bold text-slate-900 text-base group-hover:text-blue-700 transition-colors">
                     {result.brand_name ? result.brand_name : result.generic_name}
                   </p>
-                  <p className="text-xs font-semibold text-gray-500 mt-1 uppercase tracking-wide">
+                  <p className="text-xs font-semibold text-slate-500 mt-1 uppercase tracking-wide">
                     {result.brand_name ? `Generic: ${result.generic_name}` : 'Generic'}
                   </p>
                   {(result.dosage_form || result.strength) && (
                     <div className="flex gap-2 mt-2.5">
                       {result.dosage_form && (
-                        <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-[11px] font-bold uppercase rounded border border-gray-200">
+                        <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-[11px] font-bold uppercase rounded border border-slate-200">
                           {result.dosage_form}
                         </span>
                       )}
                       {result.strength && (
-                        <span className="px-2 py-0.5 bg-clinic-emerald/10 text-[#0080ff]Dark text-[11px] font-bold uppercase rounded border border-clinic-emerald/20">
+                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[11px] font-bold uppercase rounded border border-blue-200">
                           {result.strength}
                         </span>
                       )}
@@ -186,12 +186,12 @@ export default function DrugSearchUI({ onSelect }: DrugSearchUIProps) {
                     </span>
                   )}
                   {(!result.isRestricted && result.popularity !== undefined && result.popularity >= 10) && (
-                    <span className="text-[10px] font-bold text-yellow-700 bg-yellow-50 px-2 py-0.5 rounded uppercase border border-yellow-200 flex items-center shadow-sm">
+                    <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded uppercase border border-amber-200 flex items-center shadow-sm">
                       ★ Favorite
                     </span>
                   )}
                   {(!result.isRestricted && result.popularity !== undefined && result.popularity > 0 && result.popularity < 10) && (
-                    <span className="text-[10px] font-bold text-[#0052cc] bg-[#e8f1fd] px-2 py-0.5 rounded uppercase border border-[#bfdbfe] flex items-center shadow-sm">
+                    <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded uppercase border border-blue-200 flex items-center shadow-sm">
                       ✓ Preferred
                     </span>
                   )}

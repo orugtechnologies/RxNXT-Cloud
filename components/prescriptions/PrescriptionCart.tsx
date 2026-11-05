@@ -1,7 +1,15 @@
 'use client';
 
-import React from 'react';
-import { Trash2, AlertCircle, Check } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Trash2, 
+  AlertCircle, 
+  Check, 
+  ChevronDown, 
+  ChevronUp, 
+  ChevronsUpDown,
+  Edit3
+} from 'lucide-react';
 
 export interface PrescribedMedicine {
   id: string;
@@ -16,8 +24,9 @@ export interface PrescribedMedicine {
   instructions: string;
 }
 
-interface CartProps {
-  medicines: PrescribedMedicine[];
+export interface CartProps {
+  medicines?: PrescribedMedicine[];
+  items?: PrescribedMedicine[];
   onUpdate: (id: string, updates: Partial<PrescribedMedicine>) => void;
   onRemove: (id: string) => void;
 }
@@ -93,241 +102,335 @@ const QUICK_FREQUENCIES = ['1-0-1', '1-1-1', '1-0-0', '0-0-1', 'OD', 'SOS'];
 const QUICK_DURATIONS = ['3 days', '5 days', '7 days', '10 days', '15 days', '1 month'];
 const QUICK_INSTRUCTIONS = ['After Food', 'Before Food', 'At bedtime', 'SOS'];
 
-export default function PrescriptionCart({ medicines, onUpdate, onRemove }: CartProps) {
+export default function PrescriptionCart({ medicines, items, onUpdate, onRemove }: CartProps) {
+  const medList = items || medicines || [];
+  
+  // Track expanded accordion cards
+  const [expandedIds, setExpandedIds] = useState<Record<string, boolean>>({});
+  const prevCountRef = useRef(medList.length);
+
+  // Auto-expand only newly added medicine or any item missing frequency/duration
+  useEffect(() => {
+    if (medList.length > prevCountRef.current) {
+      const latestItem = medList[medList.length - 1];
+      const newExpanded: Record<string, boolean> = {};
+      medList.forEach(m => {
+        const isIncomplete = !m.frequency?.trim() || !m.duration?.trim();
+        if (m.id === latestItem.id || isIncomplete) {
+          newExpanded[m.id] = true;
+        }
+      });
+      setExpandedIds(newExpanded);
+    }
+    prevCountRef.current = medList.length;
+  }, [medList.length]);
+
+  const toggleExpand = (id: string) => {
+    setExpandedIds(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const allExpanded = medList.length > 0 && medList.every(m => expandedIds[m.id]);
+
+  const toggleExpandAll = () => {
+    if (allExpanded) {
+      setExpandedIds({});
+    } else {
+      const next: Record<string, boolean> = {};
+      medList.forEach(m => { next[m.id] = true; });
+      setExpandedIds(next);
+    }
+  };
+
   return (
-    <div className="bg-white animate-in fade-in">
-      {medicines.length === 0 ? (
+    <div className="bg-white">
+      {medList.length === 0 ? (
         <div className="py-8 px-4 text-center bg-white flex flex-col items-center justify-center">
           <p className="text-sm font-semibold text-slate-500">
             — No medicines prescribed yet —
           </p>
           <p className="text-xs text-slate-400 mt-1">
-            Pick from My Frequent Drugs chips or search above to add medicines.
+            Pick from My Frequent Drugs chips or search to add medicines.
           </p>
         </div>
       ) : (
-        <div className="divide-y divide-gray-100">
-          {medicines.map((med, index) => (
-          <div key={med.id} className="p-5 hover:bg-gray-50/50 transition-colors group">
-            {/* Medicine Name & Details */}
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-start">
-                <span className="text-gray-300 font-bold mr-3 mt-0.5 select-none">{index + 1}.</span>
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-bold text-clinic-navy text-lg leading-tight">{med.name}</p>
-                    {(!med.frequency?.trim() || !med.duration?.trim() || !med.instructions?.trim()) ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full">
-                        <AlertCircle size={12} className="text-amber-600" /> Details Incomplete
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-300 px-2 py-0.5 rounded-full">
-                        <Check size={12} className="text-emerald-600" /> Complete
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-sm font-medium text-gray-500 mt-1 uppercase tracking-wide">
-                    {[med.dosage_form, med.strength, med.route].filter(Boolean).join(' • ') || 'Generic / Standard Form'}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => onRemove(med.id)}
-                className="text-gray-400 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors"
-                title="Remove Medicine"
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
-
-            {/* Smart Inputs & Quick-Select Chips Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
-              {/* Frequency */}
-              <div className={`p-3.5 rounded-xl border transition-all shadow-xs space-y-2.5 ${
-                !med.frequency?.trim() ? 'bg-amber-50/40 border-amber-300 ring-1 ring-amber-200/50' : 'bg-slate-50/70 border-slate-200/80'
-              }`}>
-                <div className="flex items-center justify-between gap-1.5">
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">Frequency *</label>
-                    {!med.frequency?.trim() ? (
-                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded whitespace-nowrap">Required</span>
-                    ) : (
-                      <span className="text-[10px] font-bold text-emerald-600 flex items-center shrink-0">✓</span>
-                    )}
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-semibold whitespace-nowrap shrink-0">Quick Pick:</span>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {QUICK_FREQUENCIES.map(q => (
-                    <button
-                      key={q}
-                      type="button"
-                      onClick={() => onUpdate(med.id, { frequency: q })}
-                      className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all shadow-2xs whitespace-nowrap ${
-                        med.frequency === q
-                          ? 'bg-[#dbeafe] text-[#1e40af] border border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
-                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#1e40af] hover:border-blue-300'
-                      }`}
-                    >
-                      {q}
-                    </button>
-                  ))}
-                </div>
-                <div className="relative pt-1">
-                  <input
-                    type="text"
-                    list={`freq-list-${med.id}`}
-                    value={med.frequency}
-                    onChange={(e) => onUpdate(med.id, { frequency: e.target.value })}
-                    placeholder="e.g. 1-0-1, TDS, SOS..."
-                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-semibold outline-none transition-shadow shadow-xs ${
-                      !med.frequency?.trim()
-                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/70'
-                        : 'border-slate-300 focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb]'
-                    }`}
-                  />
-                  <datalist id={`freq-list-${med.id}`}>
-                    {FREQUENCY_OPTIONS.filter(o => o.value).map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </datalist>
-                </div>
-              </div>
-
-              {/* Duration */}
-              <div className={`p-3.5 rounded-xl border transition-all shadow-xs space-y-2.5 ${
-                !med.duration?.trim() ? 'bg-amber-50/40 border-amber-300 ring-1 ring-amber-200/50' : 'bg-slate-50/70 border-slate-200/80'
-              }`}>
-                <div className="flex items-center justify-between gap-1.5">
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">Duration *</label>
-                    {!med.duration?.trim() ? (
-                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded whitespace-nowrap">Required</span>
-                    ) : (
-                      <span className="text-[10px] font-bold text-emerald-600 flex items-center shrink-0">✓</span>
-                    )}
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-semibold whitespace-nowrap shrink-0">Quick Pick:</span>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {QUICK_DURATIONS.map(q => (
-                    <button
-                      key={q}
-                      type="button"
-                      onClick={() => onUpdate(med.id, { duration: q })}
-                      className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all shadow-2xs whitespace-nowrap ${
-                        med.duration === q
-                          ? 'bg-[#dbeafe] text-[#1e40af] border border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
-                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#1e40af] hover:border-blue-300'
-                      }`}
-                    >
-                      {q}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex items-center gap-1.5 pt-1">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      list={`dur-list-${med.id}`}
-                      value={med.duration}
-                      onChange={(e) => onUpdate(med.id, { duration: e.target.value })}
-                      placeholder="e.g. 3 days, 5 days, 1 month..."
-                      className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-semibold outline-none transition-shadow shadow-xs ${
-                        !med.duration?.trim()
-                          ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/70'
-                          : 'border-slate-300 focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb]'
-                      }`}
-                    />
-                    <datalist id={`dur-list-${med.id}`}>
-                      {DURATION_OPTIONS.filter(o => o.value).map(opt => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </datalist>
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const num = parseInt(med.duration) || 3;
-                        const next = Math.max(1, num - 1);
-                        onUpdate(med.id, { duration: `${next} day${next > 1 ? 's' : ''}` });
-                      }}
-                      className="px-2.5 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition-colors shadow-2xs"
-                      title="Decrease by 1 day"
-                    >
-                      -1d
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const num = parseInt(med.duration) || 3;
-                        const next = num + 1;
-                        onUpdate(med.id, { duration: `${next} day${next > 1 ? 's' : ''}` });
-                      }}
-                      className="px-2.5 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition-colors shadow-2xs"
-                      title="Increase by 1 day"
-                    >
-                      +1d
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Instructions */}
-              <div className={`p-3.5 rounded-xl border transition-all shadow-xs space-y-2.5 ${
-                !med.instructions?.trim() ? 'bg-amber-50/40 border-amber-300 ring-1 ring-amber-200/50' : 'bg-slate-50/70 border-slate-200/80'
-              }`}>
-                <div className="flex items-center justify-between gap-1.5">
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider whitespace-nowrap">Instructions *</label>
-                    {!med.instructions?.trim() ? (
-                      <span className="text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded whitespace-nowrap">Required</span>
-                    ) : (
-                      <span className="text-[10px] font-bold text-emerald-600 flex items-center shrink-0">✓</span>
-                    )}
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-semibold whitespace-nowrap shrink-0">Quick Pick:</span>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {QUICK_INSTRUCTIONS.map(q => (
-                    <button
-                      key={q}
-                      type="button"
-                      onClick={() => onUpdate(med.id, { instructions: q })}
-                      className={`text-[11px] font-semibold px-2.5 py-1 rounded-md transition-all shadow-2xs whitespace-nowrap ${
-                        med.instructions === q
-                          ? 'bg-[#dbeafe] text-[#1e40af] border border-[#93c5fd] font-bold shadow-xs ring-1 ring-[#93c5fd]'
-                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-blue-50 hover:text-[#1e40af] hover:border-blue-300'
-                      }`}
-                    >
-                      {q}
-                    </button>
-                  ))}
-                </div>
-                <div className="relative pt-1">
-                  <input
-                    type="text"
-                    list={`inst-list-${med.id}`}
-                    value={med.instructions}
-                    onChange={(e) => onUpdate(med.id, { instructions: e.target.value })}
-                    placeholder="e.g. After Food, Before Food..."
-                    className={`w-full bg-white border rounded-lg px-3 py-2 text-xs text-slate-800 font-semibold outline-none transition-shadow shadow-xs ${
-                      !med.instructions?.trim()
-                        ? 'border-amber-300 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 placeholder:text-amber-500/70'
-                        : 'border-slate-300 focus:ring-2 focus:ring-[#2563eb] focus:border-[#2563eb]'
-                    }`}
-                  />
-                  <datalist id={`inst-list-${med.id}`}>
-                    {INSTRUCTIONS_OPTIONS.filter(o => o.value).map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </datalist>
-                </div>
-              </div>
-            </div>
+        <div className="space-y-2">
+          {/* Cart Header Controls */}
+          <div className="flex items-center justify-between pb-1.5 border-b border-slate-100 px-1">
+            <span className="text-xs font-bold text-slate-600">
+              {medList.length} Medicine{medList.length > 1 ? 's' : ''} in Plan
+            </span>
+            <button
+              type="button"
+              onClick={toggleExpandAll}
+              className="text-xs font-bold text-blue-700 hover:text-blue-800 flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50/70 hover:bg-blue-100/70 border border-blue-200 transition-colors cursor-pointer"
+            >
+              <ChevronsUpDown size={13} />
+              <span>{allExpanded ? 'Collapse All' : 'Expand All'}</span>
+            </button>
           </div>
-        ))}
+
+          {/* Accordion Medicine Rows */}
+          <div className="space-y-2">
+            {medList.map((med, index) => {
+              const isExpanded = Boolean(expandedIds[med.id]);
+              const isIncomplete = !med.frequency?.trim() || !med.duration?.trim() || !med.instructions?.trim();
+
+              return (
+                <div 
+                  key={med.id} 
+                  className={`border rounded-xl transition-all duration-200 overflow-hidden ${
+                    isExpanded 
+                      ? 'border-blue-300 shadow-sm bg-white ring-1 ring-blue-100' 
+                      : isIncomplete 
+                        ? 'border-amber-300 bg-amber-50/30 hover:border-amber-400' 
+                        : 'border-slate-200 bg-white hover:border-slate-300 shadow-2xs'
+                  }`}
+                >
+                  {/* 1-Line Compact Summary Header */}
+                  <div className="p-3 flex items-center justify-between gap-3">
+                    
+                    {/* Medicine Identity & Summary Pills */}
+                    <div 
+                      className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer select-none"
+                      onClick={() => toggleExpand(med.id)}
+                    >
+                      <span className="text-slate-400 font-black text-xs shrink-0 select-none">
+                        {index + 1}.
+                      </span>
+
+                      <div className="flex items-center gap-2 flex-wrap min-w-0">
+                        <span className="font-bold text-slate-900 text-sm leading-tight truncate">
+                          {med.name}
+                        </span>
+
+                        {(med.dosage_form || med.strength) && (
+                          <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wide shrink-0">
+                            {[med.dosage_form, med.strength].filter(Boolean).join(' • ')}
+                          </span>
+                        )}
+
+                        {/* Inline Summary Badges */}
+                        <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+                          {med.frequency ? (
+                            <span className="px-2 py-0.5 rounded text-[11px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs">
+                              {med.frequency}
+                            </span>
+                          ) : (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                              ! Dose
+                            </span>
+                          )}
+
+                          {med.duration ? (
+                            <span className="px-2 py-0.5 rounded text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+                              {med.duration}
+                            </span>
+                          ) : (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                              ! Days
+                            </span>
+                          )}
+
+                          {med.instructions && (
+                            <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 hidden sm:inline shadow-2xs">
+                              {med.instructions}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons: Expand/Collapse & Remove */}
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => toggleExpand(med.id)}
+                        className={`p-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors ${
+                          isExpanded 
+                            ? 'bg-blue-100 text-blue-800' 
+                            : 'text-slate-500 hover:text-blue-700 hover:bg-slate-100'
+                        }`}
+                        title={isExpanded ? 'Collapse' : 'Edit dose & instructions'}
+                      >
+                        <Edit3 size={14} className="sm:hidden" />
+                        <span className="hidden sm:inline text-[11px]">{isExpanded ? 'Done' : 'Edit'}</span>
+                        {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onRemove(med.id)}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                        title="Remove medicine"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+
+                  </div>
+
+                  {/* Expanded Customizer Drawer (Quick chips, datalists, steppers) */}
+                  {isExpanded && (
+                    <div className="p-3.5 pt-2 border-t border-slate-100 bg-slate-50/60 animate-in fade-in duration-150">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        
+                        {/* Frequency Card */}
+                        <div className="p-3 rounded-xl border border-slate-200 bg-white space-y-2 shadow-2xs">
+                          <div className="flex items-center justify-between">
+                            <label className="text-[10px] font-extrabold text-slate-700 uppercase tracking-wider">
+                              Frequency *
+                            </label>
+                            <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {QUICK_FREQUENCIES.map(q => (
+                              <button
+                                key={q}
+                                type="button"
+                                onClick={() => onUpdate(med.id, { frequency: q })}
+                                className={`text-[11px] font-bold px-2 py-0.5 rounded-md transition-all shadow-2xs ${
+                                  med.frequency === q
+                                    ? 'bg-blue-600 text-white shadow-xs'
+                                    : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300'
+                                }`}
+                              >
+                                {q}
+                              </button>
+                            ))}
+                          </div>
+                          <div className="relative pt-0.5">
+                            <input
+                              type="text"
+                              list={`freq-list-${med.id}`}
+                              value={med.frequency}
+                              onChange={(e) => onUpdate(med.id, { frequency: e.target.value })}
+                              placeholder="e.g. 1-0-1, TDS, SOS..."
+                              className="w-full bg-white border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-semibold outline-none"
+                            />
+                            <datalist id={`freq-list-${med.id}`}>
+                              {FREQUENCY_OPTIONS.filter(o => o.value).map(opt => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                              ))}
+                            </datalist>
+                          </div>
+                        </div>
+
+                        {/* Duration Card with -1d / +1d Steppers */}
+                        <div className="p-3 rounded-xl border border-slate-200 bg-white space-y-2 shadow-2xs">
+                          <div className="flex items-center justify-between">
+                            <label className="text-[10px] font-extrabold text-slate-700 uppercase tracking-wider">
+                              Duration *
+                            </label>
+                            <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {QUICK_DURATIONS.map(q => (
+                              <button
+                                key={q}
+                                type="button"
+                                onClick={() => onUpdate(med.id, { duration: q })}
+                                className={`text-[11px] font-bold px-2 py-0.5 rounded-md transition-all shadow-2xs ${
+                                  med.duration === q
+                                    ? 'bg-emerald-600 text-white shadow-xs'
+                                    : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300'
+                                }`}
+                              >
+                                {q}
+                              </button>
+                            ))}
+                          </div>
+                          <div className="flex items-center gap-1 pt-0.5">
+                            <div className="relative flex-1">
+                              <input
+                                type="text"
+                                list={`dur-list-${med.id}`}
+                                value={med.duration}
+                                onChange={(e) => onUpdate(med.id, { duration: e.target.value })}
+                                placeholder="e.g. 5 days, 1 month..."
+                                className="w-full bg-white border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-semibold outline-none"
+                              />
+                              <datalist id={`dur-list-${med.id}`}>
+                                {DURATION_OPTIONS.filter(o => o.value).map(opt => (
+                                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
+                              </datalist>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const num = parseInt(med.duration) || 5;
+                                const next = Math.max(1, num - 1);
+                                onUpdate(med.id, { duration: `${next} day${next > 1 ? 's' : ''}` });
+                              }}
+                              className="px-2 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition-colors shadow-2xs"
+                              title="Decrease 1 day"
+                            >
+                              -1d
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const num = parseInt(med.duration) || 5;
+                                const next = num + 1;
+                                onUpdate(med.id, { duration: `${next} day${next > 1 ? 's' : ''}` });
+                              }}
+                              className="px-2 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 transition-colors shadow-2xs"
+                              title="Increase 1 day"
+                            >
+                              +1d
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Instructions Card */}
+                        <div className="p-3 rounded-xl border border-slate-200 bg-white space-y-2 shadow-2xs">
+                          <div className="flex items-center justify-between">
+                            <label className="text-[10px] font-extrabold text-slate-700 uppercase tracking-wider">
+                              Instructions *
+                            </label>
+                            <span className="text-[10px] text-slate-400 font-semibold">Quick Pick:</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {QUICK_INSTRUCTIONS.map(q => (
+                              <button
+                                key={q}
+                                type="button"
+                                onClick={() => onUpdate(med.id, { instructions: q })}
+                                className={`text-[11px] font-bold px-2 py-0.5 rounded-md transition-all shadow-2xs ${
+                                  med.instructions === q
+                                    ? 'bg-slate-800 text-white shadow-xs'
+                                    : 'bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 hover:text-slate-900'
+                                }`}
+                              >
+                                {q}
+                              </button>
+                            ))}
+                          </div>
+                          <div className="relative pt-0.5">
+                            <input
+                              type="text"
+                              list={`inst-list-${med.id}`}
+                              value={med.instructions}
+                              onChange={(e) => onUpdate(med.id, { instructions: e.target.value })}
+                              placeholder="e.g. After Food, Before Food..."
+                              className="w-full bg-white border border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 font-semibold outline-none"
+                            />
+                            <datalist id={`inst-list-${med.id}`}>
+                              {INSTRUCTIONS_OPTIONS.filter(o => o.value).map(opt => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                              ))}
+                            </datalist>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
