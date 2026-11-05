@@ -12,3 +12,5 @@ scratch/
 test_download.pdf
 *.pptx
 export_test*.ps1
+data/
+
