@@ -1,5 +1,18 @@
 import { jsPDF } from 'jspdf';
+import QRCode from 'qrcode';
 import { formatDisplayRxId } from './prescription-id';
+
+// Ensure TextEncoder is available across both Node (Jest/JSDOM) and browser environments
+if (typeof globalThis.TextEncoder === 'undefined') {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { TextEncoder: UtilTextEncoder, TextDecoder: UtilTextDecoder } = require('util');
+    (globalThis as any).TextEncoder = UtilTextEncoder;
+    (globalThis as any).TextDecoder = UtilTextDecoder;
+  } catch {
+    // Browser fallback
+  }
+}
 
 export interface PrescriptionMedicineItem {
   id?: string;
@@ -130,6 +143,66 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
   };
 
   const drawFooter = () => {
+    const rawSignDocName = (data.doctorName || 'Doctor').trim();
+    const cleanSignDocName = rawSignDocName.toLowerCase().startsWith('dr.') || rawSignDocName.toLowerCase().startsWith('dr ')
+      ? rawSignDocName
+      : `Dr. ${rawSignDocName}`;
+
+    const drawVerificationQr = (x: number, yPos: number, sizeMm = 12) => {
+      try {
+        const qrPayload = JSON.stringify({
+          system: 'RxNXT Verified',
+          rxId: displayRxId || 'UNASSIGNED',
+          doc: cleanSignDocName,
+          reg: data.doctorRegNo || '',
+          clinic: data.clinicName || 'Clinic',
+          patient: data.patient?.name || 'Patient',
+          date: new Date().toISOString().split('T')[0],
+          meds: data.medicines?.length || 0,
+        });
+
+        const qr = QRCode.create(qrPayload, { errorCorrectionLevel: 'M' });
+        const moduleCount = qr.modules.size;
+        const scale = sizeMm / moduleCount;
+
+        // Draw light container border & background
+        doc.setFillColor(255, 255, 255);
+        doc.setDrawColor(226, 232, 240); // Slate-200
+        doc.setLineWidth(0.2);
+        doc.roundedRect(x - 1, yPos - 1, sizeMm + 2, sizeMm + 2, 1, 1, 'FD');
+
+        // Draw crisp vector modules
+        doc.setFillColor(15, 23, 42); // Slate-900
+        for (let r = 0; r < moduleCount; r++) {
+          for (let c = 0; c < moduleCount; c++) {
+            if (qr.modules.get(r, c)) {
+              doc.rect(x + c * scale, yPos + r * scale, scale, scale, 'F');
+            }
+          }
+        }
+
+        // Draw "Scan to Verify" label alongside QR
+        const textX = x + sizeMm + 2.5;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(30, 41, 59);
+        doc.text('Scan to Verify', textX, yPos + 3.5);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6);
+        doc.setTextColor(100, 116, 139);
+        doc.text('RxNXT Encrypted EMR', textX, yPos + 7);
+
+        if (displayRxId) {
+          doc.setFontSize(5.5);
+          doc.setTextColor(148, 163, 184);
+          doc.text(`Rx: ${displayRxId}`, textX, yPos + 10.5);
+        }
+      } catch (qrErr) {
+        console.warn('Could not render vector QR in PDF:', qrErr);
+      }
+    };
+
     if (hasCustomPad) {
       // For custom prescription pads, the physical paper footer already contains clinic branding.
       // We cleanly position the doctor signature & verification tag in the allocated lower margin.
@@ -151,10 +224,6 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
       doc.setFontSize(8);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(30, 41, 59);
-      const rawSignDocName = (data.doctorName || 'Doctor').trim();
-      const cleanSignDocName = rawSignDocName.toLowerCase().startsWith('dr.') || rawSignDocName.toLowerCase().startsWith('dr ')
-        ? rawSignDocName
-        : `Dr. ${rawSignDocName}`;
       doc.text(cleanSignDocName, pageWidth - margin - 27.5, footerY + 2, { align: 'center' });
 
       if (data.doctorRegNo) {
@@ -164,10 +233,8 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
         doc.text(`Reg: ${data.doctorRegNo}`, pageWidth - margin - 27.5, footerY + 5.5, { align: 'center' });
       }
 
-      // Subtle verification stamp on bottom left
-      doc.setFontSize(6.5);
-      doc.setTextColor(148, 163, 184);
-      doc.text(displayRxId ? `Rx: ${displayRxId} • RxNXT Verified` : 'RxNXT Verified', margin, footerY + 5.5);
+      // Verification QR on bottom left
+      drawVerificationQr(margin, footerY - 10, 12);
       return;
     }
 
@@ -191,16 +258,15 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
     doc.setFontSize(8.5);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 41, 59);
-    const rawSignDocName = (data.doctorName || 'Doctor').trim();
-    const cleanSignDocName = rawSignDocName.toLowerCase().startsWith('dr.') || rawSignDocName.toLowerCase().startsWith('dr ')
-      ? rawSignDocName
-      : `Dr. ${rawSignDocName}`;
     doc.text(cleanSignDocName, pageWidth - margin - 27.5, footerY - 1, { align: 'center' });
     
     doc.setFontSize(7.5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(100, 116, 139);
     doc.text(data.doctorRegNo ? `Reg. No: ${data.doctorRegNo}` : 'Authorized Medical Signatory', pageWidth - margin - 27.5, footerY + 3, { align: 'center' });
+
+    // Verification QR on bottom left
+    drawVerificationQr(margin, footerY - 14, 12);
 
     // Legal / System watermark footer (NMC Gazette 2023 P. 108 Sec 3.7.9 compliant)
     doc.setFontSize(6.5);
