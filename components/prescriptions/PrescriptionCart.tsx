@@ -237,6 +237,49 @@ export default function PrescriptionCart({ medicines, items, onUpdate, onRemove 
                             </span>
                           )}
                         </div>
+
+                        {/* 1-Click Direct Inline Dosage Shortcuts (Zero Clicks to expand) */}
+                        <div className="hidden sm:flex items-center gap-1 shrink-0 ml-1 border-l border-slate-200 pl-2">
+                          {['1-0-1', '1-1-1', '1-0-0', 'SOS'].map((freq) => (
+                            <button
+                              key={freq}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onUpdate(med.id, { frequency: freq });
+                              }}
+                              className={`text-[10px] font-bold px-1.5 py-0.5 rounded transition-all cursor-pointer ${
+                                med.frequency === freq
+                                  ? 'bg-blue-600 text-white shadow-xs'
+                                  : 'bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-blue-700 border border-slate-200'
+                              }`}
+                              title={`Set dose to ${freq}`}
+                            >
+                              {freq}
+                            </button>
+                          ))}
+
+                          <span className="text-slate-300 text-xs mx-0.5">•</span>
+
+                          {['3 days', '5 days', '7 days'].map((dur) => (
+                            <button
+                              key={dur}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onUpdate(med.id, { duration: dur });
+                              }}
+                              className={`text-[10px] font-bold px-1.5 py-0.5 rounded transition-all cursor-pointer ${
+                                med.duration === dur
+                                  ? 'bg-emerald-600 text-white shadow-xs'
+                                  : 'bg-slate-100 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200'
+                              }`}
+                              title={`Set duration to ${dur}`}
+                            >
+                              {dur.replace(' days', 'd')}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
