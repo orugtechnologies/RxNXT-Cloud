@@ -22,7 +22,6 @@ import FrequentDrugsBar from '@/components/drugs/FrequentDrugsBar';
 import QuickAdviceChips from '@/components/prescriptions/QuickAdviceChips';
 import LivePrescriptionSheet from '@/components/prescriptions/LivePrescriptionSheet';
 import SubscriptionLockoutModal from '@/components/subscription/SubscriptionLockoutModal';
-import PatientTopRibbon from '@/components/prescriptions/PatientTopRibbon';
 import { getSmartClinicalDefaults } from '@/lib/prescriptionClinicalDefaults';
 
 function PrescriptionWorkflowContent() {
@@ -249,30 +248,6 @@ function PrescriptionWorkflowContent() {
     setCreationMethod('TEMPLATE');
   };
 
-  const handleCloneLastRx = (encounter: any) => {
-    const encMeds = encounter?.medicines || encounter?.prescriptions?.[0]?.medicines || [];
-    if (encMeds.length > 0) {
-      const formattedMeds: PrescribedMedicine[] = encMeds.map((m: any) => ({
-        id: Math.random().toString(36).substr(2, 9),
-        generic_id: m.generic_id || m.genericId,
-        brand_id: m.brand_id || m.brandId,
-        name: m.name || m.customName || m.custom_name,
-        dosage_form: m.dosage_form || m.dosageForm,
-        strength: m.strength,
-        route: m.route,
-        frequency: m.frequency || '1-0-1',
-        duration: m.duration || '5 days',
-        instructions: m.instructions || 'After Food'
-      }));
-      setMedicines(formattedMeds);
-      setCreationMethod('TEMPLATE');
-    }
-    if (encounter.diagnosis) setDiagnosis(encounter.diagnosis);
-    if (encounter.chiefComplaint || encounter.chief_complaint) {
-      setChiefComplaint(encounter.chiefComplaint || encounter.chief_complaint);
-    }
-  };
-
   const updateMedicine = (id: string, updates: Partial<PrescribedMedicine>) => {
     setMedicines(medicines.map(m => m.id === id ? { ...m, ...updates } : m));
   };
@@ -496,52 +471,157 @@ function PrescriptionWorkflowContent() {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Top Header: Compact Title & Mode */}
-      <div className="flex items-center justify-between py-1">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center">
-            <Activity className="text-clinic-emerald mr-2.5" size={24} strokeWidth={2.5} />
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center">
+            <Activity className="text-clinic-emerald mr-3" size={28} strokeWidth={2.5} />
             Clinical Workspace
             <InfoTooltip text="Write and send digital prescriptions via WhatsApp. Use the AI Smart Search to quickly find drugs, or switch to the Templates tab to use pre-saved protocols." />
           </h1>
-          <div className="flex flex-wrap items-center gap-2 mt-0.5 ml-8 text-xs">
-            <p className="text-slate-500 font-medium">RxNXT Clinical Flow</p>
+          <div className="flex flex-wrap items-center gap-2 mt-1 ml-11">
+            <p className="text-slate-500 text-sm font-medium">RxNXT Clinical Flow</p>
             <span className="text-slate-300">•</span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-bold text-[10px]">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-[11px] font-bold">
               ⚡ Zero-Typing Faster Prescription Generator
             </span>
           </div>
         </div>
       </div>
 
-      {/* Patient Top Ribbon (Persistent, Zero Extra Clicks) */}
-      <PatientTopRibbon
-        patient={patient}
-        patientEncounters={patientEncounters}
-        onSelectPatient={handlePatientSelect}
-        onClearPatient={() => setPatient(null)}
-        onAddNewPatient={(q) => { setNewPatientQuery(q || ''); setShowAddPatient(true); }}
-        onCloneLastRx={handleCloneLastRx}
-        elapsedSeconds={startTime ? Math.floor((Date.now() - startTime) / 1000) : 0}
-      />
+      <div className="w-full max-w-[1780px]">
 
-      {patient && (
-        <div className="w-full max-w-[1780px]">
-          <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 gap-5 items-start mt-2">
+        <div className="grid grid-cols-1 lg:grid-cols-12 xl:grid-cols-12 gap-6 items-start">
+          
+          {/* Left Column: Patient & Clinical Details (Sticky docked) */}
+          <div className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-20 lg:self-start">
             
-            {/* Left / Center Column: Supercharged Prescription Studio (65% width) */}
-            <div className="lg:col-span-7 xl:col-span-8 space-y-4">
-              
-              {/* Step 1: Quick Symptoms & Diagnosis Chips (Wide & prominent) */}
+            {/* Step 1: Patient Selection */}
+            <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border transition-all duration-300 hover:shadow-md relative z-30">
+              <div className="bg-slate-50/80 px-4 sm:px-5 py-3 border-b border-slate-200 flex items-center justify-between rounded-t-xl">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center shrink-0 border border-blue-200">
+                    <User size={15} className="stroke-[2.5]" />
+                  </div>
+                  <h2 className="text-xs sm:text-[13px] font-extrabold text-slate-900 uppercase tracking-wider">Patient</h2>
+                </div>
+              </div>
+              <div className="p-5">
+                {!patient ? (
+                  <PatientSearchUI 
+                    onSelect={handlePatientSelect} 
+                    onAddNew={(q) => { setNewPatientQuery(q); setShowAddPatient(true); }} 
+                  />
+                ) : (
+                  <div className="relative group">
+                    <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100 flex items-start">
+                      <div className="h-10 w-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-lg mr-4 shrink-0">
+                        {patient.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-bold text-clinic-navy text-lg leading-tight">{patient.name}</p>
+                        <p className="text-sm text-gray-600 mt-1 flex flex-wrap gap-2">
+                          <span className="bg-white px-2 py-0.5 rounded border border-gray-200">{patient.age}y</span>
+                          <span className="bg-white px-2 py-0.5 rounded border border-gray-200">{patient.gender}</span>
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">{patient.phone}</p>
+
+                        {/* Drug Allergy / NKDA Guardrail */}
+                        {patient.allergies ? (
+                          <div className="mt-2.5 flex items-center gap-1.5 p-2 bg-rose-50 border border-rose-300 rounded-lg text-rose-800 text-xs font-bold animate-pulse">
+                            <AlertCircle size={14} className="text-rose-600 shrink-0" />
+                            <span>Allergy Alert: {patient.allergies}</span>
+                          </div>
+                        ) : (
+                          <div className="mt-2.5 flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-xs font-semibold">
+                            <span className="w-2 h-2 rounded-full bg-blue-600 inline-block shrink-0"></span>
+                            <span>NKDA (No Known Drug Allergies)</span>
+                          </div>
+                        )}
+
+                        {/* Patient Vitals Strip */}
+                        {patient.vitals && (patient.vitals.bp || patient.vitals.pulse || patient.vitals.temperature || patient.vitals.weight || patient.vitals.spo2) && (
+                          <div className="mt-3 pt-3 border-t border-blue-100/80">
+                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                              <span className="flex items-center gap-1">
+                                <Activity size={12} className="text-rose-500" />
+                                Recorded Vitals
+                              </span>
+                              <span className="text-emerald-600 font-semibold lowercase">Today</span>
+                            </div>
+                            <div className="grid grid-cols-5 gap-1.5 text-xs">
+                              {patient.vitals.bp && (
+                                <div className="bg-white border border-slate-200 rounded p-1.5 text-center shadow-2xs">
+                                  <span className="text-[9px] text-slate-400 block font-semibold">BP</span>
+                                  <span className={`font-black ${patient.vitals.bp.includes('/') && parseInt(patient.vitals.bp.split('/')[0]) >= 140 ? 'text-amber-600' : 'text-slate-800'}`}>
+                                    {patient.vitals.bp}
+                                  </span>
+                                </div>
+                              )}
+                              {patient.vitals.temperature && (
+                                <div className="bg-white border border-slate-200 rounded p-1.5 text-center shadow-2xs">
+                                  <span className="text-[9px] text-slate-400 block font-semibold">TEMP</span>
+                                  <span className={`font-black ${parseFloat(patient.vitals.temperature) >= 100.4 ? 'text-rose-600' : 'text-slate-800'}`}>
+                                    {patient.vitals.temperature}°F
+                                  </span>
+                                </div>
+                              )}
+                              {patient.vitals.pulse && (
+                                <div className="bg-white border border-slate-200 rounded p-1.5 text-center shadow-2xs">
+                                  <span className="text-[9px] text-slate-400 block font-semibold">PULSE</span>
+                                  <span className="font-black text-slate-800">{patient.vitals.pulse} bpm</span>
+                                </div>
+                              )}
+                              {patient.vitals.weight && (
+                                <div className="bg-white border border-slate-200 rounded p-1.5 text-center shadow-2xs">
+                                  <span className="text-[9px] text-slate-400 block font-semibold">WEIGHT</span>
+                                  <span className="font-black text-slate-800">{patient.vitals.weight} kg</span>
+                                </div>
+                              )}
+                              {patient.vitals.spo2 && (
+                                <div className="bg-white border border-slate-200 rounded p-1.5 text-center shadow-2xs">
+                                  <span className="text-[9px] text-slate-400 block font-semibold">SpO2</span>
+                                  <span className={`font-black ${parseFloat(patient.vitals.spo2) < 95 ? 'text-rose-600' : 'text-slate-800'}`}>
+                                    {patient.vitals.spo2}%
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => setPatient(null)} 
+                      className="absolute top-2 right-2 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-white px-2 py-1 rounded shadow-sm border border-blue-100 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      Change
+                    </button>
+                    
+                    {/* AI Patient Clinical Summary for Returning Patients */}
+                    <AIPatientSummaryCard patientId={patient.id} encounters={patientEncounters} />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Step 2: Clinical Details with 1-Click Chips */}
+            {patient && (
               <QuickSymptomsDiagnosis
                 chiefComplaint={chiefComplaint}
                 setChiefComplaint={setChiefComplaint}
                 diagnosis={diagnosis}
                 setDiagnosis={setDiagnosis}
               />
+            )}
+          </div>
 
-              {/* Block 1: 1-Click Protocol Packs & Drug Search */}
+          {/* Center Column: Medications & Clinical Actions */}
+          <div className="lg:col-span-8 xl:col-span-5 space-y-4">
+            
+            {patient && (
+              <>
+                {/* Block 1: 1-Click Protocol Packs & Drug Search */}
                 <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border relative z-20">
                   <div className="bg-slate-50/80 px-4 sm:px-5 py-3 border-b border-slate-200 flex items-center justify-between rounded-t-xl">
                     <div className="flex items-center gap-2.5">
@@ -672,7 +752,7 @@ function PrescriptionWorkflowContent() {
                 </div>
 
                 {/* Mobile / Tablet Action Bar */}
-                <div className="mt-4 lg:hidden">
+                <div className="mt-4 xl:hidden">
                   <button 
                     onClick={handleProceedToReview}
                     disabled={medicines.length === 0}
@@ -681,29 +761,30 @@ function PrescriptionWorkflowContent() {
                     <Eye size={18} /> Save & Generate Prescription (Ctrl + Enter)
                   </button>
                 </div>
-            </div>
-
-            {/* Right Rail: Real-time Live A4 Prescription Sheet & Action Dock (35% width) */}
-            <div className="hidden lg:block lg:col-span-5 xl:col-span-4 sticky top-20 self-start space-y-4 max-h-[calc(100vh-6rem)] overflow-y-auto pr-1">
-              <LivePrescriptionSheet
-                patient={patient}
-                medicines={medicines}
-                chiefComplaint={chiefComplaint}
-                diagnosis={diagnosis}
-                notes={notes}
-                followUpDate={followUpDate}
-                selectedTests={selectedTests}
-                selectedDrips={selectedDrips}
-                doctorContext={doctorContext}
-                onProceedToReview={handleProceedToReview}
-                onOpenSaveModal={() => setShowSaveTemplate(true)}
-                saving={saving}
-              />
-            </div>
-
+              </>
+            )}
           </div>
+
+          {/* Right Rail: Real-time Live A4 Prescription Sheet & Fitts's Law Action Dock */}
+          <div className="hidden xl:block xl:col-span-4 sticky top-20 self-start space-y-4 max-h-[calc(100vh-6rem)] overflow-y-auto pr-1">
+            <LivePrescriptionSheet
+              patient={patient}
+              medicines={medicines}
+              chiefComplaint={chiefComplaint}
+              diagnosis={diagnosis}
+              notes={notes}
+              followUpDate={followUpDate}
+              selectedTests={selectedTests}
+              selectedDrips={selectedDrips}
+              doctorContext={doctorContext}
+              onProceedToReview={handleProceedToReview}
+              onOpenSaveModal={() => setShowSaveTemplate(true)}
+              saving={saving}
+            />
+          </div>
+
         </div>
-      )}
+      </div>
 
       {showAddPatient && (
         <AddPatientModal 
