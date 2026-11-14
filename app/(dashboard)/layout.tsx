@@ -68,6 +68,10 @@ export default function DashboardLayout({
       router.push('/nurse/dashboard');
       return null;
     }
+    if (user.role === 'lab_technician' && !path.startsWith('/lab')) {
+      router.push('/lab/dashboard');
+      return null;
+    }
   }
 
   const toggleSidebar = () => {

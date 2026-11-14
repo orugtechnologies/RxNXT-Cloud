@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, Users, PlusCircle, Building2, Stethoscope, PhoneCall, Pill, X } from 'lucide-react';
+import { Loader2, Users, PlusCircle, Building2, Stethoscope, PhoneCall, Pill, FlaskConical, X } from 'lucide-react';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 
 export default function StaffManagementPage() {
@@ -76,6 +76,9 @@ export default function StaffManagementPage() {
     if (role === 'pharmacist') {
       return <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1"><Pill className="w-3 h-3" /> Pharmacist</span>;
     }
+    if (role === 'lab_technician') {
+      return <span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1"><FlaskConical className="w-3 h-3" /> Lab Technician</span>;
+    }
     return null;
   };
 
@@ -133,6 +136,7 @@ export default function StaffManagementPage() {
                 >
                   <option value="receptionist">Receptionist (Front Desk & Queue)</option>
                   <option value="pharmacist">Pharmacist (Pharmacy Counter & Stock)</option>
+                  <option value="lab_technician">Lab Technician (Diagnostics & Reports)</option>
                   <option value="nurse">Nurse / Medical Assistant</option>
                 </select>
               </div>

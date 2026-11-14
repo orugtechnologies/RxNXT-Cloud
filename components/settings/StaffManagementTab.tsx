@@ -113,6 +113,8 @@ export default function StaffManagementTab() {
                   <select value={formData.role} onChange={e=>setFormData({...formData, role: e.target.value})} className="w-full border rounded p-2 text-sm outline-none focus:border-clinic-emerald">
                     <option value="doctor">Doctor</option>
                     <option value="receptionist">Receptionist</option>
+                    <option value="pharmacist">Pharmacist</option>
+                    <option value="lab_technician">Lab Technician</option>
                     <option value="admin">Admin</option>
                   </select>
                 </div>

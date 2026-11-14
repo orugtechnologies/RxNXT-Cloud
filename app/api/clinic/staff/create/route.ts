@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
-    if (role !== 'receptionist' && role !== 'nurse' && role !== 'pharmacist') {
+    if (role !== 'receptionist' && role !== 'nurse' && role !== 'pharmacist' && role !== 'lab_technician') {
       return NextResponse.json({ error: 'Invalid staff role' }, { status: 400 });
     }
 

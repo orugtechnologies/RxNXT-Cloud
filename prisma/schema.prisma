@@ -61,6 +61,7 @@ model Clinic {
   dispenseLogs          DispenseLog[]
   bills                 Bill[]
   walletTransactions    WhatsAppCreditTransaction[]
+  labOrders             LabOrder[]
 }
 
 // ─────────────────────────────────────────────
@@ -94,6 +95,7 @@ model User {
   treatmentGroups TreatmentGroup[]
   doctorDrugPreferences DoctorDrugPreference[]
   queueItems      QueueItem[]
+  labOrders       LabOrder[]
 
   @@index([clinicId, role])
 }
@@ -121,6 +123,7 @@ model Patient {
   reminders     Reminder[]
   queueItems    QueueItem[]
   bills         Bill[]
+  labOrders     LabOrder[]
 
   @@index([clinicId, phone])
   @@index([clinicId, name])
@@ -500,3 +503,51 @@ model WhatsAppCreditTransaction {
   @@index([clinicId, createdAt])
   @@index([referenceId])
 }
+
+// ─────────────────────────────────────────────
+// LAB ORDERS & TEST RESULTS
+// ─────────────────────────────────────────────
+model LabOrder {
+  id              String          @id @default(cuid())
+  orderNumber     String          // e.g. LAB-202611-0001
+  clinicId        String
+  clinic          Clinic          @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patientId       String
+  patient         Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId        String?
+  doctor          User?           @relation(fields: [doctorId], references: [id])
+  encounterId     String?
+  queueItemId     String?
+  status          String          @default("ORDERED") // ORDERED, SAMPLE_COLLECTED, PROCESSING, COMPLETED, CANCELLED
+  priority        String          @default("NORMAL")  // NORMAL, URGENT
+  notes           String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  tests           LabTestResult[]
+
+  @@index([clinicId, createdAt])
+  @@index([patientId])
+  @@index([clinicId, status])
+}
+
+model LabTestResult {
+  id              String       @id @default(cuid())
+  labOrderId      String
+  labOrder        LabOrder     @relation(fields: [labOrderId], references: [id], onDelete: Cascade)
+  testName        String       // e.g. Complete Blood Count (CBC)
+  category        String       @default("BLOOD") // BLOOD, URINE, IMAGING, OTHER
+  templateType    String       @default("CUSTOM") // CBC, WIDAL, DENGUE, RBS, LFT, KFT, CRP, URINE_RE, CHEST_XRAY, ECG, CUSTOM
+  status          String       @default("PENDING") // PENDING, PROCESSING, COMPLETED
+  results         String?      // JSON string of parameter rows: [{ id, name, value, unit, referenceRange, isAbnormal, flag }]
+  impression      String?      // Overall impression / summary / clinical interpretation
+  isAbnormal      Boolean      @default(false)
+  technicianId    String?
+  technicianName  String?
+  completedAt     DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([labOrderId])
+}
+

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, ShieldCheck, Building2, CreditCard, Package, ClipboardList, ReceiptText } from 'lucide-react';
+import { LayoutDashboard, FilePlus, Users, BookOpen, LogOut, ChevronLeft, ChevronRight, Settings, Activity, ShieldCheck, Building2, CreditCard, Package, ClipboardList, ReceiptText, FlaskConical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -52,6 +52,15 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
         ]
       }
     ];
+  } else if (userRole === 'lab_technician' || userRole === 'lab') {
+    navGroups = [
+      {
+        label: 'Diagnostic Laboratory',
+        items: [
+          { name: 'Lab Worklist', href: '/lab/dashboard', icon: FlaskConical },
+        ]
+      }
+    ];
   } else {
     navGroups = [
       {
@@ -79,6 +88,7 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
           ...(userRole === 'clinic_admin' || userRole === 'admin' ? [
             { name: 'Manage Doctors', href: '/admin/team', icon: Users },
             { name: 'Support Staff', href: '/admin/staff', icon: Users },
+            { name: 'Lab Diagnostics', href: '/lab/dashboard', icon: FlaskConical },
             { name: 'Pharmacy Stock', href: '/pharmacist/inventory', icon: Package },
             { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
             { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },

@@ -23,6 +23,7 @@ import QuickAdviceChips from '@/components/prescriptions/QuickAdviceChips';
 import LivePrescriptionSheet from '@/components/prescriptions/LivePrescriptionSheet';
 import SubscriptionLockoutModal from '@/components/subscription/SubscriptionLockoutModal';
 import { getSmartClinicalDefaults } from '@/lib/prescriptionClinicalDefaults';
+import LabReportViewerModal from '@/components/lab/LabReportViewerModal';
 
 function PrescriptionWorkflowContent() {
   const router = useRouter();
@@ -45,6 +46,9 @@ function PrescriptionWorkflowContent() {
   const [selectedDrips, setSelectedDrips] = useState<DayCareProcedureItem[]>([]);
   const [queueId, setQueueId] = useState<string | null>(null);
   const [sendingForTests, setSendingForTests] = useState(false);
+  const [patientLabOrders, setPatientLabOrders] = useState<any[]>([]);
+  const [selectedReportData, setSelectedReportData] = useState<any | null>(null);
+  const [showLabViewer, setShowLabViewer] = useState(false);
   
   const setQuickFollowUp = (days: number) => {
     const d = new Date();
@@ -219,6 +223,17 @@ function PrescriptionWorkflowContent() {
           setPatient(histJson.patient);
         }
       }
+
+      // Fetch patient diagnostic lab orders / reports
+      try {
+        const labRes = await fetch(`/api/lab/orders?patientId=${selectedPatient.id}`);
+        if (labRes.ok) {
+          const labJson = await labRes.json();
+          setPatientLabOrders(labJson.data || []);
+        }
+      } catch (labErr) {
+        console.warn('Failed to fetch patient lab orders:', labErr);
+      }
     } catch (err) {
       console.error('Error fetching past rx:', err);
     } finally {
@@ -342,6 +357,22 @@ function PrescriptionWorkflowContent() {
         })
       });
 
+      // 1b. Create LabOrder for the diagnostic laboratory
+      if (selectedTests.length > 0) {
+        await fetch('/api/lab/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            patientId: patient.id,
+            queueItemId: queueId || undefined,
+            tests: selectedTests.map(t => ({
+              testName: t.name,
+              category: t.category,
+            })),
+          }),
+        }).catch(err => console.warn('Lab order creation warning:', err));
+      }
+
       // 2. Update Queue status to IN_PROCEDURE so doctor's queue moves to next patient
       if (queueId) {
         await fetch(`/api/queue/${queueId}/status`, {
@@ -442,6 +473,7 @@ function PrescriptionWorkflowContent() {
   const startNewPrescription = () => {
     setPatient(null);
     setPatientEncounters([]);
+    setPatientLabOrders([]);
     setMedicines([]);
     setChiefComplaint('');
     setDiagnosis('');
@@ -600,6 +632,84 @@ function PrescriptionWorkflowContent() {
                     
                     {/* AI Patient Clinical Summary for Returning Patients */}
                     <AIPatientSummaryCard patientId={patient.id} encounters={patientEncounters} />
+
+                    {/* Patient Lab Investigation Reports */}
+                    {patientLabOrders && patientLabOrders.length > 0 && (
+                      <div className="mt-3 bg-purple-50/70 border border-purple-200/80 rounded-xl p-3 text-xs space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-extrabold text-purple-900 flex items-center gap-1.5 uppercase text-[11px] tracking-wider">
+                            <FlaskConical size={14} className="text-purple-700" />
+                            Lab Investigation History ({patientLabOrders.length})
+                          </span>
+                        </div>
+                        <div className="space-y-1.5 max-h-48 overflow-y-auto pr-0.5">
+                          {patientLabOrders.map((ord: any) => {
+                            const completedTest = ord.tests?.find((t: any) => t.status === 'COMPLETED');
+                            return (
+                              <div key={ord.id} className="bg-white p-2 rounded-lg border border-purple-100 flex items-center justify-between gap-2 shadow-2xs">
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="font-mono text-[10px] text-purple-700 font-bold">{ord.orderNumber}</span>
+                                    {ord.status === 'COMPLETED' ? (
+                                      <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 rounded border border-emerald-200">Ready</span>
+                                    ) : (
+                                      <span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-1 rounded border border-amber-200">In Lab</span>
+                                    )}
+                                  </div>
+                                  <span className="text-[11px] text-slate-800 font-semibold truncate block mt-0.5">
+                                    {ord.tests?.map((t: any) => t.testName).join(', ')}
+                                  </span>
+                                </div>
+                                <div className="shrink-0">
+                                  {completedTest ? (
+                                    <button
+                                      type="button"
+                                      onClick={async () => {
+                                        try {
+                                          const res = await fetch(`/api/lab/orders/${ord.id}`);
+                                          if (res.ok) {
+                                            const json = await res.json();
+                                            const full = json.data;
+                                            const comp = full.tests?.find((t: any) => t.status === 'COMPLETED') || full.tests?.[0];
+                                            if (comp) {
+                                              setSelectedReportData({
+                                                orderNumber: full.orderNumber,
+                                                orderDate: full.createdAt,
+                                                clinicName: full.clinic?.name,
+                                                clinicAddress: full.clinic?.address,
+                                                clinicPhone: full.clinic?.phone,
+                                                patient: full.patient,
+                                                doctorName: full.doctor?.fullName,
+                                                technicianName: comp.technicianName,
+                                                testName: comp.testName,
+                                                category: comp.category,
+                                                results: comp.results || [],
+                                                impression: comp.impression,
+                                                isAbnormal: comp.isAbnormal,
+                                                completedAt: comp.completedAt,
+                                              });
+                                              setShowLabViewer(true);
+                                            }
+                                          }
+                                        } catch (e) {
+                                          console.error('Failed to view lab report:', e);
+                                        }
+                                      }}
+                                      className="px-2 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded font-bold text-[10px] shadow-2xs transition-colors flex items-center gap-1"
+                                    >
+                                      <Eye size={11} />
+                                      <span>Report</span>
+                                    </button>
+                                  ) : (
+                                    <span className="text-[10px] text-slate-400 font-medium">Pending</span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -837,6 +947,14 @@ function PrescriptionWorkflowContent() {
           isUsageLocked={lockoutInfo?.isUsageLocked ?? true}
           prescriptionsCount={lockoutInfo?.prescriptionsCount ?? 150}
           onClose={() => setShowLockoutModal(false)}
+        />
+      )}
+
+      {showLabViewer && (
+        <LabReportViewerModal
+          isOpen={showLabViewer}
+          onClose={() => setShowLabViewer(false)}
+          reportData={selectedReportData}
         />
       )}
     </div>

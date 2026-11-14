@@ -287,6 +287,10 @@ export default function LoginPage() {
         window.location.href = '/nurse/dashboard?login=success';
         return;
       }
+      if (role === 'labtechnician' || role === 'lab') {
+        window.location.href = '/lab/dashboard?login=success';
+        return;
+      }
     } catch (e) {
       // Fall through to default doctor dashboard redirect
     }
