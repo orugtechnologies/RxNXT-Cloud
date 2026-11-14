@@ -412,6 +412,7 @@ function PrescriptionWorkflowContent() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             patientId: patient.id,
+            doctorId: doctorContext?.doctorId || undefined,
             queueItemId: queueId || undefined,
             tests: selectedTests.map(t => ({
               testName: t.name,

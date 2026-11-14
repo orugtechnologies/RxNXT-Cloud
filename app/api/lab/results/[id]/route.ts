@@ -108,7 +108,18 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         } else {
           // If no active queue item exists today (e.g. direct lab order without receptionist token),
           // auto-create a RETURNED_READY queue item for the referring doctor
-          const targetDoctorId = parentOrder.doctorId;
+          let targetDoctorId = parentOrder.doctorId;
+          if (!targetDoctorId && prisma.user?.findFirst) {
+            const clinicDoctor = await prisma.user.findFirst({
+              where: {
+                clinicId: parentOrder.clinicId,
+                role: { in: ['doctor', 'clinic_admin'] },
+              },
+              orderBy: { createdAt: 'asc' },
+            });
+            targetDoctorId = clinicDoctor?.id || null;
+          }
+
           if (targetDoctorId) {
             const todayCount = await prisma.queueItem.count({
               where: { clinicId: parentOrder.clinicId, createdAt: { gte: today } },
@@ -125,7 +136,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             try {
               await prisma.labOrder.update({
                 where: { id: parentOrder.id },
-                data: { queueItemId: createdQueue.id },
+                data: {
+                  doctorId: targetDoctorId,
+                  queueItemId: createdQueue.id,
+                },
               });
             } catch {}
             queueUpdated = true;

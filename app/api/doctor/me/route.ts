@@ -16,6 +16,7 @@ export async function GET() {
     if (!doctor) return NextResponse.json({ error: 'Doctor not found' }, { status: 404 });
 
     return NextResponse.json({
+      doctorId: doctor.id,
       doctorName: doctor.fullName,
       doctorSpecialization: doctor.specialization,
       doctorRegNo: doctor.registrationNumber,

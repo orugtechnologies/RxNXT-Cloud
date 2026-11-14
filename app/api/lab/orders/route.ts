@@ -144,7 +144,20 @@ export async function POST(request: Request) {
     // If no queue item exists today (e.g. doctor consulted directly without front desk token),
     // auto-create a QueueItem with status IN_PROCEDURE so the return loop works seamlessly!
     let resolvedQueueItemId = queueItemId || null;
-    const targetDoctorId = doctorId || (user.role === 'doctor' ? user.id : null);
+    let targetDoctorId = doctorId || null;
+    if (!targetDoctorId && (user.role === 'doctor' || user.role === 'clinic_admin' || user.role === 'admin')) {
+      targetDoctorId = user.id;
+    }
+    if (!targetDoctorId && prisma.user?.findFirst) {
+      const clinicDoctor = await prisma.user.findFirst({
+        where: {
+          clinicId: user.clinicId,
+          role: { in: ['doctor', 'clinic_admin'] },
+        },
+        orderBy: { createdAt: 'asc' },
+      });
+      targetDoctorId = clinicDoctor?.id || null;
+    }
     try {
       const today = new Date();
       today.setHours(0, 0, 0, 0);

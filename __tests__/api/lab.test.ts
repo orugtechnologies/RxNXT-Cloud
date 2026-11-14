@@ -20,6 +20,9 @@ jest.mock('@/lib/prisma', () => ({
       findFirst: jest.fn(),
       update: jest.fn(),
     },
+    user: {
+      findFirst: jest.fn(),
+    },
   },
 }));
 
