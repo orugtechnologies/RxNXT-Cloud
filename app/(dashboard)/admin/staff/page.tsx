@@ -76,7 +76,7 @@ export default function StaffManagementPage() {
     if (role === 'pharmacist') {
       return <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1"><Pill className="w-3 h-3" /> Pharmacist</span>;
     }
-    if (role === 'lab_technician') {
+    if (role === 'lab_technician' || role === 'lab') {
       return <span className="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1"><FlaskConical className="w-3 h-3" /> Lab Technician</span>;
     }
     return null;
@@ -92,9 +92,9 @@ export default function StaffManagementPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center">
             Support Staff
-            <InfoTooltip text="Create accounts for your front desk, pharmacy, and nursing staff. Support staff have dedicated dashboards tailored to their specific daily tasks." />
+            <InfoTooltip text="Create accounts for your front desk, pharmacy, lab, and nursing staff. Support staff have dedicated dashboards tailored to their specific daily tasks." />
           </h1>
-          <p className="text-slate-500">Manage non-doctor staff like Receptionists, Pharmacists, and Nurses.</p>
+          <p className="text-slate-500">Manage non-doctor staff like Receptionists, Pharmacists, Lab Technicians, and Nurses.</p>
         </div>
         <Button className="bg-clinic-blue hover:bg-clinic-blueDark" onClick={() => setIsModalOpen(true)}>
           <PlusCircle className="w-4 h-4 mr-2" /> Add Staff Member
