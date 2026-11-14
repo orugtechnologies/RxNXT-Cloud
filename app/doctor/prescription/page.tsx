@@ -77,6 +77,52 @@ function PrescriptionWorkflowContent() {
 
   const [doctorContext, setDoctorContext] = useState<any>({});
 
+  const fetchPatientLabOrders = async (pid: string) => {
+    try {
+      const labRes = await fetch(`/api/lab/orders?patientId=${pid}`);
+      if (labRes.ok) {
+        const labJson = await labRes.json();
+        setPatientLabOrders(labJson.data || []);
+      }
+    } catch (labErr) {
+      console.warn('Failed to fetch patient lab orders:', labErr);
+    }
+  };
+
+  const handleOpenTestReport = async (orderId: string, testId?: string) => {
+    try {
+      const res = await fetch(`/api/lab/orders/${orderId}`);
+      if (res.ok) {
+        const json = await res.json();
+        const full = json.data;
+        const comp = testId
+          ? full.tests?.find((t: any) => t.id === testId) || full.tests?.[0]
+          : full.tests?.find((t: any) => t.status === 'COMPLETED') || full.tests?.[0];
+        if (comp) {
+          setSelectedReportData({
+            orderNumber: full.orderNumber,
+            orderDate: full.createdAt,
+            clinicName: full.clinic?.name,
+            clinicAddress: full.clinic?.address,
+            clinicPhone: full.clinic?.phone,
+            patient: full.patient,
+            doctorName: full.doctor?.fullName,
+            technicianName: comp.technicianName,
+            testName: comp.testName,
+            category: comp.category,
+            results: comp.results || [],
+            impression: comp.impression,
+            isAbnormal: comp.isAbnormal,
+            completedAt: comp.completedAt,
+          });
+          setShowLabViewer(true);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to view lab report:', e);
+    }
+  };
+
   useEffect(() => {
     // Fetch doctor and clinic details for the PDF
     fetch('/api/doctor/me')
@@ -121,6 +167,7 @@ function PrescriptionWorkflowContent() {
             // Fetch patient encounters history for AI summary & past visit timeline
             const targetPatientId = json.data.patient?.id || paramPatientId;
             if (targetPatientId) {
+              fetchPatientLabOrders(targetPatientId);
               try {
                 const histRes = await fetch(`/api/patients/${targetPatientId}`);
                 if (histRes.ok) {
@@ -137,6 +184,7 @@ function PrescriptionWorkflowContent() {
         .finally(() => setFetchingPastRx(false));
     } else if (paramPatientId) {
       setFetchingPastRx(true);
+      fetchPatientLabOrders(paramPatientId);
       fetch(`/api/patients/${paramPatientId}`)
         .then(res => res.json())
         .then(json => {
@@ -642,71 +690,43 @@ function PrescriptionWorkflowContent() {
                             Lab Investigation History ({patientLabOrders.length})
                           </span>
                         </div>
-                        <div className="space-y-1.5 max-h-48 overflow-y-auto pr-0.5">
-                          {patientLabOrders.map((ord: any) => {
-                            const completedTest = ord.tests?.find((t: any) => t.status === 'COMPLETED');
-                            return (
-                              <div key={ord.id} className="bg-white p-2 rounded-lg border border-purple-100 flex items-center justify-between gap-2 shadow-2xs">
-                                <div className="min-w-0">
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="font-mono text-[10px] text-purple-700 font-bold">{ord.orderNumber}</span>
-                                    {ord.status === 'COMPLETED' ? (
-                                      <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 rounded border border-emerald-200">Ready</span>
+                        <div className="space-y-2 max-h-56 overflow-y-auto pr-0.5">
+                          {patientLabOrders.map((ord: any) => (
+                            <div key={ord.id} className="bg-white p-2.5 rounded-lg border border-purple-100 space-y-1.5 shadow-2xs">
+                              <div className="flex items-center justify-between gap-1.5">
+                                <span className="font-mono text-[10px] text-purple-700 font-bold">{ord.orderNumber}</span>
+                                {ord.status === 'COMPLETED' ? (
+                                  <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Reports Ready</span>
+                                ) : (
+                                  <span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">In Lab</span>
+                                )}
+                              </div>
+                              <div className="flex flex-col gap-1">
+                                {ord.tests?.map((t: any) => (
+                                  <div key={t.id} className="flex items-center justify-between text-[11px] bg-slate-50 p-1.5 rounded border border-slate-100">
+                                    <span className="font-medium text-slate-800 truncate mr-1.5">
+                                      {t.testName}
+                                      {t.isAbnormal && (
+                                        <span className="ml-1 text-[9px] font-bold text-rose-600 bg-rose-50 px-1 rounded border border-rose-200">Abnormal</span>
+                                      )}
+                                    </span>
+                                    {t.status === 'COMPLETED' ? (
+                                      <button
+                                        type="button"
+                                        onClick={() => handleOpenTestReport(ord.id, t.id)}
+                                        className="px-2 py-0.5 bg-purple-600 hover:bg-purple-700 text-white rounded font-bold text-[10px] shadow-2xs transition-colors flex items-center gap-1 shrink-0 cursor-pointer"
+                                      >
+                                        <Eye size={11} />
+                                        <span>View</span>
+                                      </button>
                                     ) : (
-                                      <span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-1 rounded border border-amber-200">In Lab</span>
+                                      <span className="text-[9px] text-slate-400 font-medium shrink-0">Processing</span>
                                     )}
                                   </div>
-                                  <span className="text-[11px] text-slate-800 font-semibold truncate block mt-0.5">
-                                    {ord.tests?.map((t: any) => t.testName).join(', ')}
-                                  </span>
-                                </div>
-                                <div className="shrink-0">
-                                  {completedTest ? (
-                                    <button
-                                      type="button"
-                                      onClick={async () => {
-                                        try {
-                                          const res = await fetch(`/api/lab/orders/${ord.id}`);
-                                          if (res.ok) {
-                                            const json = await res.json();
-                                            const full = json.data;
-                                            const comp = full.tests?.find((t: any) => t.status === 'COMPLETED') || full.tests?.[0];
-                                            if (comp) {
-                                              setSelectedReportData({
-                                                orderNumber: full.orderNumber,
-                                                orderDate: full.createdAt,
-                                                clinicName: full.clinic?.name,
-                                                clinicAddress: full.clinic?.address,
-                                                clinicPhone: full.clinic?.phone,
-                                                patient: full.patient,
-                                                doctorName: full.doctor?.fullName,
-                                                technicianName: comp.technicianName,
-                                                testName: comp.testName,
-                                                category: comp.category,
-                                                results: comp.results || [],
-                                                impression: comp.impression,
-                                                isAbnormal: comp.isAbnormal,
-                                                completedAt: comp.completedAt,
-                                              });
-                                              setShowLabViewer(true);
-                                            }
-                                          }
-                                        } catch (e) {
-                                          console.error('Failed to view lab report:', e);
-                                        }
-                                      }}
-                                      className="px-2 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded font-bold text-[10px] shadow-2xs transition-colors flex items-center gap-1"
-                                    >
-                                      <Eye size={11} />
-                                      <span>Report</span>
-                                    </button>
-                                  ) : (
-                                    <span className="text-[10px] text-slate-400 font-medium">Pending</span>
-                                  )}
-                                </div>
+                                ))}
                               </div>
-                            );
-                          })}
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -731,6 +751,46 @@ function PrescriptionWorkflowContent() {
             
             {patient && (
               <>
+                {/* Clinical Lab Alert Banner for Returning Patients */}
+                {patientLabOrders && patientLabOrders.some((ord: any) => ord.tests?.some((t: any) => t.status === 'COMPLETED')) && (
+                  <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 rounded-xl p-4 text-white shadow-lg border border-purple-400/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-300">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20 text-purple-200">
+                        <FlaskConical size={22} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-black tracking-wider uppercase bg-emerald-400 text-slate-950 px-2 py-0.5 rounded-full">
+                            Reports Ready
+                          </span>
+                          <span className="text-xs text-purple-200 font-medium">Diagnostic Lab Investigations</span>
+                        </div>
+                        <h3 className="text-sm font-extrabold text-white mt-0.5">
+                          Patient Reports Ready for Review
+                        </h3>
+                        <p className="text-xs text-purple-200/90 line-clamp-1">
+                          Completed: {patientLabOrders.flatMap((o: any) => o.tests || []).filter((t: any) => t.status === 'COMPLETED').map((t: any) => t.testName).join(', ')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center flex-wrap gap-2 shrink-0">
+                      {patientLabOrders.flatMap((o: any) => (o.tests || []).filter((t: any) => t.status === 'COMPLETED').map((t: any) => ({ ...t, orderId: o.id }))).map((test: any) => (
+                        <button
+                          key={test.id}
+                          type="button"
+                          onClick={() => handleOpenTestReport(test.orderId, test.id)}
+                          className="px-3 py-1.5 bg-white text-purple-900 hover:bg-purple-50 font-black rounded-lg text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                        >
+                          <Eye size={13} className="text-purple-700" />
+                          <span>View {test.testName.replace(/\(.*?\)/g, '').trim()}</span>
+                          {test.isAbnormal && (
+                            <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" title="Out of range" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {/* Block 1: 1-Click Protocol Packs & Drug Search */}
                 <div className="bg-clinic-card rounded-xl shadow-soft border border-clinic-border relative z-20">
                   <div className="bg-slate-50/80 px-4 sm:px-5 py-3 border-b border-slate-200 flex items-center justify-between rounded-t-xl">

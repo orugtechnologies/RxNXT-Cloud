@@ -68,6 +68,7 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
         items: [
           { name: 'Dashboard', href: '/doctor/dashboard', icon: LayoutDashboard },
           { name: 'New Prescription', href: '/doctor/prescription', icon: FilePlus },
+          { name: 'Lab Reports', href: '/lab/dashboard', icon: FlaskConical },
           { name: 'Patients', href: '/doctor/patients', icon: Users },
           { name: 'Templates', href: '/doctor/prescription?tab=templates', icon: BookOpen },
         ]

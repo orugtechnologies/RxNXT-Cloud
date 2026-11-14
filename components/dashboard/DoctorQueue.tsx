@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, User, Stethoscope, History, Search, FastForward, Loader2, CheckCircle2, AlertCircle, Banknote, Smartphone, CreditCard } from 'lucide-react';
+import { Clock, User, Stethoscope, History, Search, FastForward, Loader2, CheckCircle2, AlertCircle, Banknote, Smartphone, CreditCard, FlaskConical } from 'lucide-react';
 import AIPatientSummaryCard from '@/components/patients/AIPatientSummaryCard';
+import LabReportViewerModal from '@/components/lab/LabReportViewerModal';
 
 interface QueueItem {
   id: string;
@@ -39,6 +40,54 @@ export default function DoctorQueue({
 }) {
   const router = useRouter();
   const [skippingId, setSkippingId] = useState<string | null>(null);
+  const [selectedReportData, setSelectedReportData] = useState<any | null>(null);
+  const [showLabViewer, setShowLabViewer] = useState(false);
+  const [loadingReportPatientId, setLoadingReportPatientId] = useState<string | null>(null);
+
+  const handleQuickViewLabReport = async (patientId: string) => {
+    setLoadingReportPatientId(patientId);
+    try {
+      const res = await fetch(`/api/lab/orders?patientId=${patientId}`);
+      if (res.ok) {
+        const json = await res.json();
+        const orders = json.data || [];
+        const latestOrder = orders.find((o: any) => o.status === 'COMPLETED') || orders[0];
+        if (latestOrder) {
+          const detailRes = await fetch(`/api/lab/orders/${latestOrder.id}`);
+          if (detailRes.ok) {
+            const detailJson = await detailRes.json();
+            const full = detailJson.data;
+            const comp = full.tests?.find((t: any) => t.status === 'COMPLETED') || full.tests?.[0];
+            if (comp) {
+              setSelectedReportData({
+                orderNumber: full.orderNumber,
+                orderDate: full.createdAt,
+                clinicName: full.clinic?.name,
+                clinicAddress: full.clinic?.address,
+                clinicPhone: full.clinic?.phone,
+                patient: full.patient,
+                doctorName: full.doctor?.fullName,
+                technicianName: comp.technicianName,
+                testName: comp.testName,
+                category: comp.category,
+                results: comp.results || [],
+                impression: comp.impression,
+                isAbnormal: comp.isAbnormal,
+                completedAt: comp.completedAt,
+              });
+              setShowLabViewer(true);
+            }
+          }
+        } else {
+          alert('No lab records found for this patient.');
+        }
+      }
+    } catch (e) {
+      console.error('Failed to view lab report from queue:', e);
+    } finally {
+      setLoadingReportPatientId(null);
+    }
+  };
 
   // Direct 1-click consultation launch into workspace page
   const handleStartConsultation = (patientId: string, queueId: string) => {
@@ -238,6 +287,22 @@ export default function DoctorQueue({
 
               {/* Actions */}
               <div className="flex items-center space-x-2 shrink-0 self-end sm:self-center">
+                {item.status === 'RETURNED_READY' && (
+                  <button
+                    onClick={() => handleQuickViewLabReport(item.patient_id)}
+                    disabled={loadingReportPatientId === item.patient_id}
+                    className="p-2 sm:px-3 sm:py-2.5 text-purple-700 bg-purple-50 hover:bg-purple-100 hover:text-purple-900 rounded-xl transition-all border border-purple-200 text-xs font-bold flex items-center shadow-2xs cursor-pointer"
+                    title="Quick preview diagnostic lab report"
+                  >
+                    {loadingReportPatientId === item.patient_id ? (
+                      <Loader2 size={15} className="animate-spin text-purple-600 sm:mr-1.5" />
+                    ) : (
+                      <FlaskConical size={15} className="text-purple-600 sm:mr-1.5" />
+                    )}
+                    <span className="hidden sm:inline">Lab Report</span>
+                  </button>
+                )}
+
                 {onViewHistory && (
                   <button
                     onClick={() => onViewHistory(item.patient_id)}
@@ -275,6 +340,14 @@ export default function DoctorQueue({
           );
         })}
       </div>
+
+      {showLabViewer && (
+        <LabReportViewerModal
+          isOpen={showLabViewer}
+          onClose={() => setShowLabViewer(false)}
+          reportData={selectedReportData}
+        />
+      )}
     </div>
   );
 }
