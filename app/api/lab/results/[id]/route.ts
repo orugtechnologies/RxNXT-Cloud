@@ -68,24 +68,69 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     // Bidirectional Queue Transition:
-    // When any lab test report is completed, if the patient is waiting in queue as IN_PROCEDURE,
-    // transition them to RETURNED_READY so the doctor immediately sees "REPORTS READY" at the top of their queue!
+    // When any lab test report is completed, transition patient to RETURNED_READY so the doctor immediately sees "REPORTS READY" at the top of their queue!
     let queueUpdated = false;
     try {
-      const activeQueueItem = await prisma.queueItem.findFirst({
-        where: {
-          clinicId: user.clinicId,
-          patientId: parentOrder.patientId,
-          status: 'IN_PROCEDURE',
-        },
-      });
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-      if (activeQueueItem) {
+      // Check parentOrder.queueItemId first
+      if (parentOrder.queueItemId) {
         await prisma.queueItem.update({
-          where: { id: activeQueueItem.id },
+          where: { id: parentOrder.queueItemId },
           data: { status: 'RETURNED_READY' },
         });
         queueUpdated = true;
+      } else {
+        // Check for any active queue item today (IN_PROCEDURE, WAITING, or stepped out)
+        const activeQueueItem = await prisma.queueItem.findFirst({
+          where: {
+            clinicId: parentOrder.clinicId,
+            patientId: parentOrder.patientId,
+            status: { in: ['IN_PROCEDURE', 'WAITING', 'AWAY'] },
+            createdAt: { gte: today },
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+
+        if (activeQueueItem) {
+          await prisma.queueItem.update({
+            where: { id: activeQueueItem.id },
+            data: { status: 'RETURNED_READY' },
+          });
+          try {
+            await prisma.labOrder.update({
+              where: { id: parentOrder.id },
+              data: { queueItemId: activeQueueItem.id },
+            });
+          } catch {}
+          queueUpdated = true;
+        } else {
+          // If no active queue item exists today (e.g. direct lab order without receptionist token),
+          // auto-create a RETURNED_READY queue item for the referring doctor
+          const targetDoctorId = parentOrder.doctorId;
+          if (targetDoctorId) {
+            const todayCount = await prisma.queueItem.count({
+              where: { clinicId: parentOrder.clinicId, createdAt: { gte: today } },
+            });
+            const createdQueue = await prisma.queueItem.create({
+              data: {
+                clinicId: parentOrder.clinicId,
+                patientId: parentOrder.patientId,
+                doctorId: targetDoctorId,
+                status: 'RETURNED_READY',
+                tokenNumber: todayCount + 1,
+              },
+            });
+            try {
+              await prisma.labOrder.update({
+                where: { id: parentOrder.id },
+                data: { queueItemId: createdQueue.id },
+              });
+            } catch {}
+            queueUpdated = true;
+          }
+        }
       }
     } catch (queueErr) {
       console.warn('Queue transition warning on test completion:', queueErr);

@@ -139,13 +139,67 @@ export async function POST(request: Request) {
       };
     });
 
+    // Queue Synchronization:
+    // If patient already has a queue item today, transition it to IN_PROCEDURE and link it.
+    // If no queue item exists today (e.g. doctor consulted directly without front desk token),
+    // auto-create a QueueItem with status IN_PROCEDURE so the return loop works seamlessly!
+    let resolvedQueueItemId = queueItemId || null;
+    const targetDoctorId = doctorId || (user.role === 'doctor' ? user.id : null);
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (resolvedQueueItemId) {
+        try {
+          await prisma.queueItem.update({
+            where: { id: resolvedQueueItemId },
+            data: { status: 'IN_PROCEDURE' },
+          });
+        } catch {}
+      } else {
+        const activeQueueItem = await prisma.queueItem.findFirst({
+          where: {
+            clinicId: user.clinicId,
+            patientId,
+            status: { in: ['WAITING', 'IN_CONSULTATION', 'IN_PROCEDURE', 'AWAY'] },
+            createdAt: { gte: today },
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+
+        if (activeQueueItem) {
+          await prisma.queueItem.update({
+            where: { id: activeQueueItem.id },
+            data: { status: 'IN_PROCEDURE' },
+          });
+          resolvedQueueItemId = activeQueueItem.id;
+        } else if (targetDoctorId) {
+          const todayCount = await prisma.queueItem.count({
+            where: { clinicId: user.clinicId, createdAt: { gte: today } },
+          });
+          const newQueue = await prisma.queueItem.create({
+            data: {
+              clinicId: user.clinicId,
+              patientId,
+              doctorId: targetDoctorId,
+              status: 'IN_PROCEDURE',
+              tokenNumber: todayCount + 1,
+            },
+          });
+          resolvedQueueItemId = newQueue.id;
+        }
+      }
+    } catch (qErr) {
+      console.warn('Queue linking warning in lab order creation:', qErr);
+    }
+
     const newOrder = await prisma.labOrder.create({
       data: {
         orderNumber,
         clinicId: user.clinicId,
         patientId,
-        doctorId: doctorId || user.id,
-        queueItemId: queueItemId || null,
+        doctorId: targetDoctorId,
+        queueItemId: resolvedQueueItemId,
         encounterId: encounterId || null,
         status: 'ORDERED',
         priority,
