@@ -287,12 +287,12 @@ export default function LabResultEntryModal({
                           </select>
                         ) : (
                           <input
-                            type={def?.type === 'number' ? 'number' : 'text'}
-                            step={def?.type === 'number' ? 'any' : undefined}
+                            type="text"
+                            inputMode={def?.type === 'number' ? 'decimal' : undefined}
                             value={param.value}
                             onChange={e => handleValueChange(idx, e.target.value)}
                             placeholder="Enter value"
-                            className={`w-full text-xs rounded-lg px-2.5 py-1.5 border font-semibold outline-none transition-all ${
+                            className={`w-full text-xs rounded-lg px-2.5 py-1.5 border font-semibold outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                               param.isAbnormal
                                 ? 'bg-red-50 border-red-300 text-red-900 font-bold focus:ring-2 focus:ring-red-400'
                                 : 'bg-slate-50 border-slate-200 text-slate-800 focus:bg-white focus:ring-2 focus:ring-blue-500'
