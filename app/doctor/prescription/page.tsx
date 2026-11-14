@@ -754,41 +754,43 @@ function PrescriptionWorkflowContent() {
               <>
                 {/* Clinical Lab Alert Banner for Returning Patients */}
                 {patientLabOrders && patientLabOrders.some((ord: any) => ord.tests?.some((t: any) => t.status === 'COMPLETED')) && (
-                  <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 rounded-xl p-4 text-white shadow-lg border border-purple-400/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-300">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20 text-purple-200">
-                        <FlaskConical size={22} />
+                  <div className="bg-gradient-to-r from-purple-950 via-indigo-900 to-slate-900 rounded-xl p-3.5 sm:p-4 text-white shadow-md border border-purple-400/30 overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-3 animate-in fade-in duration-200">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20 text-purple-200">
+                        <FlaskConical size={20} />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-black tracking-wider uppercase bg-emerald-400 text-slate-950 px-2 py-0.5 rounded-full">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[10px] font-black tracking-wider uppercase bg-emerald-400 text-slate-950 px-2 py-0.5 rounded-full shrink-0">
                             Reports Ready
                           </span>
-                          <span className="text-xs text-purple-200 font-medium">Diagnostic Lab Investigations</span>
+                          <span className="text-xs text-purple-200 font-medium truncate">Diagnostic Investigations</span>
                         </div>
-                        <h3 className="text-sm font-extrabold text-white mt-0.5">
+                        <h3 className="text-xs sm:text-sm font-extrabold text-white mt-0.5 truncate">
                           Patient Reports Ready for Review
                         </h3>
-                        <p className="text-xs text-purple-200/90 line-clamp-1">
-                          Completed: {patientLabOrders.flatMap((o: any) => o.tests || []).filter((t: any) => t.status === 'COMPLETED').map((t: any) => t.testName).join(', ')}
-                        </p>
                       </div>
                     </div>
-                    <div className="flex items-center flex-wrap gap-2 shrink-0">
-                      {patientLabOrders.flatMap((o: any) => (o.tests || []).filter((t: any) => t.status === 'COMPLETED').map((t: any) => ({ ...t, orderId: o.id }))).map((test: any) => (
-                        <button
-                          key={test.id}
-                          type="button"
-                          onClick={() => handleOpenTestReport(test.orderId, test.id)}
-                          className="px-3 py-1.5 bg-white text-purple-900 hover:bg-purple-50 font-black rounded-lg text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-                        >
-                          <Eye size={13} className="text-purple-700" />
-                          <span>View {test.testName.replace(/\(.*?\)/g, '').trim()}</span>
-                          {test.isAbnormal && (
-                            <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" title="Out of range" />
-                          )}
-                        </button>
-                      ))}
+                    <div className="flex items-center flex-wrap gap-2 pt-1 md:pt-0">
+                      {patientLabOrders.flatMap((o: any) => (o.tests || []).filter((t: any) => t.status === 'COMPLETED').map((t: any) => ({ ...t, orderId: o.id }))).map((test: any) => {
+                        const shortName = test.testName.match(/\((.*?)\)/)?.[1]
+                          || (test.testName.length > 18 ? test.testName.slice(0, 16) + '...' : test.testName);
+
+                        return (
+                          <button
+                            key={test.id}
+                            type="button"
+                            onClick={() => handleOpenTestReport(test.orderId, test.id)}
+                            className="px-3 py-1.5 bg-white text-purple-950 hover:bg-purple-50 font-black rounded-lg text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 border border-purple-200 hover:border-purple-300"
+                          >
+                            <Eye size={13} className="text-purple-700 shrink-0" />
+                            <span className="whitespace-nowrap">View {shortName}</span>
+                            {test.isAbnormal && (
+                              <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" title="Out of range" />
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
