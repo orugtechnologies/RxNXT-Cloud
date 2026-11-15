@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
+import { transitionPatientQueueToReturnedReady } from '@/lib/labQueueHelper';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const user = await getAuthenticatedUser();
@@ -79,27 +80,112 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
   try {
     const body = await request.json();
-    const { status, notes, priority } = body;
+    const { status, notes, priority, action, paymentMethod = 'UPI', amount } = body;
 
-    const existing = await prisma.labOrder.findUnique({ where: { id } });
+    const existing = await prisma.labOrder.findUnique({
+      where: { id },
+      include: { tests: true },
+    });
     if (!existing || existing.clinicId !== user.clinicId) {
       return NextResponse.json({ error: 'Lab order not found' }, { status: 404 });
     }
 
+    let updateData: any = {};
+    let shouldRelease = false;
+
+    if (action === 'COLLECT_PAYMENT') {
+      const finalAmount = typeof amount === 'number' && amount > 0 ? amount : existing.totalAmount;
+      updateData.paymentStatus = 'PAID';
+      updateData.paymentMethod = paymentMethod;
+      updateData.paidAt = new Date();
+      updateData.totalAmount = finalAmount;
+
+      // Auto-release if tests are already completed
+      const allDone = existing.tests.length > 0 && existing.tests.every(t => t.status === 'COMPLETED');
+      if (allDone || existing.status === 'COMPLETED') {
+        updateData.releasedToDoctor = true;
+        updateData.releasedAt = new Date();
+        shouldRelease = true;
+      }
+
+      // Sync central billing record
+      try {
+        if (prisma.bill?.updateMany) {
+          await prisma.bill.updateMany({
+            where: {
+              patientId: existing.patientId,
+              clinicId: existing.clinicId,
+              paymentStatus: 'PENDING',
+            },
+            data: {
+              paymentStatus: 'PAID',
+              paymentMode: paymentMethod,
+            },
+          });
+        }
+      } catch {}
+    } else if (action === 'COLLECT_AND_RELEASE') {
+      const finalAmount = typeof amount === 'number' && amount > 0 ? amount : existing.totalAmount;
+      updateData.paymentStatus = 'PAID';
+      updateData.paymentMethod = paymentMethod;
+      updateData.paidAt = new Date();
+      updateData.totalAmount = finalAmount;
+      updateData.releasedToDoctor = true;
+      updateData.releasedAt = new Date();
+      shouldRelease = true;
+
+      // Sync central billing record
+      try {
+        if (prisma.bill?.updateMany) {
+          await prisma.bill.updateMany({
+            where: {
+              patientId: existing.patientId,
+              clinicId: existing.clinicId,
+              paymentStatus: 'PENDING',
+            },
+            data: {
+              paymentStatus: 'PAID',
+              paymentMode: paymentMethod,
+            },
+          });
+        }
+      } catch {}
+    } else if (action === 'RELEASE_TO_DOCTOR') {
+      updateData.releasedToDoctor = true;
+      updateData.releasedAt = new Date();
+      shouldRelease = true;
+    } else {
+      if (status) updateData.status = status;
+      if (notes !== undefined) updateData.notes = notes;
+      if (priority) updateData.priority = priority;
+    }
+
     const updated = await prisma.labOrder.update({
       where: { id },
-      data: {
-        ...(status ? { status } : {}),
-        ...(notes !== undefined ? { notes } : {}),
-        ...(priority ? { priority } : {}),
-      },
+      data: updateData,
       include: {
         tests: true,
         patient: true,
+        doctor: true,
       },
     });
 
-    return NextResponse.json({ success: true, order: updated });
+    let queueUpdated = false;
+    if (shouldRelease) {
+      queueUpdated = await transitionPatientQueueToReturnedReady({
+        clinicId: existing.clinicId,
+        patientId: existing.patientId,
+        doctorId: existing.doctorId,
+        queueItemId: existing.queueItemId,
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      order: updated,
+      releasedToDoctor: updated.releasedToDoctor,
+      queueUpdated,
+    });
   } catch (err: any) {
     console.error('Failed to update lab order:', err);
     return NextResponse.json({ error: err.message || 'Failed to update lab order' }, { status: 500 });

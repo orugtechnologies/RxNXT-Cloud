@@ -1,4 +1,5 @@
 import { GET as getOrders, POST as createOrder } from '@/app/api/lab/orders/route';
+import { PATCH as updateOrder } from '@/app/api/lab/orders/[id]/route';
 import { PUT as updateResult } from '@/app/api/lab/results/[id]/route';
 import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/auth-server';
@@ -19,6 +20,11 @@ jest.mock('@/lib/prisma', () => ({
     queueItem: {
       findFirst: jest.fn(),
       update: jest.fn(),
+      count: jest.fn(),
+      create: jest.fn(),
+    },
+    bill: {
+      updateMany: jest.fn().mockResolvedValue({ count: 1 }),
     },
     user: {
       findFirst: jest.fn(),
@@ -123,7 +129,7 @@ describe('Lab Diagnostics API Endpoints', () => {
   });
 
   describe('PUT /api/lab/results/[id]', () => {
-    it('saves parameter results and updates queue to RETURNED_READY', async () => {
+    it('automatically delivers reports to doctor when order was already PAID (Flow A: Pre-Paid)', async () => {
       (prisma.labTestResult.findUnique as jest.Mock).mockResolvedValueOnce({
         id: 'test-1',
         testName: 'Complete Blood Count (CBC)',
@@ -131,6 +137,8 @@ describe('Lab Diagnostics API Endpoints', () => {
           id: 'order-1',
           clinicId: 'clinic-123',
           patientId: 'patient-1',
+          paymentStatus: 'PAID',
+          totalAmount: 250,
           tests: [{ id: 'test-1', status: 'PENDING' }],
         },
       });
@@ -162,9 +170,97 @@ describe('Lab Diagnostics API Endpoints', () => {
 
       expect(res.status).toBe(200);
       expect(json.success).toBe(true);
+      expect(json.autoDelivered).toBe(true);
       expect(json.queueUpdated).toBe(true);
       expect(prisma.queueItem.update).toHaveBeenCalledWith({
         where: { id: 'q-1' },
+        data: { status: 'RETURNED_READY' },
+      });
+    });
+
+    it('holds reports at lab desk when order is UNPAID (Flow B: Deferred Payment Gate)', async () => {
+      (prisma.labTestResult.findUnique as jest.Mock).mockResolvedValueOnce({
+        id: 'test-2',
+        testName: 'Random Blood Sugar (RBS)',
+        labOrder: {
+          id: 'order-2',
+          clinicId: 'clinic-123',
+          patientId: 'patient-2',
+          paymentStatus: 'PENDING',
+          totalAmount: 80,
+          tests: [{ id: 'test-2', status: 'PENDING' }],
+        },
+      });
+
+      (prisma.labTestResult.update as jest.Mock).mockResolvedValueOnce({
+        id: 'test-2',
+        testName: 'Random Blood Sugar (RBS)',
+        status: 'COMPLETED',
+        isAbnormal: false,
+      });
+
+      const req = {
+        json: async () => ({
+          results: [{ id: 'rbs', name: 'Random Glucose', value: '98', unit: 'mg/dL', referenceRange: '70-140', isAbnormal: false, flag: 'NORMAL' }],
+          impression: 'Normoglycemic.',
+        }),
+      } as any;
+
+      const res = await updateResult(req, { params: { id: 'test-2' } });
+      const json = await res.json();
+
+      expect(res.status).toBe(200);
+      expect(json.success).toBe(true);
+      // Gated! Not automatically delivered because payment is pending
+      expect(json.autoDelivered).toBe(false);
+      expect(json.queueUpdated).toBe(false);
+    });
+  });
+
+  describe('PATCH /api/lab/orders/[id] (Payment & Release Actions)', () => {
+    it('collects payment and releases reports to doctor with 1 click', async () => {
+      (prisma.labOrder.findUnique as jest.Mock).mockResolvedValueOnce({
+        id: 'order-2',
+        clinicId: 'clinic-123',
+        patientId: 'patient-2',
+        paymentStatus: 'PENDING',
+        totalAmount: 80,
+        status: 'COMPLETED',
+        tests: [{ id: 'test-2', status: 'COMPLETED' }],
+      });
+
+      (prisma.labOrder.update as jest.Mock).mockResolvedValueOnce({
+        id: 'order-2',
+        paymentStatus: 'PAID',
+        releasedToDoctor: true,
+      });
+
+      (prisma.queueItem.findFirst as jest.Mock).mockResolvedValueOnce({
+        id: 'q-2',
+        status: 'IN_PROCEDURE',
+      });
+
+      const req = {
+        json: async () => ({
+          action: 'COLLECT_AND_RELEASE',
+          paymentMethod: 'UPI',
+          amount: 80,
+        }),
+      } as any;
+
+      const res = await updateOrder(req, { params: { id: 'order-2' } });
+      const json = await res.json();
+
+      expect(res.status).toBe(200);
+      expect(json.success).toBe(true);
+      expect(json.releasedToDoctor).toBe(true);
+      expect(prisma.bill.updateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ patientId: 'patient-2', paymentStatus: 'PENDING' }),
+        })
+      );
+      expect(prisma.queueItem.update).toHaveBeenCalledWith({
+        where: { id: 'q-2' },
         data: { status: 'RETURNED_READY' },
       });
     });

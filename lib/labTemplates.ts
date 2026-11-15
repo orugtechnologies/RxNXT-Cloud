@@ -43,6 +43,28 @@ export interface LabTestTemplate {
   defaultImpression?: string;
 }
 
+export const TEST_PRICES: Record<string, number> = {
+  'Complete Blood Count (CBC)': 250,
+  'Widal / Typhidot Test': 200,
+  'Dengue NS1 Antigen': 600,
+  'Random Blood Sugar (RBS)': 80,
+  'Liver Function Test (LFT)': 650,
+  'Kidney Function Test (KFT)': 550,
+  'C-Reactive Protein (CRP)': 350,
+  'Urine Routine & Micro': 120,
+  'Chest X-Ray PA View': 350,
+  '12-Lead Resting ECG': 200,
+};
+
+export function getTestDefaultPrice(testName?: string | null): number {
+  if (!testName) return 150;
+  const clean = testName.trim().toLowerCase();
+  const match = Object.entries(TEST_PRICES).find(([name]) =>
+    clean.includes(name.toLowerCase()) || name.toLowerCase().includes(clean)
+  );
+  return match ? match[1] : 150;
+}
+
 export interface LabParameterResult {
   id: string;
   name: string;

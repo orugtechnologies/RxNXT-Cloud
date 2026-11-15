@@ -17,6 +17,12 @@ import {
   Calendar,
   Sparkles,
   Droplet,
+  CreditCard,
+  Send,
+  QrCode,
+  DollarSign,
+  X,
+  Loader2,
 } from 'lucide-react';
 import LabResultEntryModal from '@/components/lab/LabResultEntryModal';
 import LabReportViewerModal from '@/components/lab/LabReportViewerModal';
@@ -27,6 +33,12 @@ interface LabOrder {
   status: string;
   priority: string;
   notes?: string | null;
+  totalAmount?: number;
+  paymentStatus?: 'PENDING' | 'PAID' | string;
+  paymentMethod?: string | null;
+  paidAt?: string | null;
+  releasedToDoctor?: boolean;
+  releasedAt?: string | null;
   createdAt: string;
   patient: {
     id: string;
@@ -45,6 +57,7 @@ interface LabOrder {
     testName: string;
     category: string;
     templateType: string;
+    price?: number;
     status: string;
     isAbnormal: boolean;
     completedAt?: string | null;
@@ -65,6 +78,12 @@ export default function LabDashboard() {
 
   const [selectedReportData, setSelectedReportData] = useState<any | null>(null);
   const [isViewerModalOpen, setIsViewerModalOpen] = useState(false);
+
+  // Counter Payment Modal state
+  const [paymentModalOrder, setPaymentModalOrder] = useState<LabOrder | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'CASH'>('UPI');
+  const [customAmount, setCustomAmount] = useState<number>(0);
+  const [submittingPayment, setSubmittingPayment] = useState(false);
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -106,6 +125,57 @@ export default function LabDashboard() {
       }
     } catch (err) {
       console.error('Failed to update order status:', err);
+    }
+  };
+
+  const handleOpenPayment = (order: LabOrder) => {
+    setPaymentModalOrder(order);
+    const total = order.totalAmount && order.totalAmount > 0
+      ? order.totalAmount
+      : (order.tests || []).reduce((sum, t) => sum + (t.price || 150), 0);
+    setCustomAmount(total);
+    setPaymentMethod('UPI');
+  };
+
+  const handleConfirmPayment = async (andRelease: boolean = false) => {
+    if (!paymentModalOrder) return;
+    setSubmittingPayment(true);
+    try {
+      const res = await fetch(`/api/lab/orders/${paymentModalOrder.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: andRelease ? 'COLLECT_AND_RELEASE' : 'COLLECT_PAYMENT',
+          paymentMethod,
+          amount: Number(customAmount) || 0,
+        }),
+      });
+      if (res.ok) {
+        setPaymentModalOrder(null);
+        fetchOrders();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || 'Failed to record payment');
+      }
+    } catch (e: any) {
+      alert(e.message || 'Payment update failed');
+    } finally {
+      setSubmittingPayment(false);
+    }
+  };
+
+  const handleReleaseDirectly = async (orderId: string) => {
+    try {
+      const res = await fetch(`/api/lab/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'RELEASE_TO_DOCTOR' }),
+      });
+      if (res.ok) {
+        fetchOrders();
+      }
+    } catch (err) {
+      console.error('Failed to release order to doctor:', err);
     }
   };
 
@@ -302,13 +372,17 @@ export default function LabDashboard() {
           <div className="divide-y divide-slate-100">
             {orders.map(order => {
               const allTestsCompleted = order.tests.every(t => t.status === 'COMPLETED');
+              const orderAmount = order.totalAmount && order.totalAmount > 0
+                ? order.totalAmount
+                : (order.tests || []).reduce((sum, t) => sum + (t.price || 150), 0);
+              const isPaid = order.paymentStatus === 'PAID';
 
               return (
                 <div key={order.id} className="p-5 hover:bg-slate-50/60 transition-colors">
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     {/* Patient & Order Details */}
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-mono text-xs font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
                           {order.orderNumber}
                         </span>
@@ -319,6 +393,8 @@ export default function LabDashboard() {
                           ({order.patient.age ? `${order.patient.age}Y` : ''}{' '}
                           {order.patient.gender || ''})
                         </span>
+
+                        {/* Status Badge */}
                         {order.status === 'ORDERED' && (
                           <span className="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full">
                             Pending Sample
@@ -330,18 +406,35 @@ export default function LabDashboard() {
                           </span>
                         )}
                         {order.status === 'COMPLETED' && (
-                          <>
-                            <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
-                              <CheckCircle2 size={11} /> Reports Ready
-                            </span>
-                            <span className="text-[10px] font-medium bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded-full hidden sm:inline-flex items-center gap-1">
-                              🔗 Auto-merged into Doctor Rx (WhatsApp ₹0)
-                            </span>
-                          </>
+                          <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <CheckCircle2 size={11} /> Reports Ready
+                          </span>
                         )}
+
+                        {/* Financial Payment Badge */}
+                        {isPaid ? (
+                          <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <CheckCircle2 size={11} /> Paid: ₹{orderAmount} ({order.paymentMethod || 'UPI'})
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <CreditCard size={11} /> ₹{orderAmount} Due
+                          </span>
+                        )}
+
+                        {/* Doctor Release / Delivery Badge */}
+                        {order.releasedToDoctor ? (
+                          <span className="text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <Send size={11} /> Released to Doctor
+                          </span>
+                        ) : order.status === 'COMPLETED' ? (
+                          <span className="text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200 px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
+                            🔒 Held at Lab Desk
+                          </span>
+                        ) : null}
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 pt-0.5">
                         {order.doctor && (
                           <span>
                             Ref: <strong className="text-slate-700">{order.doctor.fullName}</strong>
@@ -364,17 +457,60 @@ export default function LabDashboard() {
                       </div>
                     </div>
 
-                    {/* Quick Stage Action */}
-                    <div className="flex items-center gap-2 self-start lg:self-auto">
+                    {/* Quick Stage Actions & Smart Gated Buttons */}
+                    <div className="flex items-center gap-2 flex-wrap self-start lg:self-auto">
                       {order.status === 'ORDERED' && (
                         <button
                           type="button"
                           onClick={() => handleUpdateOrderStatus(order.id, 'PROCESSING')}
-                          className="px-3 py-1.5 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors flex items-center gap-1.5"
+                          className="px-3 py-1.5 text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer active:scale-95"
                         >
                           <Droplet size={13} />
-                          <span>Mark Sample Collected</span>
+                          <span>Sample Collected</span>
                         </button>
+                      )}
+
+                      {/* FLOW A: Upfront Pre-Payment button (when unpaid & not yet completed) */}
+                      {!isPaid && order.status !== 'COMPLETED' && (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenPayment(order)}
+                          className="px-3 py-1.5 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs"
+                        >
+                          <CreditCard size={13} />
+                          <span>Collect ₹{orderAmount} (Pre-Pay)</span>
+                        </button>
+                      )}
+
+                      {/* FLOW B: Unpaid & Completed -> 1-Click Collect & Send to Doctor Gate */}
+                      {order.status === 'COMPLETED' && !isPaid && (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenPayment(order)}
+                          className="px-3.5 py-1.5 text-xs font-black text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 animate-pulse"
+                        >
+                          <CreditCard size={13} />
+                          <span>Collect ₹{orderAmount} & Send to Doctor</span>
+                        </button>
+                      )}
+
+                      {/* Paid & Completed but not yet released */}
+                      {order.status === 'COMPLETED' && isPaid && !order.releasedToDoctor && (
+                        <button
+                          type="button"
+                          onClick={() => handleReleaseDirectly(order.id)}
+                          className="px-3.5 py-1.5 text-xs font-black text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+                        >
+                          <Send size={13} />
+                          <span>Send to Doctor</span>
+                        </button>
+                      )}
+
+                      {/* Fully released and paid */}
+                      {order.releasedToDoctor && (
+                        <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg flex items-center gap-1">
+                          <CheckCircle2 size={12} /> Live in Doctor Queue
+                        </span>
                       )}
                     </div>
                   </div>
@@ -476,6 +612,152 @@ export default function LabDashboard() {
         onClose={() => setIsViewerModalOpen(false)}
         reportData={selectedReportData}
       />
+
+      {/* Counter Fee Collection Modal */}
+      {paymentModalOrder && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            {/* Header */}
+            <div className="p-4 bg-gradient-to-r from-slate-900 to-blue-950 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center border border-white/20">
+                  <CreditCard size={16} className="text-emerald-300" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-white">
+                    Collect Investigation Fee
+                  </h3>
+                  <p className="text-[11px] text-blue-200 font-mono">
+                    {paymentModalOrder.orderNumber} • {paymentModalOrder.patient.name}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPaymentModalOrder(null)}
+                className="p-1 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-5 space-y-4">
+              {/* Ordered Tests summary */}
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5 text-xs">
+                <span className="font-extrabold text-slate-500 uppercase tracking-wider text-[10px] block">
+                  Ordered Investigations ({paymentModalOrder.tests.length}):
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {paymentModalOrder.tests.map(t => (
+                    <span key={t.id} className="bg-white border border-slate-200 text-slate-800 px-2 py-0.5 rounded text-[11px] font-medium">
+                      {t.testName} {t.price ? `(₹${t.price})` : ''}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Amount Input */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Total Fee to Collect (₹)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-slate-400 font-bold text-sm">₹</span>
+                  <input
+                    type="number"
+                    value={customAmount}
+                    onChange={(e) => setCustomAmount(Number(e.target.value) || 0)}
+                    className="w-full pl-8 pr-3 py-2 border border-slate-300 rounded-xl text-base font-extrabold text-slate-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Payment Method Selector */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Payment Method
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('UPI')}
+                    className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      paymentMethod === 'UPI'
+                        ? 'bg-emerald-50 border-emerald-500 text-emerald-800 ring-2 ring-emerald-500/20'
+                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <QrCode size={16} className="text-emerald-600" />
+                    <span>UPI / QR Code</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('CASH')}
+                    className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      paymentMethod === 'CASH'
+                        ? 'bg-blue-50 border-blue-500 text-blue-800 ring-2 ring-blue-500/20'
+                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <DollarSign size={16} className="text-blue-600" />
+                    <span>Cash at Counter</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Flow description helper */}
+              <div className="p-2.5 bg-blue-50/70 border border-blue-200/80 rounded-xl text-[11px] text-blue-900">
+                {paymentModalOrder.status === 'COMPLETED' ? (
+                  <p>
+                    ⚡ <strong>Immediate Release:</strong> Confirming payment will instantly deliver the completed reports to Dr. {paymentModalOrder.doctor?.fullName || 'Doctor'} and transition the patient to <strong>Reports Ready</strong> in the live queue.
+                  </p>
+                ) : (
+                  <p>
+                    ⚡ <strong>Automated Delivery:</strong> Patient is paying upfront. Once you finish testing and click &quot;Submit Results&quot;, the reports will automatically transfer to the doctor with zero extra clicks.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setPaymentModalOrder(null)}
+                disabled={submittingPayment}
+                className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-xl transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                disabled={submittingPayment}
+                onClick={() => handleConfirmPayment(paymentModalOrder.status === 'COMPLETED')}
+                className="px-5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95 disabled:opacity-50 cursor-pointer"
+              >
+                {submittingPayment ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" />
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 size={14} />
+                    <span>
+                      {paymentModalOrder.status === 'COMPLETED'
+                        ? `Collect ₹${customAmount} & Send to Doctor`
+                        : `Confirm ₹${customAmount} Paid`}
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

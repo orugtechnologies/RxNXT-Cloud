@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
-import { getTemplateForTest } from '@/lib/labTemplates';
+import { getTemplateForTest, getTestDefaultPrice } from '@/lib/labTemplates';
 
 export async function GET(request: Request) {
   const user = await getAuthenticatedUser();
@@ -64,6 +64,7 @@ export async function GET(request: Request) {
             testName: true,
             category: true,
             templateType: true,
+            price: true,
             status: true,
             results: true,
             technicianName: true,
@@ -117,7 +118,7 @@ export async function POST(request: Request) {
     });
     const orderNumber = `LAB-${dateStr}-${String(countToday + 1).padStart(4, '0')}`;
 
-    // Prepare test items with their default template parameters pre-populated
+    // Prepare test items with their default template parameters and prices
     const testItemsData = tests.map((t: any) => {
       const template = getTemplateForTest(t.testName || t.name);
       const defaultParamResults = template.parameters.map(p => ({
@@ -130,16 +131,23 @@ export async function POST(request: Request) {
         flag: 'NORMAL',
       }));
 
+      const price = typeof t.price === 'number' && t.price > 0
+        ? t.price
+        : getTestDefaultPrice(t.testName || t.name);
+
       return {
         testName: t.testName || t.name,
         category: t.category || template.category,
         templateType: template.type,
+        price,
         status: 'PENDING',
         results: JSON.stringify(defaultParamResults),
         impression: template.defaultImpression || '',
         isAbnormal: false,
       };
     });
+
+    const totalAmount = testItemsData.reduce((sum: number, item: any) => sum + (item.price || 0), 0);
 
     // Queue Synchronization:
     // If patient already has a queue item today, transition it to IN_PROCEDURE and link it.
@@ -219,6 +227,9 @@ export async function POST(request: Request) {
         status: 'ORDERED',
         priority,
         notes: notes || null,
+        totalAmount,
+        paymentStatus: 'PENDING',
+        releasedToDoctor: false,
         tests: {
           create: testItemsData,
         },

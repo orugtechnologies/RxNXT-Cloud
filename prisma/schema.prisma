@@ -521,6 +521,12 @@ model LabOrder {
   status          String          @default("ORDERED") // ORDERED, SAMPLE_COLLECTED, PROCESSING, COMPLETED, CANCELLED
   priority        String          @default("NORMAL")  // NORMAL, URGENT
   notes           String?
+  totalAmount     Float           @default(0)
+  paymentStatus   String          @default("PENDING") // PENDING, PAID
+  paymentMethod   String?         // UPI, CASH, CARD
+  paidAt          DateTime?
+  releasedToDoctor Boolean         @default(false)
+  releasedAt      DateTime?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
@@ -529,6 +535,7 @@ model LabOrder {
   @@index([clinicId, createdAt])
   @@index([patientId])
   @@index([clinicId, status])
+  @@index([clinicId, paymentStatus])
 }
 
 model LabTestResult {
@@ -538,6 +545,7 @@ model LabTestResult {
   testName        String       // e.g. Complete Blood Count (CBC)
   category        String       @default("BLOOD") // BLOOD, URINE, IMAGING, OTHER
   templateType    String       @default("CUSTOM") // CBC, WIDAL, DENGUE, RBS, LFT, KFT, CRP, URINE_RE, CHEST_XRAY, ECG, CUSTOM
+  price           Float        @default(0)
   status          String       @default("PENDING") // PENDING, PROCESSING, COMPLETED
   results         String?      // JSON string of parameter rows: [{ id, name, value, unit, referenceRange, isAbnormal, flag }]
   impression      String?      // Overall impression / summary / clinical interpretation

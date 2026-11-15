@@ -44,6 +44,11 @@ export async function getCompletedLabReportsForPatient(
           gte: windowStart,
           lte: windowEnd,
         },
+        OR: [
+          { paymentStatus: 'PAID' },
+          { releasedToDoctor: true },
+          { totalAmount: 0 },
+        ],
         tests: {
           some: {
             status: 'COMPLETED',
