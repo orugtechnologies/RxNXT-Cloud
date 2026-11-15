@@ -36,13 +36,7 @@ export interface LabReportPDFData {
   impression?: string;
 }
 
-export function generateLabReportPDF(data: LabReportPDFData, returnBase64: boolean = false): string | void {
-  const doc = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
-  });
-
+export function appendLabReportPage(doc: jsPDF, data: LabReportPDFData): void {
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
@@ -148,7 +142,7 @@ export function generateLabReportPDF(data: LabReportPDFData, returnBase64: boole
   currentY += 10;
 
   // 5. Parameter Rows
-  data.results.forEach((res, index) => {
+  (data.results || []).forEach((res, index) => {
     // Check page overflow
     if (currentY > pageHeight - 45) {
       doc.addPage();
@@ -165,7 +159,7 @@ export function generateLabReportPDF(data: LabReportPDFData, returnBase64: boole
     doc.setFontSize(8.5);
     doc.setTextColor(res.isAbnormal ? 185 : 15, res.isAbnormal ? 28 : 23, res.isAbnormal ? 28 : 42); // Red if abnormal
 
-    doc.text(res.name, colTestX, currentY + 1.5);
+    doc.text(res.name || '', colTestX, currentY + 1.5);
 
     // Value with Flag badge
     const valText = res.value || '-';
@@ -228,6 +222,16 @@ export function generateLabReportPDF(data: LabReportPDFData, returnBase64: boole
   doc.setTextColor(51, 65, 85);
   const techLabel = data.technicianName ? `Verified by: ${data.technicianName} (Medical Lab Technologist)` : 'Medical Lab Technologist / Authorized Signatory';
   doc.text(techLabel, pageWidth - margin, footerY + 2, { align: 'right' });
+}
+
+export function generateLabReportPDF(data: LabReportPDFData, returnBase64: boolean = false): string | void {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  appendLabReportPage(doc, data);
 
   if (returnBase64) {
     return doc.output('datauristring');

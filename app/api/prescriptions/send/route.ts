@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { sendPrescriptionPDF } from '@/services/whatsappService';
 import { formatPrescriptionSchedule } from '@/lib/prescriptionScheduleFormatter';
 import { generatePrescriptionBase64 } from '@/lib/prescriptionPdfGenerator';
+import { getCompletedLabReportsForPatient } from '@/lib/prescriptionLabHelper';
 import { getClinicSubscription, getClinicWhatsAppUsage } from '@/lib/subscription';
 
 export async function POST(request: Request) {
@@ -75,6 +76,29 @@ export async function POST(request: Request) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.rxnxt.in';
     const pdfDirectUrl = `${baseUrl.replace(/\/$/, '')}/api/prescriptions/${prescription.id}/pdf`;
 
+    // Query completed lab reports for this patient & visit (for zero-cost unified dossier)
+    const doctor = await prisma.user.findUnique({
+      where: { id: prescription.doctorId || user.id }
+    });
+
+    const labReports = await getCompletedLabReportsForPatient({
+      patientId: prescription.patientId,
+      clinicId: prescription.clinicId,
+      referenceDate: prescription.createdAt,
+      fallbackDoctorName: doctor?.fullName || user.fullName,
+      fallbackClinic: prescription.clinic ? {
+        name: prescription.clinic.name,
+        address: prescription.clinic.address,
+        phone: prescription.clinic.phone,
+      } : undefined,
+      patient: prescription.patient ? {
+        name: prescription.patient.name,
+        age: prescription.patient.age,
+        gender: prescription.patient.gender,
+        phone: prescription.patient.phone,
+      } : undefined,
+    });
+
     // Synthesize structured time-of-day Medication Schedule
     const formatted = formatPrescriptionSchedule({
       patientName: prescription.patient.name,
@@ -84,15 +108,13 @@ export async function POST(request: Request) {
       doctorNotes: prescription.encounter?.notes,
       followUpDate: prescription.encounter?.followUpDate,
       pdfDirectUrl,
+      labReportCount: labReports.length,
     });
 
     // Ensure PDF Base64 is generated if not sent by client (guaranteed fallback)
     let finalPdfBase64 = pdfBase64;
     if (!finalPdfBase64) {
       try {
-        const doctor = await prisma.user.findUnique({
-          where: { id: prescription.doctorId || user.id }
-        });
         finalPdfBase64 = generatePrescriptionBase64({
           rxId: prescription.id,
           prescriptionId: prescription.id,
@@ -124,6 +146,7 @@ export async function POST(request: Request) {
           prescriptionPadUrl: (prescription.clinic as any)?.prescriptionPadUrl || undefined,
           prescriptionHeaderHeight: (prescription.clinic as any)?.prescriptionHeaderHeight ?? 48,
           prescriptionFooterHeight: (prescription.clinic as any)?.prescriptionFooterHeight ?? 30,
+          labReports,
         });
       } catch (genErr) {
         console.warn('[Server PDF Gen Warning]:', genErr);

@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
 import { formatDisplayRxId } from './prescription-id';
+import { appendLabReportPage, LabReportPDFData } from './labReportPdfGenerator';
 
 // Ensure TextEncoder is available across both Node (Jest/JSDOM) and browser environments
 if (typeof globalThis.TextEncoder === 'undefined') {
@@ -54,6 +55,7 @@ export interface PrescriptionPDFData {
   prescriptionPadUrl?: string;
   prescriptionHeaderHeight?: number;
   prescriptionFooterHeight?: number;
+  labReports?: LabReportPDFData[];
 }
 
 /**
@@ -704,6 +706,14 @@ export function buildPrescriptionDoc(data: PrescriptionPDFData): jsPDF {
 
   // 8. Footer
   drawFooter();
+
+  // 9. Append Completed Lab Investigation Reports (Unified Multi-page Health Dossier)
+  if (data.labReports && data.labReports.length > 0) {
+    for (const report of data.labReports) {
+      doc.addPage();
+      appendLabReportPage(doc, report);
+    }
+  }
 
   return doc;
 }

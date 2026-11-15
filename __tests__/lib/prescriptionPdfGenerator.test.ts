@@ -67,4 +67,81 @@ describe('prescriptionPdfGenerator', () => {
     expect(base64).toBeDefined();
     expect(typeof base64).toBe('string');
   });
+
+  it('successfully generates unified multi-page PDF dossier when lab reports are attached', () => {
+    const mockDataWithLab = {
+      rxId: 'RX-260926-003',
+      patient: {
+        name: 'Manoj Kumar',
+        phone: '919052599538',
+        age: 30,
+        gender: 'Male',
+      },
+      medicines: [
+        {
+          name: 'Paracetamol',
+          dosage_form: 'Tablet',
+          strength: '650mg',
+          frequency: '1-0-1',
+          duration: '3 days',
+        },
+      ],
+      doctorName: 'Dr. Shanmukha Datta',
+      clinicName: 'RxNXT Diagnostics & Clinic',
+      labReports: [
+        {
+          orderNumber: 'LAB-20261114-0002',
+          orderDate: '2026-11-14T18:00:00Z',
+          clinicName: 'RxNXT Diagnostics & Clinic',
+          patient: {
+            name: 'Manoj Kumar',
+            age: 30,
+            gender: 'Male',
+            phone: '919052599538',
+          },
+          doctorName: 'Dr. Shanmukha Datta',
+          technicianName: 'Suresh Lab Tech',
+          testName: 'Complete Blood Count (CBC)',
+          category: 'BLOOD',
+          results: [
+            { id: '1', name: 'Hemoglobin', value: '14.2', unit: 'g/dL', referenceRange: '13.0 - 17.0', isAbnormal: false, flag: 'NORMAL' },
+            { id: '2', name: 'Total Leukocyte Count (TLC)', value: '12500', unit: '/mcL', referenceRange: '4000 - 11000', isAbnormal: true, flag: 'HIGH' },
+          ],
+          impression: 'Mild leukocytosis indicating reactive inflammation.',
+        },
+        {
+          orderNumber: 'LAB-20261114-0002',
+          orderDate: '2026-11-14T18:00:00Z',
+          clinicName: 'RxNXT Diagnostics & Clinic',
+          patient: {
+            name: 'Manoj Kumar',
+            age: 30,
+            gender: 'Male',
+            phone: '919052599538',
+          },
+          doctorName: 'Dr. Shanmukha Datta',
+          technicianName: 'Suresh Lab Tech',
+          testName: 'Random Blood Sugar (RBS)',
+          category: 'BLOOD',
+          results: [
+            { id: '1', name: 'Random Blood Glucose', value: '110', unit: 'mg/dL', referenceRange: '70 - 140', isAbnormal: false, flag: 'NORMAL' },
+          ],
+          impression: 'Normoglycemic status.',
+        },
+      ],
+    };
+
+    const doc = buildPrescriptionDoc(mockDataWithLab as any);
+    expect(doc).toBeDefined();
+    // 1 page prescription + 2 lab report pages = at least 3 pages
+    expect((doc.internal as any).getNumberOfPages()).toBeGreaterThanOrEqual(3);
+
+    const buffer = generatePrescriptionBuffer(mockDataWithLab as any);
+    expect(buffer).toBeDefined();
+    expect(buffer.length).toBeGreaterThan(0);
+
+    const base64 = generatePrescriptionBase64(mockDataWithLab as any);
+    expect(base64).toBeDefined();
+    expect(typeof base64).toBe('string');
+  });
 });

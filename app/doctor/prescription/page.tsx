@@ -443,6 +443,40 @@ function PrescriptionWorkflowContent() {
     }
   };
 
+  const getMappedCompletedLabReports = () => {
+    return (patientLabOrders || []).flatMap((ord: any) => {
+      return (ord.tests || [])
+        .filter((t: any) => t.status === 'COMPLETED')
+        .map((t: any) => {
+          let parsedResults = [];
+          try {
+            parsedResults = typeof t.results === 'string' ? JSON.parse(t.results) : (Array.isArray(t.results) ? t.results : []);
+          } catch {
+            parsedResults = [];
+          }
+          return {
+            orderNumber: ord.orderNumber,
+            orderDate: ord.createdAt,
+            clinicName: ord.clinic?.name || doctorContext?.clinicName,
+            clinicAddress: ord.clinic?.address || doctorContext?.clinicAddress,
+            clinicPhone: ord.clinic?.phone || doctorContext?.clinicPhone,
+            patient: {
+              name: patient?.name || ord.patient?.name || 'Patient',
+              age: patient?.age ?? ord.patient?.age,
+              gender: patient?.gender || ord.patient?.gender,
+              phone: patient?.phone || ord.patient?.phone,
+            },
+            doctorName: ord.doctor?.fullName || doctorContext?.doctorName,
+            technicianName: t.technicianName,
+            testName: t.testName,
+            category: t.category,
+            results: parsedResults,
+            impression: t.impression,
+          };
+        });
+    });
+  };
+
   const handleProceedToReview = () => {
     const validation = validatePrescriptionMedicines();
     if (!validation.isValid) {
@@ -496,13 +530,14 @@ function PrescriptionWorkflowContent() {
       setPrescriptionId(createdRxId);
       
       try {
+        const completedLabReports = getMappedCompletedLabReports();
         const base64 = generatePrescriptionPDF({
-          patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, rxId: createdRxId, prescriptionId: createdRxId, ...doctorContext
+          patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, rxId: createdRxId, prescriptionId: createdRxId, labReports: completedLabReports, ...doctorContext
         }, true) as string;
         setPdfBase64(base64);
 
         generatePrescriptionPDF({
-          patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, rxId: createdRxId, prescriptionId: createdRxId, ...doctorContext
+          patient, medicines, chiefComplaint, diagnosis, notes, followUpDate, rxId: createdRxId, prescriptionId: createdRxId, labReports: completedLabReports, ...doctorContext
         }, false);
       } catch (pdfErr) {
         console.warn('PDF rendering warning on client:', pdfErr);
@@ -992,6 +1027,7 @@ function PrescriptionWorkflowContent() {
           prescriptionId={prescriptionId}
           pdfBase64={pdfBase64}
           timeTakenSeconds={lastTimeTaken}
+          attachedLabReportsCount={getMappedCompletedLabReports().length}
           onClose={() => {
             if (isSuccess) startNewPrescription();
             else setShowReview(false);

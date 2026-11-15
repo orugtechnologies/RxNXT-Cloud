@@ -16,6 +16,9 @@ jest.mock('../../lib/prisma', () => ({
       findUnique: jest.fn(),
       update: jest.fn(),
     },
+    labOrder: {
+      findMany: jest.fn().mockResolvedValue([]),
+    },
   },
 }));
 

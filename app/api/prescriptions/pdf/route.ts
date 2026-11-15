@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generatePrescriptionBuffer } from '@/lib/prescriptionPdfGenerator';
+import { getCompletedLabReportsForPatient } from '@/lib/prescriptionLabHelper';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +39,27 @@ export async function GET(request: Request) {
       });
     }
 
+    const labReports = await getCompletedLabReportsForPatient({
+      patientId: prescription.patientId,
+      clinicId: prescription.clinicId,
+      referenceDate: prescription.createdAt,
+      fallbackDoctorName: doctor?.fullName,
+      fallbackClinic: prescription.clinic ? {
+        name: prescription.clinic.name,
+        address: prescription.clinic.address,
+        phone: prescription.clinic.phone,
+      } : undefined,
+      patient: prescription.patient ? {
+        name: prescription.patient.name,
+        age: prescription.patient.age,
+        gender: prescription.patient.gender,
+        phone: prescription.patient.phone,
+      } : undefined,
+    });
+
     const pdfBuffer = generatePrescriptionBuffer({
+      rxId: prescription.id,
+      prescriptionId: prescription.id,
       patient: prescription.patient,
       medicines: (prescription.medicines || []).map((m) => ({
         id: m.id,
@@ -62,6 +83,7 @@ export async function GET(request: Request) {
       doctorSpecialization: doctor?.specialization || undefined,
       verificationStatus: doctor?.verificationStatus || undefined,
       medicalCouncil: doctor?.medicalCouncil || undefined,
+      labReports,
     });
 
     const safePatientName = (prescription.patient?.name || 'Patient').replace(/[^a-zA-Z0-9]/g, '_');

@@ -330,9 +330,14 @@ export default function LabDashboard() {
                           </span>
                         )}
                         {order.status === 'COMPLETED' && (
-                          <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
-                            <CheckCircle2 size={11} /> Reports Ready
-                          </span>
+                          <>
+                            <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <CheckCircle2 size={11} /> Reports Ready
+                            </span>
+                            <span className="text-[10px] font-medium bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded-full hidden sm:inline-flex items-center gap-1">
+                              🔗 Auto-merged into Doctor Rx (WhatsApp ₹0)
+                            </span>
+                          </>
                         )}
                       </div>
 

@@ -38,8 +38,9 @@ export function formatPrescriptionSchedule(params: {
   doctorNotes?: string | null;
   followUpDate?: Date | string | null;
   pdfDirectUrl?: string | null;
+  labReportCount?: number;
 }): FormattedPrescriptionSchedule {
-  const { patientName, clinicName, medicines = [], diagnosis, doctorNotes, followUpDate, pdfDirectUrl } = params;
+  const { patientName, clinicName, medicines = [], diagnosis, doctorNotes, followUpDate, pdfDirectUrl, labReportCount } = params;
 
   const isSlot = (freq: string | null | undefined, slot: 'MORNING' | 'AFTERNOON' | 'NIGHT') => {
     const f = (freq || '').toLowerCase().trim();
@@ -199,9 +200,16 @@ export function formatPrescriptionSchedule(params: {
       .join(', ');
     richSchedule += `📝 *Doctor Note:* ${cleanNotes}\n`;
   }
+  if (labReportCount && labReportCount > 0) {
+    richSchedule += `🧪 *Lab Investigation Reports:* ${labReportCount} Verified Report${labReportCount > 1 ? 's' : ''} attached to PDF\n`;
+  }
 
   // 3. Full WhatsApp Message Body
-  const pdfLine = pdfDirectUrl ? `\n📄 *Download Official PDF:* ${pdfDirectUrl}\n` : '';
+  const pdfLine = pdfDirectUrl
+    ? (labReportCount && labReportCount > 0
+        ? `\n📄 *Download Complete Health Dossier (Prescription & Lab Reports):* ${pdfDirectUrl}\n`
+        : `\n📄 *Download Official PDF:* ${pdfDirectUrl}\n`)
+    : '';
   const fullMessageBody =
     `Hello ${patientName},\n` +
     `Your digital prescription from *${clinicName}* is ready.\n\n` +
@@ -223,13 +231,17 @@ export function formatPrescriptionSchedule(params: {
     }
   }
 
-  const cleanAdvice = doctorNotes
+  const rawAdvice = doctorNotes
     ? doctorNotes
         .split('\n')
         .map((l) => l.trim().replace(/^[•\-\*]\s*/, ''))
         .filter(Boolean)
         .join(', ')
     : 'Take medicines as directed';
+
+  const cleanAdvice = labReportCount && labReportCount > 0
+    ? `${rawAdvice} • Attached: ${labReportCount} Verified Lab Report${labReportCount > 1 ? 's' : ''}`
+    : rawAdvice;
 
   const slotDetails = {
     patientName,

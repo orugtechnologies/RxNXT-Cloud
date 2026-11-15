@@ -3,6 +3,7 @@
 import { Patient } from '../patients/PatientSearchUI';
 import { PrescribedMedicine } from './PrescriptionCart';
 import { buildPrescriptionDoc, formatScheduleDescription } from '@/lib/prescriptionPdfGenerator';
+import { LabReportPDFData } from '@/lib/labReportPdfGenerator';
 
 export interface PrintViewProps {
   rxId?: string;
@@ -26,6 +27,7 @@ export interface PrintViewProps {
   prescriptionPadUrl?: string;
   prescriptionHeaderHeight?: number;
   prescriptionFooterHeight?: number;
+  labReports?: LabReportPDFData[];
 }
 
 export { formatScheduleDescription };

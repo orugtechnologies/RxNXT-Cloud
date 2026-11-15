@@ -65,6 +65,8 @@ export async function GET(request: Request) {
             category: true,
             templateType: true,
             status: true,
+            results: true,
+            technicianName: true,
             isAbnormal: true,
             completedAt: true,
             impression: true,

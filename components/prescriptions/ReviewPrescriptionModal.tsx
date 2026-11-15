@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, CheckCircle, User, Stethoscope, Pill, FileText, Activity, Send, Loader2, Sparkles, Download, AlertCircle, Lock } from 'lucide-react';
+import { X, CheckCircle, User, Stethoscope, Pill, FileText, Activity, Send, Loader2, Sparkles, Download, AlertCircle, Lock, FlaskConical } from 'lucide-react';
 import { PrescribedMedicine } from './PrescriptionCart';
 import { Patient } from '../patients/PatientSearchUI';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
@@ -19,6 +19,7 @@ interface ReviewModalProps {
   prescriptionId?: string;
   pdfBase64?: string | null;
   timeTakenSeconds?: number | null;
+  attachedLabReportsCount?: number;
   onClose: () => void;
   onConfirm: (enableReminders?: boolean) => void;
   onNewPrescription?: () => void;
@@ -37,6 +38,7 @@ export default function ReviewPrescriptionModal({
   prescriptionId,
   pdfBase64,
   timeTakenSeconds,
+  attachedLabReportsCount = 0,
   onClose,
   onConfirm,
   onNewPrescription,
@@ -276,7 +278,11 @@ export default function ReviewPrescriptionModal({
               className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 text-sm"
             >
               <Download size={18} />
-              <span>Download Prescription PDF</span>
+              <span>
+                {attachedLabReportsCount > 0
+                  ? `Download Complete Dossier (Rx & ${attachedLabReportsCount} Lab Reports)`
+                  : 'Download Prescription PDF'}
+              </span>
             </button>
 
             <button
@@ -363,6 +369,29 @@ export default function ReviewPrescriptionModal({
                 <p className="mt-1 pt-1 border-t border-blue-100/60"><span className="font-bold text-slate-900">📝 Doctor Advice:</span> {notes}</p>
               )}
             </div>
+
+            {/* Attached Diagnostic Lab Reports Notification */}
+            {attachedLabReportsCount > 0 && (
+              <div className="mt-3 p-2.5 bg-purple-50/80 border border-purple-200/90 rounded-lg flex items-center justify-between shadow-xs">
+                <div className="flex items-center gap-2">
+                  <FlaskConical size={16} className="text-purple-700 shrink-0" />
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs font-bold text-purple-900">
+                        {attachedLabReportsCount} Verified Lab Investigation Report{attachedLabReportsCount > 1 ? 's' : ''} Attached
+                      </p>
+                      <span className="bg-purple-200 text-purple-900 text-[9px] font-bold px-1.5 py-0.5 rounded">
+                        Page 2+
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-purple-700">Merged into unified PDF dossier & sent to WhatsApp at ₹0 extra Meta API cost</p>
+                  </div>
+                </div>
+                <span className="text-xs font-extrabold text-purple-700 bg-white border border-purple-200 px-2 py-0.5 rounded-md">
+                  Unified PDF
+                </span>
+              </div>
+            )}
 
             {/* Optional Daily Reminders Toggle */}
             <div className="mt-3 p-2.5 bg-white border border-blue-100 rounded-lg flex items-center justify-between shadow-xs">
