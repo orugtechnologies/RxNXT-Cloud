@@ -431,7 +431,7 @@ function PrescriptionWorkflowContent() {
         });
       }
 
-      alert(`✅ Patient sent for Tests & Day-Care Procedures.\n\n• Ordered: ${[...selectedTests.map(t => t.name), ...selectedDrips.map(d => d.name)].join(', ')}\n• Added to Front Desk Billing (₹${otherFeeTotal})\n• Queue updated to "At Lab / Drip"`);
+      alert(`✅ Patient sent for Tests & Day-Care Procedures.\n\n• Ordered: ${[...selectedTests.map(t => t.name), ...selectedDrips.map(d => d.name)].join(', ')}\n• Test Fees: ₹${otherFeeTotal} (Payable at Lab Counter)\n• Queue updated to "At Lab / Procedure"`);
       
       // Return to doctor dashboard to take next patient in queue
       router.push('/doctor/dashboard');
