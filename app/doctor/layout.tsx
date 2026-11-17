@@ -74,6 +74,7 @@ export default function DoctorLayout({
         <AppHeader 
           userName={profile?.full_name || user.email} 
           userRole={user.role} 
+          collapsed={sidebarCollapsed}
           onMenuToggle={toggleMobileMenu} 
         />
         

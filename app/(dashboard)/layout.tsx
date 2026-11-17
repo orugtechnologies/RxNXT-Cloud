@@ -68,7 +68,7 @@ export default function DashboardLayout({
       router.push('/nurse/dashboard');
       return null;
     }
-    if (user.role === 'lab_technician' && !path.startsWith('/lab')) {
+    if ((user.role === 'lab_technician' || user.role === 'lab' || user.role === 'labtechnician') && !path.startsWith('/lab')) {
       router.push('/lab/dashboard');
       return null;
     }
@@ -106,6 +106,7 @@ export default function DashboardLayout({
         <AppHeader 
           userName={profile?.full_name || user.email} 
           userRole={user.role} 
+          collapsed={sidebarCollapsed}
           onMenuToggle={toggleMobileMenu} 
         />
         

@@ -287,7 +287,7 @@ export default function LoginPage() {
         window.location.href = '/nurse/dashboard?login=success';
         return;
       }
-      if (role === 'labtechnician' || role === 'lab') {
+      if (role === 'labtechnician' || role === 'lab' || role === 'lab_technician') {
         window.location.href = '/lab/dashboard?login=success';
         return;
       }

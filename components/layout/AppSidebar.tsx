@@ -16,14 +16,15 @@ interface AppSidebarProps {
   onToggle: () => void;
 }
 
-function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRole: string }) {
-  const pathname = usePathname();
+function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRole?: string }) {
+  const pathname = usePathname() || '';
   const searchParams = useSearchParams();
-  const tab = searchParams.get('tab');
+  const tab = searchParams ? searchParams.get('tab') : null;
 
+  const role = (userRole || 'doctor').toLowerCase();
   let navGroups: { label: string, items: any[] }[] = [];
 
-  if (userRole === 'receptionist') {
+  if (role === 'receptionist') {
     navGroups = [
       {
         label: 'Overview',
@@ -33,7 +34,7 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
         ]
       }
     ];
-  } else if (userRole === 'pharmacist') {
+  } else if (role === 'pharmacist') {
     navGroups = [
       {
         label: 'Pharmacy Counter',
@@ -43,7 +44,7 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
         ]
       }
     ];
-  } else if (userRole === 'nurse') {
+  } else if (role === 'nurse') {
     navGroups = [
       {
         label: 'Overview',
@@ -52,7 +53,7 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
         ]
       }
     ];
-  } else if (userRole === 'lab_technician' || userRole === 'lab') {
+  } else if (role === 'lab_technician' || role === 'lab' || role === 'labtechnician') {
     navGroups = [
       {
         label: 'Diagnostic Laboratory',
@@ -81,12 +82,12 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
       }
     ];
 
-    if (userRole === 'clinic_admin' || userRole === 'admin' || userRole === 'doctor') {
+    if (role === 'clinic_admin' || role === 'admin' || role === 'doctor') {
       navGroups.push({
         label: 'Administration',
         items: [
           { name: 'Billing & Invoices', href: '/admin/billing', icon: ReceiptText },
-          ...(userRole === 'clinic_admin' || userRole === 'admin' ? [
+          ...(role === 'clinic_admin' || role === 'admin' ? [
             { name: 'Manage Doctors', href: '/admin/team', icon: Users },
             { name: 'Support Staff', href: '/admin/staff', icon: Users },
             { name: 'Lab Diagnostics', href: '/lab/dashboard', icon: FlaskConical },
@@ -168,6 +169,8 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
 
 export default function AppSidebar({ userRole, userName, collapsed, onToggle }: AppSidebarProps) {
   const { signOut } = useAuth();
+  const safeRole = (userRole || 'doctor').toLowerCase();
+  const safeUserName = userName || 'User';
 
   return (
     <div className={cn(
@@ -190,7 +193,8 @@ export default function AppSidebar({ userRole, userName, collapsed, onToggle }: 
       {/* Collapse Toggle */}
       <button 
         onClick={onToggle}
-        className="absolute -right-3 top-20 bg-white border border-slate-200 rounded-full p-1 text-slate-400 hover:text-[#2563eb] hover:bg-blue-50 shadow-sm transition-colors hidden md:block z-10"
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        className="absolute -right-3 top-20 bg-white border border-slate-200 rounded-full p-1 text-slate-400 hover:text-[#2563eb] hover:bg-blue-50 shadow-sm transition-colors hidden md:block z-10 cursor-pointer"
       >
         {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
       </button>
@@ -198,7 +202,7 @@ export default function AppSidebar({ userRole, userName, collapsed, onToggle }: 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-6 space-y-2">
         <Suspense fallback={<div className="p-4 text-center text-slate-500 text-sm">Loading...</div>}>
-          <SidebarNavigation collapsed={collapsed} userRole={userRole} />
+          <SidebarNavigation collapsed={collapsed} userRole={safeRole} />
         </Suspense>
       </nav>
 
@@ -206,20 +210,21 @@ export default function AppSidebar({ userRole, userName, collapsed, onToggle }: 
       <div className="p-4 border-t border-slate-200 bg-white/50 mt-auto">
         <div className={cn("flex items-center gap-3 mb-4", collapsed && "justify-center")}>
           <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-clinic-blue to-clinic-emerald flex items-center justify-center text-white text-sm font-bold shadow-inner shrink-0">
-            {userName?.charAt(0).toUpperCase() || 'U'}
+            {safeUserName?.charAt(0).toUpperCase() || 'U'}
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1 overflow-hidden">
-              <p className="text-sm font-medium text-slate-900 truncate">{userName}</p>
-              <p className="text-xs text-slate-500 capitalize truncate">{userRole.replace('_', ' ')}</p>
+              <p className="text-sm font-medium text-slate-900 truncate">{safeUserName}</p>
+              <p className="text-xs text-slate-500 capitalize truncate">{safeRole.replace(/_/g, ' ')}</p>
             </div>
           )}
         </div>
         
         <button
           onClick={signOut}
+          title="Sign Out"
           className={cn(
-            "flex items-center gap-3 w-full px-3 py-2 text-sm font-medium text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors group mt-2",
+            "flex items-center gap-3 w-full px-3 py-2 text-sm font-medium text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors group mt-2 cursor-pointer",
             collapsed && "justify-center px-0"
           )}
         >
