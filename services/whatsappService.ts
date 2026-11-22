@@ -361,7 +361,11 @@ export async function sendPrescriptionPDF(
   }
 ) {
   // Construct official direct downloadable PDF link (e.g. https://app.rxnxt.in/api/prescriptions/{id}/pdf)
-  const appBaseUrl = cleanEnv(process.env.NEXT_PUBLIC_APP_URL) || 'https://app.rxnxt.in';
+  // Ensure public HTTPS domain is always used so Meta Cloud servers can download the PDF document
+  const rawAppUrl = cleanEnv(process.env.NEXT_PUBLIC_APP_URL);
+  const appBaseUrl = (!rawAppUrl || rawAppUrl.includes('localhost') || rawAppUrl.includes('127.0.0.1'))
+    ? 'https://app.rxnxt.in'
+    : rawAppUrl;
   const directPdfUrl = prescriptionId
     ? `${appBaseUrl.replace(/\/$/, '')}/api/prescriptions/${prescriptionId}/pdf`
     : pdfUrl;
