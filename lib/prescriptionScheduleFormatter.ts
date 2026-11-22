@@ -22,6 +22,101 @@ export interface FormattedPrescriptionSchedule {
   };
 }
 
+export interface MedicineSlotResolution {
+  morning: boolean;
+  afternoon: boolean;
+  night: boolean;
+  isSos: boolean;
+  specialNote?: string;
+}
+
+export function resolveMedicineSlots(
+  frequencyRaw?: string | null,
+  instructionsRaw?: string | null
+): MedicineSlotResolution {
+  const freq = (frequencyRaw || '').toLowerCase().trim();
+  const inst = (instructionsRaw || '').toLowerCase().trim();
+  const combined = `${freq} ${inst}`;
+
+  // 1. SOS / PRN
+  if (freq === 'sos' || combined.includes('as needed') || combined.includes('prn') || combined.includes('when needed')) {
+    return { morning: false, afternoon: false, night: false, isSos: true };
+  }
+
+  // 2. Weekly / Alternate Days (Do NOT send daily doses for weekly pills)
+  if (combined.includes('once a week') || combined.includes('weekly') || combined.includes('alternate day')) {
+    return { morning: false, afternoon: false, night: false, isSos: true, specialNote: 'Weekly' };
+  }
+
+  // 3. Regex match standard Dash Pattern: e.g. "1-0-1", "1-1-1", "0-1-1", "1-1-0", "2-0-2", "1/2-0-1/2", "0-0-1", "0-1-0"
+  const dashMatch = freq.match(/^([0-9/.]+)\s*-\s*([0-9/.]+)\s*-\s*([0-9/.]+)$/);
+  if (dashMatch) {
+    const isNonZero = (val: string) => {
+      const v = val.trim();
+      return v !== '0' && v !== '0.0';
+    };
+    return {
+      morning: isNonZero(dashMatch[1]),
+      afternoon: isNonZero(dashMatch[2]),
+      night: isNonZero(dashMatch[3]),
+      isSos: false,
+    };
+  }
+
+  // 4. Four times a day: "1-1-1-1" or "qid"
+  if (freq.includes('1-1-1-1') || freq.includes('qid') || freq.includes('four times') || freq.includes('4 times')) {
+    return { morning: true, afternoon: true, night: true, isSos: false };
+  }
+
+  // 5. Multi-dose text tokens:
+  // TDS / Thrice / 3 times a day -> Morning, Afternoon, Night
+  if (freq.includes('tds') || freq.includes('thrice') || freq.includes('3 times') || freq.includes('tid')) {
+    return { morning: true, afternoon: true, night: true, isSos: false };
+  }
+
+  // BD / Twice daily / 2 times a day -> Morning and Night (unless instructions specify afternoon)
+  if (freq.includes('bd') || freq.includes('bid') || freq.includes('twice') || freq.includes('2 times')) {
+    if (combined.includes('afternoon') || combined.includes('lunch')) {
+      return { morning: true, afternoon: true, night: false, isSos: false };
+    }
+    return { morning: true, afternoon: false, night: true, isSos: false };
+  }
+
+  // 6. Once-daily / OD / Single dose tokens (Resolve slot based on combined frequency + instructions)
+  const isNightInstruction =
+    combined.includes('bedtime') ||
+    combined.includes('night') ||
+    combined.includes('hs') ||
+    combined.includes('sleep') ||
+    combined.includes('dinner');
+
+  const isAfternoonInstruction =
+    combined.includes('afternoon') ||
+    combined.includes('lunch') ||
+    combined.includes('midday');
+
+  const isMorningInstruction =
+    combined.includes('morning') ||
+    combined.includes('breakfast') ||
+    combined.includes('empty stomach') ||
+    combined.includes('wake up');
+
+  if (isNightInstruction) {
+    return { morning: false, afternoon: false, night: true, isSos: false };
+  }
+
+  if (isAfternoonInstruction) {
+    return { morning: false, afternoon: true, night: false, isSos: false };
+  }
+
+  if (isMorningInstruction || freq.includes('od') || freq.includes('once') || freq.includes('daily') || freq.includes('1-0-0')) {
+    return { morning: true, afternoon: false, night: false, isSos: false };
+  }
+
+  // Fallback: if unclassified
+  return { morning: false, afternoon: false, night: false, isSos: true };
+}
+
 export function formatPrescriptionSchedule(params: {
   patientName: string;
   clinicName: string;
@@ -42,64 +137,6 @@ export function formatPrescriptionSchedule(params: {
 }): FormattedPrescriptionSchedule {
   const { patientName, clinicName, medicines = [], diagnosis, doctorNotes, followUpDate, pdfDirectUrl, labReportCount } = params;
 
-  const isSlot = (freq: string | null | undefined, slot: 'MORNING' | 'AFTERNOON' | 'NIGHT') => {
-    const f = (freq || '').toLowerCase().trim();
-    if (!f || f === 'sos' || f.includes('as needed') || f.includes('prn')) {
-      return false;
-    }
-
-    if (slot === 'MORNING') {
-      if (f.includes('0-1-0') || f.includes('0-0-1') || f.includes('bedtime') || f.includes('hs') || f.includes('night')) {
-        if (!f.includes('1-1-1') && !f.includes('1-0-1') && !f.includes('thrice') && !f.includes('3 times') && !f.includes('twice')) {
-          return false;
-        }
-      }
-      return (
-        f.includes('1-') ||
-        f.includes('2-') ||
-        f.includes('morning') ||
-        f.includes('od') ||
-        f.includes('bd') ||
-        f.includes('tds') ||
-        f.includes('qid') ||
-        f.includes('once') ||
-        f.includes('twice') ||
-        f.includes('thrice') ||
-        f.includes('breakfast') ||
-        f.includes('daily')
-      );
-    }
-    if (slot === 'AFTERNOON') {
-      return (
-        f.includes('1-1-1') ||
-        f.includes('0-1-0') ||
-        f.includes('thrice') ||
-        f.includes('3 times') ||
-        f.includes('tds') ||
-        f.includes('qid') ||
-        f.includes('afternoon') ||
-        f.includes('lunch')
-      );
-    }
-    if (slot === 'NIGHT') {
-      return (
-        f.includes('1-0-1') ||
-        f.includes('1-1-1') ||
-        f.includes('0-0-1') ||
-        f.includes('bedtime') ||
-        f.includes('hs') ||
-        f.includes('night') ||
-        f.includes('dinner') ||
-        f.includes('bd') ||
-        f.includes('tds') ||
-        f.includes('qid') ||
-        f.includes('twice') ||
-        f.includes('thrice')
-      );
-    }
-    return false;
-  };
-
   const cleanInstruction = (raw?: string | null) => {
     const inst = (raw || '').trim();
     if (/after\s+(meals?|food)/i.test(inst)) return 'After Food';
@@ -112,6 +149,7 @@ export function formatPrescriptionSchedule(params: {
   const morningMeds: string[] = [];
   const afternoonMeds: string[] = [];
   const nightMeds: string[] = [];
+  const sosMeds: string[] = [];
 
   medicines.forEach((m) => {
     const name = m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine';
@@ -119,9 +157,13 @@ export function formatPrescriptionSchedule(params: {
     const inst = cleanInstruction(m.instructions);
     const itemStr = inst ? `${name}${strength} (${inst})` : `${name}${strength}`;
 
-    if (isSlot(m.frequency, 'MORNING')) morningMeds.push(itemStr);
-    if (isSlot(m.frequency, 'AFTERNOON')) afternoonMeds.push(itemStr);
-    if (isSlot(m.frequency, 'NIGHT')) nightMeds.push(itemStr);
+    const slots = resolveMedicineSlots(m.frequency, m.instructions);
+    if (slots.morning) morningMeds.push(itemStr);
+    if (slots.afternoon) afternoonMeds.push(itemStr);
+    if (slots.night) nightMeds.push(itemStr);
+    if (slots.isSos || (!slots.morning && !slots.afternoon && !slots.night)) {
+      sosMeds.push(itemStr);
+    }
   });
 
   const slotsList: string[] = [];

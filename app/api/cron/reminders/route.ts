@@ -8,6 +8,7 @@ import {
   isMetaConfigured,
 } from '@/services/whatsappService';
 import { isDemoClinic } from '@/lib/subscription';
+import { resolveMedicineSlots } from '@/lib/prescriptionScheduleFormatter';
 
 const CONCURRENCY_LIMIT = parseInt(process.env.META_CONCURRENCY || '10', 10);
 const MESSAGES_PER_SECOND = parseInt(process.env.META_MESSAGES_PER_SECOND || '20', 10);
@@ -136,64 +137,6 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
     const doctorName = prescription?.doctor?.fullName || 'your doctor';
     const clinicName = prescription?.clinic?.name || 'RxNXT Clinic';
 
-    const isSlot = (freq: string | null | undefined, slot: 'MORNING' | 'AFTERNOON' | 'NIGHT') => {
-      const f = (freq || '').toLowerCase().trim();
-      if (!f || f === 'sos' || f.includes('as needed') || f.includes('prn')) {
-        return false;
-      }
-
-      if (slot === 'MORNING') {
-        if (f.includes('0-1-0') || f.includes('0-0-1') || f.includes('bedtime') || f.includes('hs') || f.includes('night')) {
-          if (!f.includes('1-1-1') && !f.includes('1-0-1') && !f.includes('thrice') && !f.includes('3 times') && !f.includes('twice')) {
-            return false;
-          }
-        }
-        return (
-          f.includes('1-') ||
-          f.includes('2-') ||
-          f.includes('morning') ||
-          f.includes('od') ||
-          f.includes('bd') ||
-          f.includes('tds') ||
-          f.includes('qid') ||
-          f.includes('once') ||
-          f.includes('twice') ||
-          f.includes('thrice') ||
-          f.includes('breakfast') ||
-          f.includes('daily')
-        );
-      }
-      if (slot === 'AFTERNOON') {
-        return (
-          f.includes('1-1-1') ||
-          f.includes('0-1-0') ||
-          f.includes('thrice') ||
-          f.includes('3 times') ||
-          f.includes('tds') ||
-          f.includes('qid') ||
-          f.includes('afternoon') ||
-          f.includes('lunch')
-        );
-      }
-      if (slot === 'NIGHT') {
-        return (
-          f.includes('1-0-1') ||
-          f.includes('1-1-1') ||
-          f.includes('0-0-1') ||
-          f.includes('bedtime') ||
-          f.includes('hs') ||
-          f.includes('night') ||
-          f.includes('dinner') ||
-          f.includes('bd') ||
-          f.includes('tds') ||
-          f.includes('qid') ||
-          f.includes('twice') ||
-          f.includes('thrice')
-        );
-      }
-      return false;
-    };
-
     const formatMedItem = (m: any) => {
       const name = m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine';
       const strength = m.strength ? ` ${m.strength.trim()}` : '';
@@ -222,7 +165,10 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
 
     if (isLegacySingleSlot) {
       slotType = reminder.messageType === 'MEDICINE_AFTERNOON' ? 'AFTERNOON' : 'NIGHT';
-      const filtered = allPrescribedMeds.filter((m: any) => isSlot(m.frequency, slotType as any));
+      const filtered = allPrescribedMeds.filter((m: any) => {
+        const slots = resolveMedicineSlots(m.frequency, m.instructions);
+        return slotType === 'AFTERNOON' ? slots.afternoon : slots.night;
+      });
       const targetMeds = filtered.length > 0 ? filtered : allPrescribedMeds;
       medicinesList = targetMeds.map((m: any) => formatMedItem(m)).join(', • ') || 'Prescribed medicines';
     } else {
@@ -236,22 +182,12 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
 
       allPrescribedMeds.forEach((m: any) => {
         const itemStr = formatMedItem(m);
-        const freq = m.frequency || '';
-        let matched = false;
+        const slots = resolveMedicineSlots(m.frequency, m.instructions);
 
-        if (isSlot(freq, 'MORNING')) {
-          morningMeds.push(itemStr);
-          matched = true;
-        }
-        if (isSlot(freq, 'AFTERNOON')) {
-          afternoonMeds.push(itemStr);
-          matched = true;
-        }
-        if (isSlot(freq, 'NIGHT')) {
-          nightMeds.push(itemStr);
-          matched = true;
-        }
-        if (!matched) {
+        if (slots.morning) morningMeds.push(itemStr);
+        if (slots.afternoon) afternoonMeds.push(itemStr);
+        if (slots.night) nightMeds.push(itemStr);
+        if (slots.isSos || (!slots.morning && !slots.afternoon && !slots.night)) {
           sosMeds.push(itemStr);
         }
       });
