@@ -141,6 +141,53 @@ export default function PrescriptionCart({ medicines, items, onUpdate, onRemove 
     }
   };
 
+  const isDosingMismatch = (freq?: string, inst?: string) => {
+    const f = (freq || '').trim();
+    const i = (inst || '').toLowerCase().trim();
+    return (
+      (f === '1-1-1' || f === '1-0-1' || f === '1-1-0' || f === '1-0-0' || f === 'TDS' || f === 'BD') &&
+      i.includes('bedtime')
+    );
+  };
+
+  const handleFrequencySelect = (med: PrescribedMedicine, newFreq: string) => {
+    const updates: Partial<PrescribedMedicine> = { frequency: newFreq };
+    const currentInst = (med.instructions || '').trim().toLowerCase();
+
+    // Smart Auto-Pairing: Automatically sync instruction if empty or conflicting
+    if (newFreq === '0-0-1' || newFreq === 'HS') {
+      updates.instructions = 'At bedtime';
+    } else if (newFreq === '1-0-0') {
+      if (!currentInst || currentInst.includes('bedtime')) {
+        updates.instructions = 'Before Food';
+      }
+    } else if (newFreq === '1-1-1' || newFreq === '1-0-1' || newFreq === '1-1-0' || newFreq === 'TDS' || newFreq === 'BD') {
+      if (!currentInst || currentInst.includes('bedtime')) {
+        updates.instructions = 'After Food';
+      }
+    } else if (newFreq === 'SOS') {
+      if (!currentInst || currentInst.includes('bedtime')) {
+        updates.instructions = 'When Needed';
+      }
+    }
+
+    onUpdate(med.id, updates);
+  };
+
+  const handleInstructionSelect = (med: PrescribedMedicine, newInst: string) => {
+    const updates: Partial<PrescribedMedicine> = { instructions: newInst };
+    const freq = (med.frequency || '').trim();
+
+    // If doctor clicks "At bedtime" on a daytime frequency, automatically sync frequency to Night-only (0-0-1)
+    if (newInst === 'At bedtime') {
+      if (freq === '1-0-0' || freq === '1-1-1' || freq === '1-1-0') {
+        updates.frequency = '0-0-1';
+      }
+    }
+
+    onUpdate(med.id, updates);
+  };
+
   return (
     <div className="bg-white">
       {medList.length === 0 ? (
@@ -236,6 +283,17 @@ export default function PrescriptionCart({ medicines, items, onUpdate, onRemove 
                               {med.instructions}
                             </span>
                           )}
+
+                          {isDosingMismatch(med.frequency, med.instructions) && !isExpanded && (
+                            <button
+                              type="button"
+                              onClick={() => toggleExpand(med.id)}
+                              className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-200 transition-colors flex items-center gap-1 cursor-pointer"
+                              title="Frequency and instruction may conflict. Click to review."
+                            >
+                              ⚠️ Review Dose
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -287,7 +345,7 @@ export default function PrescriptionCart({ medicines, items, onUpdate, onRemove 
                               <button
                                 key={q}
                                 type="button"
-                                onClick={() => onUpdate(med.id, { frequency: q })}
+                                onClick={() => handleFrequencySelect(med, q)}
                                 className={`text-[11px] font-bold px-2 py-0.5 rounded-md transition-all shadow-2xs ${
                                   med.frequency === q
                                     ? 'bg-blue-600 text-white shadow-xs'
@@ -395,7 +453,7 @@ export default function PrescriptionCart({ medicines, items, onUpdate, onRemove 
                               <button
                                 key={q}
                                 type="button"
-                                onClick={() => onUpdate(med.id, { instructions: q })}
+                                onClick={() => handleInstructionSelect(med, q)}
                                 className={`text-[11px] font-bold px-2 py-0.5 rounded-md transition-all shadow-2xs ${
                                   med.instructions === q
                                     ? 'bg-slate-800 text-white shadow-xs'
@@ -422,6 +480,39 @@ export default function PrescriptionCart({ medicines, items, onUpdate, onRemove 
                             </datalist>
                           </div>
                         </div>
+
+                        {/* Smart Dosing Conflict Helper */}
+                        {isDosingMismatch(med.frequency, med.instructions) && (
+                          <div className="col-span-1 md:col-span-3 mt-1 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg flex flex-wrap items-center justify-between gap-2 text-xs">
+                            <div className="flex items-center gap-1.5 text-amber-800 font-medium">
+                              <span className="text-amber-600 font-bold">⚠️ Notice:</span>
+                              <span>Frequency is <strong>{med.frequency}</strong>, but instruction is <strong>"{med.instructions}"</strong>.</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => onUpdate(med.id, { frequency: '0-0-1', instructions: 'At bedtime' })}
+                                className="px-2.5 py-1 bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 rounded font-semibold text-[11px] transition-colors shadow-2xs cursor-pointer"
+                              >
+                                🌙 Set 0-0-1 (Bedtime)
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => onUpdate(med.id, { instructions: 'After Food' })}
+                                className="px-2.5 py-1 bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 rounded font-semibold text-[11px] transition-colors shadow-2xs cursor-pointer"
+                              >
+                                🍽️ Set After Food
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => onUpdate(med.id, { instructions: 'Before Food' })}
+                                className="px-2.5 py-1 bg-white border border-amber-300 hover:bg-amber-100 text-amber-900 rounded font-semibold text-[11px] transition-colors shadow-2xs cursor-pointer"
+                              >
+                                🥣 Set Before Food
+                              </button>
+                            </div>
+                          </div>
+                        )}
 
                       </div>
                     </div>

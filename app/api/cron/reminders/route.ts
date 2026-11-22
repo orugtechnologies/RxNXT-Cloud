@@ -137,7 +137,7 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
     const doctorName = prescription?.doctor?.fullName || 'your doctor';
     const clinicName = prescription?.clinic?.name || 'RxNXT Clinic';
 
-    const formatMedItem = (m: any) => {
+    const formatMedItem = (m: any, slotName?: 'morning' | 'afternoon' | 'night' | 'sos') => {
       const name = m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine';
       const strength = m.strength ? ` ${m.strength.trim()}` : '';
       let rawInst = (m.instructions || '').trim();
@@ -150,7 +150,12 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
         } else if (/with\s+(meals?|food)/i.test(rawInst)) {
           inst = 'With Food';
         } else if (/at\s+bedtime|night/i.test(rawInst)) {
-          inst = 'At Bedtime';
+          // Suppress bedtime instruction if displayed in morning or afternoon slot
+          if (slotName === 'morning' || slotName === 'afternoon') {
+            inst = '';
+          } else {
+            inst = 'At Bedtime';
+          }
         }
       }
       const instStr = inst ? ` (${inst})` : '';
@@ -165,12 +170,13 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
 
     if (isLegacySingleSlot) {
       slotType = reminder.messageType === 'MEDICINE_AFTERNOON' ? 'AFTERNOON' : 'NIGHT';
+      const targetSlot = slotType === 'AFTERNOON' ? 'afternoon' : 'night';
       const filtered = allPrescribedMeds.filter((m: any) => {
         const slots = resolveMedicineSlots(m.frequency, m.instructions);
         return slotType === 'AFTERNOON' ? slots.afternoon : slots.night;
       });
       const targetMeds = filtered.length > 0 ? filtered : allPrescribedMeds;
-      medicinesList = targetMeds.map((m: any) => formatMedItem(m)).join(', • ') || 'Prescribed medicines';
+      medicinesList = targetMeds.map((m: any) => formatMedItem(m, targetSlot)).join(', • ') || 'Prescribed medicines';
     } else {
       // 🌅 Single Daily Morning Briefing: Formats the COMPLETE DAY'S DOSES (Morning + Afternoon + Night)
       slotType = 'DAILY';
@@ -181,14 +187,13 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
       const sosMeds: string[] = [];
 
       allPrescribedMeds.forEach((m: any) => {
-        const itemStr = formatMedItem(m);
         const slots = resolveMedicineSlots(m.frequency, m.instructions);
 
-        if (slots.morning) morningMeds.push(itemStr);
-        if (slots.afternoon) afternoonMeds.push(itemStr);
-        if (slots.night) nightMeds.push(itemStr);
+        if (slots.morning) morningMeds.push(formatMedItem(m, 'morning'));
+        if (slots.afternoon) afternoonMeds.push(formatMedItem(m, 'afternoon'));
+        if (slots.night) nightMeds.push(formatMedItem(m, 'night'));
         if (slots.isSos || (!slots.morning && !slots.afternoon && !slots.night)) {
-          sosMeds.push(itemStr);
+          sosMeds.push(formatMedItem(m, 'sos'));
         }
       });
 

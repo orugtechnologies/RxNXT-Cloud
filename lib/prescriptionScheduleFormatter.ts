@@ -151,18 +151,26 @@ export function formatPrescriptionSchedule(params: {
   const nightMeds: string[] = [];
   const sosMeds: string[] = [];
 
-  medicines.forEach((m) => {
+  const formatItemForSlot = (m: any, slot: 'morning' | 'afternoon' | 'night' | 'sos') => {
     const name = m.customName || m.drug?.brandName || m.drug?.genericName || 'Medicine';
     const strength = m.strength ? ` ${m.strength.trim()}` : '';
-    const inst = cleanInstruction(m.instructions);
-    const itemStr = inst ? `${name}${strength} (${inst})` : `${name}${strength}`;
+    let inst = cleanInstruction(m.instructions);
 
+    // Clinical Safeguard: Suppress bedtime instruction in daylight slots to prevent patient confusion
+    if ((slot === 'morning' || slot === 'afternoon') && /bedtime|night/i.test(inst)) {
+      inst = '';
+    }
+
+    return inst ? `${name}${strength} (${inst})` : `${name}${strength}`;
+  };
+
+  medicines.forEach((m) => {
     const slots = resolveMedicineSlots(m.frequency, m.instructions);
-    if (slots.morning) morningMeds.push(itemStr);
-    if (slots.afternoon) afternoonMeds.push(itemStr);
-    if (slots.night) nightMeds.push(itemStr);
+    if (slots.morning) morningMeds.push(formatItemForSlot(m, 'morning'));
+    if (slots.afternoon) afternoonMeds.push(formatItemForSlot(m, 'afternoon'));
+    if (slots.night) nightMeds.push(formatItemForSlot(m, 'night'));
     if (slots.isSos || (!slots.morning && !slots.afternoon && !slots.night)) {
-      sosMeds.push(itemStr);
+      sosMeds.push(formatItemForSlot(m, 'sos'));
     }
   });
 

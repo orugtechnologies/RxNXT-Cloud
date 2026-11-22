@@ -141,4 +141,33 @@ describe('formatPrescriptionSchedule', () => {
     // Vitamin D3 (Once a week) must NOT be in Morning daily briefing
     expect(morningSection).not.toContain('Vitamin D3');
   });
+
+  it('safeguards against contradictory instructions (e.g. 1-1-1 with At Bedtime suppresses bedtime text in morning/afternoon)', () => {
+    const result = formatPrescriptionSchedule({
+      patientName: 'Ramesh',
+      clinicName: 'RxNXT Health',
+      medicines: [
+        {
+          customName: 'Pan',
+          strength: '40mg',
+          frequency: '1-1-1',
+          instructions: 'At bedtime',
+        },
+      ],
+    });
+
+    const morningSection = result.templateSummary.split('☀️ Afternoon:')[0] || '';
+    const afternoonSection = (result.templateSummary.split('☀️ Afternoon:')[1] || '').split('🌙 Night:')[0] || '';
+    const nightSection = result.templateSummary.split('🌙 Night:')[1] || '';
+
+    // Morning and Afternoon should list the drug without the contradictory "(At Bedtime)" text
+    expect(morningSection).toContain('Pan 40mg');
+    expect(morningSection).not.toContain('(At Bedtime)');
+
+    expect(afternoonSection).toContain('Pan 40mg');
+    expect(afternoonSection).not.toContain('(At Bedtime)');
+
+    // Night should retain the bedtime instruction
+    expect(nightSection).toContain('Pan 40mg (At Bedtime)');
+  });
 });
