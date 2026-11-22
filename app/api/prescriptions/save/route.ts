@@ -232,9 +232,10 @@ export async function POST(request: Request) {
         if (isChronic) {
           // CHRONIC CARE: Daily morning briefings for 14 days + Refill Reminder on Day 25
           for (let day = 1; day <= 14; day++) {
-            const reminderDate = new Date();
-            reminderDate.setDate(now.getDate() + day);
-            reminderDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
+            const reminderDate = new Date(Date.UTC(
+              now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + day,
+              2, 30, 0, 0
+            ));
 
             remindersToCreate.push({
               prescriptionId: prescription.id,
@@ -246,9 +247,10 @@ export async function POST(request: Request) {
           }
 
           // Schedule Monthly Refill Alert on Day 25
-          const refillDate = new Date();
-          refillDate.setDate(now.getDate() + 25);
-          refillDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
+          const refillDate = new Date(Date.UTC(
+            now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 25,
+            2, 30, 0, 0
+          ));
 
           remindersToCreate.push({
             prescriptionId: prescription.id,
@@ -261,9 +263,10 @@ export async function POST(request: Request) {
           // ACUTE ILLNESS: Streamlined 1-Morning Daily Briefing (8:00 AM IST) for the prescribed course
           const durationDays = Math.min(maxDurationDays, 14);
           for (let day = 1; day <= durationDays; day++) {
-            const morningDate = new Date();
-            morningDate.setDate(now.getDate() + day);
-            morningDate.setUTCHours(2, 30, 0, 0); // 8:00 AM IST
+            const morningDate = new Date(Date.UTC(
+              now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + day,
+              2, 30, 0, 0
+            ));
 
             remindersToCreate.push({
               prescriptionId: prescription.id,

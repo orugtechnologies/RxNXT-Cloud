@@ -201,13 +201,22 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
     };
 
     const allPrescribedMeds = prescription?.medicines || [];
-    const isLegacySingleSlot = reminder.messageType === 'MEDICINE_AFTERNOON' || reminder.messageType === 'MEDICINE_NIGHT';
+    const isLegacySingleSlot =
+      reminder.messageType === 'MEDICINE_MORNING' ||
+      reminder.messageType === 'MEDICINE_AFTERNOON' ||
+      reminder.messageType === 'MEDICINE_NIGHT';
 
     let slotType = 'DAILY';
     let medicinesList = '';
 
     if (isLegacySingleSlot) {
-      slotType = reminder.messageType === 'MEDICINE_AFTERNOON' ? 'AFTERNOON' : 'NIGHT';
+      if (reminder.messageType === 'MEDICINE_MORNING') {
+        slotType = 'MORNING';
+      } else if (reminder.messageType === 'MEDICINE_AFTERNOON') {
+        slotType = 'AFTERNOON';
+      } else {
+        slotType = 'NIGHT';
+      }
       const filtered = allPrescribedMeds.filter((m: any) => isSlot(m.frequency, slotType as any));
       const targetMeds = filtered.length > 0 ? filtered : allPrescribedMeds;
       medicinesList = targetMeds.map((m: any) => formatMedItem(m)).join('\n') || '"Prescribed medicines"';
