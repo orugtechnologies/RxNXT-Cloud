@@ -32,8 +32,8 @@ export async function getCompletedLabReportsForPatient(
 ): Promise<LabReportPDFData[]> {
   try {
     const refDate = params.referenceDate || new Date();
-    // Look for lab orders placed within 48 hours prior to or 24 hours after the reference date
-    const windowStart = new Date(refDate.getTime() - 48 * 60 * 60 * 1000);
+    // Look for completed lab orders placed within 30 days prior to or 24 hours after the reference date
+    const windowStart = new Date(refDate.getTime() - 30 * 24 * 60 * 60 * 1000);
     const windowEnd = new Date(refDate.getTime() + 24 * 60 * 60 * 1000);
 
     const orders = await prisma.labOrder.findMany({
@@ -44,11 +44,6 @@ export async function getCompletedLabReportsForPatient(
           gte: windowStart,
           lte: windowEnd,
         },
-        OR: [
-          { paymentStatus: 'PAID' },
-          { releasedToDoctor: true },
-          { totalAmount: 0 },
-        ],
         tests: {
           some: {
             status: 'COMPLETED',

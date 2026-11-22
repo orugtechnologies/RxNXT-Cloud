@@ -445,7 +445,6 @@ function PrescriptionWorkflowContent() {
 
   const getMappedCompletedLabReports = () => {
     return (patientLabOrders || [])
-      .filter((ord: any) => ord.releasedToDoctor || ord.paymentStatus === 'PAID' || ord.totalAmount === 0)
       .flatMap((ord: any) => {
         return (ord.tests || [])
           .filter((t: any) => t.status === 'COMPLETED')
@@ -790,7 +789,7 @@ function PrescriptionWorkflowContent() {
             {patient && (
               <>
                 {/* Clinical Lab Alert Banner for Returning Patients */}
-                {patientLabOrders && patientLabOrders.some((ord: any) => (ord.releasedToDoctor || ord.paymentStatus === 'PAID' || ord.totalAmount === 0) && ord.tests?.some((t: any) => t.status === 'COMPLETED')) && (
+                {patientLabOrders && patientLabOrders.some((ord: any) => ord.tests?.some((t: any) => t.status === 'COMPLETED')) && (
                   <div className="bg-gradient-to-r from-purple-950 via-indigo-900 to-slate-900 rounded-xl p-3.5 sm:p-4 text-white shadow-md border border-purple-400/30 overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-3 animate-in fade-in duration-200">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="w-9 h-9 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/20 text-purple-200">
@@ -810,7 +809,6 @@ function PrescriptionWorkflowContent() {
                     </div>
                     <div className="flex items-center flex-wrap gap-2 pt-1 md:pt-0">
                       {patientLabOrders
-                        .filter((o: any) => o.releasedToDoctor || o.paymentStatus === 'PAID' || o.totalAmount === 0)
                         .flatMap((o: any) => (o.tests || []).filter((t: any) => t.status === 'COMPLETED').map((t: any) => ({ ...t, orderId: o.id })))
                         .map((test: any) => {
                         const shortName = test.testName.match(/\((.*?)\)/)?.[1]
