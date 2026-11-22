@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
 import { sendPrescriptionPDF } from '@/services/whatsappService';
+import { getPublicAppUrl } from '@/lib/utils';
 import { formatPrescriptionSchedule } from '@/lib/prescriptionScheduleFormatter';
 import { generatePrescriptionBase64 } from '@/lib/prescriptionPdfGenerator';
 import { getCompletedLabReportsForPatient } from '@/lib/prescriptionLabHelper';
@@ -73,11 +74,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No phone number provided for prescription delivery' }, { status: 400 });
     }
 
-    const rawBaseUrl = process.env.NEXT_PUBLIC_APP_URL;
-    const baseUrl = (!rawBaseUrl || rawBaseUrl.includes('localhost') || rawBaseUrl.includes('127.0.0.1'))
-      ? 'https://app.rxnxt.in'
-      : rawBaseUrl;
-    const pdfDirectUrl = `${baseUrl.replace(/\/$/, '')}/api/prescriptions/${prescription.id}/pdf`;
+    const baseUrl = getPublicAppUrl();
+    const pdfDirectUrl = `${baseUrl}/api/prescriptions/${prescription.id}/pdf`;
 
     // Query completed lab reports for this patient & visit (for zero-cost unified dossier)
     const doctor = await prisma.user.findUnique({

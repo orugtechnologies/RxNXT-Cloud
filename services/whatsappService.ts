@@ -44,6 +44,14 @@ export function sanitizeTemplateParam(val?: string, maxLen = 1024): string {
     .slice(0, maxLen);
 }
 
+export function getPublicAppUrl(): string {
+  const raw = (process.env.NEXT_PUBLIC_APP_URL || '').trim().replace(/^["']|["']$/g, '').trim();
+  if (!raw || raw.includes('localhost') || raw.includes('127.0.0.1')) {
+    return 'https://app.rxnxt.in';
+  }
+  return raw.replace(/\/$/, '');
+}
+
 const cleanEnv = (val?: string) => (val || '').trim().replace(/^["']|["']$/g, '').trim();
 
 const ACTIVE_VERIFIED_META_TOKEN =
@@ -362,13 +370,17 @@ export async function sendPrescriptionPDF(
 ) {
   // Construct official direct downloadable PDF link (e.g. https://app.rxnxt.in/api/prescriptions/{id}/pdf)
   // Ensure public HTTPS domain is always used so Meta Cloud servers can download the PDF document
-  const rawAppUrl = cleanEnv(process.env.NEXT_PUBLIC_APP_URL);
-  const appBaseUrl = (!rawAppUrl || rawAppUrl.includes('localhost') || rawAppUrl.includes('127.0.0.1'))
-    ? 'https://app.rxnxt.in'
-    : rawAppUrl;
-  const directPdfUrl = prescriptionId
-    ? `${appBaseUrl.replace(/\/$/, '')}/api/prescriptions/${prescriptionId}/pdf`
-    : pdfUrl;
+  const appBaseUrl = getPublicAppUrl();
+  let directPdfUrl = prescriptionId
+    ? `${appBaseUrl}/api/prescriptions/${prescriptionId}/pdf`
+    : (pdfUrl || `${appBaseUrl}/api/prescriptions`);
+
+  // Extra safeguard: under no circumstances can a localhost URL be dispatched to Meta
+  if (directPdfUrl.includes('localhost') || directPdfUrl.includes('127.0.0.1')) {
+    directPdfUrl = prescriptionId
+      ? `https://app.rxnxt.in/api/prescriptions/${prescriptionId}/pdf`
+      : 'https://app.rxnxt.in';
+  }
 
   const messageBody = options?.fullMessageBody
     ? options.fullMessageBody
@@ -685,8 +697,8 @@ export async function sendSubscriptionExpiryNotice(
   renewalUrl?: string
 ) {
   const docStr = doctorName.trim().toLowerCase().startsWith('dr') ? doctorName.trim() : `Dr. ${doctorName.trim()}`;
-  const appBaseUrl = cleanEnv(process.env.NEXT_PUBLIC_APP_URL) || 'https://app.rxnxt.in';
-  const renewLink = renewalUrl || `${appBaseUrl.replace(/\/$/, '')}/admin/subscription`;
+  const appBaseUrl = getPublicAppUrl();
+  const renewLink = renewalUrl || `${appBaseUrl}/admin/subscription`;
 
   const messageBody =
     `⚠️ *RxNXT Subscription Expiry Notice*\n\n` +

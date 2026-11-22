@@ -51,3 +51,15 @@ export function relativeTime(dateString: string): string {
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
+
+/**
+ * Returns the public application URL for external integrations (such as Meta WhatsApp document attachments).
+ * Strictly guards against localhost/127.0.0.1 leaking to external cloud services.
+ */
+export function getPublicAppUrl(): string {
+  const raw = (process.env.NEXT_PUBLIC_APP_URL || '').trim().replace(/^["']|["']$/g, '').trim();
+  if (!raw || raw.includes('localhost') || raw.includes('127.0.0.1')) {
+    return 'https://app.rxnxt.in';
+  }
+  return raw.replace(/\/$/, '');
+}
