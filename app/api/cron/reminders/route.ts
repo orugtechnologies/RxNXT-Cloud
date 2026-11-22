@@ -210,8 +210,8 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
           inst = 'At Bedtime';
         }
       }
-      const instStr = inst ? ` - ${inst}` : '';
-      return `"${name}${strength}${instStr}"`;
+      const instStr = inst ? ` (${inst})` : '';
+      return `${name}${strength}${instStr}`;
     };
 
     const allPrescribedMeds = prescription?.medicines || [];
@@ -224,7 +224,7 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
       slotType = reminder.messageType === 'MEDICINE_AFTERNOON' ? 'AFTERNOON' : 'NIGHT';
       const filtered = allPrescribedMeds.filter((m: any) => isSlot(m.frequency, slotType as any));
       const targetMeds = filtered.length > 0 ? filtered : allPrescribedMeds;
-      medicinesList = targetMeds.map((m: any) => formatMedItem(m)).join('\n') || '"Prescribed medicines"';
+      medicinesList = targetMeds.map((m: any) => formatMedItem(m)).join(', • ') || 'Prescribed medicines';
     } else {
       // 🌅 Single Daily Morning Briefing: Formats the COMPLETE DAY'S DOSES (Morning + Afternoon + Night)
       slotType = 'DAILY';
@@ -258,23 +258,23 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
 
       const slotLines: string[] = [];
       if (morningMeds.length > 0) {
-        slotLines.push(`🌅 Morning:\n${morningMeds.join('\n')}`);
+        slotLines.push(`🌅 MORNING:\n${morningMeds.join(', • ')}`);
       }
       if (afternoonMeds.length > 0) {
-        slotLines.push(`☀️ Afternoon:\n${afternoonMeds.join('\n')}`);
+        slotLines.push(`☀️ AFTERNOON:\n${afternoonMeds.join(', • ')}`);
       }
       if (nightMeds.length > 0) {
-        slotLines.push(`🌙 Night:\n${nightMeds.join('\n')}`);
+        slotLines.push(`🌙 NIGHT:\n${nightMeds.join(', • ')}`);
       }
       if (sosMeds.length > 0) {
-        slotLines.push(`💊 When Needed (SOS):\n${sosMeds.join('\n')}`);
+        slotLines.push(`💊 WHEN NEEDED (SOS):\n${sosMeds.join(', • ')}`);
       }
 
       if (slotLines.length === 0 && allPrescribedMeds.length > 0) {
-        slotLines.push(allPrescribedMeds.map((m: any) => formatMedItem(m)).join('\n'));
+        slotLines.push(allPrescribedMeds.map((m: any) => formatMedItem(m)).join(', • '));
       }
 
-      medicinesList = slotLines.join('\n\n') || '"Prescribed medicines"';
+      medicinesList = slotLines.join('\n\n') || 'Prescribed medicines';
     }
 
     try {

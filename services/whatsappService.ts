@@ -34,9 +34,12 @@ export function sanitizePhone(phone: string): string {
 export function sanitizeTemplateParam(val?: string, maxLen = 1024): string {
   if (!val) return '';
   return val
-    .replace(/[\r\n\t]+/g, ' • ')
+    .replace(/\r/g, '')
+    .replace(/\n{2,}/g, '  ───  ')
+    .replace(/\n+/g, ' ')
+    .replace(/\t+/g, ' ')
     .replace(/\s{2,}/g, ' ')
-    .replace(/^(\s*•\s*)+|(\s*•\s*)+$/g, '')
+    .replace(/^(\s*[•─\s]+)+|([•─\s]+)$/g, '')
     .trim()
     .slice(0, maxLen);
 }

@@ -170,7 +170,7 @@ describe('GET /api/cron/reminders (Atomic Concurrency & Stalled Recovery)', () =
     expect(sendMedicineReminder).toHaveBeenCalledWith(
       '9876543211',
       'Priya Sharma',
-      expect.stringContaining('🌅 Morning:'),
+      expect.stringContaining('🌅 MORNING:'),
       'Dr. Shanmukha',
       'City Clinic',
       'clinic_1',
@@ -181,16 +181,16 @@ describe('GET /api/cron/reminders (Atomic Concurrency & Stalled Recovery)', () =
     const medicineDetailsArg = callArgs[2];
 
     // Assert Morning contains Pantoprazole & Amoxicillin
-    expect(medicineDetailsArg).toContain('🌅 Morning:');
-    expect(medicineDetailsArg).toContain('"Pantoprazole 40mg - Before Food"');
-    expect(medicineDetailsArg).toContain('"Amoxicillin 500mg - After Food"');
+    expect(medicineDetailsArg).toContain('🌅 MORNING:');
+    expect(medicineDetailsArg).toContain('Pantoprazole 40mg (Before Food)');
+    expect(medicineDetailsArg).toContain('Amoxicillin 500mg (After Food)');
 
     // Assert Afternoon contains Amoxicillin
-    expect(medicineDetailsArg).toContain('☀️ Afternoon:');
-    expect(medicineDetailsArg).toContain('"Amoxicillin 500mg - After Food"');
+    expect(medicineDetailsArg).toContain('☀️ AFTERNOON:');
+    expect(medicineDetailsArg).toContain('Amoxicillin 500mg (After Food)');
 
-    // Assert Night contains Amoxicillin & Cetirizine (previously Cetirizine was filtered out!)
-    expect(medicineDetailsArg).toContain('🌙 Night:');
-    expect(medicineDetailsArg).toContain('"Cetirizine 10mg - At Bedtime"');
+    // Assert Night contains Amoxicillin & Cetirizine
+    expect(medicineDetailsArg).toContain('🌙 NIGHT:');
+    expect(medicineDetailsArg).toContain('Cetirizine 10mg (At Bedtime)');
   });
 });
