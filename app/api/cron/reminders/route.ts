@@ -73,13 +73,27 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
     const isAdherenceMessage = reminder.messageType !== 'FOLLOW_UP';
     if (isAdherenceMessage && clinic.subscriptionStatus === 'ACTIVE') {
       const creditBalance = (clinic as any).whatsappCreditBalance ?? 0;
-      if (creditBalance <= 0) {
+      const plan = (clinic.subscriptionPlan || '').toUpperCase();
+      const tier = ((clinic as any).subscriptionTier || '').toUpperCase();
+      const hasPlanWithAdherence =
+        plan.includes('STARTER') ||
+        plan.includes('PRO') ||
+        plan.includes('SPECIALIST') ||
+        plan.includes('POLYCLINIC') ||
+        plan.includes('ENTERPRISE') ||
+        plan.includes('DEMO') ||
+        tier.includes('SPECIALIST') ||
+        tier.includes('POLYCLINIC') ||
+        tier.includes('ENTERPRISE');
+
+      // Only enforce prepaid wallet balance if the clinic does not have an active plan with included dose briefings
+      if (!hasPlanWithAdherence && creditBalance <= 0) {
         // Failsafe: Gracefully skip without breaking the cron or prescription system
         await prisma.reminder.update({
           where: { id: reminder.id },
           data: { status: 'SUPERSEDED' },
         });
-        console.log(`[Wallet Failsafe] Clinic ${clinic.id} has 0 WhatsApp credits. Gracefully skipped adherence message for reminder ${reminder.id}.`);
+        console.log(`[Wallet Failsafe] Clinic ${clinic.id} has 0 WhatsApp credits and no active adherence plan. Gracefully skipped adherence message for reminder ${reminder.id}.`);
         return { id: reminder.id, status: 'FAILED', reason: 'Zero WhatsApp credit balance' };
       }
     }
@@ -201,22 +215,13 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
     };
 
     const allPrescribedMeds = prescription?.medicines || [];
-    const isLegacySingleSlot =
-      reminder.messageType === 'MEDICINE_MORNING' ||
-      reminder.messageType === 'MEDICINE_AFTERNOON' ||
-      reminder.messageType === 'MEDICINE_NIGHT';
+    const isLegacySingleSlot = reminder.messageType === 'MEDICINE_AFTERNOON' || reminder.messageType === 'MEDICINE_NIGHT';
 
     let slotType = 'DAILY';
     let medicinesList = '';
 
     if (isLegacySingleSlot) {
-      if (reminder.messageType === 'MEDICINE_MORNING') {
-        slotType = 'MORNING';
-      } else if (reminder.messageType === 'MEDICINE_AFTERNOON') {
-        slotType = 'AFTERNOON';
-      } else {
-        slotType = 'NIGHT';
-      }
+      slotType = reminder.messageType === 'MEDICINE_AFTERNOON' ? 'AFTERNOON' : 'NIGHT';
       const filtered = allPrescribedMeds.filter((m: any) => isSlot(m.frequency, slotType as any));
       const targetMeds = filtered.length > 0 ? filtered : allPrescribedMeds;
       medicinesList = targetMeds.map((m: any) => formatMedItem(m)).join('\n') || '"Prescribed medicines"';
@@ -282,7 +287,8 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
         prescription?.clinicId || 'default',
         slotType
       );
-    } catch (e) {
+    } catch (e: any) {
+      console.error(`[Reminder Dispatch Error] sendMedicineReminder failed for reminder #${reminder.id}:`, e?.message || e);
       sendResult = null;
     }
   }
@@ -396,6 +402,8 @@ export async function GET(request: Request) {
 
     // 2. Truly Atomic Batch Claiming:
     // Atomically claim due reminders & increment attempt counter
+    // 10-minute lookahead buffer to absorb Vercel cron invocation jitter (e.g. firing at 02:29:55 UTC)
+    const dueWindow = new Date(now.getTime() + 10 * 60 * 1000);
     let claimedIds: string[] = [];
 
     try {
@@ -403,7 +411,7 @@ export async function GET(request: Request) {
       const claimedRows: Array<{ id: string }> = await prisma.$queryRaw`
         WITH due_batch AS (
           SELECT id FROM "Reminder"
-          WHERE "status" = 'PENDING' AND "scheduledFor" <= ${now}
+          WHERE "status" = 'PENDING' AND "scheduledFor" <= ${dueWindow}
           ORDER BY "scheduledFor" ASC
           LIMIT ${BATCH_SIZE}
           FOR UPDATE SKIP LOCKED
@@ -421,7 +429,7 @@ export async function GET(request: Request) {
         const pending = await tx.reminder.findMany({
           where: {
             status: 'PENDING',
-            scheduledFor: { lte: now },
+            scheduledFor: { lte: dueWindow },
           },
           select: { id: true },
           take: BATCH_SIZE,
