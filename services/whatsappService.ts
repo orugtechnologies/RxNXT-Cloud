@@ -395,9 +395,54 @@ export async function sendPrescriptionPDF(
 
   let documentMediaId: string | undefined;
 
+  // 🚀 Upfront Direct Media API Upload:
+  // Instead of passing a dynamic URL that causes Meta's crawler to time out (>10s) on heavy PDFs
+  // (with high-res clinic letterheads, stamps, multi-page lab reports, or invoices),
+  // directly upload the PDF binary into Meta's Media API up to 100MB.
+  if (pdfBase64 && pdfBase64.length > 50) {
+    try {
+      const uploadedId = await uploadPDFToMetaMedia(pdfBase64);
+      if (uploadedId) {
+        documentMediaId = uploadedId;
+      }
+    } catch (uploadErr) {
+      console.warn('[Meta WhatsApp] Upfront media upload failed, falling back to URL dispatch:', uploadErr);
+    }
+  }
+
+  // Fallback: If pdfBase64 was not provided directly, attempt to fetch from directPdfUrl and upload to Meta Media API
+  if (
+    !documentMediaId &&
+    process.env.NODE_ENV !== 'test' &&
+    directPdfUrl &&
+    directPdfUrl.startsWith('https://') &&
+    !directPdfUrl.includes('localhost')
+  ) {
+    try {
+      const pdfFetch = await fetch(directPdfUrl);
+      if (pdfFetch.ok) {
+        const ab = await pdfFetch.arrayBuffer();
+        if (ab.byteLength > 100) {
+          const b64 = Buffer.from(ab).toString('base64');
+          const uploadedId = await uploadPDFToMetaMedia(b64);
+          if (uploadedId) {
+            documentMediaId = uploadedId;
+          }
+        }
+      }
+    } catch (fetchErr) {
+      console.warn('[Meta WhatsApp] Direct PDF fetch-and-upload fallback warning:', fetchErr);
+    }
+  }
+
   const cleanPhone = sanitizePhone(patientPhone);
   const safePatientName = sanitizeTemplateParam(patientName).replace(/[^a-zA-Z0-9]/g, '_') || 'Patient';
   const docFilename = `RxNXT_Prescription_${safePatientName}.pdf`;
+
+  // Use pre-uploaded Meta Media ID when available for guaranteed instant delivery without crawler timeouts
+  const documentPayload = documentMediaId
+    ? { id: documentMediaId, filename: docFilename }
+    : { link: directPdfUrl, filename: docFilename };
 
   // Meta Cloud API Policy: For business-initiated messages outside the 24-hour customer window,
   // Meta strictly requires an APPROVED Message Template.
@@ -418,10 +463,7 @@ export async function sendPrescriptionPDF(
               parameters: [
                 {
                   type: 'document',
-                  document: {
-                    link: directPdfUrl,
-                    filename: docFilename,
-                  },
+                  document: documentPayload,
                 },
               ],
             },
@@ -471,10 +513,7 @@ export async function sendPrescriptionPDF(
             parameters: [
               {
                 type: 'document',
-                document: {
-                  link: directPdfUrl,
-                  filename: docFilename,
-                },
+                document: documentPayload,
               },
             ],
           },
@@ -501,18 +540,6 @@ export async function sendPrescriptionPDF(
     }
   } catch (docErr: any) {
     console.warn('[Meta WhatsApp] rxnxt_prescription_doc failed, falling back to rxnxt_prescription_ready:', docErr.message);
-  }
-
-  // Fallback: only upload media if Candidate 1 and Candidate 2 failed
-  if (pdfBase64 && pdfBase64.length > 50) {
-    try {
-      const uploadedId = await uploadPDFToMetaMedia(pdfBase64);
-      if (uploadedId) {
-        documentMediaId = uploadedId;
-      }
-    } catch (uploadErr) {
-      console.warn('[Meta WhatsApp] Fallback upload failed:', uploadErr);
-    }
   }
 
   // 3. Fallback: rxnxt_prescription_ready (Language: 'en_US')
