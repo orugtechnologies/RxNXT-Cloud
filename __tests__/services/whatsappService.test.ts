@@ -173,6 +173,44 @@ describe('Meta WhatsApp Cloud API Service', () => {
       expect(result.messageId).toBeDefined();
     });
 
+    it('formats Day of Week, full date with year in slotLabel parameter {{3}}', async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          messages: [{ id: 'wamid.day_progress_test_123' }],
+        }),
+      });
+
+      const testDate = new Date('2026-11-24T02:30:00.000Z'); // Tuesday, 24 Nov 2026
+
+      const result = await sendMedicineReminder(
+        '9876543210',
+        'Hanumad',
+        'Azithral 500mg, Pan 40mg',
+        'Dr. Shanmukha',
+        'RxNXT Health Clinic (D3)',
+        'clinic_d3',
+        'DAILY',
+        {
+          currentDay: 2,
+          totalDays: 3,
+          date: testDate,
+        }
+      );
+
+      expect(result.success).toBe(true);
+
+      const call = (global.fetch as jest.Mock).mock.calls[0];
+      const payload = JSON.parse(call[1].body);
+      const params = payload.template.components[0].parameters;
+
+      expect(params[0].text).toBe('Hanumad');
+      expect(params[1].text).toBe('RxNXT Health Clinic (D3)');
+      expect(params[2].text).toBe("Tue, 24 Nov 2026 • Today's Schedule");
+      expect(params[3].text).toBe('Azithral 500mg, Pan 40mg');
+    });
+
     it('throws error when retries are exhausted on permanent 400 Bad Request', async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,

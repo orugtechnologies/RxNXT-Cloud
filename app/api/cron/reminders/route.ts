@@ -218,6 +218,39 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
       medicinesList = slotLines.join('\n\n') || 'Prescribed medicines';
     }
 
+    // 🌅 Compute Day of the Week + Course Progress (e.g. Tue, 24 Nov (Day 2 of 3))
+    const scheduledDate = reminder.scheduledFor ? new Date(reminder.scheduledFor) : new Date();
+    const doseReminders = prescription?.reminders || [];
+    let currentDay = 1;
+    let totalDays = 0;
+
+    if (doseReminders.length > 0) {
+      totalDays = doseReminders.length;
+      const idx = doseReminders.findIndex((r: any) => r.id === reminder.id);
+      if (idx >= 0) {
+        currentDay = idx + 1;
+      }
+    } else {
+      const detectedDurations: number[] = [];
+      allPrescribedMeds.forEach((m: any) => {
+        if (m.duration) {
+          const match = m.duration.match(/\d+/);
+          if (match) {
+            const parsed = parseInt(match[0], 10);
+            if (parsed > 0) detectedDurations.push(parsed);
+          }
+        }
+      });
+      totalDays = detectedDurations.length > 0 ? Math.max(...detectedDurations) : 1;
+      if (prescription?.createdAt && reminder.scheduledFor) {
+        const createdDate = new Date(prescription.createdAt);
+        const schedDate = new Date(reminder.scheduledFor);
+        const diffMs = schedDate.getTime() - createdDate.getTime();
+        const diffDays = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+        currentDay = Math.max(1, Math.min(totalDays, diffDays + 1));
+      }
+    }
+
     try {
       sendResult = await sendMedicineReminder(
         patient.phone,
@@ -226,7 +259,12 @@ async function processSingleReminder(reminder: any): Promise<{ id: string; statu
         doctorName,
         clinicName,
         prescription?.clinicId || 'default',
-        slotType
+        slotType,
+        {
+          currentDay,
+          totalDays,
+          date: scheduledDate,
+        }
       );
     } catch (e: any) {
       console.error(`[Reminder Dispatch Error] sendMedicineReminder failed for reminder #${reminder.id}:`, e?.message || e);
@@ -415,6 +453,13 @@ export async function GET(request: Request) {
               include: {
                 drug: true,
               },
+            },
+            reminders: {
+              where: {
+                messageType: { in: ['MEDICINE', 'MEDICINE_MORNING'] },
+              },
+              orderBy: { scheduledFor: 'asc' },
+              select: { id: true, scheduledFor: true },
             },
           },
         },

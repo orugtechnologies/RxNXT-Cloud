@@ -542,6 +542,12 @@ export async function sendPrescriptionPDF(
 /**
  * Sends a Smart Slot medicine reminder message (Morning, Afternoon, Night) via Meta Cloud API.
  */
+export interface MedicineReminderDayContext {
+  currentDay?: number;
+  totalDays?: number;
+  date?: Date;
+}
+
 export async function sendMedicineReminder(
   patientPhone: string,
   patientName: string,
@@ -549,7 +555,8 @@ export async function sendMedicineReminder(
   doctorName?: string,
   clinicName?: string,
   clinicId?: string,
-  slotType: string = 'MORNING'
+  slotType: string = 'MORNING',
+  dayContext?: MedicineReminderDayContext
 ) {
   const cleanDocName = doctorName
     ? doctorName.trim().toLowerCase().startsWith('dr')
@@ -559,21 +566,31 @@ export async function sendMedicineReminder(
   const docStr = doctorName ? cleanDocName : 'your doctor';
   const clinicStr = clinicName ? `*${clinicName}*` : 'your clinic';
 
+  // 🌅 Day of the Week + Full Date with Year (e.g. "Thu, 26 Nov 2026 • Today's Schedule")
+  const refDate = dayContext?.date ? new Date(dayContext.date) : new Date();
+  const dateFormatted = refDate.toLocaleDateString('en-GB', {
+    timeZone: 'Asia/Kolkata',
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }); // e.g. "Thu, 26 Nov 2026"
+
   let headerIcon = '🌅';
-  let slotTitle = 'Morning Dose Reminder';
+  let slotTitle = `Today's Medication Schedule • ${dateFormatted}`;
   let foodNote = '🥛 Take medicine as per the direction. Have a healthy day';
 
   if (slotType === 'AFTERNOON') {
     headerIcon = '☀️';
-    slotTitle = 'Afternoon Dose Reminder';
+    slotTitle = `Afternoon Dose Reminder • ${dateFormatted}`;
     foodNote = '🍱 Take medicine as per the direction. Have a healthy day';
   } else if (slotType === 'NIGHT') {
     headerIcon = '🌙';
-    slotTitle = 'Night Dose Reminder';
+    slotTitle = `Night Dose Reminder • ${dateFormatted}`;
     foodNote = '😴 Take medicine as per the direction. Have a healthy day';
   } else if (slotType === 'DAILY' || slotType === 'TODAY') {
     headerIcon = '🌅';
-    slotTitle = "Today's Medication Schedule";
+    slotTitle = `Today's Medication Schedule • ${dateFormatted}`;
     foodNote = '🥛 Take medicine as per the direction. Have a healthy day';
   }
 
@@ -584,9 +601,12 @@ export async function sendMedicineReminder(
     `${foodNote}\n\n` +
     `_To pause reminders, reply STOP_`;
 
-  const slotLabel = slotType === 'DAILY' || slotType === 'TODAY'
-    ? "Today's Schedule"
-    : `${slotType.charAt(0) + slotType.slice(1).toLowerCase()} Dose`;
+  let slotLabel = `${dateFormatted} • Today's Schedule`;
+  if (slotType === 'AFTERNOON') {
+    slotLabel = `${dateFormatted} • Afternoon Dose`;
+  } else if (slotType === 'NIGHT') {
+    slotLabel = `${dateFormatted} • Night Dose`;
+  }
 
   return await dispatchWhatsAppMessage({
     phone: patientPhone,

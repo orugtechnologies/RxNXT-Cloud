@@ -174,7 +174,11 @@ describe('GET /api/cron/reminders (Atomic Concurrency & Stalled Recovery)', () =
       'Dr. Shanmukha',
       'City Clinic',
       'clinic_1',
-      'DAILY'
+      'DAILY',
+      expect.objectContaining({
+        currentDay: expect.any(Number),
+        totalDays: expect.any(Number),
+      })
     );
 
     const callArgs = (sendMedicineReminder as jest.Mock).mock.calls[0];
