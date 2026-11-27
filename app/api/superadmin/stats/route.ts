@@ -1,8 +1,14 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getAuthenticatedUser } from '@/lib/auth-server';
 
 export async function GET() {
+  const user = await getAuthenticatedUser();
+  if (!user || (user.role !== 'superadmin' && user.role !== 'super_admin')) {
+    return NextResponse.json({ error: 'Unauthorized: Superadmin access required' }, { status: 403 });
+  }
+
   try {
     const [
       totalClinics,

@@ -9,14 +9,21 @@ export async function POST(request: Request) {
     const signature = request.headers.get('x-razorpay-signature');
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
-    // Verify webhook signature in production when secret is set
-    if (webhookSecret && signature) {
+    // Verify webhook signature when secret is configured
+    if (webhookSecret) {
+      if (!signature) {
+        return NextResponse.json({ error: 'Missing webhook signature header' }, { status: 400 });
+      }
+
       const expectedSignature = crypto
         .createHmac('sha256', webhookSecret)
         .update(rawBody)
         .digest('hex');
 
-      if (expectedSignature !== signature) {
+      const expectedBuffer = Buffer.from(expectedSignature, 'utf8');
+      const receivedBuffer = Buffer.from(signature, 'utf8');
+
+      if (expectedBuffer.length !== receivedBuffer.length || !crypto.timingSafeEqual(expectedBuffer, receivedBuffer)) {
         return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 400 });
       }
     }

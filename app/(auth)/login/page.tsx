@@ -330,13 +330,6 @@ export default function LoginPage() {
         {/* Top Header CTAs */}
         <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
           <Link
-            href="/superadmin/login"
-            className="text-[11px] font-bold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition flex items-center gap-1.5"
-          >
-            <Shield className="w-3.5 h-3.5 text-slate-500" />
-            <span className="hidden md:inline">Platform</span> Super Admin
-          </Link>
-          <Link
             href="/register"
             className="text-[11px] font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 px-3.5 py-1.5 rounded-lg shadow-sm shadow-emerald-700/20 transition flex items-center gap-1.5"
           >
