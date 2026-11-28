@@ -51,12 +51,7 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    let clinicId = user.clinicId;
-    if (!clinicId) {
-      const clinic = await prisma.clinic.findFirst();
-      if (clinic) clinicId = clinic.id;
-    }
-
+    const clinicId = user.clinicId;
     if (!clinicId) {
       return NextResponse.json({ error: 'Clinic context not found' }, { status: 400 });
     }

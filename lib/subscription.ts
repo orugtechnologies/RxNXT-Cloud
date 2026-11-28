@@ -117,21 +117,8 @@ export const PLAN_PRICING: Record<string, { name: string; monthly: number; annua
 
 export const DEMO_CLINIC_ID = 'demo-clinic-001';
 
-export const DEMO_EMAILS = [
-  'doctor@rxnxt.com',
-  'receptionist@rxnxt.com',
-  'pharmacist@rxnxt.com',
-  'pharmacy@rxnxt.com',
-  'superadmin@rxnxt.com',
-  'dev@rxnxt.com',
-  'admin@rxnxt.com',
-  'd2@rxnxt.com',
-  'd3@rxnxt.com',
-];
-
-export function isDemoEmail(email?: string | null): boolean {
-  if (!email) return false;
-  return DEMO_EMAILS.includes(email.toLowerCase().trim());
+export function isDemoEmail(_email?: string | null): boolean {
+  return false;
 }
 
 export function isDemoClinic(clinicId?: string | null, clinicName?: string | null): boolean {

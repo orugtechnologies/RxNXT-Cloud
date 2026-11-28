@@ -8,8 +8,12 @@ export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
 
-  // Authorization check for production
-  if (process.env.NODE_ENV === 'production' && cronSecret) {
+  // Authorization check for production: fail-closed if CRON_SECRET is not configured
+  if (process.env.NODE_ENV === 'production') {
+    if (!cronSecret) {
+      console.error('[CRON Subscription Check] CRON_SECRET is not configured in production.');
+      return new Response('CRON_SECRET not configured', { status: 500 });
+    }
     const urlSecret = new URL(request.url).searchParams.get('secret');
     const isAuthorized = authHeader === `Bearer ${cronSecret}` || urlSecret === cronSecret;
     if (!isAuthorized) {

@@ -22,6 +22,15 @@ export async function POST(request: Request) {
 
     if (!source) return NextResponse.json({ error: 'Source prescription not found' }, { status: 404 });
 
+    if (targetPatientId) {
+      const targetPatient = await prisma.patient.findFirst({
+        where: { id: targetPatientId, clinicId: user.clinicId }
+      });
+      if (!targetPatient) {
+        return NextResponse.json({ error: 'Target patient not found in this clinic' }, { status: 404 });
+      }
+    }
+
     const patientId = targetPatientId || source.patientId;
 
     const result = await prisma.$transaction(async (tx) => {

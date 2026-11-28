@@ -7,12 +7,21 @@ import { PNG } from 'pngjs';
 export function optimizeBase64Png(dataUri?: string | null, maxDimension = 400): string | null | undefined {
   if (!dataUri) return dataUri;
 
-  // Only attempt server optimization if payload is unusually large (> 200 KB)
-  if (dataUri.length < 250000) {
-    return dataUri;
+  // Validate allowed image formats
+  const isPng = dataUri.startsWith('data:image/png;base64,');
+  const isJpeg = dataUri.startsWith('data:image/jpeg;base64,') || dataUri.startsWith('data:image/jpg;base64,');
+  const isWebp = dataUri.startsWith('data:image/webp;base64,');
+
+  if (!isPng && !isJpeg && !isWebp) {
+    // If it's a hosted image URL, allow it; otherwise reject invalid payload
+    if (dataUri.startsWith('http://') || dataUri.startsWith('https://')) {
+      return dataUri;
+    }
+    return null;
   }
 
-  if (!dataUri.startsWith('data:image/png;base64,')) {
+  // Only attempt server optimization if payload is unusually large (> 200 KB)
+  if (dataUri.length < 250000 || !isPng) {
     return dataUri;
   }
 

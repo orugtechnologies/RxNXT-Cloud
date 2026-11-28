@@ -216,21 +216,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleSelectDemoRole = (role: 'doctor' | 'receptionist' | 'pharmacist') => {
-    setError('');
-    setAuthMode('password');
-    if (role === 'doctor') {
-      setEmailOrPhone('doctor@rxnxt.com');
-      setPassword('password123');
-    } else if (role === 'receptionist') {
-      setEmailOrPhone('receptionist@rxnxt.com');
-      setPassword('password123');
-    } else if (role === 'pharmacist') {
-      setEmailOrPhone('pharmacist@rxnxt.com');
-      setPassword('password123');
-    }
-  };
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -515,47 +500,6 @@ export default function LoginPage() {
               <p className="text-xs text-slate-500 mt-1 font-medium">Access your outpatient clinical workspace</p>
             </div>
 
-            {/* Hidden Sales Demo Switcher (Only visible via ?demo=true) */}
-            {isDemoMode && (
-              <div className="bg-emerald-50 border border-emerald-200/90 p-2.5 rounded-2xl animate-fade-in">
-                <div className="flex items-center justify-between mb-1.5 px-1">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-900 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    ⚡ Sales Demo Switcher
-                  </span>
-                  <span className="text-[9px] text-emerald-700 bg-white border border-emerald-200 px-2 py-0.5 rounded-full font-bold">
-                    Secret Mode
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => handleSelectDemoRole('doctor')}
-                    className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white hover:bg-emerald-100/70 border border-emerald-200 text-slate-800 font-bold transition shadow-2xs group"
-                  >
-                    <Stethoscope className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
-                    <span className="text-[10px] mt-1">Doctor</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSelectDemoRole('receptionist')}
-                    className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white hover:bg-teal-100/70 border border-teal-200 text-slate-800 font-bold transition shadow-2xs group"
-                  >
-                    <Building2 className="w-3.5 h-3.5 text-teal-600 group-hover:scale-110 transition-transform" />
-                    <span className="text-[10px] mt-1">Front Desk</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSelectDemoRole('pharmacist')}
-                    className="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-white hover:bg-rose-100/70 border border-rose-200 text-slate-800 font-bold transition shadow-2xs group"
-                  >
-                    <Pill className="w-3.5 h-3.5 text-rose-600 group-hover:scale-110 transition-transform" />
-                    <span className="text-[10px] mt-1">Pharmacy</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* Mode Switcher Tabs */}
             <div className="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-xl">
               <button
@@ -603,7 +547,7 @@ export default function LoginPage() {
                     required
                     value={emailOrPhone}
                     onChange={(e) => setEmailOrPhone(e.target.value)}
-                    placeholder="e.g. doctor@rxnxt.com or 9876543210"
+                    placeholder="e.g. doctor@clinic.com or 9876543210"
                     className="pl-16 pr-3 py-2.5 text-sm bg-slate-50/70 border-slate-200 focus:bg-white focus:border-emerald-500 rounded-xl"
                     disabled={loading}
                   />

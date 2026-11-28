@@ -42,6 +42,10 @@ export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  if (user.role !== 'clinic_admin' && user.role !== 'admin' && user.role !== 'doctor' && user.role !== 'superadmin') {
+    return NextResponse.json({ error: 'Permission denied. Only Clinic Admins or Doctors can recharge wallet.' }, { status: 403 });
+  }
+
   try {
     const { packageId, paymentRef } = await request.json();
     const pack = WALLET_RECHARGE_PACKAGES[packageId];

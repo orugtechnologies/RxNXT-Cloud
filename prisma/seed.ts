@@ -40,38 +40,6 @@ async function main() {
   });
   console.log(`✅ Clinic: ${clinic.name}`);
 
-  // ── 2. Demo Doctor ──────────────────────────────────────────────
-  const hashedPassword = await bcrypt.hash('doctor123', 12);
-  const doctor = await prisma.user.upsert({
-    where: { email: 'doctor@rxnxt.com' },
-    update: {},
-    create: {
-      email: 'doctor@rxnxt.com',
-      password: hashedPassword,
-      fullName: 'Dr. Shanmukha Datta',
-      role: 'clinic_admin',
-      specialization: 'General Physician',
-      clinicId: clinic.id,
-    },
-  });
-  console.log(`✅ Doctor: ${doctor.fullName} (${doctor.email})`);
-
-  // ── 2b. Super Admin ────────────────────────────────────────────
-  const superAdminPassword = await bcrypt.hash('admin123', 12);
-  const superAdmin = await prisma.user.upsert({
-    where: { email: 'superadmin@rxnxt.com' },
-    update: { role: 'superadmin' },
-    create: {
-      email: 'superadmin@rxnxt.com',
-      password: superAdminPassword,
-      fullName: 'RxNXT Platform Executive Admin',
-      role: 'superadmin',
-      specialization: 'Platform Administration',
-      clinicId: clinic.id,
-    },
-  });
-  console.log(`✅ Super Admin: ${superAdmin.fullName} (${superAdmin.email})`);
-
   // ── 3. Drugs ────────────────────────────────────────────────────
   const drugsPath = path.join(process.cwd(), 'data', 'drugs.json');
   const drugsData = JSON.parse(fs.readFileSync(drugsPath, 'utf-8'));
@@ -131,11 +99,10 @@ async function main() {
   console.log(`✅ Sample patients: ${patients.length} added`);
 
   // ── Done ─────────────────────────────────────────────────────────
-  console.log('\n🎉 Database seeded successfully!\n');
+  console.log('\n🎉 Database catalog seeded successfully!\n');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('  Login: doctor@rxnxt.com');
-  console.log('  Password: doctor123');
   console.log('  App: http://localhost:3000');
+  console.log('  Create superadmin: npm run create-admin');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 }
 

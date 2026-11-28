@@ -32,6 +32,12 @@ export async function PUT(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  // Only clinic administrators and doctors can modify clinic branding and profile
+  const allowedRoles = ['clinic_admin', 'admin', 'doctor', 'superadmin'];
+  if (!allowedRoles.includes(user.role.toLowerCase())) {
+    return NextResponse.json({ error: 'Forbidden: Admin or Doctor access required to update clinic profile.' }, { status: 403 });
+  }
+
   try {
     const body = await request.json();
     const updatedClinic = await prisma.clinic.update({
@@ -68,4 +74,3 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
-

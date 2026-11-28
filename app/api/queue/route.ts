@@ -2,30 +2,27 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth-server';
 import { prisma } from '@/lib/prisma';
-import { getClinicSubscription, isDemoEmail } from '@/lib/subscription';
+import { getClinicSubscription } from '@/lib/subscription';
 
 export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    let clinicId = user.clinicId;
+    const clinicId = user.clinicId;
     if (!clinicId) {
-      const clinic = await prisma.clinic.findFirst();
-      if (clinic) clinicId = clinic.id;
+      return NextResponse.json({ error: 'Clinic ID is required' }, { status: 400 });
     }
 
-    if (!isDemoEmail(user.email)) {
-      const sub = await getClinicSubscription(clinicId);
-      if (!sub.allowed) {
-        return NextResponse.json({
-          error: sub.isUsageLocked ? 'TRIAL_USAGE_LIMIT_REACHED' : 'SUBSCRIPTION_EXPIRED',
-          message: sub.isUsageLocked
-            ? `Your 150-prescription free trial has ended (${sub.prescriptionsCount || 150}/${sub.trialPrescriptionCap || 150} used). Please select a subscription plan to manage patient queue.`
-            : 'Your subscription has expired. Please renew your subscription to manage patient queue.',
-          subscription: sub,
-        }, { status: 403 });
-      }
+    const sub = await getClinicSubscription(clinicId);
+    if (!sub.allowed) {
+      return NextResponse.json({
+        error: sub.isUsageLocked ? 'TRIAL_USAGE_LIMIT_REACHED' : 'SUBSCRIPTION_EXPIRED',
+        message: sub.isUsageLocked
+          ? `Your 150-prescription free trial has ended (${sub.prescriptionsCount || 150}/${sub.trialPrescriptionCap || 150} used). Please select a subscription plan to manage patient queue.`
+          : 'Your subscription has expired. Please renew your subscription to manage patient queue.',
+        subscription: sub,
+      }, { status: 403 });
     }
 
     const { patientId, doctorId, bp, pulse, temperature, weight, height, spo2 } = await request.json();
