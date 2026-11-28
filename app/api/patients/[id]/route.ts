@@ -101,6 +101,7 @@ export async function GET(
       bills: patient.bills || []
     });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('[Patient Detail API Error]:', err);
+    return NextResponse.json({ error: 'Internal server error retrieving patient data.' }, { status: 500 });
   }
 }

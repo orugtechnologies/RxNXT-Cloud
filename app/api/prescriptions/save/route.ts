@@ -10,9 +10,25 @@ export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  // Clinical RBAC: Only authorized doctors or medical clinic administrators can issue prescriptions
-  if (user.role !== 'doctor' && user.role !== 'clinic_admin') {
-    return NextResponse.json({ error: 'Permission denied. Only authorized medical practitioners can issue prescriptions.' }, { status: 403 });
+  // Clinical RBAC: Strictly restricted to verified licensed medical practitioners (doctors)
+  if (user.role !== 'doctor') {
+    return NextResponse.json({ error: 'Permission denied. Only authorized medical practitioners (doctors) can issue prescriptions.' }, { status: 403 });
+  }
+
+  // Authoritative database check: Verify active practitioner record in the authenticated clinic
+  if (prisma.user?.findFirst) {
+    const activeDoctor = await prisma.user.findFirst({
+      where: {
+        id: user.id,
+        clinicId: user.clinicId,
+        role: 'doctor',
+      },
+      select: { id: true, fullName: true, registrationNumber: true },
+    });
+
+    if (!activeDoctor) {
+      return NextResponse.json({ error: 'Unauthorized: Active practitioner credentials not found.' }, { status: 403 });
+    }
   }
 
   try {
@@ -28,24 +44,59 @@ export async function POST(request: Request) {
       }, { status: 403 });
     }
 
-    const { patientId, chiefComplaint, diagnosis, notes, followUpDate, medicines, timeTakenSeconds, creationMethod, enableDailyReminders } = await request.json();
+    const body = await request.json();
+    const {
+      patientId,
+      chiefComplaint,
+      diagnosis,
+      notes,
+      followUpDate,
+      medicines,
+      timeTakenSeconds,
+      creationMethod,
+      enableDailyReminders
+    } = body || {};
 
-    if (!patientId || !medicines || medicines.length === 0) {
-      return NextResponse.json({ error: 'Patient and at least 1 medicine are required' }, { status: 400 });
+    if (!patientId || typeof patientId !== 'string') {
+      return NextResponse.json({ error: 'Valid Patient ID is required' }, { status: 400 });
+    }
+
+    if (!Array.isArray(medicines) || medicines.length === 0 || medicines.length > 50) {
+      return NextResponse.json({ error: 'Prescription must contain between 1 and 50 medicines.' }, { status: 400 });
+    }
+
+    // Input bounds: string length guards to prevent payload / resource abuse
+    if (chiefComplaint && typeof chiefComplaint === 'string' && chiefComplaint.length > 1000) {
+      return NextResponse.json({ error: 'Chief complaint exceeds maximum allowed length (1000 characters).' }, { status: 400 });
+    }
+    if (diagnosis && typeof diagnosis === 'string' && diagnosis.length > 1000) {
+      return NextResponse.json({ error: 'Diagnosis exceeds maximum allowed length (1000 characters).' }, { status: 400 });
+    }
+    if (notes && typeof notes === 'string' && notes.length > 2000) {
+      return NextResponse.json({ error: 'Clinical notes exceed maximum allowed length (2000 characters).' }, { status: 400 });
     }
 
     // Strict Clinical Validation: Frequency, Duration, and Instructions are mandatory for every prescribed medicine
     for (let i = 0; i < medicines.length; i++) {
       const m = medicines[i];
+      if (!m || typeof m !== 'object') {
+        return NextResponse.json({ error: `Invalid medicine item at position ${i + 1}.` }, { status: 400 });
+      }
       const medName = m.name || m.customName || `Medicine #${i + 1}`;
-      if (!m.frequency || !m.frequency.trim()) {
+      if (typeof medName === 'string' && medName.length > 200) {
+        return NextResponse.json({ error: `Medicine name at #${i + 1} exceeds 200 characters.` }, { status: 400 });
+      }
+      if (!m.frequency || typeof m.frequency !== 'string' || !m.frequency.trim()) {
         return NextResponse.json({ error: `Frequency is mandatory for "${medName}".` }, { status: 400 });
       }
-      if (!m.duration || !m.duration.trim()) {
+      if (!m.duration || typeof m.duration !== 'string' || !m.duration.trim()) {
         return NextResponse.json({ error: `Duration is mandatory for "${medName}".` }, { status: 400 });
       }
-      if (!m.instructions || !m.instructions.trim()) {
+      if (!m.instructions || typeof m.instructions !== 'string' || !m.instructions.trim()) {
         return NextResponse.json({ error: `Instructions are mandatory for "${medName}".` }, { status: 400 });
+      }
+      if (m.instructions.length > 500) {
+        return NextResponse.json({ error: `Instructions for "${medName}" exceed 500 characters.` }, { status: 400 });
       }
     }
 
@@ -355,8 +406,11 @@ export async function POST(request: Request) {
     }, { status: 201 });
 
   } catch (err: any) {
-    console.error('Save prescription error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('[Save Prescription Error]:', err);
+    return NextResponse.json(
+      { error: 'An internal error occurred while saving the prescription. Please try again or contact support.' },
+      { status: 500 }
+    );
   }
 }
 

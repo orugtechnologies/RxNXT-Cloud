@@ -27,8 +27,15 @@ describe('Prescription PDF HMAC Security Tokens', () => {
   });
 
   it('rejects an expired token', () => {
-    // Generate token that expired 1 second ago (-1000ms TTL)
-    const expiredToken = generatePrescriptionPdfToken(sampleRxId, -1000);
+    const activeSecret = process.env.NEXTAUTH_SECRET || process.env.CRON_SECRET || 'rxnxt-jest-test-suite-secret-mock';
+    const pastTimestamp = Date.now() - 5000; // 5 seconds in the past
+    const sig = crypto
+      .createHmac('sha256', activeSecret)
+      .update(`rx_pdf:${sampleRxId}:${pastTimestamp}`)
+      .digest('hex')
+      .substring(0, 32);
+    const expiredToken = `${pastTimestamp}.${sig}`;
+
     const isValid = verifyPrescriptionPdfToken(sampleRxId, expiredToken);
     expect(isValid).toBe(false);
   });
@@ -48,7 +55,7 @@ describe('Prescription PDF HMAC Security Tokens', () => {
     expect(verifyPrescriptionPdfToken('', 'some_token')).toBe(false);
   });
 
-  it('supports legacy tokens for smooth backwards compatibility', () => {
+  it('strictly rejects legacy permanent tokens without expiration timestamps', () => {
     const activeSecret = process.env.NEXTAUTH_SECRET || process.env.CRON_SECRET || 'rxnxt-jest-test-suite-secret-mock';
     const legacySig = crypto
       .createHmac('sha256', activeSecret)
@@ -56,15 +63,28 @@ describe('Prescription PDF HMAC Security Tokens', () => {
       .digest('hex')
       .substring(0, 32);
 
-    expect(verifyPrescriptionPdfToken(sampleRxId, legacySig)).toBe(true);
+    // Must be rejected because it lacks `<expiresAt>.`
+    expect(verifyPrescriptionPdfToken(sampleRxId, legacySig)).toBe(false);
 
-    // Also supports legacy salt fallback
+    // Legacy fixed salt must also be rejected
     const saltSig = crypto
       .createHmac('sha256', 'rxnxt-pdf-signature-salt-2026')
       .update(`rx_pdf:${sampleRxId}`)
       .digest('hex')
       .substring(0, 32);
 
-    expect(verifyPrescriptionPdfToken(sampleRxId, saltSig)).toBe(true);
+    expect(verifyPrescriptionPdfToken(sampleRxId, saltSig)).toBe(false);
+  });
+
+  it('enforces maximum TTL ceiling on generated tokens', () => {
+    // Attempting to request a 10-year TTL (3650 days)
+    const tenYearsMs = 3650 * 24 * 60 * 60 * 1000;
+    const token = generatePrescriptionPdfToken(sampleRxId, tenYearsMs);
+    const [expStr] = token.split('.');
+    const expiresAt = Number(expStr);
+
+    // Max expiry is 60 days
+    const maxAllowedFuture = Date.now() + 61 * 24 * 60 * 60 * 1000;
+    expect(expiresAt).toBeLessThanOrEqual(maxAllowedFuture);
   });
 });

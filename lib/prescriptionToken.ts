@@ -15,8 +15,9 @@ function getSigningSecret(): string {
   return secret;
 }
 
-// Default 30 days expiration for WhatsApp prescription access links
+// Expiration policy: default 30 days, maximum allowable TTL is 60 days
 const DEFAULT_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000;
+const MAX_EXPIRY_MS = 60 * 24 * 60 * 60 * 1000;
 
 /**
  * Generates a time-bound, cryptographically signed HMAC-SHA256 token
@@ -30,7 +31,10 @@ export function generatePrescriptionPdfToken(
 ): string {
   if (!prescriptionId) return '';
   const secret = getSigningSecret();
-  const expiresAt = Date.now() + ttlMs;
+
+  // Enforce a strict ceiling on TTL to prevent arbitrary permanent tokens
+  const safeTtl = Math.min(Math.max(1000, ttlMs), MAX_EXPIRY_MS);
+  const expiresAt = Date.now() + safeTtl;
 
   const signature = crypto
     .createHmac('sha256', secret)
@@ -43,64 +47,46 @@ export function generatePrescriptionPdfToken(
 
 /**
  * Verifies that the provided token matches the expected signature and has not expired.
- * Also maintains backwards-compatibility for tokens generated prior to timestamping.
+ * Strict time-bound enforcement: legacy non-expiring tokens are explicitly rejected.
  */
 export function verifyPrescriptionPdfToken(prescriptionId: string, token?: string | null): boolean {
   if (!prescriptionId || !token) return false;
   const secret = getSigningSecret();
 
   try {
-    // 1. New Format: `<expiresAt>.<signature>`
-    if (token.includes('.')) {
-      const parts = token.split('.');
-      if (parts.length !== 2) return false;
-
-      const [expStr, tokenSig] = parts;
-      const expiresAt = parseInt(expStr, 10);
-
-      // Check timestamp validity and expiration
-      if (isNaN(expiresAt) || Date.now() > expiresAt) {
-        return false; // Expired token!
-      }
-
-      const expectedSig = crypto
-        .createHmac('sha256', secret)
-        .update(`rx_pdf:${prescriptionId}:${expStr}`)
-        .digest('hex')
-        .substring(0, 32);
-
-      const tokenBuf = Buffer.from(tokenSig);
-      const expectedBuf = Buffer.from(expectedSig);
-      if (tokenBuf.length !== expectedBuf.length) return false;
-
-      return crypto.timingSafeEqual(tokenBuf, expectedBuf);
+    // Strictly require time-bound format: `<expiresAt>.<signature>`
+    if (!token.includes('.')) {
+      return false; // Legacy permanent tokens are strictly rejected
     }
 
-    // 2. Legacy fallback for smooth migration of existing tokens
-    const legacyExpected = crypto
+    const parts = token.split('.');
+    if (parts.length !== 2) return false;
+
+    const [expStr, tokenSig] = parts;
+    const expiresAt = parseInt(expStr, 10);
+
+    // Check timestamp validity and expiration
+    const now = Date.now();
+    if (isNaN(expiresAt) || now > expiresAt) {
+      return false; // Expired token!
+    }
+
+    // Reject tokens with timestamps unreasonably far in the future (tamper protection)
+    if (expiresAt > now + MAX_EXPIRY_MS + 24 * 60 * 60 * 1000) {
+      return false;
+    }
+
+    const expectedSig = crypto
       .createHmac('sha256', secret)
-      .update(`rx_pdf:${prescriptionId}`)
+      .update(`rx_pdf:${prescriptionId}:${expStr}`)
       .digest('hex')
       .substring(0, 32);
 
-    const tokenBuf = Buffer.from(token);
-    const legacyBuf = Buffer.from(legacyExpected);
-    if (tokenBuf.length === legacyBuf.length && crypto.timingSafeEqual(tokenBuf, legacyBuf)) {
-      return true;
-    }
+    const tokenBuf = Buffer.from(tokenSig);
+    const expectedBuf = Buffer.from(expectedSig);
+    if (tokenBuf.length !== expectedBuf.length) return false;
 
-    // Backwards compatibility with initial legacy salt for any links issued earlier
-    const saltLegacy = crypto
-      .createHmac('sha256', 'rxnxt-pdf-signature-salt-2026')
-      .update(`rx_pdf:${prescriptionId}`)
-      .digest('hex')
-      .substring(0, 32);
-    const saltBuf = Buffer.from(saltLegacy);
-    if (tokenBuf.length === saltBuf.length && crypto.timingSafeEqual(tokenBuf, saltBuf)) {
-      return true;
-    }
-
-    return false;
+    return crypto.timingSafeEqual(tokenBuf, expectedBuf);
   } catch {
     return false;
   }

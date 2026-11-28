@@ -128,7 +128,7 @@ export async function POST(request: Request) {
     }}, { status: 201 });
   } catch (err: any) {
     console.error('Error saving patient:', err);
-    return NextResponse.json({ error: err.message || 'Failed to save patient' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create patient record. Please check inputs and try again.' }, { status: 500 });
   }
 }
 
