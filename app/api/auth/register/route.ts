@@ -14,7 +14,9 @@ export async function POST(request: Request) {
       clinicPhone, 
       specialization, 
       phone, 
-      inviteCode 
+      inviteCode,
+      accountType, // 'doctor' (default, doctor & clinic owner) or 'clinic_admin' (practice manager)
+      registrationNumber // Doctor's medical registration number
     } = await request.json();
 
     if (!fullName || !email || !password) {
@@ -42,7 +44,8 @@ export async function POST(request: Request) {
     // Create clinic (or link to existing) + user account in a transaction
     const result = await prisma.$transaction(async (tx) => {
       let activeClinicId = '';
-      let assignedRole = 'clinic_admin';
+      // Default to 'doctor' (prescribing doctor & clinic owner) unless explicitly registering as non-prescribing clinic_admin
+      let assignedRole = accountType === 'clinic_admin' ? 'clinic_admin' : 'doctor';
       let assignedStatus = 'ACTIVE';
 
       if (inviteCode) {
@@ -85,7 +88,8 @@ export async function POST(request: Request) {
           role: assignedRole,
           status: assignedStatus,
           clinicId: activeClinicId,
-          specialization: specialization?.trim() || 'General Physician',
+          specialization: specialization?.trim() || (assignedRole === 'doctor' ? 'General Physician' : null),
+          registrationNumber: registrationNumber?.trim() || null,
           phone: phone?.trim() || clinicPhone?.trim() || null,
           verificationStatus: 'VERIFIED',
         },
@@ -98,6 +102,7 @@ export async function POST(request: Request) {
       message: 'Clinic workspace and account created successfully.',
       clinicId: result.clinicId,
       userId: result.user.id,
+      role: result.user.role,
       status: result.user.status,
     }, { status: 201 });
 

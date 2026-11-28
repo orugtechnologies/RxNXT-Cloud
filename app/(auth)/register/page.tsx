@@ -37,7 +37,9 @@ function RegisterForm() {
     email: '',
     password: '',
     phone: '',
-    specialization: '',
+    specialization: 'General Physician',
+    registrationNumber: '',
+    accountType: 'doctor', // 'doctor' (default, prescribing doctor & owner) or 'clinic_admin'
     inviteCode: inviteCodeParam,
   });
 
@@ -97,7 +99,11 @@ function RegisterForm() {
         return;
       }
 
-      window.location.href = '/doctor/dashboard';
+      if (form.accountType === 'clinic_admin') {
+        window.location.href = '/admin/team';
+      } else {
+        window.location.href = '/doctor/dashboard';
+      }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
       setLoading(false);
@@ -214,6 +220,44 @@ function RegisterForm() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Role Selection (Doctor-Owner vs Practice Manager) */}
+              {!inviteCodeParam && (
+                <div className="space-y-2 md:col-span-2">
+                  <Label className="text-xs font-semibold text-slate-700">I am registering as:</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div 
+                      onClick={() => setForm({ ...form, accountType: 'doctor' })}
+                      className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start gap-3 select-none ${
+                        form.accountType === 'doctor' 
+                          ? 'border-emerald-500 bg-emerald-50/50 text-emerald-950 ring-2 ring-emerald-500/20' 
+                          : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                      }`}
+                    >
+                      <Stethoscope className={`h-5 w-5 mt-0.5 shrink-0 ${form.accountType === 'doctor' ? 'text-emerald-600' : 'text-slate-400'}`} />
+                      <div>
+                        <div className="text-xs font-bold text-slate-900">Doctor & Clinic Owner</div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">Prescribe medicines, consult patients, and manage clinic</div>
+                      </div>
+                    </div>
+
+                    <div 
+                      onClick={() => setForm({ ...form, accountType: 'clinic_admin' })}
+                      className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-start gap-3 select-none ${
+                        form.accountType === 'clinic_admin' 
+                          ? 'border-emerald-500 bg-emerald-50/50 text-emerald-950 ring-2 ring-emerald-500/20' 
+                          : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                      }`}
+                    >
+                      <Building2 className={`h-5 w-5 mt-0.5 shrink-0 ${form.accountType === 'clinic_admin' ? 'text-emerald-600' : 'text-slate-400'}`} />
+                      <div>
+                        <div className="text-xs font-bold text-slate-900">Practice Manager / Admin</div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">Manage staff, billing & clinic operations (non-prescribing)</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <Label htmlFor="fullName" className="text-xs font-semibold text-slate-700">
                   Full Name <span className="text-rose-500">*</span>
@@ -233,16 +277,36 @@ function RegisterForm() {
                 </div>
               </div>
 
+              {form.accountType === 'doctor' && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="registrationNumber" className="text-xs font-semibold text-slate-700">
+                    Medical Council Reg. No.
+                  </Label>
+                  <div className="relative">
+                    <Sparkles className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input 
+                      id="registrationNumber" 
+                      name="registrationNumber" 
+                      placeholder="e.g. MMC 2018/04/1234 or MCI-12345" 
+                      className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
+                      value={form.registrationNumber} 
+                      onChange={handleChange} 
+                      disabled={loading} 
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <Label htmlFor="specialization" className="text-xs font-semibold text-slate-700">
-                  Specialization / Role
+                  {form.accountType === 'doctor' ? 'Medical Specialization' : 'Administrative Role'}
                 </Label>
                 <div className="relative">
                   <Stethoscope className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input 
                     id="specialization" 
                     name="specialization" 
-                    placeholder="e.g. General Physician, MD" 
+                    placeholder={form.accountType === 'doctor' ? "e.g. General Physician, MD, Pediatrician" : "e.g. Clinic Manager, Operations Head"} 
                     className="pl-10 h-11 text-sm bg-slate-50/50 border-slate-200 focus:bg-white transition-all rounded-xl" 
                     value={form.specialization} 
                     onChange={handleChange} 

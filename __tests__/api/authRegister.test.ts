@@ -116,7 +116,7 @@ describe('Auth Register API (Without NMC Gating)', () => {
       id: 'user-created-456',
       email: 'doctor@cityclinic.com',
       fullName: 'Dr. John Doe',
-      role: 'clinic_admin',
+      role: 'doctor',
       status: 'ACTIVE',
       clinicId: 'clinic-created-123',
     });
@@ -160,10 +160,53 @@ describe('Auth Register API (Without NMC Gating)', () => {
         data: expect.objectContaining({
           fullName: 'Dr. John Doe',
           email: 'doctor@cityclinic.com',
-          role: 'clinic_admin',
+          role: 'doctor',
           status: 'ACTIVE',
           clinicId: 'clinic-created-123',
           specialization: 'Cardiologist',
+        }),
+      })
+    );
+  });
+
+  it('supports explicit clinic_admin registration for practice managers', async () => {
+    (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+    (prisma.clinic.create as jest.Mock).mockResolvedValue({
+      id: 'clinic-manager-123',
+      name: 'Apollo Polyclinic',
+      subscriptionStatus: 'TRIAL',
+    });
+    (prisma.user.create as jest.Mock).mockResolvedValue({
+      id: 'admin-created-789',
+      email: 'manager@apollo.com',
+      fullName: 'Ramesh Manager',
+      role: 'clinic_admin',
+      status: 'ACTIVE',
+      clinicId: 'clinic-manager-123',
+    });
+
+    const req = {
+      json: async () => ({
+        clinicName: 'Apollo Polyclinic',
+        fullName: 'Ramesh Manager',
+        email: 'manager@apollo.com',
+        password: 'securePassword123',
+        accountType: 'clinic_admin',
+      }),
+    } as any;
+
+    const response = await POST(req);
+    const data = await response.json();
+
+    expect(response.status).toBe(201);
+    expect(data.role).toBe('clinic_admin');
+
+    expect(prisma.user.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          fullName: 'Ramesh Manager',
+          email: 'manager@apollo.com',
+          role: 'clinic_admin',
         }),
       })
     );

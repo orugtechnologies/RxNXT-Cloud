@@ -62,7 +62,30 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
         ]
       }
     ];
+  } else if (role === 'clinic_admin' || role === 'admin') {
+    navGroups = [
+      {
+        label: 'Clinic Operations',
+        items: [
+          { name: 'Manage Doctors', href: '/admin/team', icon: Users },
+          { name: 'Support Staff', href: '/admin/staff', icon: Users },
+          { name: 'Patient Directory', href: '/doctor/patients', icon: Users },
+          { name: 'Lab Diagnostics', href: '/lab/dashboard', icon: FlaskConical },
+          { name: 'Pharmacy Stock', href: '/pharmacist/inventory', icon: Package },
+        ]
+      },
+      {
+        label: 'Administration',
+        items: [
+          { name: 'Billing & Invoices', href: '/admin/billing', icon: ReceiptText },
+          { name: 'Subscription & Plans', href: '/admin/subscription', icon: CreditCard },
+          { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
+          { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
+        ]
+      }
+    ];
   } else {
+    // Default: Doctor & Clinic Owner (Clinical prescription workspace + clinic management)
     navGroups = [
       {
         label: 'Clinical',
@@ -79,26 +102,19 @@ function SidebarNavigation({ collapsed, userRole }: { collapsed: boolean, userRo
         items: [
           { name: 'Analytics', href: '/doctor/analytics', icon: Activity },
         ]
-      }
-    ];
-
-    if (role === 'clinic_admin' || role === 'admin' || role === 'doctor') {
-      navGroups.push({
+      },
+      {
         label: 'Administration',
         items: [
+          { name: 'Manage Doctors', href: '/admin/team', icon: Users },
+          { name: 'Support Staff', href: '/admin/staff', icon: Users },
           { name: 'Billing & Invoices', href: '/admin/billing', icon: ReceiptText },
-          ...(role === 'clinic_admin' || role === 'admin' ? [
-            { name: 'Manage Doctors', href: '/admin/team', icon: Users },
-            { name: 'Support Staff', href: '/admin/staff', icon: Users },
-            { name: 'Lab Diagnostics', href: '/lab/dashboard', icon: FlaskConical },
-            { name: 'Pharmacy Stock', href: '/pharmacist/inventory', icon: Package },
-            { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
-            { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
-          ] : []),
           { name: 'Subscription & Plans', href: '/admin/subscription', icon: CreditCard },
+          { name: 'Clinic Settings', href: '/admin/settings', icon: Settings },
+          { name: 'Clinic Drugs', href: '/admin/drugs', icon: FilePlus },
         ]
-      });
-    }
+      }
+    ];
   }
 
   return (
