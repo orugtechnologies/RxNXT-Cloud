@@ -6,7 +6,7 @@ import { appendLabReportPage, LabReportPDFData } from './labReportPdfGenerator';
 // Ensure TextEncoder is available across both Node (Jest/JSDOM) and browser environments
 if (typeof globalThis.TextEncoder === 'undefined') {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line
     const { TextEncoder: UtilTextEncoder, TextDecoder: UtilTextDecoder } = require('util');
     (globalThis as any).TextEncoder = UtilTextEncoder;
     (globalThis as any).TextDecoder = UtilTextDecoder;

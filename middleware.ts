@@ -8,7 +8,7 @@ export async function middleware(req: NextRequest) {
   if (pathname.startsWith('/superadmin/dashboard')) {
     const token = await getToken({ 
       req, 
-      secret: process.env.NEXTAUTH_SECRET || 'rxnxt-local-dev-secret-key-2024' 
+      secret: process.env.NEXTAUTH_SECRET || (process.env.NODE_ENV === 'production' ? undefined : 'rxnxt-local-dev-secret-key-2024') 
     });
     const role = (token?.role as string)?.toLowerCase().replace('_', '');
     if (!token || role !== 'superadmin') {

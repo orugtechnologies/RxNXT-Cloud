@@ -16,6 +16,28 @@ export async function GET(request: Request) {
       return new NextResponse('Prescription ID is required', { status: 400 });
     }
 
+    // 1. First fetch minimal prescription header to authorize BEFORE loading full PHI
+    const rxHeader = await prisma.prescription.findUnique({
+      where: { id: prescriptionId },
+      select: { id: true, clinicId: true, patientId: true },
+    });
+
+    if (!rxHeader) {
+      return new NextResponse('Prescription not found', { status: 404 });
+    }
+
+    // 2. Authorization check: Either active clinic user session OR valid HMAC signature token
+    const user = await getAuthenticatedUser();
+    const token = searchParams.get('token');
+
+    const isClinicUser = user && (user.clinicId === rxHeader.clinicId || user.role === 'superadmin');
+    const hasValidToken = verifyPrescriptionPdfToken(prescriptionId, token);
+
+    if (!isClinicUser && !hasValidToken) {
+      return new NextResponse('Unauthorized: Access denied. Valid login or signed link required.', { status: 403 });
+    }
+
+    // 3. Authorized — now load complete clinical details
     const prescription = await prisma.prescription.findUnique({
       where: { id: prescriptionId },
       include: {
@@ -32,17 +54,6 @@ export async function GET(request: Request) {
 
     if (!prescription) {
       return new NextResponse('Prescription not found', { status: 404 });
-    }
-
-    // Authorization check: Either active clinic user session OR valid HMAC signature token
-    const user = await getAuthenticatedUser();
-    const token = searchParams.get('token');
-
-    const isClinicUser = user && (user.clinicId === prescription.clinicId || user.role === 'superadmin');
-    const hasValidToken = verifyPrescriptionPdfToken(prescriptionId, token);
-
-    if (!isClinicUser && !hasValidToken) {
-      return new NextResponse('Unauthorized: Access denied. Valid login or signed link required.', { status: 403 });
     }
 
     let doctor: any = null;
@@ -107,11 +118,13 @@ export async function GET(request: Request) {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `inline; filename="${filename}"`,
-        'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=86400',
+        'Cache-Control': 'private, no-store, no-cache, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
       },
     });
   } catch (error: any) {
     console.error('Error in prescriptions/pdf route:', error);
-    return new NextResponse(`Error generating PDF: ${error.message}`, { status: 500 });
+    return new NextResponse('Internal error generating prescription document', { status: 500 });
   }
 }
