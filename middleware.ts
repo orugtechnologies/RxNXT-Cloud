@@ -22,6 +22,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/receptionist') ||
     pathname.startsWith('/pharmacist') ||
     pathname.startsWith('/nurse') ||
+    pathname.startsWith('/lab') ||
     pathname.startsWith('/admin')
   ) {
     const token = req.cookies.get('next-auth.session-token') || req.cookies.get('__Secure-next-auth.session-token');
