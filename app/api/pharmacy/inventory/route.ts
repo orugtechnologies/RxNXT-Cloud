@@ -48,6 +48,11 @@ export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  const allowedRoles = ['pharmacist', 'clinic_admin', 'doctor', 'admin', 'superadmin'];
+  if (!allowedRoles.includes(user.role)) {
+    return NextResponse.json({ error: 'Permission denied. Only pharmacists or clinic administrators can manage inventory.' }, { status: 403 });
+  }
+
   try {
     const {
       medicineName,
@@ -94,6 +99,11 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const allowedRoles = ['pharmacist', 'clinic_admin', 'doctor', 'admin', 'superadmin'];
+  if (!allowedRoles.includes(user.role)) {
+    return NextResponse.json({ error: 'Permission denied. Only pharmacists or clinic administrators can manage inventory.' }, { status: 403 });
+  }
 
   try {
     const { id, quantityInStock, unitPrice, costPrice, batchNumber, expiryDate, rackLocation, minReorderLevel } = await request.json();

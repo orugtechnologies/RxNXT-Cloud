@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generatePrescriptionBuffer } from '@/lib/prescriptionPdfGenerator';
 import { getCompletedLabReportsForPatient } from '@/lib/prescriptionLabHelper';
+import { getAuthenticatedUser } from '@/lib/auth-server';
+import { verifyPrescriptionPdfToken } from '@/lib/prescriptionToken';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,6 +32,17 @@ export async function GET(request: Request) {
 
     if (!prescription) {
       return new NextResponse('Prescription not found', { status: 404 });
+    }
+
+    // Authorization check: Either active clinic user session OR valid HMAC signature token
+    const user = await getAuthenticatedUser();
+    const token = searchParams.get('token');
+
+    const isClinicUser = user && (user.clinicId === prescription.clinicId || user.role === 'superadmin');
+    const hasValidToken = verifyPrescriptionPdfToken(prescriptionId, token);
+
+    if (!isClinicUser && !hasValidToken) {
+      return new NextResponse('Unauthorized: Access denied. Valid login or signed link required.', { status: 403 });
     }
 
     let doctor: any = null;

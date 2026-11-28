@@ -9,6 +9,8 @@
  * 4. Monthly 25-Day Chronic Care Refill Alerts
  */
 
+import { generatePrescriptionPdfToken } from '@/lib/prescriptionToken';
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
@@ -54,31 +56,12 @@ export function getPublicAppUrl(): string {
 
 const cleanEnv = (val?: string) => (val || '').trim().replace(/^["']|["']$/g, '').trim();
 
-const ACTIVE_VERIFIED_META_TOKEN =
-  'EAAZAw6je6IHQBSRFNYW74j2dCdBSMHw9mk8xNmCs2DTVVlUHeZA0yioYLU46zJ15xL4m00q916KDUHEEZBLhpKdE124xAWeke2A4aNJqlDxFrCRCYdeV9Oe7laGgZAXAxEPaqrmMZAWmco9AZAhWUtUEwwNS38e6zFzAzRWGZAggUZC2tz67urhcU3AAVpPoPnvUNQZDZD';
-
-const ACTIVE_VERIFIED_PHONE_NUMBER_ID = '1294365190428277';
-
 export function getEffectiveMetaToken(): string {
-  const envToken = cleanEnv(process.env.META_WA_ACCESS_TOKEN);
-  if (process.env.NODE_ENV === 'test') {
-    return envToken;
-  }
-  if (!envToken || envToken.includes('ZAhrkitJK8') || envToken.includes('BSUiu17K0Ri') || envToken.length < 10) {
-    return ACTIVE_VERIFIED_META_TOKEN;
-  }
-  return envToken;
+  return cleanEnv(process.env.META_WA_ACCESS_TOKEN);
 }
 
 export function getEffectivePhoneNumberId(): string {
-  const envPhoneId = cleanEnv(process.env.META_WA_PHONE_NUMBER_ID);
-  if (process.env.NODE_ENV === 'test') {
-    return envPhoneId;
-  }
-  if (!envPhoneId || envPhoneId === '1371113409414029' || envPhoneId.length < 5) {
-    return ACTIVE_VERIFIED_PHONE_NUMBER_ID;
-  }
-  return envPhoneId;
+  return cleanEnv(process.env.META_WA_PHONE_NUMBER_ID);
 }
 
 /**
@@ -368,17 +351,19 @@ export async function sendPrescriptionPDF(
     slotDetails?: any;
   }
 ) {
-  // Construct official direct downloadable PDF link (e.g. https://app.rxnxt.in/api/prescriptions/{id}/pdf)
+  // Construct official direct downloadable PDF link with secure HMAC token
   // Ensure public HTTPS domain is always used so Meta Cloud servers can download the PDF document
   const appBaseUrl = getPublicAppUrl();
+  const pdfToken = prescriptionId ? generatePrescriptionPdfToken(prescriptionId) : '';
+  const tokenQuery = pdfToken ? `?token=${pdfToken}` : '';
   let directPdfUrl = prescriptionId
-    ? `${appBaseUrl}/api/prescriptions/${prescriptionId}/pdf`
+    ? `${appBaseUrl}/api/prescriptions/${prescriptionId}/pdf${tokenQuery}`
     : (pdfUrl || `${appBaseUrl}/api/prescriptions`);
 
   // Extra safeguard: under no circumstances can a localhost URL be dispatched to Meta
   if (directPdfUrl.includes('localhost') || directPdfUrl.includes('127.0.0.1')) {
     directPdfUrl = prescriptionId
-      ? `https://app.rxnxt.in/api/prescriptions/${prescriptionId}/pdf`
+      ? `https://app.rxnxt.in/api/prescriptions/${prescriptionId}/pdf${tokenQuery}`
       : 'https://app.rxnxt.in';
   }
 

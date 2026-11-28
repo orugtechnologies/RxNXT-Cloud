@@ -101,6 +101,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'patientId is required' }, { status: 400 });
     }
 
+    // Verify patient belongs to caller's clinic
+    if (prisma.patient?.findFirst) {
+      const patient = await prisma.patient.findFirst({
+        where: { id: patientId, clinicId: user.clinicId }
+      });
+      if (!patient) {
+        return NextResponse.json({ error: 'Patient not found or access denied' }, { status: 404 });
+      }
+    }
+
     if (!tests || !Array.isArray(tests) || tests.length === 0) {
       return NextResponse.json({ error: 'At least one test must be specified' }, { status: 400 });
     }

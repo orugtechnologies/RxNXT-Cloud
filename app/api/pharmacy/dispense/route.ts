@@ -7,6 +7,11 @@ export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  const allowedRoles = ['pharmacist', 'clinic_admin', 'doctor', 'admin', 'superadmin'];
+  if (!allowedRoles.includes(user.role)) {
+    return NextResponse.json({ error: 'Permission denied. Only pharmacists or clinic administrators can dispense prescriptions.' }, { status: 403 });
+  }
+
   try {
     const { prescriptionId, items, paymentMode, notes } = await request.json();
 

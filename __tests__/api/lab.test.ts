@@ -29,6 +29,9 @@ jest.mock('@/lib/prisma', () => ({
     user: {
       findFirst: jest.fn(),
     },
+    patient: {
+      findFirst: jest.fn().mockResolvedValue({ id: 'patient-1', clinicId: 'clinic-123' }),
+    },
   },
 }));
 

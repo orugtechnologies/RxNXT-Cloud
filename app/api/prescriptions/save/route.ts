@@ -10,6 +10,11 @@ export async function POST(request: Request) {
   const user = await getAuthenticatedUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  // Only doctors or clinic admins can create & sign prescriptions
+  if (user.role !== 'doctor' && user.role !== 'clinic_admin' && user.role !== 'admin' && user.role !== 'superadmin') {
+    return NextResponse.json({ error: 'Permission denied. Only licensed doctors or clinic administrators can issue prescriptions.' }, { status: 403 });
+  }
+
   try {
     // 0. Enforce Subscription / 150-Rx Usage-Based Free Trial Guard
     const sub = await getClinicSubscription(user.clinicId);

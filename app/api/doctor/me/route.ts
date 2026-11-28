@@ -8,6 +8,10 @@ export async function GET() {
     const sessionUser = await getAuthenticatedUser();
     if (!sessionUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    if (sessionUser.role !== 'doctor' && sessionUser.role !== 'clinic_admin' && sessionUser.role !== 'admin' && sessionUser.role !== 'superadmin') {
+      return NextResponse.json({ error: 'Permission denied: Doctor role required' }, { status: 403 });
+    }
+
     const doctor = await prisma.user.findUnique({
       where: { id: sessionUser.id },
       include: { clinic: true },
